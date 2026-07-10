@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
   <title>Tim G — Personal Hub</title>
   <meta name="description" content="Tim G — high school student based in the San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
+  <meta name="author" content="Tim G" />
+  <meta name="format-detection" content="telephone=no" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -14,7 +17,7 @@
   <meta property="og:locale" content="en_US" />
 
   <!-- Twitter -->
-  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Tim G — Personal Hub" />
   <meta name="twitter:description" content="High school student based in the San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
 
@@ -30,6 +33,7 @@
       try {
         var THEME_KEY = "timg-theme";
         var MOTION_KEY = "timg-motion";
+        var root = document.documentElement;
         var savedTheme = localStorage.getItem(THEME_KEY);
         var theme =
           savedTheme === "light" || savedTheme === "dark"
@@ -37,7 +41,8 @@
             : window.matchMedia("(prefers-color-scheme: dark)").matches
               ? "dark"
               : "light";
-        document.documentElement.setAttribute("data-theme", theme);
+        root.setAttribute("data-theme", theme);
+        root.style.colorScheme = theme;
 
         var savedMotion = localStorage.getItem(MOTION_KEY);
         var reduce =
@@ -46,22 +51,38 @@
             : savedMotion === "full"
               ? false
               : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (reduce) document.documentElement.classList.add("reduce-motion");
-        else document.documentElement.classList.add("motion-full");
+        if (reduce) root.classList.add("reduce-motion");
+        else root.classList.add("motion-full");
+
+        // Enable JS stylesheet path early so reveals don't flash fully-visible then hide
+        root.classList.add("js");
+
+        // If main.js fails to load, never leave content invisible
+        setTimeout(function () {
+          if (!root.classList.contains("app-ready")) {
+            root.classList.add("reveal-fallback");
+          }
+        }, 2500);
       } catch (e) {
         /* ignore */
       }
     })();
   </script>
+  <noscript>
+    <style>
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .top-bar { position: static; }
+    </style>
+  </noscript>
 </head>
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 
   <!-- Top controls: language + theme + motion -->
-  <div class="top-bar" role="navigation" aria-label="Site controls">
+  <header class="top-bar" role="banner">
     <div class="top-bar__inner">
-      <div class="control-cluster">
-        <div class="lang-switcher" role="group" aria-label="Select language">
+      <nav class="control-cluster" aria-label="Site controls" data-i18n-aria="a11y.siteControls">
+        <div class="lang-switcher" role="group" aria-label="Select language" data-i18n-aria="a11y.selectLanguage">
           <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
           <span class="lang-sep" aria-hidden="true">/</span>
           <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
@@ -71,7 +92,7 @@
           <button type="button" class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
         </div>
 
-        <div class="pref-switcher" role="group" aria-label="Display preferences">
+        <div class="pref-switcher" role="group" aria-label="Display preferences" data-i18n-aria="a11y.displayPrefs">
           <button
             type="button"
             class="pref-btn"
@@ -82,13 +103,13 @@
             title="Theme"
           >
             <span class="pref-btn__icon pref-btn__icon--sun" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false">
                 <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
                 <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
             </span>
             <span class="pref-btn__icon pref-btn__icon--moon" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false">
                 <path d="M13.5 9.2A5.5 5.5 0 0 1 6.8 2.5 5.5 5.5 0 1 0 13.5 9.2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
               </svg>
             </span>
@@ -103,16 +124,16 @@
             title="Reduce motion"
           >
             <span class="pref-btn__icon" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false">
                 <path d="M3 8h6.5M7 4.5L10.5 8 7 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 <path class="motion-slash" d="M3.5 3.5l9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
             </span>
           </button>
         </div>
-      </div>
+      </nav>
     </div>
-  </div>
+  </header>
 
   <main id="main">
     <!-- 1. Hero -->
@@ -125,7 +146,7 @@
         <p class="hero__tagline reveal reveal-delay-2" data-i18n="hero.tagline">
           High school student based in the San Francisco Bay Area
         </p>
-        <a class="scroll-cue reveal reveal-delay-3" href="#about" aria-label="Scroll to about">
+        <a class="scroll-cue reveal reveal-delay-3" href="#about" data-i18n-aria="a11y.scrollAbout" aria-label="Scroll to about">
           <span class="scroll-cue__label" data-i18n="hero.scroll">Scroll</span>
           <span class="scroll-cue__icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -302,6 +323,7 @@
               rel="noopener noreferrer"
               data-accent="coral"
               data-mode="instagram"
+              data-wechat-id="realTimGong"
             >
               <div class="link-card__icon" aria-hidden="true">
                 <svg class="social-icon social-icon--instagram" viewBox="0 0 32 32" width="28" height="28" fill="none">

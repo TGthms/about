@@ -4,10 +4,14 @@
 (function () {
   "use strict";
 
-  document.documentElement.classList.add("js");
-
   const THEME_KEY = "timg-theme";
   const MOTION_KEY = "timg-motion";
+  const WECHAT_ID = "realTimGong";
+
+  // Mark JS-ready early (pairs with noscript CSS fallback)
+  document.documentElement.classList.add("js");
+  document.documentElement.classList.add("app-ready");
+  document.documentElement.classList.remove("reveal-fallback");
 
   // ---------- Year ----------
   const yearEl = document.getElementById("year");
@@ -15,16 +19,16 @@
 
   // ---------- Helpers ----------
   function systemPrefersDark() {
-    return (
+    return Boolean(
       window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
+        window.matchMedia("(prefers-color-scheme: dark)").matches
     );
   }
 
   function systemPrefersReducedMotion() {
-    return (
+    return Boolean(
       window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
   }
 
@@ -40,7 +44,7 @@
     try {
       localStorage.setItem(key, value);
     } catch (_) {
-      /* ignore */
+      /* private mode / quota */
     }
   }
 
@@ -57,10 +61,15 @@
     return systemPrefersReducedMotion();
   }
 
+  function isReduceMotion() {
+    return document.documentElement.classList.contains("reduce-motion");
+  }
+
   // ---------- Theme ----------
   function applyTheme(theme) {
     const resolved = theme === "dark" ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", resolved);
+    document.documentElement.style.colorScheme = resolved;
 
     const meta = document.getElementById("meta-theme-color");
     if (meta) {
@@ -69,7 +78,6 @@
 
     const btn = document.getElementById("theme-toggle");
     if (btn) {
-      // pressed = currently dark (or "toggle to light")
       btn.setAttribute("aria-pressed", resolved === "dark" ? "true" : "false");
     }
   }
@@ -81,6 +89,12 @@
   }
 
   // ---------- Motion ----------
+  function showAllReveals() {
+    document.querySelectorAll(".reveal").forEach(function (el) {
+      el.classList.add("is-visible");
+    });
+  }
+
   function applyMotion(reduce) {
     const root = document.documentElement;
     root.classList.toggle("reduce-motion", reduce);
@@ -90,17 +104,17 @@
     if (btn) {
       btn.setAttribute("aria-pressed", reduce ? "true" : "false");
     }
+
+    // Enabling reduce motion must never leave content invisible
+    if (reduce) showAllReveals();
   }
 
   function toggleMotion() {
     const next = !resolveReduceMotion();
     setStored(MOTION_KEY, next ? "reduce" : "full");
     applyMotion(next);
-    // Soft reload of motion-dependent setup is heavy; page state is fine.
-    // Tilt/scroll already check class via CSS. Re-init reveals if enabling motion.
   }
 
-  // Apply (sync with early script; re-apply so aria states are correct)
   applyTheme(resolveTheme());
   applyMotion(resolveReduceMotion());
 
@@ -110,10 +124,10 @@
   const motionBtn = document.getElementById("motion-toggle");
   if (motionBtn) motionBtn.addEventListener("click", toggleMotion);
 
-  // Follow system theme only when user has not set a manual preference
+  // Follow system prefs only when user has not set a manual override
   if (window.matchMedia) {
     const colorMq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onColorChange = () => {
+    const onColorChange = function () {
       const saved = getStored(THEME_KEY);
       if (saved !== "light" && saved !== "dark") {
         applyTheme(resolveTheme());
@@ -123,7 +137,7 @@
     else if (colorMq.addListener) colorMq.addListener(onColorChange);
 
     const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onMotionChange = () => {
+    const onMotionChange = function () {
       const saved = getStored(MOTION_KEY);
       if (saved !== "reduce" && saved !== "full") {
         applyMotion(resolveReduceMotion());
@@ -134,40 +148,48 @@
   }
 
   // ---------- Language ----------
-  let currentLang = "en";
+  var currentLang = "en";
   if (typeof detectLanguage === "function" && typeof applyLanguage === "function") {
     currentLang = applyLanguage(detectLanguage());
   }
 
-  document.querySelectorAll(".lang-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const lang = btn.getAttribute("data-lang");
+  document.querySelectorAll(".lang-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var lang = btn.getAttribute("data-lang");
       if (!lang || lang === currentLang) return;
       currentLang = applyLanguage(lang);
     });
   });
 
-  // ---------- Reduced motion (runtime) ----------
-  function isReduceMotion() {
-    return document.documentElement.classList.contains("reduce-motion");
-  }
+  // ---------- Scroll reveals ----------
+  var revealEls = document.querySelectorAll(".reveal");
+  var revealObserver = null;
 
-  // ---------- Scroll reveals (IntersectionObserver) ----------
-  const revealEls = document.querySelectorAll(".reveal");
+  function initReveals() {
+    if (isReduceMotion()) {
+      showAllReveals();
+      return;
+    }
 
-  if (isReduceMotion()) {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
-  } else if ("IntersectionObserver" in window) {
-    const heroReveals = document.querySelectorAll(".hero .reveal");
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        heroReveals.forEach((el) => el.classList.add("is-visible"));
-      }, 80);
+    if (!("IntersectionObserver" in window)) {
+      showAllReveals();
+      return;
+    }
+
+    // Hero entrance on load
+    var heroReveals = document.querySelectorAll(".hero .reveal");
+    requestAnimationFrame(function () {
+      window.setTimeout(function () {
+        heroReveals.forEach(function (el) {
+          el.classList.add("is-visible");
+        });
+      }, 60);
     });
 
-    const observer = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
+    // Safer margins so bottom elements always reveal (short/landscape viewports)
+    revealObserver = new IntersectionObserver(
+      function (entries, obs) {
+        entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
           entry.target.classList.add("is-visible");
           obs.unobserve(entry.target);
@@ -175,108 +197,155 @@
       },
       {
         root: null,
-        rootMargin: "0px 0px -8% 0px",
-        threshold: 0.12,
+        rootMargin: "0px 0px 12% 0px",
+        threshold: 0.01,
       }
     );
 
-    revealEls.forEach((el) => {
+    revealEls.forEach(function (el) {
       if (el.closest(".hero")) return;
-      observer.observe(el);
+      if (el.classList.contains("is-visible")) return;
+      revealObserver.observe(el);
     });
-  } else {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
+
+    // Safety net: if anything is still hidden after load/scroll settle, show it
+    window.setTimeout(function () {
+      document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (el) {
+        var rect = el.getBoundingClientRect();
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        // In or near viewport, or past (scrolled past)
+        if (rect.top < vh * 1.25) {
+          el.classList.add("is-visible");
+          if (revealObserver) revealObserver.unobserve(el);
+        }
+      });
+    }, 1200);
   }
 
-  // ---------- Interest card subtle tilt (pointer devices) ----------
-  if (
+  initReveals();
+
+  // ---------- Interest card tilt (fine pointer + hover only) ----------
+  var canTilt =
     !isReduceMotion() &&
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches
-  ) {
-    document.querySelectorAll(".interest-card").forEach((card) => {
-      const maxTilt = 6;
+    window.matchMedia &&
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-      card.addEventListener("pointermove", (e) => {
-        if (isReduceMotion()) return;
-        const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        const tiltX = (0.5 - y) * maxTilt;
-        const tiltY = (x - 0.5) * maxTilt;
-        card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px) scale(1.02)`;
-      });
+  if (canTilt) {
+    document.querySelectorAll(".interest-card").forEach(function (card) {
+      var maxTilt = 5;
+      var raf = 0;
+      var pending = null;
 
-      card.addEventListener("pointerleave", () => {
+      function applyTilt(e) {
+        pending = e;
+        if (raf) return;
+        raf = requestAnimationFrame(function () {
+          raf = 0;
+          if (!pending || isReduceMotion()) return;
+          var e2 = pending;
+          pending = null;
+          var rect = card.getBoundingClientRect();
+          if (!rect.width || !rect.height) return;
+          var x = (e2.clientX - rect.left) / rect.width;
+          var y = (e2.clientY - rect.top) / rect.height;
+          var tiltX = (0.5 - y) * maxTilt;
+          var tiltY = (x - 0.5) * maxTilt;
+          card.style.transform =
+            "perspective(800px) rotateX(" +
+            tiltX.toFixed(2) +
+            "deg) rotateY(" +
+            tiltY.toFixed(2) +
+            "deg) translateY(-4px) scale(1.02)";
+        });
+      }
+
+      card.addEventListener("pointermove", applyTilt);
+
+      card.addEventListener("pointerleave", function () {
+        pending = null;
         card.style.transform = "";
       });
 
-      card.addEventListener("pointerdown", () => {
+      card.addEventListener("pointerdown", function () {
         if (isReduceMotion()) return;
         card.style.transform = "perspective(800px) scale(0.98)";
       });
 
-      card.addEventListener("pointerup", (e) => {
+      card.addEventListener("pointerup", function (e) {
         if (isReduceMotion()) {
           card.style.transform = "";
           return;
         }
-        if (e.pointerType === "mouse") {
-          const rect = card.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width;
-          const y = (e.clientY - rect.top) / rect.height;
-          if (x >= 0 && x <= 1 && y >= 0 && y <= 1) {
-            const tiltX = (0.5 - y) * maxTilt;
-            const tiltY = (x - 0.5) * maxTilt;
-            card.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px) scale(1.02)`;
-            return;
-          }
-        }
-        card.style.transform = "";
+        if (e.pointerType === "mouse") applyTilt(e);
+        else card.style.transform = "";
       });
     });
   }
 
   // ---------- WeChat ID copy (Chinese social card) ----------
-  const socialCard = document.getElementById("social-card");
+  var socialCard = document.getElementById("social-card");
   if (socialCard) {
-    const copyWeChatId = async () => {
-      if (socialCard.getAttribute("data-mode") !== "wechat") return false;
-      const sub = socialCard.querySelector(".link-card__sub");
-      const id = (sub && sub.textContent ? sub.textContent : "realTimGong").trim();
-      if (id === "已复制") return true;
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(id);
-        } else {
-          const ta = document.createElement("textarea");
-          ta.value = id;
-          ta.setAttribute("readonly", "");
-          ta.style.position = "fixed";
-          ta.style.opacity = "0";
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          document.body.removeChild(ta);
-        }
+    var copyTimer = 0;
+
+    function getWeChatId() {
+      var sub = socialCard.querySelector(".link-card__sub");
+      var text = sub && sub.textContent ? sub.textContent.trim() : "";
+      if (!text || text === "已复制" || text === "Copied") return WECHAT_ID;
+      return text;
+    }
+
+    function copyWeChatId() {
+      if (socialCard.getAttribute("data-mode") !== "wechat") return;
+
+      var sub = socialCard.querySelector(".link-card__sub");
+      var id = getWeChatId();
+
+      function showCopied() {
         socialCard.classList.add("is-copied");
         if (sub) sub.textContent = "已复制";
-        setTimeout(() => {
+        if (copyTimer) window.clearTimeout(copyTimer);
+        copyTimer = window.setTimeout(function () {
           socialCard.classList.remove("is-copied");
           if (sub) sub.textContent = id;
+          copyTimer = 0;
         }, 1400);
-      } catch (_) {
-        /* ignore copy failures */
       }
-      return true;
-    };
 
-    socialCard.addEventListener("click", (e) => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(id).then(showCopied).catch(function () {
+          fallbackCopy(id, showCopied);
+        });
+      } else {
+        fallbackCopy(id, showCopied);
+      }
+    }
+
+    function fallbackCopy(text, onSuccess) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.setAttribute("aria-hidden", "true");
+        ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok && onSuccess) onSuccess();
+      } catch (_) {
+        /* leave ID visible if copy fails */
+      }
+    }
+
+    socialCard.addEventListener("click", function (e) {
       if (socialCard.getAttribute("data-mode") !== "wechat") return;
       e.preventDefault();
       copyWeChatId();
     });
 
-    socialCard.addEventListener("keydown", (e) => {
+    socialCard.addEventListener("keydown", function (e) {
       if (socialCard.getAttribute("data-mode") !== "wechat") return;
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -286,11 +355,17 @@
   }
 
   // ---------- Smooth scroll for in-page anchors ----------
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", (e) => {
-      const id = anchor.getAttribute("href");
-      if (!id || id === "#") return;
-      const target = document.querySelector(id);
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener("click", function (e) {
+      var id = anchor.getAttribute("href");
+      // Skip empty hashes and non-section tokens (e.g. WeChat copy control)
+      if (!id || id === "#" || id === "#wechat") return;
+      var target = null;
+      try {
+        target = document.querySelector(id);
+      } catch (_) {
+        return;
+      }
       if (!target) return;
       e.preventDefault();
       target.scrollIntoView({
@@ -298,8 +373,14 @@
         block: "start",
       });
       if (typeof target.focus === "function") {
-        target.setAttribute("tabindex", "-1");
-        target.focus({ preventScroll: true });
+        if (!target.hasAttribute("tabindex")) {
+          target.setAttribute("tabindex", "-1");
+        }
+        try {
+          target.focus({ preventScroll: true });
+        } catch (_) {
+          target.focus();
+        }
       }
     });
   });

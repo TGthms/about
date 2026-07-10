@@ -13,6 +13,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "Toggle light or dark theme",
       motionToggle: "Toggle reduced motion",
+      scrollAbout: "Scroll to about",
+      siteControls: "Site controls",
+      selectLanguage: "Select language",
+      displayPrefs: "Display preferences",
     },
     hero: {
       eyebrow: "Hello — welcome",
@@ -95,6 +99,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "Cambiar tema claro u oscuro",
       motionToggle: "Activar o desactivar menos movimiento",
+      scrollAbout: "Ir a la sección sobre mí",
+      siteControls: "Controles del sitio",
+      selectLanguage: "Seleccionar idioma",
+      displayPrefs: "Preferencias de visualización",
     },
     hero: {
       eyebrow: "Hola — bienvenido",
@@ -177,6 +185,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "切换浅色或深色主题",
       motionToggle: "减弱动态效果",
+      scrollAbout: "滚动到关于部分",
+      siteControls: "网站控件",
+      selectLanguage: "选择语言",
+      displayPrefs: "显示偏好",
     },
     hero: {
       eyebrow: "Hi — 欢迎",
@@ -259,6 +271,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "ライト／ダークテーマを切り替え",
       motionToggle: "動きを減らす設定を切り替え",
+      scrollAbout: "自己紹介へスクロール",
+      siteControls: "サイト操作",
+      selectLanguage: "言語を選択",
+      displayPrefs: "表示設定",
     },
     hero: {
       eyebrow: "こんにちは — ようこそ",
@@ -410,15 +426,19 @@ function updateSocialCard(pack) {
   if (arrowExt) arrowExt.hidden = isWeChat;
   if (arrowCopy) arrowCopy.hidden = !isWeChat;
 
+  // Reset copy feedback class when switching languages
+  card.classList.remove("is-copied");
+
   if (isWeChat) {
-    card.removeAttribute("href");
+    // Valid focusable control without navigation (no empty href)
+    card.setAttribute("href", "#wechat");
     card.removeAttribute("target");
     card.removeAttribute("rel");
     card.setAttribute("role", "button");
     card.setAttribute("tabindex", "0");
     card.setAttribute(
       "aria-label",
-      (social.label || "微信") + ": " + (social.sub || "") + " — 点击复制"
+      (social.label || "微信") + ": " + (social.sub || "realTimGong") + " — 点击复制"
     );
     card.classList.add("link-card--copy");
   } else {
@@ -439,8 +459,9 @@ function applyLanguage(lang) {
   const pack = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const resolved = TRANSLATIONS[lang] ? lang : "en";
 
-  document.documentElement.lang =
-    resolved === "zh" ? "zh-Hans" : resolved === "ja" ? "ja" : resolved;
+  const htmlLang =
+    resolved === "zh" ? "zh-Hans" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
+  document.documentElement.lang = htmlLang;
 
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
@@ -450,12 +471,13 @@ function applyLanguage(lang) {
     }
   });
 
-  // Accessible labels (aria-label / title)
+  // Accessible labels (aria-label / title on controls; aria-label only on landmarks)
   document.querySelectorAll("[data-i18n-aria]").forEach((el) => {
     const key = el.getAttribute("data-i18n-aria");
     const value = getNested(pack, key);
-    if (typeof value === "string") {
-      el.setAttribute("aria-label", value);
+    if (typeof value !== "string") return;
+    el.setAttribute("aria-label", value);
+    if (el.matches("button, a.scroll-cue, .pref-btn")) {
       el.setAttribute("title", value);
     }
   });
@@ -463,7 +485,7 @@ function applyLanguage(lang) {
   // Instagram vs WeChat (Chinese only swaps this card)
   updateSocialCard(pack);
 
-  // Document title + meta description
+  // Document title + meta description + locale
   if (pack.meta) {
     if (pack.meta.title) document.title = pack.meta.title;
     const desc = document.querySelector('meta[name="description"]');
@@ -481,6 +503,11 @@ function applyLanguage(lang) {
     if (twTitle && pack.meta.title) twTitle.setAttribute("content", pack.meta.title);
     if (twDesc && pack.meta.description) {
       twDesc.setAttribute("content", pack.meta.description);
+    }
+    const ogLocale = document.querySelector('meta[property="og:locale"]');
+    if (ogLocale) {
+      const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", ja: "ja_JP" };
+      ogLocale.setAttribute("content", localeMap[resolved] || "en_US");
     }
   }
 
