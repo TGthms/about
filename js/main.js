@@ -236,6 +236,55 @@
     });
   }
 
+  // ---------- WeChat ID copy (Chinese social card) ----------
+  const socialCard = document.getElementById("social-card");
+  if (socialCard) {
+    const copyWeChatId = async () => {
+      if (socialCard.getAttribute("data-mode") !== "wechat") return false;
+      const sub = socialCard.querySelector(".link-card__sub");
+      const id = (sub && sub.textContent ? sub.textContent : "realTimGong").trim();
+      if (id === "已复制") return true;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(id);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = id;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        }
+        socialCard.classList.add("is-copied");
+        if (sub) sub.textContent = "已复制";
+        setTimeout(() => {
+          socialCard.classList.remove("is-copied");
+          if (sub) sub.textContent = id;
+        }, 1400);
+      } catch (_) {
+        /* ignore copy failures */
+      }
+      return true;
+    };
+
+    socialCard.addEventListener("click", (e) => {
+      if (socialCard.getAttribute("data-mode") !== "wechat") return;
+      e.preventDefault();
+      copyWeChatId();
+    });
+
+    socialCard.addEventListener("keydown", (e) => {
+      if (socialCard.getAttribute("data-mode") !== "wechat") return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        copyWeChatId();
+      }
+    });
+  }
+
   // ---------- Smooth scroll for in-page anchors ----------
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {

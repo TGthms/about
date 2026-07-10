@@ -63,7 +63,12 @@ const TRANSLATIONS = {
         desc: "A curated guide to places worth visiting across the United States — built as a small web project.",
       },
       github: "GitHub",
-      instagram: "Instagram",
+      social: {
+        label: "Instagram",
+        sub: "@timg.ins",
+        href: "https://www.instagram.com/timg.ins/",
+        mode: "instagram",
+      },
       placeholder1: {
         label: "Coming soon",
         sub: "[Add another link]",
@@ -140,7 +145,12 @@ const TRANSLATIONS = {
         desc: "Una guía curada de lugares que vale la pena visitar en Estados Unidos — hecha como un pequeño proyecto web.",
       },
       github: "GitHub",
-      instagram: "Instagram",
+      social: {
+        label: "Instagram",
+        sub: "@timg.ins",
+        href: "https://www.instagram.com/timg.ins/",
+        mode: "instagram",
+      },
       placeholder1: {
         label: "Próximamente",
         sub: "[Añadir otro enlace]",
@@ -217,7 +227,12 @@ const TRANSLATIONS = {
         desc: "一份精心制作的的指南 — 小型网页项目",
       },
       github: "GitHub",
-      instagram: "Instagram",
+      social: {
+        label: "微信",
+        sub: "realTimGong",
+        href: null,
+        mode: "wechat",
+      },
       placeholder1: {
         label: "即将推出",
         sub: "[添加更多链接]",
@@ -294,7 +309,12 @@ const TRANSLATIONS = {
         desc: "アメリカ各地のおすすめスポットをまとめたガイド — 小さなウェブプロジェクトとして制作。",
       },
       github: "GitHub",
-      instagram: "Instagram",
+      social: {
+        label: "Instagram",
+        sub: "@timg.ins",
+        href: "https://www.instagram.com/timg.ins/",
+        mode: "instagram",
+      },
       placeholder1: {
         label: "近日公開",
         sub: "[リンクを追加]",
@@ -368,6 +388,51 @@ function detectLanguage() {
 }
 
 /**
+ * Swap Instagram ↔ WeChat card based on active language pack.
+ * Chinese shows WeChat ID (copy on click); other languages link to Instagram.
+ */
+function updateSocialCard(pack) {
+  const card = document.getElementById("social-card");
+  if (!card || !pack.links || !pack.links.social) return;
+
+  const social = pack.links.social;
+  const isWeChat = social.mode === "wechat" || !social.href;
+
+  card.setAttribute("data-mode", isWeChat ? "wechat" : "instagram");
+
+  const igIcon = card.querySelector(".social-icon--instagram");
+  const wxIcon = card.querySelector(".social-icon--wechat");
+  const arrowExt = card.querySelector(".social-arrow--external");
+  const arrowCopy = card.querySelector(".social-arrow--copy");
+
+  if (igIcon) igIcon.hidden = isWeChat;
+  if (wxIcon) wxIcon.hidden = !isWeChat;
+  if (arrowExt) arrowExt.hidden = isWeChat;
+  if (arrowCopy) arrowCopy.hidden = !isWeChat;
+
+  if (isWeChat) {
+    card.removeAttribute("href");
+    card.removeAttribute("target");
+    card.removeAttribute("rel");
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute(
+      "aria-label",
+      (social.label || "微信") + ": " + (social.sub || "") + " — 点击复制"
+    );
+    card.classList.add("link-card--copy");
+  } else {
+    card.setAttribute("href", social.href);
+    card.setAttribute("target", "_blank");
+    card.setAttribute("rel", "noopener noreferrer");
+    card.removeAttribute("role");
+    card.removeAttribute("tabindex");
+    card.removeAttribute("aria-label");
+    card.classList.remove("link-card--copy");
+  }
+}
+
+/**
  * Apply translations to all [data-i18n] nodes and document meta.
  */
 function applyLanguage(lang) {
@@ -394,6 +459,9 @@ function applyLanguage(lang) {
       el.setAttribute("title", value);
     }
   });
+
+  // Instagram vs WeChat (Chinese only swaps this card)
+  updateSocialCard(pack);
 
   // Document title + meta description
   if (pack.meta) {

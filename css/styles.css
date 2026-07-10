@@ -937,6 +937,32 @@ a.link-card:hover .link-card__arrow {
   transform: translate(2px, -2px);
 }
 
+/* Social card: Instagram vs WeChat icons */
+.social-icon[hidden],
+.social-arrow--external[hidden],
+.social-arrow--copy[hidden] {
+  display: none !important;
+}
+
+/* WeChat mode: acts as copy button (no external link) */
+.link-card--copy {
+  cursor: pointer;
+}
+
+.link-card--copy:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--border-strong);
+}
+
+.link-card--copy:active {
+  transform: scale(0.97);
+}
+
+.link-card--copy.is-copied .link-card__sub {
+  color: var(--accent-green);
+}
+
 /* ---------- Footer ---------- */
 .footer {
   padding-block: var(--space-6) var(--space-7);

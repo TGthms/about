@@ -293,21 +293,41 @@
             </a>
           </li>
           <li class="reveal" style="--stagger: 1">
-            <a class="link-card" href="https://www.instagram.com/timg.ins/" target="_blank" rel="noopener noreferrer" data-accent="coral">
+            <!-- Instagram for most languages; WeChat ID when Chinese (swapped in i18n.js) -->
+            <a
+              class="link-card"
+              id="social-card"
+              href="https://www.instagram.com/timg.ins/"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-accent="coral"
+              data-mode="instagram"
+            >
               <div class="link-card__icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+                <svg class="social-icon social-icon--instagram" viewBox="0 0 32 32" width="28" height="28" fill="none">
                   <rect x="6" y="6" width="20" height="20" rx="6" stroke="currentColor" stroke-width="1.75"/>
                   <circle cx="16" cy="16" r="5" stroke="currentColor" stroke-width="1.75"/>
                   <circle cx="22.5" cy="9.5" r="1.25" fill="currentColor"/>
                 </svg>
+                <!-- Original chat motif for WeChat (not a brand logo) -->
+                <svg class="social-icon social-icon--wechat" viewBox="0 0 32 32" width="28" height="28" fill="none" hidden>
+                  <path d="M11 8c-4.4 0-8 3-8 6.7 0 2.2 1.3 4.1 3.3 5.4L5.5 24l4.2-2.1c.4.1.9.1 1.3.1 4.4 0 8-3 8-6.7S15.4 8 11 8z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                  <path d="M21 13.5c3.6.4 6.5 3 6.5 6.2 0 1.8-1 3.4-2.6 4.5l.6 3.3-3.2-1.7c-.4.1-.8.1-1.3.1-3.3 0-6-2.2-6.7-5.1" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </div>
               <div class="link-card__text">
-                <span class="link-card__label" data-i18n="links.instagram">Instagram</span>
-                <span class="link-card__sub">@timg.ins</span>
+                <span class="link-card__label" data-i18n="links.social.label">Instagram</span>
+                <span class="link-card__sub" data-i18n="links.social.sub">@timg.ins</span>
               </div>
-              <span class="link-card__arrow" aria-hidden="true">
+              <span class="link-card__arrow social-arrow--external" aria-hidden="true">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="link-card__arrow social-arrow--copy" aria-hidden="true" hidden>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="5.5" y="5.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M3.5 10.5V4.5A1 1 0 0 1 4.5 3.5h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                 </svg>
               </span>
             </a>
