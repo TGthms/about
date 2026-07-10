@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tim G — Personal Hub</title>
+  <meta name="description" content="Tim G — high school student based in the San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Tim G — Personal Hub" />
+  <meta property="og:description" content="High school student based in the San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
+  <meta property="og:image" content="og-image.svg" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Tim G — Personal Hub" />
+  <meta name="twitter:description" content="High school student based in the San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
+
+  <meta name="theme-color" content="#f7f5f2" id="meta-theme-color" />
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Apply theme + motion before paint to avoid flash -->
+  <script>
+    (function () {
+      try {
+        var THEME_KEY = "timg-theme";
+        var MOTION_KEY = "timg-motion";
+        var savedTheme = localStorage.getItem(THEME_KEY);
+        var theme =
+          savedTheme === "light" || savedTheme === "dark"
+            ? savedTheme
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+
+        var savedMotion = localStorage.getItem(MOTION_KEY);
+        var reduce =
+          savedMotion === "reduce"
+            ? true
+            : savedMotion === "full"
+              ? false
+              : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) document.documentElement.classList.add("reduce-motion");
+        else document.documentElement.classList.add("motion-full");
+      } catch (e) {
+        /* ignore */
+      }
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <!-- Top controls: language + theme + motion -->
+  <div class="top-bar" role="navigation" aria-label="Site controls">
+    <div class="top-bar__inner">
+      <div class="control-cluster">
+        <div class="lang-switcher" role="group" aria-label="Select language">
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
+        </div>
+
+        <div class="pref-switcher" role="group" aria-label="Display preferences">
+          <button
+            type="button"
+            class="pref-btn"
+            id="theme-toggle"
+            aria-pressed="false"
+            data-i18n-aria="a11y.themeToggle"
+            aria-label="Toggle light or dark theme"
+            title="Theme"
+          >
+            <span class="pref-btn__icon pref-btn__icon--sun" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="pref-btn__icon pref-btn__icon--moon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 9.2A5.5 5.5 0 0 1 6.8 2.5 5.5 5.5 0 1 0 13.5 9.2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+          <button
+            type="button"
+            class="pref-btn"
+            id="motion-toggle"
+            aria-pressed="false"
+            data-i18n-aria="a11y.motionToggle"
+            aria-label="Toggle reduced motion"
+            title="Reduce motion"
+          >
+            <span class="pref-btn__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h6.5M7 4.5L10.5 8 7 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="motion-slash" d="M3.5 3.5l9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- 1. Hero -->
+    <section class="hero" id="hero" aria-labelledby="hero-name">
+      <div class="container hero__inner">
+        <p class="hero__eyebrow reveal" data-i18n="hero.eyebrow">Hello — welcome</p>
+        <h1 id="hero-name" class="hero__name reveal reveal-delay-1">
+          <span class="hero__name-text">Tim G</span>
+        </h1>
+        <p class="hero__tagline reveal reveal-delay-2" data-i18n="hero.tagline">
+          High school student based in the San Francisco Bay Area
+        </p>
+        <a class="scroll-cue reveal reveal-delay-3" href="#about" aria-label="Scroll to about">
+          <span class="scroll-cue__label" data-i18n="hero.scroll">Scroll</span>
+          <span class="scroll-cue__icon" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 2. About -->
+    <section class="section about" id="about" aria-labelledby="about-heading">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="section__label" data-i18n="about.label">About</p>
+          <h2 id="about-heading" class="section__title" data-i18n="about.title">A little about me</h2>
+        </header>
+        <div class="about__body reveal reveal-delay-1">
+          <p class="about__text" data-i18n="about.p1">
+            I'm a high school student in the Bay Area who likes building things, capturing moments, and exploring — both nearby and farther afield.
+          </p>
+          <p class="about__text" data-i18n="about.p2">
+            Outside of school and projects, I'm grounded by Psalm 23 — a quiet personal touchstone that keeps me centered through busy seasons.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Interests -->
+    <section class="section interests" id="interests" aria-labelledby="interests-heading">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="section__label" data-i18n="interests.label">Interests</p>
+          <h2 id="interests-heading" class="section__title" data-i18n="interests.title">What I care about</h2>
+        </header>
+        <ul class="interests__grid" role="list">
+          <li class="interest-card reveal" data-accent="coral" style="--stagger: 0">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Bilingual / speech -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                <circle cx="14" cy="18" r="8" stroke="currentColor" stroke-width="1.75"/>
+                <circle cx="26" cy="18" r="8" stroke="currentColor" stroke-width="1.75"/>
+                <path d="M14 26c0 3 2.5 6 6 6s6-3 6-6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.bilingual.title">Bilingual</h3>
+            <p class="interest-card__desc" data-i18n="interests.bilingual.desc">Chinese-American — fluent in Mandarin Chinese and English</p>
+          </li>
+          <li class="interest-card reveal" data-accent="amber" style="--stagger: 1">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Erhu-inspired abstract bow/string -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                <rect x="16" y="6" width="4" height="26" rx="1.5" stroke="currentColor" stroke-width="1.75"/>
+                <path d="M12 14h12M12 20h12" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                <path d="M8 10c4 2 4 18 0 20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                <circle cx="18" cy="34" r="2" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.erhu.title">Erhu</h3>
+            <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
+          </li>
+          <li class="interest-card reveal" data-accent="teal" style="--stagger: 2">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Camera aperture -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.75"/>
+                <circle cx="20" cy="20" r="5" stroke="currentColor" stroke-width="1.75"/>
+                <path d="M20 8v4M20 28v4M8 20h4M28 20h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.photo.title">Photography</h3>
+            <p class="interest-card__desc" data-i18n="interests.photo.desc">Finding light, frames, and quiet moments</p>
+          </li>
+          <li class="interest-card reveal" data-accent="violet" style="--stagger: 3">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Globe / travel -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.75"/>
+                <ellipse cx="20" cy="20" rx="5" ry="12" stroke="currentColor" stroke-width="1.75"/>
+                <path d="M8 20h24M10 14h20M10 26h20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.travel.title">Travel</h3>
+            <p class="interest-card__desc" data-i18n="interests.travel.desc">Exploring places, cultures, and open roads</p>
+          </li>
+          <li class="interest-card reveal" data-accent="blue" style="--stagger: 4">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Code / build -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                <path d="M14 12L8 20l6 8M26 12l6 8-6 8M22 10l-4 20" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.tech.title">Tech</h3>
+            <p class="interest-card__desc" data-i18n="interests.tech.desc">Building things that work — and feel good to use</p>
+          </li>
+          <li class="interest-card reveal" data-accent="green" style="--stagger: 5">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Table tennis paddle abstract -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
+                <ellipse cx="18" cy="16" rx="10" ry="11" stroke="currentColor" stroke-width="1.75"/>
+                <path d="M24 24l8 10" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
+                <circle cx="28" cy="12" r="2.5" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.tt.title">Table tennis</h3>
+            <p class="interest-card__desc" data-i18n="interests.tt.desc">Quick rallies, focus, and friendly competition</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4. Work / Links -->
+    <section class="section links" id="links" aria-labelledby="links-heading">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="section__label" data-i18n="links.label">Work &amp; links</p>
+          <h2 id="links-heading" class="section__title" data-i18n="links.title">Where to find me</h2>
+        </header>
+
+        <!-- Featured project -->
+        <a
+          class="featured-card reveal"
+          href="https://tgthms.github.io/usa-travel-guide/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
+          <div class="featured-card__content">
+            <h3 class="featured-card__title" data-i18n="links.travelGuide.title">USA Travel Guide</h3>
+            <p class="featured-card__desc" data-i18n="links.travelGuide.desc">
+              A curated guide to places worth visiting across the United States — built as a small web project.
+            </p>
+            <span class="featured-card__cta">
+              <span data-i18n="links.open">Open project</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+          <div class="featured-card__visual" aria-hidden="true">
+            <div class="featured-card__orb featured-card__orb--1"></div>
+            <div class="featured-card__orb featured-card__orb--2"></div>
+            <div class="featured-card__orb featured-card__orb--3"></div>
+          </div>
+        </a>
+
+        <!-- Link grid -->
+        <ul class="link-grid" role="list">
+          <li class="reveal" style="--stagger: 0">
+            <a class="link-card" href="https://github.com/TGthms" target="_blank" rel="noopener noreferrer" data-accent="blue">
+              <div class="link-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+                  <path d="M12 26c-6 2-6-3-8-4M20 28v-4.5a4 4 0 0 0-1-2.7c3.5-.4 7-1.7 7-7.5a5.5 5.5 0 0 0-1.5-3.8 5.1 5.1 0 0 0-.1-3.8s-1.2-.4-4 1.5a13.4 13.4 0 0 0-7 0c-2.8-1.9-4-1.5-4-1.5a5.1 5.1 0 0 0-.1 3.8A5.5 5.5 0 0 0 8 13.3c0 5.8 3.5 7.1 7 7.5a4 4 0 0 0-1 2.7V28" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="link-card__text">
+                <span class="link-card__label" data-i18n="links.github">GitHub</span>
+                <span class="link-card__sub">TGthms</span>
+              </div>
+              <span class="link-card__arrow" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </a>
+          </li>
+          <li class="reveal" style="--stagger: 1">
+            <a class="link-card" href="https://www.instagram.com/timg.ins/" target="_blank" rel="noopener noreferrer" data-accent="coral">
+              <div class="link-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+                  <rect x="6" y="6" width="20" height="20" rx="6" stroke="currentColor" stroke-width="1.75"/>
+                  <circle cx="16" cy="16" r="5" stroke="currentColor" stroke-width="1.75"/>
+                  <circle cx="22.5" cy="9.5" r="1.25" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="link-card__text">
+                <span class="link-card__label" data-i18n="links.instagram">Instagram</span>
+                <span class="link-card__sub">@timg.ins</span>
+              </div>
+              <span class="link-card__arrow" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </a>
+          </li>
+          <!-- Placeholder slots for future links -->
+          <li class="reveal" style="--stagger: 2">
+            <div class="link-card link-card--placeholder" data-accent="teal" aria-disabled="true">
+              <div class="link-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+                  <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1.75" stroke-dasharray="3 3"/>
+                  <path d="M16 11v10M11 16h10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="link-card__text">
+                <span class="link-card__label" data-i18n="links.placeholder1.label">Coming soon</span>
+                <span class="link-card__sub" data-i18n="links.placeholder1.sub">[Add another link]</span>
+              </div>
+            </div>
+          </li>
+          <li class="reveal" style="--stagger: 3">
+            <div class="link-card link-card--placeholder" data-accent="violet" aria-disabled="true">
+              <div class="link-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
+                  <circle cx="16" cy="16" r="10" stroke="currentColor" stroke-width="1.75" stroke-dasharray="3 3"/>
+                  <path d="M16 11v10M11 16h10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="link-card__text">
+                <span class="link-card__label" data-i18n="links.placeholder2.label">Coming soon</span>
+                <span class="link-card__sub" data-i18n="links.placeholder2.sub">[Add another link]</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- 5. Footer -->
+  <footer class="footer" id="footer">
+    <div class="container footer__inner reveal">
+      <p class="footer__signoff" data-i18n="footer.signoff">Thanks for stopping by.</p>
+      <p class="footer__contact">
+        <span data-i18n="footer.contact">Contact:</span>
+        <a class="footer__email" href="mailto:gong.tim@icloud.com">gong.tim@icloud.com</a>
+      </p>
+      <p class="footer__copy">
+        <span>&copy; <span id="year"></span> Tim G</span>
+        <span class="footer__dot" aria-hidden="true">·</span>
+        <span data-i18n="footer.built">Built with care</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
