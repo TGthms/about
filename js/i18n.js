@@ -13,8 +13,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "Toggle light or dark theme",
       motionToggle: "Toggle reduced motion",
+      themeShort: "Appearance",
+      motionShort: "Reduce motion",
       scrollAbout: "Scroll to about",
-      siteControls: "Site controls",
+      siteControls: "Preferences",
       selectLanguage: "Select language",
       displayPrefs: "Display preferences",
     },
@@ -102,8 +104,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "Cambiar tema claro u oscuro",
       motionToggle: "Activar o desactivar menos movimiento",
+      themeShort: "Apariencia",
+      motionShort: "Menos movimiento",
       scrollAbout: "Ir a la sección sobre mí",
-      siteControls: "Controles del sitio",
+      siteControls: "Preferencias",
       selectLanguage: "Seleccionar idioma",
       displayPrefs: "Preferencias de visualización",
     },
@@ -191,8 +195,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "切换浅色或深色主题",
       motionToggle: "减弱动态效果",
+      themeShort: "外观",
+      motionShort: "减弱动态",
       scrollAbout: "滚动到关于部分",
-      siteControls: "网站控件",
+      siteControls: "偏好设置",
       selectLanguage: "选择语言",
       displayPrefs: "显示偏好",
     },
@@ -280,8 +286,10 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "ライト／ダークテーマを切り替え",
       motionToggle: "動きを減らす設定を切り替え",
+      themeShort: "外観",
+      motionShort: "動きを減らす",
       scrollAbout: "自己紹介へスクロール",
-      siteControls: "サイト操作",
+      siteControls: "設定",
       selectLanguage: "言語を選択",
       displayPrefs: "表示設定",
     },
@@ -404,6 +412,47 @@ function closeLanguageMenus() {
     const list = menu.querySelector(".lang-menu");
     if (toggle) toggle.setAttribute("aria-expanded", "false");
     if (list) list.hidden = true;
+  });
+}
+
+/**
+ * Close mobile preferences panel (if open).
+ */
+function closeControlsPanel() {
+  const cluster = document.querySelector("[data-controls]");
+  const trigger = document.getElementById("controls-trigger");
+  if (cluster) cluster.classList.remove("is-open");
+  if (trigger) trigger.setAttribute("aria-expanded", "false");
+}
+
+/**
+ * Wire mobile preferences trigger (single button → panel).
+ * Safe no-op on desktop where the panel is always visible.
+ */
+function initControlsPanel() {
+  const cluster = document.querySelector("[data-controls]");
+  const trigger = document.getElementById("controls-trigger");
+  if (!cluster || !trigger) return;
+
+  function setOpen(open) {
+    cluster.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    if (!open) closeLanguageMenus();
+  }
+
+  trigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = trigger.getAttribute("aria-expanded") === "true";
+    setOpen(!open);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target.closest && e.target.closest("[data-controls]")) return;
+    setOpen(false);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
   });
 }
 

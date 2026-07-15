@@ -153,6 +153,10 @@
     currentLang = applyLanguage(detectLanguage());
   }
 
+  if (typeof initControlsPanel === "function") {
+    initControlsPanel();
+  }
+
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
