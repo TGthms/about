@@ -230,13 +230,13 @@ const TRANSLATIONS = {
       },
       tt: {
         title: "乒乓球",
-        desc: "快速的来来回回、友好的竞争",
+        desc: "快节奏的回合对抗，友好而充满乐趣的竞技",
       },
     },
     links: {
       label: "作品与链接",
-      title: "如何找到我",
-      featured: "精选",
+      title: "探索",
+      featured: "推荐",
       open: "打开项目",
       travelGuide: {
         title: "美国旅行指南",
@@ -251,11 +251,11 @@ const TRANSLATIONS = {
       },
       placeholder1: {
         label: "即将推出",
-        sub: "[添加更多链接]",
+        sub: "[...]",
       },
       placeholder2: {
         label: "即将推出",
-        sub: "[添加更多链接]",
+        sub: "[...]",
       },
     },
     footer: {
