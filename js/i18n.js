@@ -377,6 +377,14 @@ const LANG_ALIASES = {
 const SUPPORTED_LANGS = ["en", "es", "zh", "ja"];
 const STORAGE_KEY = "timg-lang";
 
+/** Compact labels shown in the language toggle button */
+const LANG_LABELS = {
+  en: "EN",
+  es: "ES",
+  zh: "中文",
+  ja: "日本語",
+};
+
 /**
  * Resolve a nested key like "hero.tagline" from a translation object.
  */
@@ -385,6 +393,77 @@ function getNested(obj, path) {
     if (acc && typeof acc === "object" && part in acc) return acc[part];
     return undefined;
   }, obj);
+}
+
+/**
+ * Close all compact language menus.
+ */
+function closeLanguageMenus() {
+  document.querySelectorAll("[data-lang-menu]").forEach((menu) => {
+    const toggle = menu.querySelector(".lang-toggle");
+    const list = menu.querySelector(".lang-menu");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    if (list) list.hidden = true;
+  });
+}
+
+/**
+ * Wire compact language dropdown(s). Call once after DOM is ready.
+ * onSelect(lang) is optional; default uses applyLanguage if available.
+ */
+function initLanguageMenu(onSelect) {
+  const menus = document.querySelectorAll("[data-lang-menu]");
+  if (!menus.length) return;
+
+  menus.forEach((root) => {
+    const toggle = root.querySelector(".lang-toggle");
+    const list = root.querySelector(".lang-menu");
+    if (!toggle || !list) return;
+
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = toggle.getAttribute("aria-expanded") === "true";
+      // Close other menus first
+      closeLanguageMenus();
+      if (!open) {
+        toggle.setAttribute("aria-expanded", "true");
+        list.hidden = false;
+        const active = list.querySelector('.lang-btn[aria-selected="true"]');
+        if (active && typeof active.focus === "function") {
+          try {
+            active.focus({ preventScroll: true });
+          } catch (_) {
+            active.focus();
+          }
+        }
+      }
+    });
+
+    list.querySelectorAll(".lang-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const lang = btn.getAttribute("data-lang");
+        if (!lang) return;
+        closeLanguageMenus();
+        if (typeof onSelect === "function") {
+          onSelect(lang);
+        } else if (typeof applyLanguage === "function") {
+          applyLanguage(lang);
+        }
+      });
+    });
+  });
+
+  // Outside click
+  document.addEventListener("click", (e) => {
+    if (e.target.closest && e.target.closest("[data-lang-menu]")) return;
+    closeLanguageMenus();
+  });
+
+  // Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeLanguageMenus();
+  });
 }
 
 /**
@@ -489,7 +568,7 @@ function applyLanguage(lang) {
     const value = getNested(pack, key);
     if (typeof value !== "string") return;
     el.setAttribute("aria-label", value);
-    if (el.matches("button, a.scroll-cue, .pref-btn")) {
+    if (el.matches("button, a.scroll-cue, .pref-btn, .lang-toggle")) {
       el.setAttribute("title", value);
     }
   });
@@ -523,11 +602,19 @@ function applyLanguage(lang) {
     }
   }
 
-  // Language switcher pressed state
+  // Language menu: selected option + compact toggle label
   document.querySelectorAll(".lang-btn").forEach((btn) => {
     const isActive = btn.getAttribute("data-lang") === resolved;
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
     btn.setAttribute("aria-pressed", isActive ? "true" : "false");
   });
+
+  const label = LANG_LABELS[resolved] || LANG_LABELS.en;
+  document.querySelectorAll("[data-lang-current]").forEach((el) => {
+    el.textContent = label;
+  });
+
+  closeLanguageMenus();
 
   try {
     localStorage.setItem(STORAGE_KEY, resolved);

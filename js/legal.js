@@ -23,11 +23,23 @@
   }
 
   function setLangButtons(lang) {
+    var label =
+      typeof LANG_LABELS !== "undefined" && LANG_LABELS[lang]
+        ? LANG_LABELS[lang]
+        : lang === "zh"
+          ? "中文"
+          : lang === "ja"
+            ? "日本語"
+            : lang === "es"
+              ? "ES"
+              : "EN";
     document.querySelectorAll(".lang-btn").forEach(function (btn) {
-      btn.setAttribute(
-        "aria-pressed",
-        btn.getAttribute("data-lang") === lang ? "true" : "false"
-      );
+      var active = btn.getAttribute("data-lang") === lang;
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    document.querySelectorAll("[data-lang-current]").forEach(function (el) {
+      el.textContent = label;
     });
   }
 
@@ -130,15 +142,14 @@
   var current = resolveLang();
   render(current);
 
-  document.querySelectorAll(".lang-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var lang = btn.getAttribute("data-lang");
+  if (typeof initLanguageMenu === "function") {
+    initLanguageMenu(function (lang) {
       if (!lang || lang === current) return;
       current = lang;
       render(lang);
       window.scrollTo(0, 0);
     });
-  });
+  }
 
   // Theme + motion (same keys as main site)
   var THEME_KEY = "timg-theme";

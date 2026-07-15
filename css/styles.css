@@ -385,12 +385,128 @@ button {
   max-width: 100%;
 }
 
-.lang-switcher,
+/* Compact language dropdown (collapsed by default) */
+.lang-switcher {
+  position: relative;
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 40px;
+  min-width: 52px;
+  padding: 0 10px 0 12px;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.lang-toggle:hover {
+  background: var(--bg-subtle);
+}
+
+.lang-toggle:active {
+  transform: scale(0.96);
+}
+
+.lang-toggle[aria-expanded="true"] {
+  background: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+
+.lang-toggle__code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  min-width: 1.75em;
+  text-align: center;
+}
+
+.lang-toggle__chevron {
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast);
+}
+
+.lang-toggle[aria-expanded="true"] .lang-toggle__chevron {
+  transform: rotate(180deg);
+  opacity: 0.85;
+}
+
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  list-style: none;
+  margin: 0;
+  min-width: 7.5rem;
+  padding: 6px;
+  background: var(--bg-card-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lang-menu[hidden] {
+  display: none;
+}
+
+.lang-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  min-height: 36px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.lang-btn:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
+.lang-btn[aria-selected="true"] {
+  color: var(--text);
+  background: var(--accent-blue-soft);
+  font-weight: 600;
+}
+
+.lang-btn:active {
+  transform: scale(0.98);
+}
+
 .pref-switcher {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) 10px;
+  gap: 2px;
+  padding: 4px;
+  flex-shrink: 0;
   background: var(--bg-card);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -400,46 +516,6 @@ button {
   font-size: var(--text-xs);
   font-weight: 500;
   letter-spacing: 0.02em;
-  max-width: 100%;
-}
-
-.pref-switcher {
-  gap: 2px;
-  padding: 4px;
-  flex-shrink: 0;
-}
-
-.lang-btn {
-  padding: 6px 8px;
-  min-height: 32px;
-  min-width: 32px;
-  border-radius: 8px;
-  color: var(--text-tertiary);
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    background var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-spring);
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-.lang-btn:hover {
-  color: var(--text);
-}
-
-.lang-btn[aria-pressed="true"] {
-  color: var(--text);
-  background: var(--bg-subtle);
-}
-
-.lang-btn:active {
-  transform: scale(0.96);
-}
-
-.lang-sep {
-  color: var(--text-tertiary);
-  opacity: 0.5;
-  user-select: none;
 }
 
 .pref-btn {
@@ -1291,20 +1367,10 @@ html.reveal-fallback .reveal {
     --top-bar-h: 88px;
   }
 
-  .lang-switcher {
-    gap: 0;
-    padding: 4px 6px;
-    font-size: 0.7rem;
-  }
-
-  .lang-btn {
-    padding: 4px 5px;
-    min-width: 28px;
-    min-height: 28px;
-  }
-
-  .lang-sep {
-    display: none;
+  .lang-toggle {
+    min-height: 36px;
+    min-width: 48px;
+    padding: 0 8px 0 10px;
   }
 
   .pref-btn {
@@ -1346,10 +1412,12 @@ html.reveal-fallback .reveal {
     --top-bar-h: 100px;
   }
 
-  .lang-switcher,
   .pref-switcher {
-    width: 100%;
     justify-content: center;
+  }
+
+  .lang-toggle {
+    min-width: 44px;
   }
 
   .hero__eyebrow {

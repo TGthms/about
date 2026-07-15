@@ -147,19 +147,20 @@
     else if (motionMq.addListener) motionMq.addListener(onMotionChange);
   }
 
-  // ---------- Language ----------
+  // ---------- Language (compact dropdown) ----------
   var currentLang = "en";
   if (typeof detectLanguage === "function" && typeof applyLanguage === "function") {
     currentLang = applyLanguage(detectLanguage());
   }
 
-  document.querySelectorAll(".lang-btn").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var lang = btn.getAttribute("data-lang");
+  if (typeof initLanguageMenu === "function") {
+    initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
-      currentLang = applyLanguage(lang);
+      if (typeof applyLanguage === "function") {
+        currentLang = applyLanguage(lang);
+      }
     });
-  });
+  }
 
   // ---------- Scroll reveals ----------
   var revealEls = document.querySelectorAll(".reveal");

@@ -82,14 +82,37 @@
   <header class="top-bar" role="banner">
     <div class="top-bar__inner">
       <nav class="control-cluster" aria-label="Site controls" data-i18n-aria="a11y.siteControls">
-        <div class="lang-switcher" role="group" aria-label="Select language" data-i18n-aria="a11y.selectLanguage">
-          <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
-          <span class="lang-sep" aria-hidden="true">/</span>
-          <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
-          <span class="lang-sep" aria-hidden="true">/</span>
-          <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
-          <span class="lang-sep" aria-hidden="true">/</span>
-          <button type="button" class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
+        <div class="lang-switcher" data-lang-menu>
+          <button
+            type="button"
+            class="lang-toggle"
+            id="lang-toggle"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="lang-menu"
+            data-i18n-aria="a11y.selectLanguage"
+            aria-label="Select language"
+            title="Language"
+          >
+            <span class="lang-toggle__code" data-lang-current>EN</span>
+            <svg class="lang-toggle__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <ul class="lang-menu" id="lang-menu" role="listbox" hidden>
+            <li role="none">
+              <button type="button" class="lang-btn" role="option" data-lang="en" aria-selected="true">EN</button>
+            </li>
+            <li role="none">
+              <button type="button" class="lang-btn" role="option" data-lang="es" aria-selected="false">ES</button>
+            </li>
+            <li role="none">
+              <button type="button" class="lang-btn" role="option" data-lang="zh" aria-selected="false">中文</button>
+            </li>
+            <li role="none">
+              <button type="button" class="lang-btn" role="option" data-lang="ja" aria-selected="false">日本語</button>
+            </li>
+          </ul>
         </div>
 
         <div class="pref-switcher" role="group" aria-label="Display preferences" data-i18n-aria="a11y.displayPrefs">
