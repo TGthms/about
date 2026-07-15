@@ -17,8 +17,8 @@ const TRANSLATIONS = {
       motionShort: "Reduce motion",
       scrollAbout: "Scroll to about",
       siteControls: "Preferences",
-      selectLanguage: "Select language",
-      displayPrefs: "Display preferences",
+      selectLanguage: "Language",
+      displayPrefs: "Display",
     },
     hero: {
       eyebrow: "Hello — welcome",
@@ -108,8 +108,8 @@ const TRANSLATIONS = {
       motionShort: "Menos movimiento",
       scrollAbout: "Ir a la sección sobre mí",
       siteControls: "Preferencias",
-      selectLanguage: "Seleccionar idioma",
-      displayPrefs: "Preferencias de visualización",
+      selectLanguage: "Idioma",
+      displayPrefs: "Pantalla",
     },
     hero: {
       eyebrow: "Hola — bienvenido",
@@ -199,8 +199,8 @@ const TRANSLATIONS = {
       motionShort: "减弱动态",
       scrollAbout: "滚动到关于部分",
       siteControls: "偏好设置",
-      selectLanguage: "选择语言",
-      displayPrefs: "显示偏好",
+      selectLanguage: "语言",
+      displayPrefs: "显示",
     },
     hero: {
       eyebrow: "Hi — 欢迎",
@@ -290,8 +290,8 @@ const TRANSLATIONS = {
       motionShort: "動きを減らす",
       scrollAbout: "自己紹介へスクロール",
       siteControls: "設定",
-      selectLanguage: "言語を選択",
-      displayPrefs: "表示設定",
+      selectLanguage: "言語",
+      displayPrefs: "表示",
     },
     hero: {
       eyebrow: "こんにちは — ようこそ",
@@ -403,62 +403,113 @@ function getNested(obj, path) {
   }, obj);
 }
 
+function isDesktopControls() {
+  return window.matchMedia && window.matchMedia("(min-width: 768px)").matches;
+}
+
 /**
- * Close all compact language menus.
+ * Close desktop language dropdowns only.
  */
 function closeLanguageMenus() {
   document.querySelectorAll("[data-lang-menu]").forEach((menu) => {
     const toggle = menu.querySelector(".lang-toggle");
     const list = menu.querySelector(".lang-menu");
     if (toggle) toggle.setAttribute("aria-expanded", "false");
-    if (list) list.hidden = true;
+    // On mobile the chip list stays visible inside the sheet
+    if (list && isDesktopControls()) list.hidden = true;
   });
 }
 
 /**
- * Close mobile preferences panel (if open).
+ * Close mobile preferences bottom sheet.
  */
 function closeControlsPanel() {
   const cluster = document.querySelector("[data-controls]");
   const trigger = document.getElementById("controls-trigger");
+  const panel = document.getElementById("controls-panel");
+  const backdrop = document.getElementById("controls-backdrop");
   if (cluster) cluster.classList.remove("is-open");
   if (trigger) trigger.setAttribute("aria-expanded", "false");
+  if (panel && !isDesktopControls()) panel.hidden = true;
+  if (backdrop) backdrop.hidden = true;
+  document.body.classList.remove("controls-open");
 }
 
 /**
- * Wire mobile preferences trigger (single button → panel).
- * Safe no-op on desktop where the panel is always visible.
+ * Wire mobile preferences: one button → solid bottom sheet + backdrop.
+ * On desktop the panel is always shown via CSS.
  */
 function initControlsPanel() {
   const cluster = document.querySelector("[data-controls]");
   const trigger = document.getElementById("controls-trigger");
-  if (!cluster || !trigger) return;
+  const panel = document.getElementById("controls-panel");
+  const backdrop = document.getElementById("controls-backdrop");
+  if (!cluster || !trigger || !panel) return;
+
+  function syncForViewport() {
+    if (isDesktopControls()) {
+      panel.hidden = false;
+      if (backdrop) backdrop.hidden = true;
+      cluster.classList.remove("is-open");
+      trigger.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("controls-open");
+      // Desktop lang menu starts collapsed
+      const list = panel.querySelector(".lang-menu");
+      if (list) list.hidden = true;
+    } else {
+      // Mobile: sheet closed; language chips always shown when sheet opens
+      panel.hidden = true;
+      if (backdrop) backdrop.hidden = true;
+      const list = panel.querySelector(".lang-menu");
+      if (list) list.hidden = false;
+    }
+  }
 
   function setOpen(open) {
+    if (isDesktopControls()) return;
     cluster.classList.toggle("is-open", open);
     trigger.setAttribute("aria-expanded", open ? "true" : "false");
-    if (!open) closeLanguageMenus();
+    panel.hidden = !open;
+    if (backdrop) backdrop.hidden = !open;
+    document.body.classList.toggle("controls-open", open);
+    const list = panel.querySelector(".lang-menu");
+    if (list) list.hidden = false;
   }
+
+  syncForViewport();
 
   trigger.addEventListener("click", (e) => {
     e.stopPropagation();
+    if (isDesktopControls()) return;
     const open = trigger.getAttribute("aria-expanded") === "true";
     setOpen(!open);
   });
 
-  document.addEventListener("click", (e) => {
-    if (e.target.closest && e.target.closest("[data-controls]")) return;
-    setOpen(false);
-  });
+  if (backdrop) {
+    backdrop.addEventListener("click", function () {
+      setOpen(false);
+    });
+  }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setOpen(false);
+    if (e.key === "Escape") {
+      setOpen(false);
+      closeLanguageMenus();
+    }
   });
+
+  if (window.matchMedia) {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = function () {
+      syncForViewport();
+    };
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
 }
 
 /**
- * Wire compact language dropdown(s). Call once after DOM is ready.
- * onSelect(lang) is optional; default uses applyLanguage if available.
+ * Wire language selection (chips in mobile sheet / dropdown on desktop).
  */
 function initLanguageMenu(onSelect) {
   const menus = document.querySelectorAll("[data-lang-menu]");
@@ -467,26 +518,20 @@ function initLanguageMenu(onSelect) {
   menus.forEach((root) => {
     const toggle = root.querySelector(".lang-toggle");
     const list = root.querySelector(".lang-menu");
-    if (!toggle || !list) return;
+    if (!list) return;
 
-    toggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = toggle.getAttribute("aria-expanded") === "true";
-      // Close other menus first
-      closeLanguageMenus();
-      if (!open) {
-        toggle.setAttribute("aria-expanded", "true");
-        list.hidden = false;
-        const active = list.querySelector('.lang-btn[aria-selected="true"]');
-        if (active && typeof active.focus === "function") {
-          try {
-            active.focus({ preventScroll: true });
-          } catch (_) {
-            active.focus();
-          }
+    if (toggle) {
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!isDesktopControls()) return;
+        const open = toggle.getAttribute("aria-expanded") === "true";
+        closeLanguageMenus();
+        if (!open) {
+          toggle.setAttribute("aria-expanded", "true");
+          list.hidden = false;
         }
-      }
-    });
+      });
+    }
 
     list.querySelectorAll(".lang-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -503,15 +548,10 @@ function initLanguageMenu(onSelect) {
     });
   });
 
-  // Outside click
   document.addEventListener("click", (e) => {
+    if (!isDesktopControls()) return;
     if (e.target.closest && e.target.closest("[data-lang-menu]")) return;
     closeLanguageMenus();
-  });
-
-  // Escape
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeLanguageMenus();
   });
 }
 
