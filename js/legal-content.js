@@ -1,16 +1,6 @@
 /**
  * Privacy Policy & Terms of Use — multi-language content.
- * Original text for Tim G’s personal hub. Not affiliated with Apple Inc.
- *
- * Localization approach (not hard translation):
- * - Spanish: Apple.es legal register (tú, «Sitio», Condiciones de uso,
- *   «tal cual» / «según disponibilidad», Actualizada el…).
- * - Simplified Chinese: Apple.cn legal register (你, 个人数据, 收集/使用/共享,
- *   更新日期：YYYY 年 M 月 D 日, 隐私权 wording).
- * - Japanese: Apple.jp legal register (お客様, 収集・利用・開示・移転・保存,
- *   現状有姿 / 提供可能な範囲, ウェブサイト利用規約).
- * Meaning is tailored to this static personal site; phrasing patterns only
- * are informed by public Apple legal pages in each locale.
+ * Original text for Tim G’s personal hub.
  */
 const LEGAL = {
   en: {
@@ -148,7 +138,7 @@ const LEGAL = {
           paragraphs: [
             "Unless otherwise noted, text, design, layout, graphics, icons, and other materials on the Site (collectively, “Content”) are owned by Tim G or used with permission, and are protected by applicable intellectual property laws.",
             "You may view and temporarily store Content for your personal, non-commercial use. You may not copy, modify, distribute, sell, lease, reverse engineer, or create derivative works from the Site or Content for commercial purposes without prior written permission, except as allowed by law (including fair use where applicable).",
-            "Name, marks, and branding of third parties that appear via links or references remain the property of their respective owners. The Site is not affiliated with, endorsed by, or sponsored by Apple Inc. or other third parties unless expressly stated.",
+            "Name, marks, and branding of third parties that appear via links or references remain the property of their respective owners. The Site is not affiliated with, endorsed by, or sponsored by third parties unless expressly stated.",
           ],
         },
         {
@@ -376,7 +366,7 @@ const LEGAL = {
           paragraphs: [
             "Salvo indicación en contrario, los textos, el diseño, la maquetación, los gráficos, los iconos y demás materiales del Sitio (en conjunto, el «Contenido») son propiedad de Tim G o se utilizan con autorización, y están protegidos por las leyes aplicables de propiedad intelectual y derechos afines.",
             "Puedes visualizar y almacenar temporalmente el Contenido para tu uso personal y no comercial. Salvo lo que permita la ley (incluido el uso legítimo o fair use cuando proceda), no podrás copiar, modificar, distribuir, vender, alquilar, descompilar ni crear obras derivadas del Sitio o del Contenido con fines comerciales sin autorización previa por escrito.",
-            "Los nombres, marcas y signos de terceros que aparezcan mediante enlaces o referencias siguen siendo propiedad de sus respectivos titulares. El Sitio no está afiliado, avalado ni patrocinado por Apple Inc. ni por otros terceros, salvo que se indique expresamente.",
+            "Los nombres, marcas y signos de terceros que aparezcan mediante enlaces o referencias siguen siendo propiedad de sus respectivos titulares. El Sitio no está afiliado, avalado ni patrocinado por otros terceros, salvo que se indique expresamente.",
           ],
         },
         {
@@ -603,7 +593,7 @@ const LEGAL = {
           paragraphs: [
             "除另有说明外，本网站上的文字、设计、版式、图形、图标及其他材料（统称“内容”）由 Tim G 拥有或经许可使用，并受适用的知识产权等法律保护。",
             "你可为个人非商业目的浏览并临时存储内容。除法律允许的情形（包括在适用时的合理使用）外，未经事先书面许可，不得为商业目的复制、修改、分发、出售、出租、反向工程内容，或基于本网站或内容创作衍生作品。",
-            "通过链接或引用出现的第三方名称与标识归其各自权利人所有。除非明确声明，本网站与 Apple Inc. 或其他第三方无关联、无背书、无赞助关系。",
+            "通过链接或引用出现的第三方名称与标识归其各自权利人所有。除非明确声明，本网站与其他第三方无关联、无背书、无赞助关系。",
           ],
         },
         {
@@ -830,7 +820,7 @@ const LEGAL = {
           paragraphs: [
             "特段の記載がない限り、本サイト上のテキスト、デザイン、レイアウト、グラフィック、アイコンその他の資料（以下総称して「コンテンツ」）は Tim G が所有するか許可の下で使用されており、適用される知的財産法その他の法令により保護されています。",
             "お客様は、個人的かつ非商業的な目的に限り、コンテンツを閲覧および一時的に保存することができます。法令で認められる場合（該当する場合のフェアユースを含む）を除き、事前の書面による許可なく、商業目的で本サイトまたはコンテンツを複製、改変、頒布、販売、貸与、リバースエンジニアリングし、または二次的著作物を作成してはなりません。",
-            "リンクまたは言及により表示される第三者の名称・標章は、各権利者に帰属します。明示のない限り、本サイトは Apple Inc. その他の第三者と提携、後援、またはスポンサー関係にありません。",
+            "リンクまたは言及により表示される第三者の名称・標章は、各権利者に帰属します。明示のない限り、本サイトは他の第三者と提携、後援、またはスポンサー関係にありません。",
           ],
         },
         {
