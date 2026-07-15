@@ -242,6 +242,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* Selection — calm accent, not harsh system blue */
+::selection {
+  background: var(--accent-blue-soft);
+  color: var(--text);
+}
+
 @media (min-width: 900px) and (hover: hover) {
   body {
     background-attachment: fixed;
@@ -257,6 +263,21 @@ svg {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Avoid sticky hover on coarse pointers; keep keyboard focus clear */
+@media (hover: none) {
+  .interest-card:hover,
+  a.link-card:hover,
+  .link-card--copy:hover,
+  .featured-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .featured-card {
+    box-shadow: var(--shadow-md);
+  }
 }
 
 ul[role="list"] {
@@ -330,6 +351,7 @@ button {
   letter-spacing: -0.03em;
   line-height: var(--leading-tight);
   color: var(--text);
+  text-wrap: balance;
 }
 
 /* ---------- Top bar (language + theme + motion) ---------- */
@@ -520,6 +542,7 @@ html.reduce-motion #motion-toggle {
   letter-spacing: -0.04em;
   line-height: var(--leading-tight);
   margin-bottom: var(--space-3);
+  text-wrap: balance;
 }
 
 .hero__name-text {
@@ -556,6 +579,8 @@ html.reduce-motion #motion-toggle {
   max-width: 28rem;
   line-height: var(--leading-snug);
   margin-bottom: var(--space-6);
+  text-wrap: balance;
+  padding-inline: var(--space-1);
 }
 
 .scroll-cue {
@@ -1045,6 +1070,31 @@ a.link-card:active,
   text-decoration-color: var(--accent-blue);
 }
 
+.footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  margin-top: var(--space-1);
+}
+
+.footer__legal a {
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.footer__legal a:hover {
+  color: var(--text);
+  background: var(--bg-subtle);
+}
+
 .footer__copy {
   font-size: var(--text-xs);
   color: var(--text-tertiary);
@@ -1182,6 +1232,22 @@ html.reveal-fallback .reveal {
 
 /* ---------- Extreme / edge viewports ---------- */
 
+/* Small phones */
+@media (max-width: 480px) {
+  :root {
+    --gutter: clamp(12px, 4vw, var(--space-2));
+  }
+
+  .control-cluster {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .top-bar__inner {
+    justify-content: center;
+  }
+}
+
 /* Very small phones & watch-class widths */
 @media (max-width: 360px) {
   :root {
@@ -1234,6 +1300,49 @@ html.reveal-fallback .reveal {
 
   .featured-card__visual {
     min-height: 88px;
+  }
+}
+
+/* Ultra-narrow (watch faces / extreme split views) */
+@media (max-width: 280px) {
+  :root {
+    --gutter: 8px;
+    --section-pad-y: var(--space-4);
+    --text-hero: 1.75rem;
+    --text-lg: 1.0625rem;
+    --top-bar-h: 100px;
+  }
+
+  .lang-switcher,
+  .pref-switcher {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero__eyebrow {
+    font-size: 0.75rem;
+  }
+
+  .section__title {
+    font-size: 1.35rem;
+  }
+
+  .interest-card__icon,
+  .link-card__icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Comfortable tablet portrait */
+@media (min-width: 600px) and (max-width: 899px) {
+  .interests__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .link-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Terms of Use — Tim G</title>
+  <meta name="description" content="Terms governing use of Tim G’s personal hub website." />
+  <meta name="author" content="Tim G" />
+  <meta name="robots" content="index,follow" />
+  <meta name="theme-color" content="#f7f5f2" id="meta-theme-color" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/legal.css" />
+  <script>
+    (function () {
+      try {
+        var root = document.documentElement;
+        var savedTheme = localStorage.getItem("timg-theme");
+        var theme =
+          savedTheme === "light" || savedTheme === "dark"
+            ? savedTheme
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        root.setAttribute("data-theme", theme);
+        root.style.colorScheme = theme;
+        var savedMotion = localStorage.getItem("timg-motion");
+        var reduce =
+          savedMotion === "reduce"
+            ? true
+            : savedMotion === "full"
+              ? false
+              : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        root.classList.add(reduce ? "reduce-motion" : "motion-full", "js");
+        setTimeout(function () {
+          if (!root.classList.contains("app-ready")) root.classList.add("reveal-fallback");
+        }, 2500);
+      } catch (e) {}
+    })();
+  </script>
+  <noscript>
+    <style>
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .top-bar { position: static; }
+      .legal-noscript-note { display: block !important; }
+    </style>
+  </noscript>
+</head>
+<body class="legal-page" data-legal-page="terms">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="top-bar" role="banner">
+    <div class="top-bar__inner">
+      <nav class="control-cluster" aria-label="Site controls" data-i18n-aria="a11y.siteControls">
+        <div class="lang-switcher" role="group" aria-label="Select language" data-i18n-aria="a11y.selectLanguage">
+          <button type="button" class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" class="lang-btn" data-lang="zh" aria-pressed="false">中文</button>
+          <span class="lang-sep" aria-hidden="true">/</span>
+          <button type="button" class="lang-btn" data-lang="ja" aria-pressed="false">日本語</button>
+        </div>
+        <div class="pref-switcher" role="group" aria-label="Display preferences" data-i18n-aria="a11y.displayPrefs">
+          <button type="button" class="pref-btn" id="theme-toggle" aria-pressed="false" data-i18n-aria="a11y.themeToggle" aria-label="Toggle light or dark theme" title="Theme">
+            <span class="pref-btn__icon pref-btn__icon--sun" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+            <span class="pref-btn__icon pref-btn__icon--moon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false"><path d="M13.5 9.2A5.5 5.5 0 0 1 6.8 2.5 5.5 5.5 0 1 0 13.5 9.2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+          <button type="button" class="pref-btn" id="motion-toggle" aria-pressed="false" data-i18n-aria="a11y.motionToggle" aria-label="Toggle reduced motion" title="Reduce motion">
+            <span class="pref-btn__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" focusable="false"><path d="M3 8h6.5M7 4.5L10.5 8 7 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path class="motion-slash" d="M3.5 3.5l9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="legal-main">
+    <div class="legal-shell">
+      <div class="legal-toolbar">
+        <a class="legal-back" href="index.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="legal-back">Back to home</span>
+        </a>
+        <ul class="legal-related" role="list">
+          <li><a href="privacy.html" data-legal-ui="privacyLink">Privacy Policy</a></li>
+          <li><a href="terms.html" class="is-current" data-legal-ui="termsLink" aria-current="page">Terms of Use</a></li>
+        </ul>
+      </div>
+
+      <article class="legal-article">
+        <header class="legal-hero">
+          <p class="legal-hero__label" id="legal-label">Legal</p>
+          <h1 class="legal-hero__title" id="legal-title">Terms of Use</h1>
+          <p class="legal-hero__updated" id="legal-updated">Last updated: July 10, 2026</p>
+          <p class="legal-hero__intro" id="legal-intro">
+            These Terms of Use govern your access to and use of this personal hub website.
+          </p>
+        </header>
+
+        <nav class="legal-toc-block" aria-labelledby="legal-toc-title">
+          <p class="legal-toc-block__heading" id="legal-toc-title">On this page</p>
+          <ul class="legal-toc" id="legal-toc" role="list"></ul>
+        </nav>
+
+        <p class="legal-noscript-note" hidden>
+          For the full multi-language terms, enable JavaScript. You can also email
+          <a href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>.
+        </p>
+
+        <div id="legal-body" class="legal-body">
+          <noscript>
+            <section class="legal-section" id="acceptance">
+              <h2 class="legal-section__title">Agreement to Terms</h2>
+              <p class="legal-section__p">By using this Site operated by Tim G, you agree to these Terms of Use. Contact: contact.timg@icloud.com.</p>
+            </section>
+          </noscript>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <nav class="footer__legal" aria-label="Legal">
+        <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
+        <span class="footer__dot" aria-hidden="true">·</span>
+        <a href="terms.html" data-i18n="footer.terms">Terms of Use</a>
+      </nav>
+      <p class="footer__contact">
+        <span data-i18n="footer.contact">Contact:</span>
+        <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
+      </p>
+      <p class="footer__copy">
+        <span>&copy; <span id="year"></span> Tim G</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/legal-content.js"></script>
+  <script src="js/legal.js"></script>
+</body>
+</html>

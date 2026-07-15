@@ -86,6 +86,8 @@ const TRANSLATIONS = {
       signoff: "Thanks for stopping by.",
       contact: "Contact:",
       built: "Built with care",
+      privacy: "Privacy Policy",
+      terms: "Terms of Use",
     },
   },
 
@@ -172,6 +174,8 @@ const TRANSLATIONS = {
       signoff: "Gracias por pasar.",
       contact: "Contacto:",
       built: "Hecho con cuidado",
+      privacy: "Política de privacidad",
+      terms: "Condiciones de uso",
     },
   },
 
@@ -258,6 +262,8 @@ const TRANSLATIONS = {
       signoff: "谢谢你的到访。",
       contact: "联系：",
       built: "精心制作",
+      privacy: "隐私政策",
+      terms: "使用条款",
     },
   },
 
@@ -344,6 +350,8 @@ const TRANSLATIONS = {
       signoff: "立ち寄ってくれてありがとう。",
       contact: "連絡先：",
       built: "丁寧に作りました",
+      privacy: "プライバシーポリシー",
+      terms: "ウェブサイト利用規約",
     },
   },
 };
