@@ -219,6 +219,29 @@
     });
   }
 
+  // Follow system prefs when user has not set a manual override (same as main site)
+  if (window.matchMedia) {
+    var colorMq = window.matchMedia("(prefers-color-scheme: dark)");
+    var onColorChange = function () {
+      var saved = getStored(THEME_KEY);
+      if (saved !== "light" && saved !== "dark") {
+        applyTheme(resolveTheme());
+      }
+    };
+    if (colorMq.addEventListener) colorMq.addEventListener("change", onColorChange);
+    else if (colorMq.addListener) colorMq.addListener(onColorChange);
+
+    var motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var onMotionChange = function () {
+      var saved = getStored(MOTION_KEY);
+      if (saved !== "reduce" && saved !== "full") {
+        applyMotion(resolveReduceMotion());
+      }
+    };
+    if (motionMq.addEventListener) motionMq.addEventListener("change", onMotionChange);
+    else if (motionMq.addListener) motionMq.addListener(onMotionChange);
+  }
+
   // Smooth in-page jumps for TOC (respect reduced motion; use scroll-margin)
   document.addEventListener("click", function (e) {
     var link = e.target.closest && e.target.closest(".legal-toc__link");
