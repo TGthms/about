@@ -61,10 +61,15 @@ const TRANSLATIONS = {
       label: "Work & links",
       title: "Where to find me",
       featured: "Featured",
+      project: "Project",
       open: "Open project",
       travelGuide: {
         title: "USA Travel Guide",
         desc: "A curated guide to places worth visiting across the United States — built as a small web project.",
+      },
+      japanTravelGuide: {
+        title: "Japan Travel Guide",
+        desc: "A curated guide to places worth visiting across Japan — built as a small web project.",
       },
       github: "GitHub",
       social: {
@@ -72,10 +77,6 @@ const TRANSLATIONS = {
         sub: "@timg.ins",
         href: "https://www.instagram.com/timg.ins/",
         mode: "instagram",
-      },
-      placeholder1: {
-        label: "Coming soon",
-        sub: "[Add another link]",
       },
       placeholder2: {
         label: "Coming soon",
@@ -149,10 +150,15 @@ const TRANSLATIONS = {
       label: "Trabajo y enlaces",
       title: "Dónde encontrarme",
       featured: "Destacado",
+      project: "Proyecto",
       open: "Abrir proyecto",
       travelGuide: {
         title: "Guía de viaje por EE. UU.",
         desc: "Una guía curada de lugares que vale la pena visitar en Estados Unidos — hecha como un pequeño proyecto web.",
+      },
+      japanTravelGuide: {
+        title: "Guía de viaje por Japón",
+        desc: "Una guía curada de lugares que vale la pena visitar en Japón — hecha como un pequeño proyecto web.",
       },
       github: "GitHub",
       social: {
@@ -160,10 +166,6 @@ const TRANSLATIONS = {
         sub: "@timg.ins",
         href: "https://www.instagram.com/timg.ins/",
         mode: "instagram",
-      },
-      placeholder1: {
-        label: "Próximamente",
-        sub: "[Añadir otro enlace]",
       },
       placeholder2: {
         label: "Próximamente",
@@ -237,10 +239,15 @@ const TRANSLATIONS = {
       label: "作品与链接",
       title: "探索",
       featured: "推荐",
+      project: "项目",
       open: "打开项目",
       travelGuide: {
         title: "美国旅行指南",
         desc: "一份精心制作的的指南 — 小型网页项目",
+      },
+      japanTravelGuide: {
+        title: "日本旅行指南",
+        desc: "一份关于日本值得一去之地的指南 — 小型网页项目",
       },
       github: "GitHub",
       social: {
@@ -248,10 +255,6 @@ const TRANSLATIONS = {
         sub: "realTimGong",
         href: null,
         mode: "wechat",
-      },
-      placeholder1: {
-        label: "即将推出",
-        sub: "[...]",
       },
       placeholder2: {
         label: "即将推出",
@@ -325,10 +328,15 @@ const TRANSLATIONS = {
       label: "作品とリンク",
       title: "見つけ方",
       featured: "注目",
+      project: "プロジェクト",
       open: "プロジェクトを開く",
       travelGuide: {
         title: "USA トラベルガイド",
         desc: "アメリカ各地のおすすめスポットをまとめたガイド — 小さなウェブプロジェクトとして制作。",
+      },
+      japanTravelGuide: {
+        title: "日本トラベルガイド",
+        desc: "日本各地のおすすめスポットをまとめたガイド — 小さなウェブプロジェクトとして制作。",
       },
       github: "GitHub",
       social: {
@@ -336,10 +344,6 @@ const TRANSLATIONS = {
         sub: "@timg.ins",
         href: "https://www.instagram.com/timg.ins/",
         mode: "instagram",
-      },
-      placeholder1: {
-        label: "近日公開",
-        sub: "[リンクを追加]",
       },
       placeholder2: {
         label: "近日公開",
