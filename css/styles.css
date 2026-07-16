@@ -360,10 +360,15 @@ html[data-theme="dark"] .lang-select {
 }
 .pref-btn__label { font-size: 0.95rem; }
 .pref-btn__icon--moon { display: none; }
+.pref-btn__label--dark { display: none; }
 html[data-theme="dark"] #theme-toggle .pref-btn__icon--sun { display: none; }
 html[data-theme="dark"] #theme-toggle .pref-btn__icon--moon { display: flex; }
+html[data-theme="dark"] #theme-toggle .pref-btn__label--light { display: none; }
+html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: inline; }
 html[data-theme="light"] #theme-toggle .pref-btn__icon--sun { display: flex; }
 html[data-theme="light"] #theme-toggle .pref-btn__icon--moon { display: none; }
+html[data-theme="light"] #theme-toggle .pref-btn__label--light { display: inline; }
+html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
 
 /* Desktop controls */
 @media (min-width: 768px) {

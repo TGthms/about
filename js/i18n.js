@@ -13,6 +13,8 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "Toggle light or dark theme",
       themeShort: "Appearance",
+      themeLight: "Light mode",
+      themeDark: "Dark mode",
       scrollAbout: "Scroll to about",
       siteControls: "Preferences",
       selectLanguage: "Language",
@@ -111,6 +113,8 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "Cambiar tema claro u oscuro",
       themeShort: "Apariencia",
+      themeLight: "Modo claro",
+      themeDark: "Modo oscuro",
       scrollAbout: "Ir a la sección sobre mí",
       siteControls: "Preferencias",
       selectLanguage: "Idioma",
@@ -209,6 +213,8 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "切换浅色或深色主题",
       themeShort: "外观",
+      themeLight: "浅色模式",
+      themeDark: "深色模式",
       scrollAbout: "滚动到关于部分",
       siteControls: "偏好设置",
       selectLanguage: "语言",
@@ -307,6 +313,8 @@ const TRANSLATIONS = {
     a11y: {
       themeToggle: "ライト／ダークテーマを切り替え",
       themeShort: "外観",
+      themeLight: "ライトモード",
+      themeDark: "ダークモード",
       scrollAbout: "自己紹介へスクロール",
       siteControls: "設定",
       selectLanguage: "言語",
