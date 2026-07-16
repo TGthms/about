@@ -12,9 +12,7 @@ const TRANSLATIONS = {
     skip: "Skip to content",
     a11y: {
       themeToggle: "Toggle light or dark theme",
-      motionToggle: "Toggle reduced motion",
       themeShort: "Appearance",
-      motionShort: "Reduce motion",
       scrollAbout: "Scroll to about",
       siteControls: "Preferences",
       selectLanguage: "Language",
@@ -73,6 +71,10 @@ const TRANSLATIONS = {
         title: "Japan Travel Guide",
         desc: "A curated guide to places worth visiting across Japan — built as a small web project.",
       },
+      kit: {
+        title: "Kit",
+        desc: "Private on-device tools for PDF, image, audio, and text — no account, no upload.",
+      },
       github: "GitHub",
       social: {
         label: "Instagram",
@@ -83,6 +85,11 @@ const TRANSLATIONS = {
       duolingo: {
         label: "Duolingo",
         hint: "Scan the code in the Duolingo app to add me",
+        profile: "Open profile",
+        enlarge: "View full QR code",
+        enlargeShort: "Enlarge",
+        modalTitle: "Duolingo QR",
+        close: "Close",
       },
     },
     footer: {
@@ -103,9 +110,7 @@ const TRANSLATIONS = {
     skip: "Saltar al contenido",
     a11y: {
       themeToggle: "Cambiar tema claro u oscuro",
-      motionToggle: "Activar o desactivar menos movimiento",
       themeShort: "Apariencia",
-      motionShort: "Menos movimiento",
       scrollAbout: "Ir a la sección sobre mí",
       siteControls: "Preferencias",
       selectLanguage: "Idioma",
@@ -164,6 +169,10 @@ const TRANSLATIONS = {
         title: "Guía de viaje por Japón",
         desc: "Una guía curada de lugares que vale la pena visitar en Japón — hecha como un pequeño proyecto web.",
       },
+      kit: {
+        title: "Kit",
+        desc: "Herramientas privadas en tu dispositivo para PDF, imagen, audio y texto — sin cuenta ni subidas.",
+      },
       github: "GitHub",
       social: {
         label: "Instagram",
@@ -174,6 +183,11 @@ const TRANSLATIONS = {
       duolingo: {
         label: "Duolingo",
         hint: "Escanea el código en la app de Duolingo para añadirme",
+        profile: "Abrir perfil",
+        enlarge: "Ver código QR completo",
+        enlargeShort: "Ampliar",
+        modalTitle: "QR de Duolingo",
+        close: "Cerrar",
       },
     },
     footer: {
@@ -194,9 +208,7 @@ const TRANSLATIONS = {
     skip: "跳到主要内容",
     a11y: {
       themeToggle: "切换浅色或深色主题",
-      motionToggle: "减弱动态效果",
       themeShort: "外观",
-      motionShort: "减弱动态",
       scrollAbout: "滚动到关于部分",
       siteControls: "偏好设置",
       selectLanguage: "语言",
@@ -255,6 +267,10 @@ const TRANSLATIONS = {
         title: "日本旅行指南",
         desc: "一份关于日本值得一去之地的指南 — 小型网页项目",
       },
+      kit: {
+        title: "Kit",
+        desc: "在设备上运行的私密工具：PDF、图片、音视频与文本 — 无需账号，无需上传。",
+      },
       github: "GitHub",
       social: {
         label: "微信",
@@ -265,6 +281,11 @@ const TRANSLATIONS = {
       duolingo: {
         label: "多邻国",
         hint: "在多邻国 App 中扫描二维码添加我",
+        profile: "打开主页",
+        enlarge: "查看完整二维码",
+        enlargeShort: "放大",
+        modalTitle: "多邻国二维码",
+        close: "关闭",
       },
     },
     footer: {
@@ -285,9 +306,7 @@ const TRANSLATIONS = {
     skip: "コンテンツへスキップ",
     a11y: {
       themeToggle: "ライト／ダークテーマを切り替え",
-      motionToggle: "動きを減らす設定を切り替え",
       themeShort: "外観",
-      motionShort: "動きを減らす",
       scrollAbout: "自己紹介へスクロール",
       siteControls: "設定",
       selectLanguage: "言語",
@@ -346,6 +365,10 @@ const TRANSLATIONS = {
         title: "日本トラベルガイド",
         desc: "日本各地のおすすめスポットをまとめたガイド — 小さなウェブプロジェクトとして制作。",
       },
+      kit: {
+        title: "Kit",
+        desc: "PDF・画像・音声・テキスト向けの端末内プライベートツール — アカウント不要、アップロード不要。",
+      },
       github: "GitHub",
       social: {
         label: "Instagram",
@@ -356,6 +379,11 @@ const TRANSLATIONS = {
       duolingo: {
         label: "Duolingo",
         hint: "Duolingoアプリでコードをスキャンして追加",
+        profile: "プロフィールを開く",
+        enlarge: "QRコードを大きく表示",
+        enlargeShort: "拡大",
+        modalTitle: "Duolingo QR",
+        close: "閉じる",
       },
     },
     footer: {

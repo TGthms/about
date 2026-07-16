@@ -1,11 +1,10 @@
 /**
- * Main behavior: language, theme, motion prefs, scroll reveals, card tilt.
+ * Main behavior: language, theme prefs, scroll reveals, card tilt.
  */
 (function () {
   "use strict";
 
   const THEME_KEY = "timg-theme";
-  const MOTION_KEY = "timg-motion";
   const WECHAT_ID = "realTimGong";
 
   // Mark JS-ready early (pairs with noscript CSS fallback)
@@ -32,40 +31,27 @@
     );
   }
 
-  function getStored(key) {
-    try {
-      return localStorage.getItem(key);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  function setStored(key, value) {
-    try {
-      localStorage.setItem(key, value);
-    } catch (_) {
-      /* private mode / quota */
-    }
-  }
-
-  function resolveTheme() {
-    const saved = getStored(THEME_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-    return systemPrefersDark() ? "dark" : "light";
-  }
-
-  function resolveReduceMotion() {
-    const saved = getStored(MOTION_KEY);
-    if (saved === "reduce") return true;
-    if (saved === "full") return false;
+  function isReduceMotion() {
     return systemPrefersReducedMotion();
   }
 
-  function isReduceMotion() {
-    return document.documentElement.classList.contains("reduce-motion");
+  // ---------- Theme ----------
+  // Always follow OS appearance. Manual toggle is session-only; a system
+  // change (or reload) re-applies auto-detection and clears any override.
+  var themeOverride = null; // "light" | "dark" | null
+
+  // Drop legacy persisted preference so system auto-detect always wins
+  try {
+    localStorage.removeItem(THEME_KEY);
+  } catch (_) {
+    /* ignore */
   }
 
-  // ---------- Theme ----------
+  function resolveTheme() {
+    if (themeOverride === "light" || themeOverride === "dark") return themeOverride;
+    return systemPrefersDark() ? "dark" : "light";
+  }
+
   function applyTheme(theme) {
     const resolved = theme === "dark" ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", resolved);
@@ -73,78 +59,43 @@
 
     const meta = document.getElementById("meta-theme-color");
     if (meta) {
-      meta.setAttribute("content", resolved === "dark" ? "#161412" : "#f3eee4");
+      meta.setAttribute("content", resolved === "dark" ? "#12100e" : "#f3eee4");
     }
 
     const btn = document.getElementById("theme-toggle");
     if (btn) {
+      // pressed = currently showing dark; not a sticky “manual mode” flag
       btn.setAttribute("aria-pressed", resolved === "dark" ? "true" : "false");
     }
   }
 
   function toggleTheme() {
     const next = resolveTheme() === "dark" ? "light" : "dark";
-    setStored(THEME_KEY, next);
-    applyTheme(next);
+    // Only stick while it differs from the system; else clear override
+    themeOverride = next === (systemPrefersDark() ? "dark" : "light") ? null : next;
+    applyTheme(resolveTheme());
   }
 
-  // ---------- Motion ----------
   function showAllReveals() {
     document.querySelectorAll(".reveal").forEach(function (el) {
       el.classList.add("is-visible");
     });
   }
 
-  function applyMotion(reduce) {
-    const root = document.documentElement;
-    root.classList.toggle("reduce-motion", reduce);
-    root.classList.toggle("motion-full", !reduce);
-
-    const btn = document.getElementById("motion-toggle");
-    if (btn) {
-      btn.setAttribute("aria-pressed", reduce ? "true" : "false");
-    }
-
-    // Enabling reduce motion must never leave content invisible
-    if (reduce) showAllReveals();
-  }
-
-  function toggleMotion() {
-    const next = !resolveReduceMotion();
-    setStored(MOTION_KEY, next ? "reduce" : "full");
-    applyMotion(next);
-  }
-
   applyTheme(resolveTheme());
-  applyMotion(resolveReduceMotion());
 
   const themeBtn = document.getElementById("theme-toggle");
   if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
 
-  const motionBtn = document.getElementById("motion-toggle");
-  if (motionBtn) motionBtn.addEventListener("click", toggleMotion);
-
-  // Follow system prefs only when user has not set a manual override
+  // System appearance always wins when the OS preference changes
   if (window.matchMedia) {
     const colorMq = window.matchMedia("(prefers-color-scheme: dark)");
     const onColorChange = function () {
-      const saved = getStored(THEME_KEY);
-      if (saved !== "light" && saved !== "dark") {
-        applyTheme(resolveTheme());
-      }
+      themeOverride = null;
+      applyTheme(resolveTheme());
     };
     if (colorMq.addEventListener) colorMq.addEventListener("change", onColorChange);
     else if (colorMq.addListener) colorMq.addListener(onColorChange);
-
-    const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onMotionChange = function () {
-      const saved = getStored(MOTION_KEY);
-      if (saved !== "reduce" && saved !== "full") {
-        applyMotion(resolveReduceMotion());
-      }
-    };
-    if (motionMq.addEventListener) motionMq.addEventListener("change", onMotionChange);
-    else if (motionMq.addListener) motionMq.addListener(onMotionChange);
   }
 
   // ---------- Language (compact dropdown) ----------
@@ -389,4 +340,82 @@
       }
     });
   });
+
+  // ---------- Duolingo QR large view ----------
+  (function initQrModal() {
+    var openBtn = document.getElementById("duolingo-qr-open");
+    var modal = document.getElementById("duolingo-qr-modal");
+    if (!openBtn || !modal) return;
+
+    var lastFocus = null;
+    var closeEls = modal.querySelectorAll("[data-qr-close]");
+
+    function getFocusable() {
+      return Array.prototype.slice.call(
+        modal.querySelectorAll(
+          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter(function (el) {
+        return !el.hasAttribute("disabled") && el.offsetParent !== null;
+      });
+    }
+
+    function openModal() {
+      lastFocus = document.activeElement;
+      modal.hidden = false;
+      document.body.classList.add("qr-modal-open");
+      openBtn.setAttribute("aria-expanded", "true");
+      var closeBtn = modal.querySelector(".qr-modal__close");
+      window.setTimeout(function () {
+        if (closeBtn) closeBtn.focus();
+      }, 10);
+    }
+
+    function closeModal() {
+      if (modal.hidden) return;
+      modal.hidden = true;
+      document.body.classList.remove("qr-modal-open");
+      openBtn.setAttribute("aria-expanded", "false");
+      if (lastFocus && typeof lastFocus.focus === "function") {
+        try {
+          lastFocus.focus();
+        } catch (_) {}
+      }
+    }
+
+    openBtn.setAttribute("aria-expanded", "false");
+    openBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      openModal();
+    });
+
+    closeEls.forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.preventDefault();
+        closeModal();
+      });
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (modal.hidden) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeModal();
+        return;
+      }
+      // Simple focus trap
+      if (e.key !== "Tab") return;
+      var focusable = getFocusable();
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  })();
 })();

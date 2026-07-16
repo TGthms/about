@@ -16,23 +16,15 @@
     (function () {
       try {
         var root = document.documentElement;
-        var savedTheme = localStorage.getItem("timg-theme");
-        var theme =
-          savedTheme === "light" || savedTheme === "dark"
-            ? savedTheme
-            : window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light";
+        try {
+          localStorage.removeItem("timg-theme");
+        } catch (e2) {}
+        var theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
-        var savedMotion = localStorage.getItem("timg-motion");
-        var reduce =
-          savedMotion === "reduce"
-            ? true
-            : savedMotion === "full"
-              ? false
-              : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        root.classList.add(reduce ? "reduce-motion" : "motion-full", "js");
+        root.classList.add("js");
         setTimeout(function () {
           if (!root.classList.contains("app-ready")) root.classList.add("reveal-fallback");
         }, 2500);
@@ -121,24 +113,6 @@
                   </svg>
                 </span>
                 <span class="pref-btn__label" data-i18n="a11y.themeShort">Appearance</span>
-              </button>
-              <button
-                type="button"
-                class="pref-btn"
-                id="motion-toggle"
-                aria-pressed="false"
-                data-i18n-aria="a11y.motionToggle"
-                aria-label="Toggle reduced motion"
-                title="Reduce motion"
-              >
-                <span class="pref-btn__icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" focusable="false">
-                    <path d="M1.5 10.5c1.5-2.4 3-3.6 4.7-3.6s3.2 1.2 4.7 3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M1.5 6.5c1.6-2.2 3.2-3.3 5-3.3s3.4 1.1 5 3.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-                    <path class="motion-slash" d="M3 3l10 10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-                  </svg>
-                </span>
-                <span class="pref-btn__label" data-i18n="a11y.motionShort">Reduce motion</span>
               </button>
             </div>
           </div>

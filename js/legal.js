@@ -139,40 +139,29 @@
     });
   }
 
-  // Theme + motion (same keys as main site)
-  var THEME_KEY = "timg-theme";
-  var MOTION_KEY = "timg-motion";
+  // Theme — always follow OS; session toggle only (same as main site)
+  var themeOverride = null;
 
-  function getStored(key) {
-    try {
-      return localStorage.getItem(key);
-    } catch (_) {
-      return null;
-    }
-  }
+  try {
+    localStorage.removeItem("timg-theme");
+  } catch (_) {}
 
-  function setStored(key, value) {
-    try {
-      localStorage.setItem(key, value);
-    } catch (_) {}
+  function systemPrefersDark() {
+    return Boolean(
+      window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
   }
 
   function resolveTheme() {
-    var saved = getStored(THEME_KEY);
-    if (saved === "light" || saved === "dark") return saved;
-    return window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    if (themeOverride === "light" || themeOverride === "dark") return themeOverride;
+    return systemPrefersDark() ? "dark" : "light";
   }
 
-  function resolveReduceMotion() {
-    var saved = getStored(MOTION_KEY);
-    if (saved === "reduce") return true;
-    if (saved === "full") return false;
-    return (
+  function systemPrefersReducedMotion() {
+    return Boolean(
       window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
     );
   }
 
@@ -182,7 +171,7 @@
     document.documentElement.style.colorScheme = resolved;
     var meta = document.getElementById("meta-theme-color");
     if (meta) {
-      meta.setAttribute("content", resolved === "dark" ? "#161412" : "#f3eee4");
+      meta.setAttribute("content", resolved === "dark" ? "#12100e" : "#f3eee4");
     }
     var btn = document.getElementById("theme-toggle");
     if (btn) {
@@ -190,55 +179,27 @@
     }
   }
 
-  function applyMotion(reduce) {
-    document.documentElement.classList.toggle("reduce-motion", reduce);
-    document.documentElement.classList.toggle("motion-full", !reduce);
-    var btn = document.getElementById("motion-toggle");
-    if (btn) btn.setAttribute("aria-pressed", reduce ? "true" : "false");
-  }
-
   applyTheme(resolveTheme());
-  applyMotion(resolveReduceMotion());
 
   var themeBtn = document.getElementById("theme-toggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", function () {
       var next = resolveTheme() === "dark" ? "light" : "dark";
-      setStored(THEME_KEY, next);
-      applyTheme(next);
+      themeOverride =
+        next === (systemPrefersDark() ? "dark" : "light") ? null : next;
+      applyTheme(resolveTheme());
     });
   }
 
-  var motionBtn = document.getElementById("motion-toggle");
-  if (motionBtn) {
-    motionBtn.addEventListener("click", function () {
-      var next = !resolveReduceMotion();
-      setStored(MOTION_KEY, next ? "reduce" : "full");
-      applyMotion(next);
-    });
-  }
-
-  // Follow system prefs when user has not set a manual override (same as main site)
+  // OS appearance change always re-applies auto-detect
   if (window.matchMedia) {
     var colorMq = window.matchMedia("(prefers-color-scheme: dark)");
     var onColorChange = function () {
-      var saved = getStored(THEME_KEY);
-      if (saved !== "light" && saved !== "dark") {
-        applyTheme(resolveTheme());
-      }
+      themeOverride = null;
+      applyTheme(resolveTheme());
     };
     if (colorMq.addEventListener) colorMq.addEventListener("change", onColorChange);
     else if (colorMq.addListener) colorMq.addListener(onColorChange);
-
-    var motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    var onMotionChange = function () {
-      var saved = getStored(MOTION_KEY);
-      if (saved !== "reduce" && saved !== "full") {
-        applyMotion(resolveReduceMotion());
-      }
-    };
-    if (motionMq.addEventListener) motionMq.addEventListener("change", onMotionChange);
-    else if (motionMq.addListener) motionMq.addListener(onMotionChange);
   }
 
   // Smooth in-page jumps for TOC (respect reduced motion; use scroll-margin)
@@ -250,7 +211,7 @@
     var target = document.querySelector(href);
     if (!target) return;
     e.preventDefault();
-    var reduce = document.documentElement.classList.contains("reduce-motion");
+    var reduce = systemPrefersReducedMotion();
     target.scrollIntoView({
       behavior: reduce ? "auto" : "smooth",
       block: "start",

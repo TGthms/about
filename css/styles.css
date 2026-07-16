@@ -56,17 +56,21 @@
 }
 
 html[data-theme="dark"] {
-  --bg: #161412;
+  /* Richer charcoal stack — cards lift, edges stay crisp without glare */
+  --bg: #12100e;
   --bg-card: #1f1c19;
-  --ink: #f3eee4;
-  --mute: #b0a89e;
-  --faint: #7a736b;
-  --line: #f3eee4;
-  --accent: #e07a5f;
-  --accent-soft: rgba(224, 122, 95, 0.18);
-  --shadow: 3px 3px 0 #0a0908;
-  --shadow-hover: 5px 5px 0 #0a0908;
+  --ink: #f6f1e8;
+  --mute: #b8afa4;
+  --faint: #857c72;
+  --line: #cfc6b8;
+  --accent: #e89072;
+  --accent-soft: rgba(232, 144, 114, 0.2);
+  --shadow: 3px 3px 0 #060504;
+  --shadow-hover: 5px 5px 0 #060504;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
+  --border: color-mix(in srgb, var(--line) 28%, transparent);
+  --border-strong: color-mix(in srgb, var(--line) 48%, transparent);
+  --bg-subtle: color-mix(in srgb, var(--ink) 7%, var(--bg));
 }
 
 *,
@@ -100,8 +104,10 @@ body {
 
 html[data-theme="dark"] body {
   background-image:
-    radial-gradient(ellipse 90% 60% at 50% -10%, var(--accent-soft), transparent 55%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    radial-gradient(ellipse 110% 70% at 8% -5%, rgba(232, 144, 114, 0.14), transparent 52%),
+    radial-gradient(ellipse 90% 55% at 100% 100%, rgba(232, 144, 114, 0.07), transparent 48%),
+    linear-gradient(180deg, #171410 0%, var(--bg) 42%, #0e0c0b 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
 }
 
 body.controls-open {
@@ -319,33 +325,45 @@ html[data-theme="dark"] .lang-select {
   box-shadow: var(--focus);
 }
 
-.pref-switcher { display: flex; flex-direction: column; gap: 8px; }
+/* Theme toggle — same hard control language as the native select */
+.pref-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .pref-btn {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
   min-height: 48px;
   padding: 10px 14px;
   border: var(--border-w) solid var(--line);
-  background: var(--bg);
+  background: var(--bg-card);
   border-radius: var(--radius-sm);
   box-shadow: 2px 2px 0 var(--line);
   font-weight: 600;
   text-align: left;
+  transition: background-color var(--dur) var(--ease-out), transform var(--dur) var(--ease);
 }
-.pref-btn__icon { display: flex; width: 22px; height: 22px; align-items: center; justify-content: center; }
+.pref-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--line);
+}
+.pref-btn__icon {
+  display: flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 .pref-btn__label { font-size: 0.95rem; }
-.pref-btn[aria-pressed="true"],
-html.reduce-motion #motion-toggle {
-  background: var(--accent-soft);
-}
 .pref-btn__icon--moon { display: none; }
 html[data-theme="dark"] #theme-toggle .pref-btn__icon--sun { display: none; }
 html[data-theme="dark"] #theme-toggle .pref-btn__icon--moon { display: flex; }
 html[data-theme="light"] #theme-toggle .pref-btn__icon--sun { display: flex; }
 html[data-theme="light"] #theme-toggle .pref-btn__icon--moon { display: none; }
-#motion-toggle .motion-slash { opacity: 0; }
-html.reduce-motion #motion-toggle .motion-slash { opacity: 1; }
 
 /* Desktop controls */
 @media (min-width: 768px) {
@@ -381,14 +399,9 @@ html.reduce-motion #motion-toggle .motion-slash { opacity: 1; }
     font-size: 0.8rem;
     box-shadow: 2px 2px 0 var(--line);
   }
+  /* Single icon control — match lang-select height/shadow, no empty switcher chrome */
   .pref-switcher {
-    flex-direction: row;
-    gap: 4px;
-    padding: 4px;
-    border: var(--border-w) solid var(--line);
-    background: var(--bg-card);
-    box-shadow: 3px 3px 0 var(--line);
-    border-radius: var(--radius-sm);
+    display: contents;
   }
   .pref-btn {
     width: 40px;
@@ -396,13 +409,16 @@ html.reduce-motion #motion-toggle .motion-slash { opacity: 1; }
     min-height: 40px;
     padding: 0;
     justify-content: center;
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    border-radius: 6px;
+    gap: 0;
+    background: var(--bg-card);
+    border: var(--border-w) solid var(--line);
+    box-shadow: 2px 2px 0 var(--line);
+    border-radius: var(--radius-sm);
   }
   .pref-btn__label { display: none; }
-  .pref-btn[aria-pressed="true"] { background: var(--accent-soft); }
+  .pref-btn:hover {
+    background: var(--accent-soft);
+  }
 }
 
 /* ---------- Hero ---------- */
@@ -645,27 +661,36 @@ html.reduce-motion #motion-toggle .motion-slash { opacity: 1; }
   color: var(--accent);
 }
 .featured-card__visual {
-  min-height: 100px;
+  min-height: 140px;
   border: var(--border-w) solid var(--line);
   border-radius: var(--radius-sm);
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      var(--accent-soft),
-      var(--accent-soft) 8px,
-      transparent 8px,
-      transparent 16px
-    );
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 8%, transparent);
 }
-.featured-card--japan .featured-card__visual {
+.featured-card__visual--usa {
   background:
-    repeating-linear-gradient(
-      45deg,
-      var(--accent-soft),
-      var(--accent-soft) 8px,
-      transparent 8px,
-      transparent 16px
-    );
+    radial-gradient(circle at 78% 28%, var(--accent-soft), transparent 42%),
+    linear-gradient(160deg, color-mix(in srgb, var(--accent) 8%, var(--bg)) 0%, var(--bg) 70%);
+}
+.featured-card__visual--japan {
+  background:
+    radial-gradient(circle at 50% 42%, var(--accent-soft), transparent 48%),
+    linear-gradient(200deg, color-mix(in srgb, var(--ink) 4%, var(--bg)) 0%, var(--bg) 75%);
+}
+.featured-card__visual--kit {
+  background:
+    linear-gradient(135deg, var(--accent-soft) 0%, transparent 45%),
+    linear-gradient(0deg, color-mix(in srgb, var(--ink) 3%, var(--bg)) 0%, var(--bg) 100%);
+}
+.featured-art {
+  width: 100%;
+  height: auto;
+  max-height: 180px;
+  display: block;
 }
 
 /* Links */
@@ -792,7 +817,6 @@ a.link-card:active,
 .reveal-delay-2 { transition-delay: 140ms; }
 .reveal-delay-3 { transition-delay: 210ms; }
 
-html.reduce-motion .reveal,
 html:not(.js) .reveal,
 html.reveal-fallback .reveal {
   opacity: 1 !important;
@@ -801,12 +825,13 @@ html.reveal-fallback .reveal {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html:not(.motion-full) .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
+  html { scroll-behavior: auto; }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
-  html:not(.motion-full) * {
+  * {
     scroll-behavior: auto !important;
   }
 }
@@ -815,42 +840,32 @@ html.reveal-fallback .reveal {
   .hero { padding-top: calc(var(--space-6) + 72px); }
 }
 
-/* Featured visual: drop floating orbs, keep stripe field only */
-.featured-card__orb { display: none; }
+/* ---------- Duolingo QR card ---------- */
+/* Grid items are <li>s — span must be on the list item, not the inner card */
+.link-grid > li:has(.duolingo-card) {
+  grid-column: 1 / -1;
+}
 
-/* ---------- Duolingo QR card (image-safe) ---------- */
 .duolingo-card {
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-3) var(--space-4);
   padding: var(--space-3);
   background: var(--bg-card);
   border: var(--border-w) solid var(--line);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
-  min-height: 0;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
-  grid-column: 1 / -1; /* full width of link grid on multi-col — avoid squish */
 }
 
-@media (min-width: 560px) {
-  .duolingo-card {
-    grid-column: auto;
-    /* Still one cell; image stays constrained below */
-  }
-}
-
-@media (hover: hover) and (pointer: fine) {
-  a.duolingo-card:hover {
-    transform: translate(-2px, -2px);
-    box-shadow: var(--shadow-hover);
-  }
-}
-
-a.duolingo-card:active {
-  transform: translate(1px, 1px);
-  box-shadow: 2px 2px 0 var(--line);
+.duolingo-card__body {
+  flex: 1 1 12rem;
+  min-width: min(100%, 12rem);
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .duolingo-card__header {
@@ -861,8 +876,8 @@ a.duolingo-card:active {
 }
 
 .duolingo-card__icon {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -872,7 +887,7 @@ a.duolingo-card:active {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .duolingo-card__text {
@@ -896,17 +911,65 @@ a.duolingo-card:active {
   white-space: nowrap;
 }
 
-/* Always light matte behind QR so modules stay scannable in dark mode */
-.duolingo-card__frame {
-  width: 100%;
-  max-width: 220px;
-  margin-inline: auto;
-  aspect-ratio: 936 / 1229;
-  background: #ffffff;
-  border: var(--border-card) solid var(--line);
+.duolingo-card__hint {
+  font-size: 0.8rem;
+  color: var(--mute);
+  text-align: left;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.duolingo-card__profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 0.8rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--accent);
+  width: fit-content;
+}
+.duolingo-card__profile:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* QR thumb — full export, never cropped (contain + black plate) */
+.duolingo-card__qr {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
   border-radius: var(--radius-sm);
+  touch-action: manipulation;
+}
+.duolingo-card__qr:focus-visible {
+  box-shadow: var(--focus);
+}
+
+.duolingo-card__frame {
+  display: block;
+  width: 112px;
+  /* Match full Duolingo export aspect so nothing is clipped */
+  aspect-ratio: 936 / 1229;
+  padding: 0;
+  background: #000000;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--line);
   overflow: hidden;
   line-height: 0;
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 
 .duolingo-card__img {
@@ -915,13 +978,43 @@ a.duolingo-card:active {
   height: 100%;
   object-fit: contain;
   object-position: center;
+  background: #000000;
 }
 
-.duolingo-card__hint {
-  font-size: 0.75rem;
+/* Theme-specific QR assets: light export keeps original profile colors */
+.duolingo-card__img--light { display: none; }
+html[data-theme="light"] .duolingo-card__frame {
+  background: #ffffff;
+}
+html[data-theme="light"] .duolingo-card__img--dark { display: none; }
+html[data-theme="light"] .duolingo-card__img--light {
+  display: block;
+  background: #ffffff;
+}
+html[data-theme="dark"] .duolingo-card__img--light { display: none; }
+html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
+
+.duolingo-card__expand {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--faint);
-  text-align: center;
-  font-weight: 500;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .duolingo-card__qr:hover .duolingo-card__frame {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--line);
+  }
+  .duolingo-card__qr:hover .duolingo-card__expand {
+    color: var(--accent);
+  }
+}
+
+.duolingo-card__qr:active .duolingo-card__frame {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--line);
 }
 
 @media (min-width: 560px) {
@@ -929,35 +1022,182 @@ a.duolingo-card:active {
     grid-template-columns: 1fr 1fr;
   }
 
-  /* GitHub | Social on row 1; Duolingo spans full width on row 2 for QR breathing room */
   .duolingo-card {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-4) var(--space-5);
   }
 
   .duolingo-card__frame {
-    margin-inline: 0;
-    max-width: 160px;
-    flex-shrink: 0;
-  }
-
-  .duolingo-card__body {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .duolingo-card__hint {
-    text-align: left;
+    width: 128px;
   }
 }
 
-@media (max-width: 559px) {
-  .duolingo-card__frame {
-    max-width: min(200px, 70vw);
-  }
+/* ---------- QR large-view modal ---------- */
+.qr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+.qr-modal[hidden] {
+  display: none !important;
+}
+
+.qr-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 10, 8, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: none;
+  cursor: pointer;
+}
+
+.qr-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 420px);
+  max-height: min(92dvh, 920px);
+  overflow: auto;
+  padding: var(--space-3);
+  background: var(--bg-card);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 6px 6px 0 var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.qr-modal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.qr-modal__title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.qr-modal__close {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  box-shadow: 2px 2px 0 var(--line);
+  flex-shrink: 0;
+}
+.qr-modal__close:hover {
+  background: var(--accent-soft);
+}
+.qr-modal__close:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--line);
+}
+
+.qr-modal__hint {
+  font-size: 0.85rem;
+  color: var(--mute);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.qr-modal__frame {
+  width: 100%;
+  background: #000000;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  line-height: 0;
+  box-shadow: 3px 3px 0 var(--line);
+}
+
+.qr-modal__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: #000000;
+}
+
+.qr-modal__img--light { display: none; }
+html[data-theme="light"] .qr-modal__frame {
+  background: #ffffff;
+}
+html[data-theme="light"] .qr-modal__img--dark { display: none; }
+html[data-theme="light"] .qr-modal__img--light {
+  display: block;
+  background: #ffffff;
+}
+html[data-theme="dark"] .qr-modal__img--light { display: none; }
+html[data-theme="dark"] .qr-modal__img--dark { display: block; }
+
+.qr-modal__profile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #12100e;
+  font-size: 0.85rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 var(--line);
+  text-align: center;
+}
+.qr-modal__profile:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--line);
+}
+
+body.qr-modal-open {
+  overflow: hidden;
+}
+
+/* Dark-mode surface polish — lift cards and soften pure-black voids */
+html[data-theme="dark"] .interest-card,
+html[data-theme="dark"] .featured-card,
+html[data-theme="dark"] .link-card,
+html[data-theme="dark"] .duolingo-card,
+html[data-theme="dark"] .controls-panel,
+html[data-theme="dark"] .lang-select,
+html[data-theme="dark"] .pref-btn,
+html[data-theme="dark"] .qr-modal__panel {
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px color-mix(in srgb, var(--ink) 4%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+html[data-theme="dark"] .featured-card:hover,
+html[data-theme="dark"] .link-card:hover {
+  box-shadow:
+    var(--shadow-hover),
+    0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+html[data-theme="dark"] .hero__eyebrow,
+html[data-theme="dark"] .featured-card__badge {
+  color: #12100e;
+}
+
+html[data-theme="dark"] .qr-modal__backdrop {
+  background: rgba(0, 0, 0, 0.78);
 }

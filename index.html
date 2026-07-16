@@ -27,32 +27,20 @@
   <link rel="apple-touch-icon" href="favicon.svg" />
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Apply theme + motion before paint to avoid flash -->
+  <!-- Apply system theme before paint (auto-detect always wins over saved prefs) -->
   <script>
     (function () {
       try {
-        var THEME_KEY = "timg-theme";
-        var MOTION_KEY = "timg-motion";
         var root = document.documentElement;
-        var savedTheme = localStorage.getItem(THEME_KEY);
-        var theme =
-          savedTheme === "light" || savedTheme === "dark"
-            ? savedTheme
-            : window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light";
+        // Clear legacy manual theme so OS preference is the source of truth
+        try {
+          localStorage.removeItem("timg-theme");
+        } catch (e2) {}
+        var theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
-
-        var savedMotion = localStorage.getItem(MOTION_KEY);
-        var reduce =
-          savedMotion === "reduce"
-            ? true
-            : savedMotion === "full"
-              ? false
-              : window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (reduce) root.classList.add("reduce-motion");
-        else root.classList.add("motion-full");
 
         // Enable JS stylesheet path early so reveals don't flash fully-visible then hide
         root.classList.add("js");
@@ -78,7 +66,7 @@
 <body>
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 
-  <!-- Top controls: language + theme + motion -->
+  <!-- Top controls: language + theme -->
   <header class="top-bar" role="banner">
     <div class="top-bar__inner">
       <nav class="control-cluster" data-controls aria-label="Preferences" data-i18n-aria="a11y.siteControls">
@@ -150,24 +138,6 @@
                   </svg>
                 </span>
                 <span class="pref-btn__label" data-i18n="a11y.themeShort">Appearance</span>
-              </button>
-              <button
-                type="button"
-                class="pref-btn"
-                id="motion-toggle"
-                aria-pressed="false"
-                data-i18n-aria="a11y.motionToggle"
-                aria-label="Toggle reduced motion"
-                title="Reduce motion"
-              >
-                <span class="pref-btn__icon" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" focusable="false">
-                    <path d="M1.5 10.5c1.5-2.4 3-3.6 4.7-3.6s3.2 1.2 4.7 3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M1.5 6.5c1.6-2.2 3.2-3.3 5-3.3s3.4 1.1 5 3.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-                    <path class="motion-slash" d="M3 3l10 10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-                  </svg>
-                </span>
-                <span class="pref-btn__label" data-i18n="a11y.motionShort">Reduce motion</span>
               </button>
             </div>
           </div>
@@ -329,10 +299,20 @@
                 </svg>
               </span>
             </div>
-            <div class="featured-card__visual" aria-hidden="true">
-              <div class="featured-card__orb featured-card__orb--1"></div>
-              <div class="featured-card__orb featured-card__orb--2"></div>
-              <div class="featured-card__orb featured-card__orb--3"></div>
+            <div class="featured-card__visual featured-card__visual--usa" aria-hidden="true">
+              <svg class="featured-art" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="12" y="18" width="176" height="124" rx="8" fill="var(--bg)" stroke="var(--line)" stroke-width="2"/>
+                <path d="M28 110 L58 72 L82 92 L118 48 L148 78 L172 58 L172 122 L28 122 Z" fill="var(--accent-soft)" stroke="var(--line)" stroke-width="1.75" stroke-linejoin="round"/>
+                <circle cx="148" cy="42" r="14" fill="var(--accent)" stroke="var(--line)" stroke-width="1.75"/>
+                <path d="M40 122h120" stroke="var(--line)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M52 122v-10M92 122v-16M132 122v-12" stroke="var(--line)" stroke-width="1.75" stroke-linecap="round"/>
+                <rect x="24" y="28" width="36" height="22" rx="3" fill="var(--accent)" stroke="var(--line)" stroke-width="1.5"/>
+                <circle cx="32" cy="35" r="1.5" fill="var(--bg)"/>
+                <circle cx="40" cy="35" r="1.5" fill="var(--bg)"/>
+                <circle cx="48" cy="35" r="1.5" fill="var(--bg)"/>
+                <circle cx="36" cy="42" r="1.5" fill="var(--bg)"/>
+                <circle cx="44" cy="42" r="1.5" fill="var(--bg)"/>
+              </svg>
             </div>
           </a>
 
@@ -357,9 +337,50 @@
               </span>
             </div>
             <div class="featured-card__visual featured-card__visual--japan" aria-hidden="true">
-              <div class="featured-card__orb featured-card__orb--1"></div>
-              <div class="featured-card__orb featured-card__orb--2"></div>
-              <div class="featured-card__orb featured-card__orb--3"></div>
+              <svg class="featured-art" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="12" y="18" width="176" height="124" rx="8" fill="var(--bg)" stroke="var(--line)" stroke-width="2"/>
+                <circle cx="100" cy="70" r="28" fill="var(--accent)" stroke="var(--line)" stroke-width="1.75" opacity="0.9"/>
+                <path d="M28 118c18-14 36-14 54 0s36 14 54 0 36-14 54 0" stroke="var(--line)" stroke-width="1.75" stroke-linecap="round" fill="none"/>
+                <path d="M28 128c18-14 36-14 54 0s36 14 54 0 36-14 54 0" stroke="var(--line)" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.55"/>
+                <path d="M70 100 L100 48 L130 100 Z" fill="var(--bg-card)" stroke="var(--line)" stroke-width="1.75" stroke-linejoin="round"/>
+                <path d="M88 100 V112 M112 100 V112" stroke="var(--line)" stroke-width="1.75" stroke-linecap="round"/>
+                <path d="M78 72 H122" stroke="var(--line)" stroke-width="1.75" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </a>
+
+          <a
+            class="featured-card featured-card--kit reveal reveal-delay-2"
+            href="https://tgthms.github.io/kit/en/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-describedby="links-heading"
+          >
+            <div class="featured-card__badge featured-card__badge--alt" data-i18n="links.project">Project</div>
+            <div class="featured-card__content">
+              <h3 class="featured-card__title" data-i18n="links.kit.title">Kit</h3>
+              <p class="featured-card__desc" data-i18n="links.kit.desc">
+                Private on-device tools for PDF, image, audio, and text — no account, no upload.
+              </p>
+              <span class="featured-card__cta">
+                <span data-i18n="links.open">Open project</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+            <div class="featured-card__visual featured-card__visual--kit" aria-hidden="true">
+              <svg class="featured-art" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="12" y="18" width="176" height="124" rx="8" fill="var(--bg)" stroke="var(--line)" stroke-width="2"/>
+                <rect x="28" y="36" width="52" height="40" rx="6" fill="var(--bg-card)" stroke="var(--line)" stroke-width="1.75"/>
+                <path d="M38 48h24M38 56h16" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+                <rect x="92" y="36" width="52" height="40" rx="6" fill="var(--accent-soft)" stroke="var(--line)" stroke-width="1.75"/>
+                <circle cx="118" cy="56" r="10" stroke="var(--line)" stroke-width="1.75"/>
+                <path d="M118 50v12M112 56h12" stroke="var(--line)" stroke-width="1.5" stroke-linecap="round"/>
+                <rect x="60" y="88" width="80" height="36" rx="6" fill="var(--bg-card)" stroke="var(--line)" stroke-width="1.75"/>
+                <path d="M74 100h28M74 108h20" stroke="var(--line)" stroke-width="1.75" stroke-linecap="round"/>
+                <rect x="118" y="98" width="12" height="12" rx="2" fill="var(--accent)" stroke="var(--line)" stroke-width="1.25"/>
+              </svg>
             </div>
           </a>
         </div>
@@ -425,14 +446,9 @@
               </span>
             </a>
           </li>
-          <!-- Duolingo friend QR — image kept contain + white matte for scan reliability -->
+          <!-- Duolingo friend QR — full code visible; click QR for large view -->
           <li class="reveal" style="--stagger: 2">
-            <a
-              class="duolingo-card"
-              href="https://www.duolingo.com/profile/AAPL.TimGong"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <div class="duolingo-card">
               <div class="duolingo-card__body">
                 <div class="duolingo-card__header">
                   <div class="duolingo-card__icon" aria-hidden="true">D</div>
@@ -442,24 +458,113 @@
                   </div>
                 </div>
                 <p class="duolingo-card__hint" data-i18n="links.duolingo.hint">Scan the code in the Duolingo app to add me</p>
+                <a
+                  class="duolingo-card__profile"
+                  href="https://www.duolingo.com/profile/AAPL.TimGong"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span data-i18n="links.duolingo.profile">Open profile</span>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
               </div>
-              <div class="duolingo-card__frame">
-                <img
-                  class="duolingo-card__img"
-                  src="assets/duolingo-qr.jpg"
-                  alt="Duolingo QR code for Tim G, @AAPL.TimGong"
-                  width="936"
-                  height="1229"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </a>
+              <button
+                type="button"
+                class="duolingo-card__qr"
+                id="duolingo-qr-open"
+                aria-haspopup="dialog"
+                aria-controls="duolingo-qr-modal"
+                data-i18n-aria="links.duolingo.enlarge"
+                aria-label="View full QR code"
+              >
+                <span class="duolingo-card__frame">
+                  <img
+                    class="duolingo-card__img duolingo-card__img--dark"
+                    src="assets/duolingo-qr.jpg"
+                    alt=""
+                    width="936"
+                    height="1229"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <img
+                    class="duolingo-card__img duolingo-card__img--light"
+                    src="assets/duolingo-qr-light.jpg"
+                    alt=""
+                    width="936"
+                    height="1229"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </span>
+                <span class="duolingo-card__expand" data-i18n="links.duolingo.enlargeShort">Enlarge</span>
+              </button>
+            </div>
           </li>
         </ul>
       </div>
     </section>
   </main>
+
+  <!-- Duolingo QR large view -->
+  <div
+    class="qr-modal"
+    id="duolingo-qr-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="duolingo-qr-modal-title"
+    hidden
+  >
+    <div class="qr-modal__backdrop" data-qr-close tabindex="-1"></div>
+    <div class="qr-modal__panel" role="document">
+      <div class="qr-modal__top">
+        <h2 class="qr-modal__title" id="duolingo-qr-modal-title" data-i18n="links.duolingo.modalTitle">Duolingo QR</h2>
+        <button
+          type="button"
+          class="qr-modal__close"
+          data-qr-close
+          data-i18n-aria="links.duolingo.close"
+          aria-label="Close"
+        >
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <p class="qr-modal__hint" data-i18n="links.duolingo.hint">Scan the code in the Duolingo app to add me</p>
+      <div class="qr-modal__frame">
+        <img
+          class="qr-modal__img qr-modal__img--dark"
+          src="assets/duolingo-qr.jpg"
+          alt="Duolingo QR code for Tim G, @AAPL.TimGong"
+          width="936"
+          height="1229"
+          decoding="async"
+        />
+        <img
+          class="qr-modal__img qr-modal__img--light"
+          src="assets/duolingo-qr-light.jpg"
+          alt="Duolingo QR code for Tim G, @AAPL.TimGong"
+          width="936"
+          height="1229"
+          decoding="async"
+        />
+      </div>
+      <a
+        class="qr-modal__profile"
+        href="https://www.duolingo.com/profile/AAPL.TimGong"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span data-i18n="links.duolingo.profile">Open profile</span>
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
 
   <!-- 5. Footer -->
   <footer class="footer" id="footer">

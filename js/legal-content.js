@@ -19,7 +19,7 @@ const LEGAL = {
           title: "Overview",
           paragraphs: [
             "This Site is a personal, static landing page operated by Tim G (“I,” “me,” or “we”). It is designed to introduce me and link to projects and profiles elsewhere. It is not an online store, social network, or account-based service.",
-            "I aim to collect as little information as possible. Much of what improves your visit—language, appearance, and motion preferences—stays on your device unless you choose to contact me.",
+            "I aim to collect as little information as possible. Much of what improves your visit—language and appearance preferences—stays on your device unless you choose to contact me.",
           ],
         },
         {
@@ -27,7 +27,7 @@ const LEGAL = {
           title: "Information We Handle",
           paragraphs: [
             "Personal information you choose to send. If you email contact.timg@icloud.com (or another address I publish), I receive whatever you include in that message—such as your email address, name, and message content. I use that information only to respond and, if needed, to keep a record of the conversation.",
-            "Preferences stored on your device. The Site may save settings in your browser’s local storage, including language choice, light or dark appearance, and reduced-motion preference. These values stay on your device and are not sent to a personal data server operated by me as part of the Site’s normal operation.",
+            "Preferences stored on your device. The Site may save your language choice in your browser’s local storage. Appearance follows your device’s light/dark setting (with an optional temporary override while the page is open). These values stay on your device and are not sent to a personal data server operated by me as part of the Site’s normal operation.",
             "Technical data processed by hosting. Like most websites, when you load the Site your browser communicates with the host (for example, GitHub Pages or a similar provider). That process typically involves standard technical data such as IP address, browser type, device or OS information, referring URL, and timestamps. That processing is performed by the host under its own systems and policies. I do not operate a separate analytics dashboard on this Site unless one is clearly disclosed here in a future update.",
           ],
         },
@@ -55,7 +55,7 @@ const LEGAL = {
           title: "Cookies & Local Storage",
           paragraphs: [
             "This Site is built to rely primarily on local storage for preferences rather than advertising cookies. Your browser may still send routine technical data to the host as part of normal web requests.",
-            "You can clear site data, block storage, or use private browsing in your browser settings. Doing so may reset language, theme, or motion preferences.",
+            "You can clear site data, block storage, or use private browsing in your browser settings. Doing so may reset language or theme preferences.",
           ],
         },
         {
@@ -79,7 +79,7 @@ const LEGAL = {
           paragraphs: [
             "Depending on where you live, you may have rights to access, correct, delete, or restrict certain personal information, or to object to certain processing. Because this Site minimizes collection, many requests relate to email correspondence or host logs held by providers.",
             "To make a request, email contact.timg@icloud.com. I will respond within a reasonable time.",
-            "You can control local preferences anytime using the language, theme, and motion controls on the Site, or by clearing browser storage.",
+            "You can control local preferences anytime using the language and theme controls on the Site, or by clearing browser storage.",
           ],
         },
         {
@@ -247,7 +247,7 @@ const LEGAL = {
           title: "Qué es este Sitio",
           paragraphs: [
             "Este Sitio es una página personal estática operada por Tim G (en adelante, «yo» o «nosotros»). Su finalidad es presentarme y facilitar enlaces a proyectos y perfiles en otros lugares. No es una tienda en línea, una red social ni un servicio basado en cuentas.",
-            "Me esfuerzo por recopilar solo la información necesaria. Gran parte de lo que mejora tu experiencia —idioma, aspecto y preferencia de menos movimiento— permanece en tu dispositivo, salvo que decidas contactarme.",
+            "Me esfuerzo por recopilar solo la información necesaria. Gran parte de lo que mejora tu experiencia —idioma y aspecto— permanece en tu dispositivo, salvo que decidas contactarme.",
           ],
         },
         {
@@ -255,7 +255,7 @@ const LEGAL = {
           title: "Datos personales que se tratan",
           paragraphs: [
             "Información que envías por tu cuenta. Si escribes a contact.timg@icloud.com (u otra dirección que publique), recibo lo que incluyas en el mensaje —por ejemplo, tu dirección de correo, nombre y contenido—. Utilizo esa información únicamente para responder y, si procede, conservar un registro razonable de la conversación.",
-            "Preferencias guardadas en tu dispositivo. El Sitio puede guardar ajustes en el almacenamiento local del navegador, como el idioma, el tema claro u oscuro y la preferencia de menos movimiento. Esos valores se quedan en tu dispositivo y, en el funcionamiento habitual del Sitio, no se envían a un servidor de datos personales operado por mí.",
+            "Preferencias guardadas en tu dispositivo. El Sitio puede guardar ajustes en el almacenamiento local del navegador, como el idioma y el tema claro u oscuro. Esos valores se quedan en tu dispositivo y, en el funcionamiento habitual del Sitio, no se envían a un servidor de datos personales operado por mí.",
             "Datos técnicos del alojamiento. Como ocurre en la mayoría de sitios web, al cargar el Sitio tu navegador se comunica con el proveedor de alojamiento (por ejemplo, GitHub Pages u otro similar). Ese proceso suele incluir datos técnicos habituales como dirección IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas de tiempo. Ese tratamiento lo realiza el proveedor conforme a sus propios sistemas y políticas. No opero un panel de analítica propio en este Sitio, salvo que se indique de forma expresa en una actualización futura de esta Política.",
           ],
         },
@@ -283,7 +283,7 @@ const LEGAL = {
           title: "Cookies y almacenamiento local",
           paragraphs: [
             "Este Sitio está pensado para basarse principalmente en el almacenamiento local para las preferencias, no en cookies publicitarias. Aun así, tu navegador puede enviar datos técnicos habituales al alojamiento como parte de las peticiones web normales.",
-            "Puedes borrar los datos del sitio, bloquear el almacenamiento o usar la navegación privada en la configuración de tu navegador. Al hacerlo, es posible que se restablezcan el idioma, el tema o la preferencia de movimiento.",
+            "Puedes borrar los datos del sitio, bloquear el almacenamiento o usar la navegación privada en la configuración de tu navegador. Al hacerlo, es posible que se restablezcan el idioma o el tema.",
           ],
         },
         {
@@ -307,7 +307,7 @@ const LEGAL = {
           paragraphs: [
             "Según el lugar donde vivas, puedes tener derecho a conocer, acceder, corregir, transferir, limitar el tratamiento o eliminar determinados datos personales, u oponerte a ciertos tratamientos. Como este Sitio minimiza la recopilación, muchas solicitudes se refieren a la correspondencia por correo o a registros del alojamiento en poder de proveedores.",
             "Para ejercer tus derechos, escribe a contact.timg@icloud.com. Responderé en un plazo razonable.",
-            "Puedes controlar en cualquier momento las preferencias locales con los selectores de idioma, tema y movimiento del Sitio, o borrando el almacenamiento del navegador.",
+            "Puedes controlar en cualquier momento las preferencias locales con los selectores de idioma y tema del Sitio, o borrando el almacenamiento del navegador.",
           ],
         },
         {
@@ -475,7 +475,7 @@ const LEGAL = {
           title: "本网站简介",
           paragraphs: [
             "本网站是由 Tim G（以下简称“我”或“我们”）运营的个人静态落地页，用于自我介绍并链接至其他项目与主页。它不是网店、社交网络，也不是需要账户的服务。",
-            "我们深信，你可以获得出色的浏览体验，同时有效保护隐私。因此，我们会努力只收集必要的信息。语言、外观与减少动态效果等偏好主要保存在你的设备上，除非你选择主动联系我们。",
+            "我们深信，你可以获得出色的浏览体验，同时有效保护隐私。因此，我们会努力只收集必要的信息。语言与外观等偏好主要保存在你的设备上，除非你选择主动联系我们。",
           ],
         },
         {
@@ -483,7 +483,7 @@ const LEGAL = {
           title: "我们处理的个人数据",
           paragraphs: [
             "你主动提供的信息。若你发送邮件至 contact.timg@icloud.com（或我公布的其他地址），我们将收到你在邮件中提供的内容，例如电子邮件地址、姓名与正文。上述信息仅用于回复，并在必要时合理保留通信记录。",
-            "保存在你设备上的偏好。本网站可能使用浏览器的本地存储保存语言选择、浅色或深色外观，以及减少动态效果等设置。这些数值保留在你的设备上；在本网站正常运行过程中，不会发送到由我运营的个人数据服务器。",
+            "保存在你设备上的偏好。本网站可能使用浏览器的本地存储保存语言选择，以及浅色或深色外观等设置。这些数值保留在你的设备上；在本网站正常运行过程中，不会发送到由我运营的个人数据服务器。",
             "托管产生的技术数据。与大多数网站一样，当你加载本网站时，浏览器会与托管服务提供商（例如 GitHub Pages 或类似服务）通信。该过程通常涉及 IP 地址、浏览器类型、设备或操作系统信息、来源网址与时间戳等常规技术数据。相关处理由托管方按其自身系统与政策执行。除非日后在本政策中明确说明，本网站不单独运营分析后台。",
           ],
         },
@@ -511,7 +511,7 @@ const LEGAL = {
           title: "Cookie 与本地存储",
           paragraphs: [
             "本网站主要以本地存储保存偏好，而非广告类 Cookie。作为正常网络请求的一部分，你的浏览器仍可能向托管方发送常规技术数据。",
-            "你可以在浏览器设置中清除网站数据、阻止存储，或使用无密浏览。这样做可能会重置语言、主题或动态效果偏好。",
+            "你可以在浏览器设置中清除网站数据、阻止存储，或使用无密浏览。这样做可能会重置语言或主题偏好。",
           ],
         },
         {
@@ -535,7 +535,7 @@ const LEGAL = {
           paragraphs: [
             "我们尊重你获知、访问、更正、传输、限制处理与删除个人数据的能力（具体视你所在地适用法律而定）。由于本网站尽量减少收集，许多请求可能涉及邮件通信，或由托管方持有的日志。",
             "如需提出请求，请发送邮件至 contact.timg@icloud.com。我们将在合理时间内回复。",
-            "你可随时通过本网站的语言、主题与动态效果控件管理本地偏好，或清除浏览器存储。",
+            "你可随时通过本网站的语言与主题控件管理本地偏好，或清除浏览器存储。",
           ],
         },
         {
@@ -702,7 +702,7 @@ const LEGAL = {
           title: "本サイトについて",
           paragraphs: [
             "本サイトは、Tim G（以下「私」または「当方」）が運営する静的な個人向けランディングページであり、自己紹介と他のプロジェクトやプロフィールへのリンクを目的としています。オンラインストア、ソーシャルネットワーク、またはアカウント制のサービスではありません。",
-            "お客様により良い体験を提供しつつプライバシーを守るため、必要最小限の情報のみを扱うよう努めています。言語、表示、動きを減らす設定など、体験を向上させる多くの設定は、お客様が連絡を選択されない限り、主にお客様の端末内に留まります。",
+            "お客様により良い体験を提供しつつプライバシーを守るため、必要最小限の情報のみを扱うよう努めています。言語や表示など、体験を向上させる多くの設定は、お客様が連絡を選択されない限り、主にお客様の端末内に留まります。",
           ],
         },
         {
@@ -710,7 +710,7 @@ const LEGAL = {
           title: "取り扱う個人データ",
           paragraphs: [
             "お客様が自ら送付する情報。contact.timg@icloud.com（または当方が公開する他のアドレス）へメールを送信された場合、メールアドレス、お名前、本文など、メッセージに含まれる内容を受領します。これらの情報は返信のため、および必要に応じてやり取りの記録を合理的に保持するためにのみ使用します。",
-            "端末に保存される設定。本サイトは、ブラウザのローカルストレージに、言語、ライト／ダーク表示、動きを減らす設定などを保存することがあります。これらの値はお客様の端末に留まり、本サイトの通常の動作において、当方が運営する個人データ用サーバーへは送信されません。",
+            "端末に保存される設定。本サイトは、ブラウザのローカルストレージに、言語やライト／ダーク表示などを保存することがあります。これらの値はお客様の端末に留まり、本サイトの通常の動作において、当方が運営する個人データ用サーバーへは送信されません。",
             "ホスティングにより処理される技術データ。一般的なウェブサイトと同様、本サイトを読み込む際、ブラウザはホスト（例：GitHub Pages など）と通信します。この過程では通常、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、タイムスタンプなどの標準的な技術データが扱われます。当該処理はホストのシステムおよび方針に従って行われます。今後本ポリシーで明示しない限り、本サイト上で独自の分析ダッシュボードは運用していません。",
           ],
         },
@@ -738,7 +738,7 @@ const LEGAL = {
           title: "Cookie およびローカルストレージ",
           paragraphs: [
             "本サイトは、広告用 Cookie ではなく、設定のためのローカルストレージを主に使用するよう設計されています。通常のウェブリクエストの一環として、ブラウザからホストへ技術データが送られる場合があります。",
-            "ブラウザ設定でサイトデータの削除、ストレージのブロック、またはプライベートブラウズをご利用いただけます。その場合、言語・テーマ・モーション設定がリセットされることがあります。",
+            "ブラウザ設定でサイトデータの削除、ストレージのブロック、またはプライベートブラウズをご利用いただけます。その場合、言語やテーマ設定がリセットされることがあります。",
           ],
         },
         {
@@ -762,7 +762,7 @@ const LEGAL = {
           paragraphs: [
             "お住まいの地域により、個人データに関する周知、アクセス、訂正、移転、処理の制限、削除、または特定の処理への異議申立てなどの権利が認められる場合があります。本サイトは収集を最小限にしているため、多くのご請求はメールのやり取り、またはプロバイダが保持するホストログに関するものとなります。",
             "権利行使のご請求は contact.timg@icloud.com までメールでご連絡ください。合理的な期間内に対応します。",
-            "言語・テーマ・モーションのコントロール、またはブラウザストレージの削除により、いつでも端末上の設定を管理できます。",
+            "言語・テーマのコントロール、またはブラウザストレージの削除により、いつでも端末上の設定を管理できます。",
           ],
         },
         {
