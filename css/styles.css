@@ -419,8 +419,16 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
     border: var(--border-w) solid var(--line);
     box-shadow: 2px 2px 0 var(--line);
     border-radius: var(--radius-sm);
+    overflow: hidden;
   }
-  .pref-btn__label { display: none; }
+  /* Beat theme-specific label rules — desktop is icon-only */
+  .pref-btn__label,
+  html[data-theme="light"] #theme-toggle .pref-btn__label--light,
+  html[data-theme="light"] #theme-toggle .pref-btn__label--dark,
+  html[data-theme="dark"] #theme-toggle .pref-btn__label--light,
+  html[data-theme="dark"] #theme-toggle .pref-btn__label--dark {
+    display: none !important;
+  }
   .pref-btn:hover {
     background: var(--accent-soft);
   }
