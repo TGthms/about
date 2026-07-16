@@ -80,9 +80,9 @@ const TRANSLATIONS = {
         href: "https://www.instagram.com/timg.ins/",
         mode: "instagram",
       },
-      placeholder2: {
-        label: "Coming soon",
-        sub: "[Add another link]",
+      duolingo: {
+        label: "Duolingo",
+        hint: "Scan the code in the Duolingo app to add me",
       },
     },
     footer: {
@@ -171,9 +171,9 @@ const TRANSLATIONS = {
         href: "https://www.instagram.com/timg.ins/",
         mode: "instagram",
       },
-      placeholder2: {
-        label: "Próximamente",
-        sub: "[Añadir otro enlace]",
+      duolingo: {
+        label: "Duolingo",
+        hint: "Escanea el código en la app de Duolingo para añadirme",
       },
     },
     footer: {
@@ -262,9 +262,9 @@ const TRANSLATIONS = {
         href: null,
         mode: "wechat",
       },
-      placeholder2: {
-        label: "即将推出",
-        sub: "[...]",
+      duolingo: {
+        label: "多邻国",
+        hint: "在多邻国 App 中扫描二维码添加我",
       },
     },
     footer: {
@@ -353,9 +353,9 @@ const TRANSLATIONS = {
         href: "https://www.instagram.com/timg.ins/",
         mode: "instagram",
       },
-      placeholder2: {
-        label: "近日公開",
-        sub: "[リンクを追加]",
+      duolingo: {
+        label: "Duolingo",
+        hint: "Duolingoアプリでコードをスキャンして追加",
       },
     },
     footer: {
@@ -408,19 +408,6 @@ function isDesktopControls() {
 }
 
 /**
- * Close desktop language dropdowns only.
- */
-function closeLanguageMenus() {
-  document.querySelectorAll("[data-lang-menu]").forEach((menu) => {
-    const toggle = menu.querySelector(".lang-toggle");
-    const list = menu.querySelector(".lang-menu");
-    if (toggle) toggle.setAttribute("aria-expanded", "false");
-    // On mobile the chip list stays visible inside the sheet
-    if (list && isDesktopControls()) list.hidden = true;
-  });
-}
-
-/**
  * Close mobile preferences bottom sheet.
  */
 function closeControlsPanel() {
@@ -437,7 +424,6 @@ function closeControlsPanel() {
 
 /**
  * Wire mobile preferences: one button → solid bottom sheet + backdrop.
- * On desktop the panel is always shown via CSS.
  */
 function initControlsPanel() {
   const cluster = document.querySelector("[data-controls]");
@@ -453,15 +439,9 @@ function initControlsPanel() {
       cluster.classList.remove("is-open");
       trigger.setAttribute("aria-expanded", "false");
       document.body.classList.remove("controls-open");
-      // Desktop lang menu starts collapsed
-      const list = panel.querySelector(".lang-menu");
-      if (list) list.hidden = true;
     } else {
-      // Mobile: sheet closed; language chips always shown when sheet opens
       panel.hidden = true;
       if (backdrop) backdrop.hidden = true;
-      const list = panel.querySelector(".lang-menu");
-      if (list) list.hidden = false;
     }
   }
 
@@ -472,8 +452,6 @@ function initControlsPanel() {
     panel.hidden = !open;
     if (backdrop) backdrop.hidden = !open;
     document.body.classList.toggle("controls-open", open);
-    const list = panel.querySelector(".lang-menu");
-    if (list) list.hidden = false;
   }
 
   syncForViewport();
@@ -492,10 +470,7 @@ function initControlsPanel() {
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      setOpen(false);
-      closeLanguageMenus();
-    }
+    if (e.key === "Escape") setOpen(false);
   });
 
   if (window.matchMedia) {
@@ -509,49 +484,17 @@ function initControlsPanel() {
 }
 
 /**
- * Wire language selection (chips in mobile sheet / dropdown on desktop).
+ * Native <select> language control (browser/OS menu).
  */
 function initLanguageMenu(onSelect) {
-  const menus = document.querySelectorAll("[data-lang-menu]");
-  if (!menus.length) return;
+  const select = document.getElementById("lang-select");
+  if (!select) return;
 
-  menus.forEach((root) => {
-    const toggle = root.querySelector(".lang-toggle");
-    const list = root.querySelector(".lang-menu");
-    if (!list) return;
-
-    if (toggle) {
-      toggle.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (!isDesktopControls()) return;
-        const open = toggle.getAttribute("aria-expanded") === "true";
-        closeLanguageMenus();
-        if (!open) {
-          toggle.setAttribute("aria-expanded", "true");
-          list.hidden = false;
-        }
-      });
-    }
-
-    list.querySelectorAll(".lang-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const lang = btn.getAttribute("data-lang");
-        if (!lang) return;
-        closeLanguageMenus();
-        if (typeof onSelect === "function") {
-          onSelect(lang);
-        } else if (typeof applyLanguage === "function") {
-          applyLanguage(lang);
-        }
-      });
-    });
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!isDesktopControls()) return;
-    if (e.target.closest && e.target.closest("[data-lang-menu]")) return;
-    closeLanguageMenus();
+  select.addEventListener("change", () => {
+    const lang = select.value;
+    if (!lang) return;
+    if (typeof onSelect === "function") onSelect(lang);
+    else if (typeof applyLanguage === "function") applyLanguage(lang);
   });
 }
 
@@ -657,7 +600,7 @@ function applyLanguage(lang) {
     const value = getNested(pack, key);
     if (typeof value !== "string") return;
     el.setAttribute("aria-label", value);
-    if (el.matches("button, a.scroll-cue, .pref-btn, .lang-toggle")) {
+    if (el.matches("button, a.scroll-cue, .pref-btn, select")) {
       el.setAttribute("title", value);
     }
   });
@@ -691,19 +634,9 @@ function applyLanguage(lang) {
     }
   }
 
-  // Language menu: selected option + compact toggle label
-  document.querySelectorAll(".lang-btn").forEach((btn) => {
-    const isActive = btn.getAttribute("data-lang") === resolved;
-    btn.setAttribute("aria-selected", isActive ? "true" : "false");
-    btn.setAttribute("aria-pressed", isActive ? "true" : "false");
-  });
-
-  const label = LANG_LABELS[resolved] || LANG_LABELS.en;
-  document.querySelectorAll("[data-lang-current]").forEach((el) => {
-    el.textContent = label;
-  });
-
-  closeLanguageMenus();
+  // Native <select> stays in sync with active language
+  const select = document.getElementById("lang-select");
+  if (select && select.value !== resolved) select.value = resolved;
 
   try {
     localStorage.setItem(STORAGE_KEY, resolved);

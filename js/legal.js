@@ -23,24 +23,8 @@
   }
 
   function setLangButtons(lang) {
-    var label =
-      typeof LANG_LABELS !== "undefined" && LANG_LABELS[lang]
-        ? LANG_LABELS[lang]
-        : lang === "zh"
-          ? "中文"
-          : lang === "ja"
-            ? "日本語"
-            : lang === "es"
-              ? "ES"
-              : "EN";
-    document.querySelectorAll(".lang-btn").forEach(function (btn) {
-      var active = btn.getAttribute("data-lang") === lang;
-      btn.setAttribute("aria-selected", active ? "true" : "false");
-      btn.setAttribute("aria-pressed", active ? "true" : "false");
-    });
-    document.querySelectorAll("[data-lang-current]").forEach(function (el) {
-      el.textContent = label;
-    });
+    var select = document.getElementById("lang-select");
+    if (select && select.value !== lang) select.value = lang;
   }
 
   function render(lang) {
@@ -198,7 +182,7 @@
     document.documentElement.style.colorScheme = resolved;
     var meta = document.getElementById("meta-theme-color");
     if (meta) {
-      meta.setAttribute("content", resolved === "dark" ? "#0f1114" : "#f7f5f2");
+      meta.setAttribute("content", resolved === "dark" ? "#161412" : "#f3eee4");
     }
     var btn = document.getElementById("theme-toggle");
     if (btn) {

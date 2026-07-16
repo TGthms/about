@@ -73,7 +73,7 @@
 
     const meta = document.getElementById("meta-theme-color");
     if (meta) {
-      meta.setAttribute("content", resolved === "dark" ? "#0f1114" : "#f7f5f2");
+      meta.setAttribute("content", resolved === "dark" ? "#161412" : "#f3eee4");
     }
 
     const btn = document.getElementById("theme-toggle");

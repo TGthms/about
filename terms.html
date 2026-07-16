@@ -8,7 +8,7 @@
   <meta name="description" content="Terms governing use of Tim G’s personal hub website." />
   <meta name="author" content="Tim G" />
   <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#f7f5f2" id="meta-theme-color" />
+  <meta name="theme-color" content="#f3eee4" id="meta-theme-color" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/legal.css" />
@@ -81,37 +81,19 @@
 
           <div class="controls-section">
             <p class="controls-section__label" data-i18n="a11y.selectLanguage">Language</p>
-            <div class="lang-switcher" data-lang-menu>
-              <button
-                type="button"
-                class="lang-toggle"
-                id="lang-toggle"
-                aria-haspopup="listbox"
-                aria-expanded="false"
-                aria-controls="lang-menu"
+            <div class="lang-switcher">
+              <label class="visually-hidden" for="lang-select" data-i18n="a11y.selectLanguage">Language</label>
+              <select
+                id="lang-select"
+                class="lang-select"
                 data-i18n-aria="a11y.selectLanguage"
-                aria-label="Select language"
-                title="Language"
+                aria-label="Language"
               >
-                <span class="lang-toggle__code" data-lang-current>EN</span>
-                <svg class="lang-toggle__chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <ul class="lang-menu" id="lang-menu" role="listbox">
-                <li role="none">
-                  <button type="button" class="lang-btn" role="option" data-lang="en" aria-selected="true">EN</button>
-                </li>
-                <li role="none">
-                  <button type="button" class="lang-btn" role="option" data-lang="es" aria-selected="false">ES</button>
-                </li>
-                <li role="none">
-                  <button type="button" class="lang-btn" role="option" data-lang="zh" aria-selected="false">中文</button>
-                </li>
-                <li role="none">
-                  <button type="button" class="lang-btn" role="option" data-lang="ja" aria-selected="false">日本語</button>
-                </li>
-              </ul>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+                <option value="zh">中文</option>
+                <option value="ja">日本語</option>
+              </select>
             </div>
           </div>
 
