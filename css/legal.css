@@ -70,7 +70,7 @@
 
 .legal-related a.is-current {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
 }
 
 .legal-hero {
@@ -122,6 +122,34 @@
   border: var(--border-w) solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+html[data-theme="dark"] .legal-toc-block {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--ink) 4%, var(--bg-card)) 0%,
+      var(--bg-card) 50%
+    );
+}
+
+html[data-theme="dark"] .legal-toc__link {
+  background: color-mix(in srgb, var(--ink) 3%, var(--bg));
+  border-color: color-mix(in srgb, var(--line) 75%, transparent);
+}
+
+html[data-theme="dark"] .legal-toc__link:hover {
+  background: var(--accent-soft);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] .legal-hero__label {
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+html[data-theme="dark"] .legal-section + .legal-section {
+  border-top-color: color-mix(in srgb, var(--line) 45%, transparent);
 }
 
 .legal-toc-block__heading {

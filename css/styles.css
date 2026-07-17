@@ -35,6 +35,7 @@
   --line: #12100e;
   --accent: #c45c3e;
   --accent-soft: rgba(196, 92, 62, 0.14);
+  --on-accent: #f3eee4; /* paper text on terracotta (light) */
   --shadow: 3px 3px 0 #12100e;
   --shadow-hover: 5px 5px 0 #12100e;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
@@ -45,17 +46,22 @@
   --dur-enter: 480ms;
 }
 
+/*
+  Dark — invert the same craft language, not a flat charcoal wash:
+  deep espresso page, lifted warm cards, bone-hard edges, true black offsets.
+*/
 html[data-theme="dark"] {
-  --bg: #12100e;
-  --bg-card: #1f1c19;
-  --ink: #f6f1e8;
-  --mute: #b8afa4;
-  --faint: #857c72;
-  --line: #cfc6b8;
-  --accent: #e89072;
-  --accent-soft: rgba(232, 144, 114, 0.2);
-  --shadow: 3px 3px 0 #060504;
-  --shadow-hover: 5px 5px 0 #060504;
+  --bg: #13110f;
+  --bg-card: #1e1b18;
+  --ink: #f5f0e6;
+  --mute: #b7aea3;
+  --faint: #8f867c;
+  --line: #e6dfd3;
+  --accent: #e07a56;
+  --accent-soft: rgba(224, 122, 86, 0.18);
+  --on-accent: #12100e; /* deep ink on terracotta for dark contrast */
+  --shadow: 3px 3px 0 #050403;
+  --shadow-hover: 5px 5px 0 #050403;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
 }
 
@@ -89,11 +95,11 @@ body {
 }
 
 html[data-theme="dark"] body {
+  /* Mirror light: one soft accent wash + light grain — not a muddy triple stack */
   background-image:
-    radial-gradient(ellipse 110% 70% at 8% -5%, rgba(232, 144, 114, 0.14), transparent 52%),
-    radial-gradient(ellipse 90% 55% at 100% 100%, rgba(232, 144, 114, 0.07), transparent 48%),
-    linear-gradient(180deg, #171410 0%, var(--bg) 42%, #0e0c0b 100%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    radial-gradient(ellipse 120% 80% at 0% -15%, rgba(224, 122, 86, 0.12), transparent 52%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(224, 122, 86, 0.05), transparent 48%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 body.controls-open {
@@ -279,7 +285,7 @@ button {
 }
 
 html[data-theme="dark"] .lang-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23f3eee4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23e6dfd3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
 .lang-select:focus-visible {
@@ -415,7 +421,7 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
   padding: 6px 10px;
   border: var(--border-w) solid var(--line);
   box-shadow: 3px 3px 0 var(--line);
@@ -460,9 +466,11 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   border-radius: var(--radius-sm);
   transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.scroll-cue:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0 var(--line);
+@media (hover: hover) and (pointer: fine) {
+  .scroll-cue.reveal.is-visible:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--line);
+  }
 }
 
 /* ---------- Sections ---------- */
@@ -513,15 +521,17 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   box-shadow: 2px 2px 0 var(--line);
   border-radius: var(--radius);
   padding: var(--space-3);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  /* transform transition re-enabled after .reveal.is-visible settles */
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 @media (hover: hover) and (pointer: fine) {
-  .interest-card:hover {
+  /* Beats .reveal.is-visible (0,2,0) so every interest card lifts, not only the first */
+  .interest-card.reveal.is-visible:hover {
     transform: translate(-2px, -2px);
     box-shadow: 3px 3px 0 var(--line);
   }
 }
-.interest-card:active {
+.interest-card.reveal.is-visible:active {
   transform: translate(1px, 1px);
   box-shadow: 1px 1px 0 var(--line);
 }
@@ -578,12 +588,12 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  .featured-card:hover {
+  .featured-card.reveal.is-visible:hover {
     transform: translate(-3px, -3px);
     box-shadow: var(--shadow-hover);
   }
 }
-.featured-card:active {
+.featured-card.reveal.is-visible:active {
   transform: translate(1px, 1px);
   box-shadow: 2px 2px 0 var(--line);
 }
@@ -596,7 +606,7 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
   border: var(--border-w) solid var(--line);
   padding: 4px 10px;
   box-shadow: 2px 2px 0 var(--line);
@@ -763,22 +773,36 @@ a.link-card:active,
 }
 .footer__dot { opacity: 0.5; }
 
-/* Reveals */
+/* ---------- Scroll entrance ----------
+   Entrance uses opacity + translateY.
+   Once .is-visible, stagger delay is cleared so hover transforms work on every card.
+*/
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(16px);
   transition:
-    opacity var(--dur-enter) var(--ease),
-    transform var(--dur-enter) var(--ease);
-  transition-delay: calc(var(--stagger, 0) * 70ms);
+    opacity var(--dur-enter) var(--ease-out),
+    transform var(--dur-enter) var(--ease-out);
+  transition-delay: calc(var(--stagger, 0) * 60ms);
 }
 .reveal.is-visible {
   opacity: 1;
-  transform: none;
+  transform: translateY(0);
+  transition-delay: 0ms;
+  /* Keep transform in transition so hover lift animates smoothly */
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
 }
 .reveal-delay-1 { transition-delay: 70ms; }
 .reveal-delay-2 { transition-delay: 140ms; }
 .reveal-delay-3 { transition-delay: 210ms; }
+.reveal-delay-1.is-visible,
+.reveal-delay-2.is-visible,
+.reveal-delay-3.is-visible {
+  transition-delay: 0ms;
+}
 
 html:not(.js) .reveal,
 html.reveal-fallback .reveal {
@@ -794,8 +818,13 @@ html.reveal-fallback .reveal {
     transform: none !important;
     transition: none !important;
   }
-  * {
+  *,
+  *::before,
+  *::after {
     scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -1113,7 +1142,7 @@ html[data-theme="dark"] .qr-modal__img--dark { display: block; }
   border: var(--border-w) solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--accent);
-  color: #12100e;
+  color: var(--on-accent);
   font-size: 0.85rem;
   font-weight: 750;
   letter-spacing: 0.04em;
@@ -1130,34 +1159,143 @@ body.qr-modal-open {
   overflow: hidden;
 }
 
-/* Dark-mode surface polish — lift cards and soften pure-black voids */
+/* ---------- Dark theme component polish ---------- */
+/* Hard craft edges like light: bone border + true-black offset, slight lift */
 html[data-theme="dark"] .interest-card,
 html[data-theme="dark"] .featured-card,
 html[data-theme="dark"] .link-card,
 html[data-theme="dark"] .duolingo-card,
-html[data-theme="dark"] .controls-panel,
+html[data-theme="dark"] .scroll-cue,
+html[data-theme="dark"] .controls-trigger,
 html[data-theme="dark"] .lang-select,
 html[data-theme="dark"] .pref-btn,
-html[data-theme="dark"] .qr-modal__panel {
-  box-shadow:
-    var(--shadow),
-    0 0 0 1px color-mix(in srgb, var(--ink) 4%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent);
+html[data-theme="dark"] .qr-modal__panel,
+html[data-theme="dark"] .qr-modal__close {
+  border-color: var(--line);
+  box-shadow: var(--shadow);
 }
 
-html[data-theme="dark"] .featured-card:hover,
-html[data-theme="dark"] .link-card:hover {
-  box-shadow:
-    var(--shadow-hover),
-    0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--ink) 8%, transparent);
+html[data-theme="dark"] .featured-card,
+html[data-theme="dark"] .link-card,
+html[data-theme="dark"] .duolingo-card {
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--ink) 4%, var(--bg-card)) 0%,
+      var(--bg-card) 42%
+    );
 }
 
-html[data-theme="dark"] .hero__eyebrow,
-html[data-theme="dark"] .featured-card__badge {
-  color: #12100e;
+html[data-theme="dark"] .interest-card.reveal.is-visible:hover,
+html[data-theme="dark"] .scroll-cue.reveal.is-visible:hover,
+html[data-theme="dark"] .controls-trigger:hover {
+  box-shadow: 4px 4px 0 #050403;
 }
 
+html[data-theme="dark"] .featured-card.reveal.is-visible:hover,
+html[data-theme="dark"] .link-card:hover,
+html[data-theme="dark"] .duolingo-card__qr:hover .duolingo-card__frame {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Icon wells: warmer tint, clearer edge */
+html[data-theme="dark"] .interest-card__icon,
+html[data-theme="dark"] .link-card__icon,
+html[data-theme="dark"] .duolingo-card__icon {
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-card));
+  border-color: color-mix(in srgb, var(--line) 70%, var(--accent));
+  color: #f0a88a;
+}
+
+/* Section chip: keep high-contrast cream plate on dark (mirror light) */
+html[data-theme="dark"] .section__label {
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+/* Tagline bar + secondary text a touch brighter for long reads */
+html[data-theme="dark"] .hero__tagline {
+  border-left-color: var(--accent);
+  color: var(--mute);
+}
+html[data-theme="dark"] .about__text,
+html[data-theme="dark"] .interest-card__desc,
+html[data-theme="dark"] .featured-card__desc {
+  color: color-mix(in srgb, var(--mute) 92%, var(--ink));
+}
+
+/* Featured visual panels — more depth, less flat charcoal */
+html[data-theme="dark"] .featured-card__visual {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--ink) 3%, #181512);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 5%, transparent);
+}
+html[data-theme="dark"] .featured-card__visual--usa {
+  background:
+    radial-gradient(circle at 78% 28%, rgba(224, 122, 86, 0.22), transparent 44%),
+    linear-gradient(160deg, #2a221c 0%, #181512 70%);
+}
+html[data-theme="dark"] .featured-card__visual--japan {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(224, 122, 86, 0.2), transparent 50%),
+    linear-gradient(200deg, #241f1b 0%, #181512 75%);
+}
+html[data-theme="dark"] .featured-card__visual--kit {
+  background:
+    linear-gradient(135deg, rgba(224, 122, 86, 0.16) 0%, transparent 48%),
+    linear-gradient(0deg, #1c1916 0%, #181512 100%);
+}
+
+/* Controls expanded trigger: readable on accent */
+html[data-theme="dark"] .controls-trigger[aria-expanded="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-color: var(--line);
+}
+
+/* Footer divider + links */
+html[data-theme="dark"] .footer {
+  border-top-color: color-mix(in srgb, var(--line) 55%, transparent);
+}
+html[data-theme="dark"] .footer__legal a {
+  border-bottom-color: color-mix(in srgb, var(--line) 65%, transparent);
+}
+html[data-theme="dark"] .footer__legal a:hover {
+  color: #f0a88a;
+  border-bottom-color: #f0a88a;
+}
+html[data-theme="dark"] .footer__email {
+  color: #f0a88a;
+}
+
+/* QR / modal: crisp frame against dark UI */
+html[data-theme="dark"] .duolingo-card__frame,
+html[data-theme="dark"] .qr-modal__frame {
+  border-color: var(--line);
+  box-shadow: 3px 3px 0 #050403;
+}
 html[data-theme="dark"] .qr-modal__backdrop {
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(8, 6, 5, 0.78);
+}
+html[data-theme="dark"] .qr-modal__panel {
+  background: var(--bg-card);
+  border-color: var(--line);
+  box-shadow: 6px 6px 0 #050403;
+}
+
+/* Mobile prefs sheet */
+html[data-theme="dark"] .controls-panel {
+  background: var(--bg-card);
+  border-color: var(--line);
+  box-shadow: 0 -6px 0 #050403;
+}
+html[data-theme="dark"] .controls-backdrop:not([hidden]) {
+  background: rgba(8, 6, 5, 0.55);
+}
+
+/* Selection */
+html[data-theme="dark"] ::selection {
+  background: rgba(224, 122, 86, 0.35);
+  color: var(--ink);
 }

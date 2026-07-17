@@ -1,6 +1,6 @@
 /**
- * Home page behavior: theme, language, reveals, tilt, WeChat copy, QR modal.
- * Depends on js/i18n.js (loaded first).
+ * Home page interactions.
+ * Depends on js/i18n.js (theme, language, controls).
  */
 (function () {
   "use strict";
@@ -13,13 +13,13 @@
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  function isReduceMotion() {
+  function prefersReducedMotion() {
     return typeof systemPrefersReducedMotion === "function"
       ? systemPrefersReducedMotion()
       : false;
   }
 
-  // ---------- Theme + language + controls (shared) ----------
+  /* ---------- Shared prefs ---------- */
   if (typeof initTheme === "function") initTheme();
 
   var currentLang = "en";
@@ -30,13 +30,11 @@
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
-      if (typeof applyLanguage === "function") {
-        currentLang = applyLanguage(lang);
-      }
+      if (typeof applyLanguage === "function") currentLang = applyLanguage(lang);
     });
   }
 
-  // ---------- Scroll reveals ----------
+  /* ---------- Scroll entrance ---------- */
   function showAllReveals() {
     document.querySelectorAll(".reveal").forEach(function (el) {
       el.classList.add("is-visible");
@@ -44,13 +42,10 @@
   }
 
   function initReveals() {
-    if (isReduceMotion() || !("IntersectionObserver" in window)) {
+    if (prefersReducedMotion() || !("IntersectionObserver" in window)) {
       showAllReveals();
       return;
     }
-
-    var revealEls = document.querySelectorAll(".reveal");
-    var revealObserver = null;
 
     var heroReveals = document.querySelectorAll(".hero .reveal");
     requestAnimationFrame(function () {
@@ -58,10 +53,10 @@
         heroReveals.forEach(function (el) {
           el.classList.add("is-visible");
         });
-      }, 60);
+      }, 40);
     });
 
-    revealObserver = new IntersectionObserver(
+    var observer = new IntersectionObserver(
       function (entries, obs) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
@@ -72,19 +67,18 @@
       { root: null, rootMargin: "0px 0px 12% 0px", threshold: 0.01 }
     );
 
-    revealEls.forEach(function (el) {
-      if (el.closest(".hero")) return;
-      if (el.classList.contains("is-visible")) return;
-      revealObserver.observe(el);
+    document.querySelectorAll(".reveal").forEach(function (el) {
+      if (el.closest(".hero") || el.classList.contains("is-visible")) return;
+      observer.observe(el);
     });
 
+    /* Safety net for short viewports / fast scroll */
     window.setTimeout(function () {
+      var vh = window.innerHeight || document.documentElement.clientHeight;
       document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (el) {
-        var rect = el.getBoundingClientRect();
-        var vh = window.innerHeight || document.documentElement.clientHeight;
-        if (rect.top < vh * 1.25) {
+        if (el.getBoundingClientRect().top < vh * 1.25) {
           el.classList.add("is-visible");
-          if (revealObserver) revealObserver.unobserve(el);
+          observer.unobserve(el);
         }
       });
     }, 1200);
@@ -92,67 +86,12 @@
 
   initReveals();
 
-  // ---------- Interest card tilt ----------
-  var canTilt =
-    !isReduceMotion() &&
-    window.matchMedia &&
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-  if (canTilt) {
-    document.querySelectorAll(".interest-card").forEach(function (card) {
-      var maxTilt = 5;
-      var raf = 0;
-      var pending = null;
-
-      function applyTilt(e) {
-        pending = e;
-        if (raf) return;
-        raf = requestAnimationFrame(function () {
-          raf = 0;
-          if (!pending || isReduceMotion()) return;
-          var e2 = pending;
-          pending = null;
-          var rect = card.getBoundingClientRect();
-          if (!rect.width || !rect.height) return;
-          var x = (e2.clientX - rect.left) / rect.width;
-          var y = (e2.clientY - rect.top) / rect.height;
-          var tiltX = (0.5 - y) * maxTilt;
-          var tiltY = (x - 0.5) * maxTilt;
-          card.style.transform =
-            "perspective(800px) rotateX(" +
-            tiltX.toFixed(2) +
-            "deg) rotateY(" +
-            tiltY.toFixed(2) +
-            "deg) translateY(-4px) scale(1.02)";
-        });
-      }
-
-      card.addEventListener("pointermove", applyTilt);
-      card.addEventListener("pointerleave", function () {
-        pending = null;
-        card.style.transform = "";
-      });
-      card.addEventListener("pointerdown", function () {
-        if (isReduceMotion()) return;
-        card.style.transform = "perspective(800px) scale(0.98)";
-      });
-      card.addEventListener("pointerup", function (e) {
-        if (isReduceMotion()) {
-          card.style.transform = "";
-          return;
-        }
-        if (e.pointerType === "mouse") applyTilt(e);
-        else card.style.transform = "";
-      });
-    });
-  }
-
-  // ---------- WeChat ID copy ----------
+  /* ---------- WeChat ID copy (Chinese social card) ---------- */
   var socialCard = document.getElementById("social-card");
   if (socialCard) {
     var copyTimer = 0;
 
-    function getWeChatId() {
+    function weChatId() {
       var sub = socialCard.querySelector(".link-card__sub");
       var text = sub && sub.textContent ? sub.textContent.trim() : "";
       if (!text || text === "已复制" || text === "Copied") return WECHAT_ID;
@@ -175,15 +114,14 @@
         document.body.removeChild(ta);
         if (ok && onSuccess) onSuccess();
       } catch (_) {
-        /* leave ID visible if copy fails */
+        /* leave ID visible */
       }
     }
 
     function copyWeChatId() {
       if (socialCard.getAttribute("data-mode") !== "wechat") return;
-
       var sub = socialCard.querySelector(".link-card__sub");
-      var id = getWeChatId();
+      var id = weChatId();
 
       function showCopied() {
         socialCard.classList.add("is-copied");
@@ -220,12 +158,12 @@
     });
   }
 
-  // ---------- Smooth scroll for in-page anchors ----------
+  /* ---------- In-page smooth scroll ---------- */
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener("click", function (e) {
       var id = anchor.getAttribute("href");
       if (!id || id === "#" || id === "#wechat") return;
-      var target = null;
+      var target;
       try {
         target = document.querySelector(id);
       } catch (_) {
@@ -234,23 +172,20 @@
       if (!target) return;
       e.preventDefault();
       target.scrollIntoView({
-        behavior: isReduceMotion() ? "auto" : "smooth",
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
         block: "start",
       });
-      if (typeof target.focus === "function") {
-        if (!target.hasAttribute("tabindex")) {
-          target.setAttribute("tabindex", "-1");
-        }
-        try {
-          target.focus({ preventScroll: true });
-        } catch (_) {
-          target.focus();
-        }
+      if (typeof target.focus !== "function") return;
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      try {
+        target.focus({ preventScroll: true });
+      } catch (_) {
+        target.focus();
       }
     });
   });
 
-  // ---------- Duolingo QR large view ----------
+  /* ---------- Duolingo QR modal ---------- */
   (function initQrModal() {
     var openBtn = document.getElementById("duolingo-qr-open");
     var modal = document.getElementById("duolingo-qr-modal");
@@ -259,11 +194,11 @@
     var lastFocus = null;
     var closeEls = modal.querySelectorAll("[data-qr-close]");
 
-    function isOpen() {
+    function modalIsOpen() {
       return !modal.hidden;
     }
 
-    function getFocusable() {
+    function focusableInModal() {
       return Array.prototype.slice
         .call(
           modal.querySelectorAll(
@@ -288,20 +223,18 @@
     }
 
     function closeModal() {
-      if (!isOpen()) return;
+      if (!modalIsOpen()) return;
       modal.hidden = true;
       document.body.classList.remove("qr-modal-open");
       openBtn.setAttribute("aria-expanded", "false");
       if (lastFocus && typeof lastFocus.focus === "function") {
         try {
           lastFocus.focus();
-        } catch (_) {}
+        } catch (_) {
+          /* ignore */
+        }
       }
     }
-
-    // Expose for shared Escape handling
-    window.__closeQrModal = closeModal;
-    window.__qrModalIsOpen = isOpen;
 
     openBtn.setAttribute("aria-expanded", "false");
     openBtn.addEventListener("click", function (e) {
@@ -317,18 +250,17 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (!isOpen()) return;
+      if (!modalIsOpen()) return;
       if (e.key === "Escape") {
         e.preventDefault();
-        e.stopPropagation();
         closeModal();
         return;
       }
       if (e.key !== "Tab") return;
-      var focusable = getFocusable();
-      if (!focusable.length) return;
-      var first = focusable[0];
-      var last = focusable[focusable.length - 1];
+      var nodes = focusableInModal();
+      if (!nodes.length) return;
+      var first = nodes[0];
+      var last = nodes[nodes.length - 1];
       if (e.shiftKey && document.activeElement === first) {
         e.preventDefault();
         last.focus();

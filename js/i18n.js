@@ -497,10 +497,8 @@ function initControlsPanel() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    // QR modal owns Escape when open
-    if (typeof window.__qrModalIsOpen === "function" && window.__qrModalIsOpen()) {
-      return;
-    }
+    /* QR modal owns Escape while open (body class set by main.js) */
+    if (document.body.classList.contains("qr-modal-open")) return;
     setOpen(false);
   });
 
@@ -730,7 +728,7 @@ function applyTheme(theme) {
 
   var meta = document.getElementById("meta-theme-color");
   if (meta) {
-    meta.setAttribute("content", resolved === "dark" ? "#12100e" : "#f3eee4");
+    meta.setAttribute("content", resolved === "dark" ? "#13110f" : "#f3eee4");
   }
 
   var btn = document.getElementById("theme-toggle");
