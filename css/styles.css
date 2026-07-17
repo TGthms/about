@@ -1,6 +1,6 @@
 /* ==========================================================================
-   Craft Brutal — Tim G hub prototype
-   Soft-brutal structure + single terracotta accent + warm paper
+   Craft Brutal — Tim G personal hub
+   Soft-brutal structure + terracotta accent + warm paper / charcoal
    ========================================================================== */
 
 :root {
@@ -26,16 +26,6 @@
   --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Aliases so any leftover component tokens still resolve */
-  --text: var(--ink);
-  --text-secondary: var(--mute);
-  --text-tertiary: var(--faint);
-  --border: color-mix(in srgb, var(--line) 18%, transparent);
-  --border-strong: color-mix(in srgb, var(--line) 35%, transparent);
-  --bg-subtle: color-mix(in srgb, var(--ink) 6%, var(--bg));
-  --bg-elevated: var(--bg-card);
-  --bg-card-solid: var(--bg-card);
-
   /* Light — paper + ink + one accent */
   --bg: #f3eee4;
   --bg-card: #faf6ee;
@@ -56,7 +46,6 @@
 }
 
 html[data-theme="dark"] {
-  /* Richer charcoal stack — cards lift, edges stay crisp without glare */
   --bg: #12100e;
   --bg-card: #1f1c19;
   --ink: #f6f1e8;
@@ -68,9 +57,6 @@ html[data-theme="dark"] {
   --shadow: 3px 3px 0 #060504;
   --shadow-hover: 5px 5px 0 #060504;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
-  --border: color-mix(in srgb, var(--line) 28%, transparent);
-  --border-strong: color-mix(in srgb, var(--line) 48%, transparent);
-  --bg-subtle: color-mix(in srgb, var(--ink) 7%, var(--bg));
 }
 
 *,
@@ -166,31 +152,6 @@ button {
   max-width: var(--content-max);
   margin-inline: auto;
   padding-inline: var(--gutter);
-}
-
-/* Preview banner */
-.preview-banner {
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: 10px var(--gutter);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  align-items: center;
-  justify-content: space-between;
-}
-.preview-banner a {
-  color: var(--bg);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.preview-banner em {
-  font-style: normal;
-  opacity: 0.75;
-  font-weight: 500;
 }
 
 /* ---------- Top bar ---------- */
@@ -472,12 +433,7 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
 .hero__name-text {
   font-family: inherit;
   font-weight: inherit;
-  /* No multi-color AI gradient — solid craft ink */
   color: var(--ink);
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  animation: none;
 }
 .hero__tagline {
   font-size: clamp(1.05rem, 2.5vw, 1.3rem);
@@ -739,12 +695,6 @@ a.link-card:active,
   transform: translate(1px, 1px);
   box-shadow: 2px 2px 0 var(--line);
 }
-.link-card--placeholder {
-  opacity: 0.55;
-  border-style: dashed;
-  box-shadow: none;
-  cursor: default;
-}
 .link-card__icon {
   width: 48px;
   height: 48px;
@@ -854,7 +804,8 @@ html.reveal-fallback .reveal {
 }
 
 /* ---------- Duolingo QR card ---------- */
-/* Grid items are <li>s — span must be on the list item, not the inner card */
+/* Full-width row under GitHub / social (class preferred; :has is backup) */
+.link-grid > li.link-grid__full,
 .link-grid > li:has(.duolingo-card) {
   grid-column: 1 / -1;
 }
@@ -1031,10 +982,6 @@ html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
 }
 
 @media (min-width: 560px) {
-  .link-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .duolingo-card {
     padding: var(--space-3) var(--space-4);
     gap: var(--space-4) var(--space-5);

@@ -1,5 +1,6 @@
 /**
- * Render Privacy / Terms pages from LEGAL content + shared site prefs.
+ * Privacy / Terms: render LEGAL content + shared site prefs.
+ * Depends on js/i18n.js and js/legal-content.js.
  */
 (function () {
   "use strict";
@@ -22,7 +23,7 @@
     return "en";
   }
 
-  function setLangButtons(lang) {
+  function setLangSelect(lang) {
     var select = document.getElementById("lang-select");
     if (select && select.value !== lang) select.value = lang;
   }
@@ -65,7 +66,6 @@
       if (ui && typeof ui[key] === "string") el.textContent = ui[key];
     });
 
-    // TOC + body
     var toc = document.getElementById("legal-toc");
     var body = document.getElementById("legal-body");
     if (toc) toc.innerHTML = "";
@@ -95,7 +95,6 @@
         (section.paragraphs || []).forEach(function (text) {
           var p = document.createElement("p");
           p.className = "legal-section__p";
-          // Auto-link email addresses
           if (text.indexOf("contact.timg@icloud.com") !== -1) {
             p.innerHTML = text.replace(
               /contact\.timg@icloud\.com/g,
@@ -111,13 +110,13 @@
       }
     });
 
-    setLangButtons(lang);
+    setLangSelect(lang);
 
     try {
       localStorage.setItem("timg-lang", lang);
     } catch (_) {}
 
-    // Sync main-site i18n chrome if present (footer strings etc.)
+    // Footer chrome + control labels from main i18n pack
     if (typeof applyLanguage === "function") {
       applyLanguage(lang);
     }
@@ -126,10 +125,8 @@
   var current = resolveLang();
   render(current);
 
-  if (typeof initControlsPanel === "function") {
-    initControlsPanel();
-  }
-
+  if (typeof initTheme === "function") initTheme();
+  if (typeof initControlsPanel === "function") initControlsPanel();
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {
       if (!lang || lang === current) return;
@@ -139,70 +136,7 @@
     });
   }
 
-  // Theme — always follow OS; session toggle only (same as main site)
-  var themeOverride = null;
-
-  try {
-    localStorage.removeItem("timg-theme");
-  } catch (_) {}
-
-  function systemPrefersDark() {
-    return Boolean(
-      window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
-  }
-
-  function resolveTheme() {
-    if (themeOverride === "light" || themeOverride === "dark") return themeOverride;
-    return systemPrefersDark() ? "dark" : "light";
-  }
-
-  function systemPrefersReducedMotion() {
-    return Boolean(
-      window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
-  }
-
-  function applyTheme(theme) {
-    var resolved = theme === "dark" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", resolved);
-    document.documentElement.style.colorScheme = resolved;
-    var meta = document.getElementById("meta-theme-color");
-    if (meta) {
-      meta.setAttribute("content", resolved === "dark" ? "#12100e" : "#f3eee4");
-    }
-    var btn = document.getElementById("theme-toggle");
-    if (btn) {
-      btn.setAttribute("aria-pressed", resolved === "dark" ? "true" : "false");
-    }
-  }
-
-  applyTheme(resolveTheme());
-
-  var themeBtn = document.getElementById("theme-toggle");
-  if (themeBtn) {
-    themeBtn.addEventListener("click", function () {
-      var next = resolveTheme() === "dark" ? "light" : "dark";
-      themeOverride =
-        next === (systemPrefersDark() ? "dark" : "light") ? null : next;
-      applyTheme(resolveTheme());
-    });
-  }
-
-  // OS appearance change always re-applies auto-detect
-  if (window.matchMedia) {
-    var colorMq = window.matchMedia("(prefers-color-scheme: dark)");
-    var onColorChange = function () {
-      themeOverride = null;
-      applyTheme(resolveTheme());
-    };
-    if (colorMq.addEventListener) colorMq.addEventListener("change", onColorChange);
-    else if (colorMq.addListener) colorMq.addListener(onColorChange);
-  }
-
-  // Smooth in-page jumps for TOC (respect reduced motion; use scroll-margin)
+  // Smooth TOC jumps
   document.addEventListener("click", function (e) {
     var link = e.target.closest && e.target.closest(".legal-toc__link");
     if (!link) return;
@@ -211,7 +145,10 @@
     var target = document.querySelector(href);
     if (!target) return;
     e.preventDefault();
-    var reduce = systemPrefersReducedMotion();
+    var reduce =
+      typeof systemPrefersReducedMotion === "function"
+        ? systemPrefersReducedMotion()
+        : false;
     target.scrollIntoView({
       behavior: reduce ? "auto" : "smooth",
       block: "start",

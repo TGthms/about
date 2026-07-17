@@ -1,6 +1,6 @@
 /**
- * Translation dictionary — edit strings here to update the site.
- * Keys map to [data-i18n] attributes in index.html.
+ * i18n + shared prefs (theme, language, mobile controls).
+ * Loaded before page scripts on every HTML entry.
  */
 const TRANSLATIONS = {
   en: {
@@ -12,7 +12,6 @@ const TRANSLATIONS = {
     skip: "Skip to content",
     a11y: {
       themeToggle: "Toggle light or dark theme",
-      themeShort: "Appearance",
       themeLight: "Light mode",
       themeDark: "Dark mode",
       scrollAbout: "Scroll to about",
@@ -112,7 +111,6 @@ const TRANSLATIONS = {
     skip: "Saltar al contenido",
     a11y: {
       themeToggle: "Cambiar tema claro u oscuro",
-      themeShort: "Apariencia",
       themeLight: "Modo claro",
       themeDark: "Modo oscuro",
       scrollAbout: "Ir a la sección sobre mí",
@@ -212,7 +210,6 @@ const TRANSLATIONS = {
     skip: "跳到主要内容",
     a11y: {
       themeToggle: "切换浅色或深色主题",
-      themeShort: "外观",
       themeLight: "浅色模式",
       themeDark: "深色模式",
       scrollAbout: "滚动到关于部分",
@@ -267,7 +264,7 @@ const TRANSLATIONS = {
       open: "打开项目",
       travelGuide: {
         title: "美国旅行指南",
-        desc: "一份精心制作的的指南 — 小型网页项目",
+        desc: "一份精心制作的指南 — 小型网页项目",
       },
       japanTravelGuide: {
         title: "日本旅行指南",
@@ -312,7 +309,6 @@ const TRANSLATIONS = {
     skip: "コンテンツへスキップ",
     a11y: {
       themeToggle: "ライト／ダークテーマを切り替え",
-      themeShort: "外観",
       themeLight: "ライトモード",
       themeDark: "ダークモード",
       scrollAbout: "自己紹介へスクロール",
@@ -420,14 +416,8 @@ const LANG_ALIASES = {
 
 const SUPPORTED_LANGS = ["en", "es", "zh", "ja"];
 const STORAGE_KEY = "timg-lang";
-
-/** Compact labels shown in the language toggle button */
-const LANG_LABELS = {
-  en: "EN",
-  es: "ES",
-  zh: "中文",
-  ja: "日本語",
-};
+const THEME_LEGACY_KEY = "timg-theme";
+const THEME_SESSION_KEY = "timg-theme-session";
 
 /**
  * Resolve a nested key like "hero.tagline" from a translation object.
@@ -506,7 +496,12 @@ function initControlsPanel() {
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setOpen(false);
+    if (e.key !== "Escape") return;
+    // QR modal owns Escape when open
+    if (typeof window.__qrModalIsOpen === "function" && window.__qrModalIsOpen()) {
+      return;
+    }
+    setOpen(false);
   });
 
   if (window.matchMedia) {
@@ -681,4 +676,106 @@ function applyLanguage(lang) {
   }
 
   return resolved;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Theme — OS default; session override only; OS change clears override        */
+/* -------------------------------------------------------------------------- */
+
+function systemPrefersDark() {
+  return Boolean(
+    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
+}
+
+function systemPrefersReducedMotion() {
+  return Boolean(
+    window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+function getThemeOverride() {
+  try {
+    var v = sessionStorage.getItem(THEME_SESSION_KEY);
+    if (v === "light" || v === "dark") return v;
+  } catch (_) {
+    /* private mode */
+  }
+  return null;
+}
+
+function setThemeOverride(value) {
+  try {
+    if (value === "light" || value === "dark") {
+      sessionStorage.setItem(THEME_SESSION_KEY, value);
+    } else {
+      sessionStorage.removeItem(THEME_SESSION_KEY);
+    }
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function resolveTheme() {
+  var override = getThemeOverride();
+  if (override) return override;
+  return systemPrefersDark() ? "dark" : "light";
+}
+
+function applyTheme(theme) {
+  var resolved = theme === "dark" ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", resolved);
+  document.documentElement.style.colorScheme = resolved;
+
+  var meta = document.getElementById("meta-theme-color");
+  if (meta) {
+    meta.setAttribute("content", resolved === "dark" ? "#12100e" : "#f3eee4");
+  }
+
+  var btn = document.getElementById("theme-toggle");
+  if (btn) {
+    btn.setAttribute("aria-pressed", resolved === "dark" ? "true" : "false");
+  }
+}
+
+function toggleTheme() {
+  var next = resolveTheme() === "dark" ? "light" : "dark";
+  // Persist only while different from OS; else clear (auto again)
+  if (next === (systemPrefersDark() ? "dark" : "light")) {
+    setThemeOverride(null);
+  } else {
+    setThemeOverride(next);
+  }
+  applyTheme(resolveTheme());
+}
+
+/**
+ * Wire theme button + follow OS changes. Safe to call once per page.
+ */
+function initTheme() {
+  try {
+    localStorage.removeItem(THEME_LEGACY_KEY);
+  } catch (_) {
+    /* ignore */
+  }
+
+  applyTheme(resolveTheme());
+
+  var themeBtn = document.getElementById("theme-toggle");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+
+  if (!window.matchMedia) return;
+  var colorMq = window.matchMedia("(prefers-color-scheme: dark)");
+  var onColorChange = function () {
+    setThemeOverride(null);
+    applyTheme(resolveTheme());
+  };
+  if (colorMq.addEventListener) colorMq.addEventListener("change", onColorChange);
+  else if (colorMq.addListener) colorMq.addListener(onColorChange);
 }

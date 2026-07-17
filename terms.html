@@ -19,9 +19,16 @@
         try {
           localStorage.removeItem("timg-theme");
         } catch (e2) {}
-        var theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
+        var override = null;
+        try {
+          override = sessionStorage.getItem("timg-theme-session");
+        } catch (e3) {}
+        var theme =
+          override === "light" || override === "dark"
+            ? override
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
         root.classList.add("js");

@@ -27,25 +27,27 @@
   <link rel="apple-touch-icon" href="favicon.svg" />
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Apply system theme before paint (auto-detect always wins over saved prefs) -->
+  <!-- Theme before paint: session override, else OS preference -->
   <script>
     (function () {
       try {
         var root = document.documentElement;
-        // Clear legacy manual theme so OS preference is the source of truth
         try {
           localStorage.removeItem("timg-theme");
         } catch (e2) {}
-        var theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
+        var override = null;
+        try {
+          override = sessionStorage.getItem("timg-theme-session");
+        } catch (e3) {}
+        var theme =
+          override === "light" || override === "dark"
+            ? override
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
-
-        // Enable JS stylesheet path early so reveals don't flash fully-visible then hide
         root.classList.add("js");
-
-        // If main.js fails to load, never leave content invisible
         setTimeout(function () {
           if (!root.classList.contains("app-ready")) {
             root.classList.add("reveal-fallback");
@@ -178,7 +180,7 @@
         </header>
         <div class="about__body reveal reveal-delay-1">
           <p class="about__text" data-i18n="about.p1">
-            I'm a high school student in the Bay Area who likes building things, capturing moments, and exploring — both nearby and farther afield.
+            I'm a high school student in the Bay Area who likes building things, capturing moments, music, and exploring — both nearby and farther afield.
           </p>
           <p class="about__text" data-i18n="about.p2">
             Outside of school and projects, I'm grounded by Psalm 23 — a quiet personal touchstone that keeps me centered through busy seasons.
@@ -195,7 +197,7 @@
           <h2 id="interests-heading" class="section__title" data-i18n="interests.title">What I care about</h2>
         </header>
         <ul class="interests__grid" role="list">
-          <li class="interest-card reveal" data-accent="coral" style="--stagger: 0">
+          <li class="interest-card reveal" style="--stagger: 0">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Bilingual / speech -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -207,7 +209,7 @@
             <h3 class="interest-card__title" data-i18n="interests.bilingual.title">Bilingual</h3>
             <p class="interest-card__desc" data-i18n="interests.bilingual.desc">Chinese-American — fluent in Mandarin Chinese and English</p>
           </li>
-          <li class="interest-card reveal" data-accent="amber" style="--stagger: 1">
+          <li class="interest-card reveal" style="--stagger: 1">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Erhu-inspired abstract bow/string -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -220,7 +222,7 @@
             <h3 class="interest-card__title" data-i18n="interests.erhu.title">Erhu</h3>
             <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
           </li>
-          <li class="interest-card reveal" data-accent="teal" style="--stagger: 2">
+          <li class="interest-card reveal" style="--stagger: 2">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Camera aperture -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -232,7 +234,7 @@
             <h3 class="interest-card__title" data-i18n="interests.photo.title">Photography</h3>
             <p class="interest-card__desc" data-i18n="interests.photo.desc">Finding light, frames, and quiet moments</p>
           </li>
-          <li class="interest-card reveal" data-accent="violet" style="--stagger: 3">
+          <li class="interest-card reveal" style="--stagger: 3">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Globe / travel -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -244,7 +246,7 @@
             <h3 class="interest-card__title" data-i18n="interests.travel.title">Travel</h3>
             <p class="interest-card__desc" data-i18n="interests.travel.desc">Exploring places, cultures, and open roads</p>
           </li>
-          <li class="interest-card reveal" data-accent="blue" style="--stagger: 4">
+          <li class="interest-card reveal" style="--stagger: 4">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Code / build -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -254,7 +256,7 @@
             <h3 class="interest-card__title" data-i18n="interests.tech.title">Tech</h3>
             <p class="interest-card__desc" data-i18n="interests.tech.desc">Building things that work — and feel good to use</p>
           </li>
-          <li class="interest-card reveal" data-accent="green" style="--stagger: 5">
+          <li class="interest-card reveal" style="--stagger: 5">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Table tennis paddle abstract -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -285,7 +287,6 @@
             href="https://tgthms.github.io/usa-travel-guide/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-describedby="links-heading"
           >
             <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
             <div class="featured-card__content">
@@ -322,7 +323,6 @@
             href="https://tgthms.github.io/japan-travel-guide/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-describedby="links-heading"
           >
             <div class="featured-card__badge featured-card__badge--alt" data-i18n="links.project">Project</div>
             <div class="featured-card__content">
@@ -355,7 +355,6 @@
             href="https://tgthms.github.io/kit/en/"
             target="_blank"
             rel="noopener noreferrer"
-            aria-describedby="links-heading"
           >
             <div class="featured-card__badge featured-card__badge--alt" data-i18n="links.project">Project</div>
             <div class="featured-card__content">
@@ -389,7 +388,7 @@
         <!-- Link grid -->
         <ul class="link-grid" role="list">
           <li class="reveal" style="--stagger: 0">
-            <a class="link-card" href="https://github.com/TGthms" target="_blank" rel="noopener noreferrer" data-accent="blue">
+            <a class="link-card" href="https://github.com/TGthms" target="_blank" rel="noopener noreferrer">
               <div class="link-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
                   <path d="M12 26c-6 2-6-3-8-4M20 28v-4.5a4 4 0 0 0-1-2.7c3.5-.4 7-1.7 7-7.5a5.5 5.5 0 0 0-1.5-3.8 5.1 5.1 0 0 0-.1-3.8s-1.2-.4-4 1.5a13.4 13.4 0 0 0-7 0c-2.8-1.9-4-1.5-4-1.5a5.1 5.1 0 0 0-.1 3.8A5.5 5.5 0 0 0 8 13.3c0 5.8 3.5 7.1 7 7.5a4 4 0 0 0-1 2.7V28" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
@@ -414,7 +413,6 @@
               href="https://www.instagram.com/timg.ins/"
               target="_blank"
               rel="noopener noreferrer"
-              data-accent="coral"
               data-mode="instagram"
               data-wechat-id="realTimGong"
             >
@@ -448,7 +446,7 @@
             </a>
           </li>
           <!-- Duolingo friend QR — full code visible; click QR for large view -->
-          <li class="reveal" style="--stagger: 2">
+          <li class="link-grid__full reveal" style="--stagger: 2">
             <div class="duolingo-card">
               <div class="duolingo-card__body">
                 <div class="duolingo-card__header">

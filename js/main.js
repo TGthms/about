@@ -1,113 +1,32 @@
 /**
- * Main behavior: language, theme prefs, scroll reveals, card tilt.
+ * Home page behavior: theme, language, reveals, tilt, WeChat copy, QR modal.
+ * Depends on js/i18n.js (loaded first).
  */
 (function () {
   "use strict";
 
-  const THEME_KEY = "timg-theme";
-  const WECHAT_ID = "realTimGong";
+  var WECHAT_ID = "realTimGong";
 
-  // Mark JS-ready early (pairs with noscript CSS fallback)
-  document.documentElement.classList.add("js");
-  document.documentElement.classList.add("app-ready");
+  document.documentElement.classList.add("js", "app-ready");
   document.documentElement.classList.remove("reveal-fallback");
 
-  // ---------- Year ----------
-  const yearEl = document.getElementById("year");
+  var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // ---------- Helpers ----------
-  function systemPrefersDark() {
-    return Boolean(
-      window.matchMedia &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-    );
-  }
-
-  function systemPrefersReducedMotion() {
-    return Boolean(
-      window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    );
-  }
-
   function isReduceMotion() {
-    return systemPrefersReducedMotion();
+    return typeof systemPrefersReducedMotion === "function"
+      ? systemPrefersReducedMotion()
+      : false;
   }
 
-  // ---------- Theme ----------
-  // Always follow OS appearance. Manual toggle is session-only; a system
-  // change (or reload) re-applies auto-detection and clears any override.
-  var themeOverride = null; // "light" | "dark" | null
+  // ---------- Theme + language + controls (shared) ----------
+  if (typeof initTheme === "function") initTheme();
 
-  // Drop legacy persisted preference so system auto-detect always wins
-  try {
-    localStorage.removeItem(THEME_KEY);
-  } catch (_) {
-    /* ignore */
-  }
-
-  function resolveTheme() {
-    if (themeOverride === "light" || themeOverride === "dark") return themeOverride;
-    return systemPrefersDark() ? "dark" : "light";
-  }
-
-  function applyTheme(theme) {
-    const resolved = theme === "dark" ? "dark" : "light";
-    document.documentElement.setAttribute("data-theme", resolved);
-    document.documentElement.style.colorScheme = resolved;
-
-    const meta = document.getElementById("meta-theme-color");
-    if (meta) {
-      meta.setAttribute("content", resolved === "dark" ? "#12100e" : "#f3eee4");
-    }
-
-    const btn = document.getElementById("theme-toggle");
-    if (btn) {
-      // pressed = currently showing dark; not a sticky “manual mode” flag
-      btn.setAttribute("aria-pressed", resolved === "dark" ? "true" : "false");
-    }
-  }
-
-  function toggleTheme() {
-    const next = resolveTheme() === "dark" ? "light" : "dark";
-    // Only stick while it differs from the system; else clear override
-    themeOverride = next === (systemPrefersDark() ? "dark" : "light") ? null : next;
-    applyTheme(resolveTheme());
-  }
-
-  function showAllReveals() {
-    document.querySelectorAll(".reveal").forEach(function (el) {
-      el.classList.add("is-visible");
-    });
-  }
-
-  applyTheme(resolveTheme());
-
-  const themeBtn = document.getElementById("theme-toggle");
-  if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
-
-  // System appearance always wins when the OS preference changes
-  if (window.matchMedia) {
-    const colorMq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onColorChange = function () {
-      themeOverride = null;
-      applyTheme(resolveTheme());
-    };
-    if (colorMq.addEventListener) colorMq.addEventListener("change", onColorChange);
-    else if (colorMq.addListener) colorMq.addListener(onColorChange);
-  }
-
-  // ---------- Language (compact dropdown) ----------
   var currentLang = "en";
   if (typeof detectLanguage === "function" && typeof applyLanguage === "function") {
     currentLang = applyLanguage(detectLanguage());
   }
-
-  if (typeof initControlsPanel === "function") {
-    initControlsPanel();
-  }
-
+  if (typeof initControlsPanel === "function") initControlsPanel();
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
@@ -118,21 +37,21 @@
   }
 
   // ---------- Scroll reveals ----------
-  var revealEls = document.querySelectorAll(".reveal");
-  var revealObserver = null;
+  function showAllReveals() {
+    document.querySelectorAll(".reveal").forEach(function (el) {
+      el.classList.add("is-visible");
+    });
+  }
 
   function initReveals() {
-    if (isReduceMotion()) {
+    if (isReduceMotion() || !("IntersectionObserver" in window)) {
       showAllReveals();
       return;
     }
 
-    if (!("IntersectionObserver" in window)) {
-      showAllReveals();
-      return;
-    }
+    var revealEls = document.querySelectorAll(".reveal");
+    var revealObserver = null;
 
-    // Hero entrance on load
     var heroReveals = document.querySelectorAll(".hero .reveal");
     requestAnimationFrame(function () {
       window.setTimeout(function () {
@@ -142,7 +61,6 @@
       }, 60);
     });
 
-    // Safer margins so bottom elements always reveal (short/landscape viewports)
     revealObserver = new IntersectionObserver(
       function (entries, obs) {
         entries.forEach(function (entry) {
@@ -151,11 +69,7 @@
           obs.unobserve(entry.target);
         });
       },
-      {
-        root: null,
-        rootMargin: "0px 0px 12% 0px",
-        threshold: 0.01,
-      }
+      { root: null, rootMargin: "0px 0px 12% 0px", threshold: 0.01 }
     );
 
     revealEls.forEach(function (el) {
@@ -164,12 +78,10 @@
       revealObserver.observe(el);
     });
 
-    // Safety net: if anything is still hidden after load/scroll settle, show it
     window.setTimeout(function () {
       document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (el) {
         var rect = el.getBoundingClientRect();
         var vh = window.innerHeight || document.documentElement.clientHeight;
-        // In or near viewport, or past (scrolled past)
         if (rect.top < vh * 1.25) {
           el.classList.add("is-visible");
           if (revealObserver) revealObserver.unobserve(el);
@@ -180,7 +92,7 @@
 
   initReveals();
 
-  // ---------- Interest card tilt (fine pointer + hover only) ----------
+  // ---------- Interest card tilt ----------
   var canTilt =
     !isReduceMotion() &&
     window.matchMedia &&
@@ -216,17 +128,14 @@
       }
 
       card.addEventListener("pointermove", applyTilt);
-
       card.addEventListener("pointerleave", function () {
         pending = null;
         card.style.transform = "";
       });
-
       card.addEventListener("pointerdown", function () {
         if (isReduceMotion()) return;
         card.style.transform = "perspective(800px) scale(0.98)";
       });
-
       card.addEventListener("pointerup", function (e) {
         if (isReduceMotion()) {
           card.style.transform = "";
@@ -238,7 +147,7 @@
     });
   }
 
-  // ---------- WeChat ID copy (Chinese social card) ----------
+  // ---------- WeChat ID copy ----------
   var socialCard = document.getElementById("social-card");
   if (socialCard) {
     var copyTimer = 0;
@@ -248,6 +157,26 @@
       var text = sub && sub.textContent ? sub.textContent.trim() : "";
       if (!text || text === "已复制" || text === "Copied") return WECHAT_ID;
       return text;
+    }
+
+    function fallbackCopy(text, onSuccess) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.setAttribute("aria-hidden", "true");
+        ta.style.cssText =
+          "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok && onSuccess) onSuccess();
+      } catch (_) {
+        /* leave ID visible if copy fails */
+      }
     }
 
     function copyWeChatId() {
@@ -276,25 +205,6 @@
       }
     }
 
-    function fallbackCopy(text, onSuccess) {
-      try {
-        var ta = document.createElement("textarea");
-        ta.value = text;
-        ta.setAttribute("readonly", "");
-        ta.setAttribute("aria-hidden", "true");
-        ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;";
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        ta.setSelectionRange(0, text.length);
-        var ok = document.execCommand("copy");
-        document.body.removeChild(ta);
-        if (ok && onSuccess) onSuccess();
-      } catch (_) {
-        /* leave ID visible if copy fails */
-      }
-    }
-
     socialCard.addEventListener("click", function (e) {
       if (socialCard.getAttribute("data-mode") !== "wechat") return;
       e.preventDefault();
@@ -314,7 +224,6 @@
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener("click", function (e) {
       var id = anchor.getAttribute("href");
-      // Skip empty hashes and non-section tokens (e.g. WeChat copy control)
       if (!id || id === "#" || id === "#wechat") return;
       var target = null;
       try {
@@ -350,17 +259,24 @@
     var lastFocus = null;
     var closeEls = modal.querySelectorAll("[data-qr-close]");
 
+    function isOpen() {
+      return !modal.hidden;
+    }
+
     function getFocusable() {
-      return Array.prototype.slice.call(
-        modal.querySelectorAll(
-          'button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      return Array.prototype.slice
+        .call(
+          modal.querySelectorAll(
+            'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+          )
         )
-      ).filter(function (el) {
-        return !el.hasAttribute("disabled") && el.offsetParent !== null;
-      });
+        .filter(function (el) {
+          return el.getAttribute("aria-hidden") !== "true" && !el.disabled;
+        });
     }
 
     function openModal() {
+      if (typeof closeControlsPanel === "function") closeControlsPanel();
       lastFocus = document.activeElement;
       modal.hidden = false;
       document.body.classList.add("qr-modal-open");
@@ -372,7 +288,7 @@
     }
 
     function closeModal() {
-      if (modal.hidden) return;
+      if (!isOpen()) return;
       modal.hidden = true;
       document.body.classList.remove("qr-modal-open");
       openBtn.setAttribute("aria-expanded", "false");
@@ -382,6 +298,10 @@
         } catch (_) {}
       }
     }
+
+    // Expose for shared Escape handling
+    window.__closeQrModal = closeModal;
+    window.__qrModalIsOpen = isOpen;
 
     openBtn.setAttribute("aria-expanded", "false");
     openBtn.addEventListener("click", function (e) {
@@ -397,13 +317,13 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (modal.hidden) return;
+      if (!isOpen()) return;
       if (e.key === "Escape") {
         e.preventDefault();
+        e.stopPropagation();
         closeModal();
         return;
       }
-      // Simple focus trap
       if (e.key !== "Tab") return;
       var focusable = getFocusable();
       if (!focusable.length) return;

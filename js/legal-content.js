@@ -27,7 +27,7 @@ const LEGAL = {
           title: "Information We Handle",
           paragraphs: [
             "Personal information you choose to send. If you email contact.timg@icloud.com (or another address I publish), I receive whatever you include in that message—such as your email address, name, and message content. I use that information only to respond and, if needed, to keep a record of the conversation.",
-            "Preferences stored on your device. The Site may save your language choice in your browser’s local storage. Appearance follows your device’s light/dark setting (with an optional temporary override while the page is open). These values stay on your device and are not sent to a personal data server operated by me as part of the Site’s normal operation.",
+            "Preferences stored on your device. The Site may save your language choice in your browser’s local storage. Appearance follows your device’s light/dark setting (with an optional temporary session override). These values stay on your device and are not sent to a personal data server operated by me as part of the Site’s normal operation.",
             "Technical data processed by hosting. Like most websites, when you load the Site your browser communicates with the host (for example, GitHub Pages or a similar provider). That process typically involves standard technical data such as IP address, browser type, device or OS information, referring URL, and timestamps. That processing is performed by the host under its own systems and policies. I do not operate a separate analytics dashboard on this Site unless one is clearly disclosed here in a future update.",
           ],
         },
