@@ -6,6 +6,8 @@
   "use strict";
 
   var WECHAT_ID = "realTimGong";
+  /* Entrance duration + max stagger buffer (keep in sync with CSS --dur-enter) */
+  var REVEAL_MS = 720;
 
   document.documentElement.classList.add("js", "app-ready");
   document.documentElement.classList.remove("reveal-fallback");
@@ -35,9 +37,40 @@
   }
 
   /* ---------- Scroll entrance ---------- */
+  function settle(el) {
+    el.classList.add("is-settled");
+  }
+
+  function markVisible(el) {
+    if (el.classList.contains("is-visible")) return;
+    el.classList.add("is-visible");
+
+    if (prefersReducedMotion()) {
+      settle(el);
+      return;
+    }
+
+    /* After entrance finishes, free will-change and enable hover transforms */
+    var settled = false;
+    function done() {
+      if (settled) return;
+      settled = true;
+      el.removeEventListener("transitionend", onEnd);
+      settle(el);
+    }
+    function onEnd(e) {
+      if (e.target !== el) return;
+      if (e.propertyName !== "opacity" && e.propertyName !== "transform") return;
+      done();
+    }
+    el.addEventListener("transitionend", onEnd);
+    window.setTimeout(done, REVEAL_MS);
+  }
+
   function showAllReveals() {
     document.querySelectorAll(".reveal").forEach(function (el) {
       el.classList.add("is-visible");
+      settle(el);
     });
   }
 
@@ -47,24 +80,32 @@
       return;
     }
 
+    /* Hero: play on load so mobile always gets an entrance */
     var heroReveals = document.querySelectorAll(".hero .reveal");
     requestAnimationFrame(function () {
-      window.setTimeout(function () {
-        heroReveals.forEach(function (el) {
-          el.classList.add("is-visible");
+      requestAnimationFrame(function () {
+        heroReveals.forEach(function (el, i) {
+          window.setTimeout(function () {
+            markVisible(el);
+          }, i * 70);
         });
-      }, 40);
+      });
     });
 
     var observer = new IntersectionObserver(
       function (entries, obs) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
+          markVisible(entry.target);
           obs.unobserve(entry.target);
         });
       },
-      { root: null, rootMargin: "0px 0px 12% 0px", threshold: 0.01 }
+      {
+        root: null,
+        /* Start a bit before fully in view so mobile scrolls feel alive */
+        rootMargin: "0px 0px -8% 0px",
+        threshold: 0.08,
+      }
     );
 
     document.querySelectorAll(".reveal").forEach(function (el) {
@@ -72,16 +113,17 @@
       observer.observe(el);
     });
 
-    /* Safety net for short viewports / fast scroll */
+    /* Catch anything still hidden after layout settles (fast flings, short pages) */
     window.setTimeout(function () {
       var vh = window.innerHeight || document.documentElement.clientHeight;
       document.querySelectorAll(".reveal:not(.is-visible)").forEach(function (el) {
-        if (el.getBoundingClientRect().top < vh * 1.25) {
-          el.classList.add("is-visible");
+        var top = el.getBoundingClientRect().top;
+        if (top < vh * 1.15) {
+          markVisible(el);
           observer.unobserve(el);
         }
       });
-    }, 1200);
+    }, 900);
   }
 
   initReveals();
@@ -158,7 +200,7 @@
     });
   }
 
-  /* ---------- In-page smooth scroll ---------- */
+  /* ---------- In-page smooth scroll (only for taps, not global page scroll) ---------- */
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener("click", function (e) {
       var id = anchor.getAttribute("href");

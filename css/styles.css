@@ -40,10 +40,11 @@
   --shadow-hover: 5px 5px 0 #12100e;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
 
-  --ease: cubic-bezier(0.34, 1.45, 0.64, 1);
+  /* Smooth, no spring overshoot (overshoot + box-shadow anims cause scroll jank) */
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur: 180ms;
-  --dur-enter: 480ms;
+  --dur: 200ms;
+  --dur-enter: 620ms;
 }
 
 /*
@@ -74,7 +75,7 @@ html[data-theme="dark"] {
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Native scroll only — CSS smooth-scroll feels laggy on mobile trackpads */
   scroll-padding-top: calc(var(--top-bar-h) + 16px);
 }
 
@@ -95,11 +96,24 @@ body {
 }
 
 html[data-theme="dark"] body {
-  /* Mirror light: one soft accent wash + light grain — not a muddy triple stack */
   background-image:
     radial-gradient(ellipse 120% 80% at 0% -15%, rgba(224, 122, 86, 0.12), transparent 52%),
     radial-gradient(ellipse 70% 50% at 100% 100%, rgba(224, 122, 86, 0.05), transparent 48%),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* SVG noise filters are expensive while scrolling — skip on touch devices */
+@media (pointer: coarse) {
+  body,
+  html[data-theme="dark"] body {
+    background-image:
+      radial-gradient(ellipse 120% 80% at 100% -20%, var(--accent-soft), transparent 50%);
+  }
+  html[data-theme="dark"] body {
+    background-image:
+      radial-gradient(ellipse 120% 80% at 0% -15%, rgba(224, 122, 86, 0.12), transparent 52%),
+      radial-gradient(ellipse 70% 50% at 100% 100%, rgba(224, 122, 86, 0.05), transparent 48%);
+  }
 }
 
 body.controls-open {
@@ -190,14 +204,16 @@ button {
   box-shadow: 3px 3px 0 var(--line);
   border-radius: var(--radius-sm);
   color: var(--ink);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease-out);
 }
-.controls-trigger:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0 var(--line);
+@media (hover: hover) and (pointer: fine) {
+  .controls-trigger:hover {
+    transform: translate3d(-1px, -1px, 0);
+    box-shadow: 4px 4px 0 var(--line);
+  }
 }
 .controls-trigger:active {
-  transform: translate(1px, 1px);
+  transform: translate3d(1px, 1px, 0);
   box-shadow: 2px 2px 0 var(--line);
 }
 .controls-trigger[aria-expanded="true"] {
@@ -464,13 +480,17 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   padding: 10px 14px;
   box-shadow: 3px 3px 0 var(--line);
   border-radius: var(--radius-sm);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
-  .scroll-cue.reveal.is-visible:hover {
-    transform: translate(-2px, -2px);
+  .scroll-cue.is-settled:hover {
+    transform: translate3d(-2px, -2px, 0);
     box-shadow: 5px 5px 0 var(--line);
   }
+}
+.scroll-cue:active {
+  transform: translate3d(1px, 1px, 0);
+  box-shadow: 2px 2px 0 var(--line);
 }
 
 /* ---------- Sections ---------- */
@@ -521,19 +541,14 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   box-shadow: 2px 2px 0 var(--line);
   border-radius: var(--radius);
   padding: var(--space-3);
-  /* transform transition re-enabled after .reveal.is-visible settles */
-  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
+  /* Static cards: hover only on fine pointers — never press/active (not clickable) */
+  transition: transform var(--dur) var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
-  /* Beats .reveal.is-visible (0,2,0) so every interest card lifts, not only the first */
-  .interest-card.reveal.is-visible:hover {
-    transform: translate(-2px, -2px);
+  .interest-card.is-settled:hover {
+    transform: translate3d(-2px, -2px, 0);
     box-shadow: 3px 3px 0 var(--line);
   }
-}
-.interest-card.reveal.is-visible:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 var(--line);
 }
 .interest-card__icon {
   width: 48px;
@@ -577,8 +592,8 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   box-shadow: var(--shadow);
   border-radius: var(--radius);
   padding: var(--space-4);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
   overflow: hidden;
+  transition: transform var(--dur) var(--ease-out);
 }
 @media (min-width: 720px) {
   .featured-card {
@@ -588,13 +603,14 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  .featured-card.reveal.is-visible:hover {
-    transform: translate(-3px, -3px);
+  .featured-card.is-settled:hover {
+    transform: translate3d(-3px, -3px, 0);
     box-shadow: var(--shadow-hover);
   }
 }
-.featured-card.reveal.is-visible:active {
-  transform: translate(1px, 1px);
+/* Real links — press feedback OK */
+.featured-card:active {
+  transform: translate3d(1px, 1px, 0);
   box-shadow: 2px 2px 0 var(--line);
 }
 .featured-card__badge {
@@ -691,18 +707,18 @@ html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: none; }
   border: var(--border-w) solid var(--line);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
   a.link-card:hover,
   .link-card--copy:hover {
-    transform: translate(-2px, -2px);
+    transform: translate3d(-2px, -2px, 0);
     box-shadow: var(--shadow-hover);
   }
 }
 a.link-card:active,
 .link-card--copy:active {
-  transform: translate(1px, 1px);
+  transform: translate3d(1px, 1px, 0);
   box-shadow: 2px 2px 0 var(--line);
 }
 .link-card__icon {
@@ -773,35 +789,40 @@ a.link-card:active,
 }
 .footer__dot { opacity: 0.5; }
 
-/* ---------- Scroll entrance ----------
-   Entrance uses opacity + translateY.
-   Once .is-visible, stagger delay is cleared so hover transforms work on every card.
+/* ---------- Scroll entrance (mobile + desktop) ----------
+   1) .reveal → hidden, will animate in
+   2) .is-visible → play entrance (opacity + translate3d)
+   3) .is-settled → drop will-change; hover may own transform again
+   Never animate box-shadow (major scroll jank source).
 */
 .reveal {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translate3d(0, 20px, 0);
   transition:
     opacity var(--dur-enter) var(--ease-out),
     transform var(--dur-enter) var(--ease-out);
-  transition-delay: calc(var(--stagger, 0) * 60ms);
+  transition-delay: calc(var(--stagger, 0) * 55ms);
+  will-change: opacity, transform;
 }
 .reveal.is-visible {
   opacity: 1;
-  transform: translateY(0);
-  transition-delay: 0ms;
-  /* Keep transform in transition so hover lift animates smoothly */
-  transition:
-    opacity var(--dur) var(--ease-out),
-    transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
+  transform: translate3d(0, 0, 0);
 }
-.reveal-delay-1 { transition-delay: 70ms; }
-.reveal-delay-2 { transition-delay: 140ms; }
-.reveal-delay-3 { transition-delay: 210ms; }
-.reveal-delay-1.is-visible,
-.reveal-delay-2.is-visible,
-.reveal-delay-3.is-visible {
+/* After entrance ends — free compositor; hover rules use .is-settled */
+.reveal.is-settled {
+  will-change: auto;
+  transition: transform var(--dur) var(--ease-out);
   transition-delay: 0ms;
+}
+.reveal-delay-1 { transition-delay: 80ms; }
+.reveal-delay-2 { transition-delay: 140ms; }
+.reveal-delay-3 { transition-delay: 200ms; }
+
+/* Non-interactive reveals (headers, copy) need no post-hover transition */
+.section__header.reveal.is-settled,
+.about__body.reveal.is-settled,
+.footer__inner.reveal.is-settled {
+  transition: none;
 }
 
 html:not(.js) .reveal,
@@ -809,22 +830,18 @@ html.reveal-fallback .reveal {
   opacity: 1 !important;
   transform: none !important;
   transition: none !important;
+  will-change: auto !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   .reveal {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+    will-change: auto !important;
   }
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .reveal.is-settled {
+    transition: none;
   }
 }
 
@@ -962,7 +979,7 @@ html.reveal-fallback .reveal {
   box-shadow: 2px 2px 0 var(--line);
   overflow: hidden;
   line-height: 0;
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease-out);
 }
 
 .duolingo-card__img {
@@ -997,7 +1014,7 @@ html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
 
 @media (hover: hover) and (pointer: fine) {
   .duolingo-card__qr:hover .duolingo-card__frame {
-    transform: translate(-2px, -2px);
+    transform: translate3d(-2px, -2px, 0);
     box-shadow: 4px 4px 0 var(--line);
   }
   .duolingo-card__qr:hover .duolingo-card__expand {
@@ -1006,7 +1023,7 @@ html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
 }
 
 .duolingo-card__qr:active .duolingo-card__frame {
-  transform: translate(1px, 1px);
+  transform: translate3d(1px, 1px, 0);
   box-shadow: 1px 1px 0 var(--line);
 }
 
@@ -1186,13 +1203,13 @@ html[data-theme="dark"] .duolingo-card {
     );
 }
 
-html[data-theme="dark"] .interest-card.reveal.is-visible:hover,
-html[data-theme="dark"] .scroll-cue.reveal.is-visible:hover,
+html[data-theme="dark"] .interest-card.is-settled:hover,
+html[data-theme="dark"] .scroll-cue.is-settled:hover,
 html[data-theme="dark"] .controls-trigger:hover {
   box-shadow: 4px 4px 0 #050403;
 }
 
-html[data-theme="dark"] .featured-card.reveal.is-visible:hover,
+html[data-theme="dark"] .featured-card.is-settled:hover,
 html[data-theme="dark"] .link-card:hover,
 html[data-theme="dark"] .duolingo-card__qr:hover .duolingo-card__frame {
   box-shadow: var(--shadow-hover);
