@@ -42,12 +42,17 @@
   background: var(--bg-card);
   box-shadow: 2px 2px 0 var(--line);
   border-radius: var(--radius-sm);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease-out);
 }
 
-.legal-back:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--line);
+@media (hover: hover) and (pointer: fine) {
+  .legal-back:hover {
+    transform: translate3d(0, -1px, 0);
+    box-shadow: 3px 3px 0 var(--line);
+  }
+}
+.legal-back:active {
+  transform: scale(0.98);
 }
 
 .legal-related {

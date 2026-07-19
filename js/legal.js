@@ -24,8 +24,7 @@
   }
 
   function setLangSelect(lang) {
-    var select = document.getElementById("lang-select");
-    if (select && select.value !== lang) select.value = lang;
+    if (typeof syncLangPicker === "function") syncLangPicker(lang);
   }
 
   function render(lang) {
@@ -84,7 +83,7 @@
 
       if (body) {
         var article = document.createElement("section");
-        article.className = "legal-section reveal is-visible";
+        article.className = "legal-section reveal is-visible is-settled";
         article.id = section.id;
 
         var h2 = document.createElement("h2");

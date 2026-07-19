@@ -7,7 +7,7 @@
 
   var WECHAT_ID = "realTimGong";
   /* Entrance duration + max stagger buffer (keep in sync with CSS --dur-enter) */
-  var REVEAL_MS = 720;
+  var REVEAL_MS = 640;
 
   document.documentElement.classList.add("js", "app-ready");
   document.documentElement.classList.remove("reveal-fallback");
@@ -235,10 +235,8 @@
 
     var lastFocus = null;
     var closeEls = modal.querySelectorAll("[data-qr-close]");
-
-    function modalIsOpen() {
-      return !modal.hidden;
-    }
+    var modalGen = 0;
+    var isOpen = false;
 
     function focusableInModal() {
       return Array.prototype.slice
@@ -254,28 +252,47 @@
 
     function openModal() {
       if (typeof closeControlsPanel === "function") closeControlsPanel();
+      modalGen += 1;
+      var gen = modalGen;
+      isOpen = true;
       lastFocus = document.activeElement;
       modal.hidden = false;
+      modal.classList.remove("is-shown");
       document.body.classList.add("qr-modal-open");
       openBtn.setAttribute("aria-expanded", "true");
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (gen !== modalGen) return;
+          modal.classList.add("is-shown");
+        });
+      });
       var closeBtn = modal.querySelector(".qr-modal__close");
       window.setTimeout(function () {
+        if (gen !== modalGen) return;
         if (closeBtn) closeBtn.focus();
       }, 10);
     }
 
     function closeModal() {
-      if (!modalIsOpen()) return;
-      modal.hidden = true;
-      document.body.classList.remove("qr-modal-open");
+      if (!isOpen) return;
+      modalGen += 1;
+      var gen = modalGen;
+      isOpen = false;
+      modal.classList.remove("is-shown");
       openBtn.setAttribute("aria-expanded", "false");
-      if (lastFocus && typeof lastFocus.focus === "function") {
-        try {
-          lastFocus.focus();
-        } catch (_) {
-          /* ignore */
+      var closeMs = prefersReducedMotion() ? 0 : 240;
+      window.setTimeout(function () {
+        if (gen !== modalGen) return;
+        modal.hidden = true;
+        document.body.classList.remove("qr-modal-open");
+        if (lastFocus && typeof lastFocus.focus === "function") {
+          try {
+            lastFocus.focus();
+          } catch (_) {
+            /* ignore */
+          }
         }
-      }
+      }, closeMs);
     }
 
     openBtn.setAttribute("aria-expanded", "false");
@@ -292,7 +309,7 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (!modalIsOpen()) return;
+      if (!isOpen) return;
       if (e.key === "Escape") {
         e.preventDefault();
         closeModal();

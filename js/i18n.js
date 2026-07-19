@@ -419,6 +419,14 @@ const STORAGE_KEY = "timg-lang";
 const THEME_LEGACY_KEY = "timg-theme";
 const THEME_SESSION_KEY = "timg-theme-session";
 
+/** Native language names shown in the custom picker (not translated). */
+const LANG_OPTIONS = [
+  { code: "en", label: "English" },
+  { code: "es", label: "Español" },
+  { code: "zh", label: "中文" },
+  { code: "ja", label: "日本語" },
+];
+
 /**
  * Resolve a nested key like "hero.tagline" from a translation object.
  */
@@ -434,7 +442,7 @@ function isDesktopControls() {
 }
 
 /**
- * Close mobile preferences bottom sheet.
+ * Close mobile preferences bottom sheet immediately (no exit animation).
  */
 function closeControlsPanel() {
   const cluster = document.querySelector("[data-controls]");
@@ -443,41 +451,156 @@ function closeControlsPanel() {
   const backdrop = document.getElementById("controls-backdrop");
   if (cluster) cluster.classList.remove("is-open");
   if (trigger) trigger.setAttribute("aria-expanded", "false");
-  if (panel && !isDesktopControls()) panel.hidden = true;
-  if (backdrop) backdrop.hidden = true;
+  if (panel && !isDesktopControls()) {
+    panel.classList.remove("is-raised", "is-dragging");
+    panel.hidden = true;
+    panel.style.transform = "";
+    panel.style.transition = "";
+    panel.removeAttribute("aria-modal");
+    if (panel.getAttribute("data-default-role")) {
+      panel.setAttribute("role", panel.getAttribute("data-default-role"));
+    }
+  }
+  if (backdrop) {
+    backdrop.classList.remove("is-visible");
+    backdrop.hidden = true;
+    backdrop.style.opacity = "";
+    backdrop.style.transition = "";
+  }
   document.body.classList.remove("controls-open");
 }
 
 /**
- * Wire mobile preferences: one button → solid bottom sheet + backdrop.
+ * Wire mobile preferences: bottom sheet + backdrop + iOS-style drag dismiss.
  */
 function initControlsPanel() {
   const cluster = document.querySelector("[data-controls]");
   const trigger = document.getElementById("controls-trigger");
   const panel = document.getElementById("controls-panel");
   const backdrop = document.getElementById("controls-backdrop");
+  const grab = panel && panel.querySelector(".controls-panel__grab");
   if (!cluster || !trigger || !panel) return;
 
+  /* Store non-dialog role for desktop; mobile open uses dialog */
+  if (!panel.getAttribute("data-default-role")) {
+    panel.setAttribute("data-default-role", panel.getAttribute("role") || "region");
+  }
+
+  var sheetGen = 0;
+
+  function resetSheetInlineStyles() {
+    panel.style.transform = "";
+    panel.style.transition = "";
+    panel.classList.remove("is-dragging");
+    if (backdrop) {
+      backdrop.style.opacity = "";
+      backdrop.style.transition = "";
+    }
+  }
+
+  function setSheetDialogMode(isDialog) {
+    if (isDialog) {
+      panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-modal", "true");
+    } else {
+      panel.setAttribute("role", panel.getAttribute("data-default-role") || "region");
+      panel.removeAttribute("aria-modal");
+    }
+  }
+
   function syncForViewport() {
+    sheetGen += 1;
+    resetSheetInlineStyles();
+    panel.classList.remove("is-raised");
+    if (backdrop) backdrop.classList.remove("is-visible");
+
     if (isDesktopControls()) {
       panel.hidden = false;
       if (backdrop) backdrop.hidden = true;
       cluster.classList.remove("is-open");
       trigger.setAttribute("aria-expanded", "false");
       document.body.classList.remove("controls-open");
+      setSheetDialogMode(false);
     } else {
       panel.hidden = true;
       if (backdrop) backdrop.hidden = true;
+      cluster.classList.remove("is-open");
+      trigger.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("controls-open");
+      setSheetDialogMode(false);
     }
   }
 
   function setOpen(open) {
     if (isDesktopControls()) return;
+    sheetGen += 1;
+    var gen = sheetGen;
+
     cluster.classList.toggle("is-open", open);
     trigger.setAttribute("aria-expanded", open ? "true" : "false");
-    panel.hidden = !open;
-    if (backdrop) backdrop.hidden = !open;
     document.body.classList.toggle("controls-open", open);
+
+    if (open) {
+      setSheetDialogMode(true);
+      panel.hidden = false;
+      if (backdrop) {
+        backdrop.hidden = false;
+        backdrop.classList.remove("is-visible");
+      }
+      panel.classList.remove("is-raised", "is-dragging");
+      resetSheetInlineStyles();
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          if (gen !== sheetGen) return;
+          panel.classList.add("is-raised");
+          if (backdrop) backdrop.classList.add("is-visible");
+        });
+      });
+      return;
+    }
+
+    /* Close: CSS drops .is-raised → slides down (unless drag left an inline transform) */
+    setSheetDialogMode(false);
+    panel.classList.remove("is-dragging");
+    if (backdrop) backdrop.classList.remove("is-visible");
+
+    var reduce =
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var closeMs = reduce ? 0 : 380;
+
+    if (panel.style.transform) {
+      panel.style.transition =
+        "transform " + closeMs + "ms cubic-bezier(0.32, 0.72, 0, 1)";
+      panel.style.transform = "translate3d(0, 100%, 0)";
+      panel.classList.remove("is-raised");
+    } else {
+      panel.style.transition = "";
+      panel.classList.remove("is-raised");
+    }
+
+    window.setTimeout(function () {
+      if (gen !== sheetGen) return;
+      panel.hidden = true;
+      resetSheetInlineStyles();
+      if (backdrop) backdrop.hidden = true;
+    }, closeMs);
+  }
+
+  /** Finalize after drag-dismiss animation (panel already off-screen). */
+  function finishDragClose() {
+    sheetGen += 1;
+    cluster.classList.remove("is-open");
+    trigger.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("controls-open");
+    setSheetDialogMode(false);
+    panel.classList.remove("is-raised", "is-dragging");
+    panel.hidden = true;
+    resetSheetInlineStyles();
+    if (backdrop) {
+      backdrop.classList.remove("is-visible");
+      backdrop.hidden = true;
+    }
   }
 
   syncForViewport();
@@ -497,10 +620,108 @@ function initControlsPanel() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
-    /* QR modal owns Escape while open (body class set by main.js) */
     if (document.body.classList.contains("qr-modal-open")) return;
+    if (document.body.classList.contains("lang-picker-open")) return;
+    if (isDesktopControls()) return;
+    if (trigger.getAttribute("aria-expanded") !== "true") return;
     setOpen(false);
   });
+
+  /* Drag grabber to dismiss — iOS sheet pattern */
+  if (grab) {
+    var drag = {
+      active: false,
+      startY: 0,
+      dy: 0,
+      startTime: 0,
+    };
+
+    function clientY(e) {
+      if (e.touches && e.touches[0]) return e.touches[0].clientY;
+      if (e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientY;
+      return e.clientY;
+    }
+
+    function onDragStart(e) {
+      if (isDesktopControls() || panel.hidden) return;
+      if (trigger.getAttribute("aria-expanded") !== "true") return;
+      drag.active = true;
+      drag.startY = clientY(e);
+      drag.dy = 0;
+      drag.startTime = Date.now();
+      panel.classList.add("is-dragging");
+      panel.style.transition = "none";
+      if (e.pointerId != null && grab.setPointerCapture) {
+        try {
+          grab.setPointerCapture(e.pointerId);
+        } catch (_) {}
+      }
+      e.preventDefault();
+    }
+
+    function onDragMove(e) {
+      if (!drag.active) return;
+      drag.dy = Math.max(0, clientY(e) - drag.startY);
+      panel.style.transform = "translate3d(0, " + drag.dy + "px, 0)";
+      if (backdrop) {
+        backdrop.style.opacity = String(Math.max(0.12, 1 - drag.dy / 280));
+      }
+      if (e.cancelable) e.preventDefault();
+    }
+
+    function onDragEnd() {
+      if (!drag.active) return;
+      drag.active = false;
+      panel.classList.remove("is-dragging");
+
+      var elapsed = Math.max(1, Date.now() - drag.startTime);
+      var velocity = drag.dy / elapsed;
+      var shouldClose = drag.dy > 96 || (drag.dy > 48 && velocity > 0.45);
+
+      if (shouldClose) {
+        var h = panel.getBoundingClientRect().height || 400;
+        panel.classList.remove("is-raised");
+        panel.style.transition =
+          "transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)";
+        panel.style.transform =
+          "translate3d(0, " + Math.max(h, drag.dy + 24) + "px, 0)";
+        if (backdrop) {
+          backdrop.classList.remove("is-visible");
+          backdrop.style.transition = "opacity 0.22s ease-out";
+          backdrop.style.opacity = "0";
+        }
+        window.setTimeout(finishDragClose, 300);
+      } else {
+        panel.style.transition =
+          "transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)";
+        panel.style.transform = "translate3d(0, 0, 0)";
+        if (backdrop) {
+          backdrop.style.transition = "opacity 0.2s ease-out";
+          backdrop.style.opacity = "";
+          backdrop.classList.add("is-visible");
+        }
+        window.setTimeout(function () {
+          panel.style.transition = "";
+          panel.style.transform = "";
+          panel.classList.add("is-raised");
+          if (backdrop) backdrop.style.transition = "";
+        }, 300);
+      }
+      drag.dy = 0;
+    }
+
+    if (window.PointerEvent) {
+      grab.addEventListener("pointerdown", onDragStart);
+      grab.addEventListener("pointermove", onDragMove);
+      grab.addEventListener("pointerup", onDragEnd);
+      grab.addEventListener("pointercancel", onDragEnd);
+    } else {
+      grab.addEventListener("touchstart", onDragStart, { passive: false });
+      grab.addEventListener("touchmove", onDragMove, { passive: false });
+      grab.addEventListener("touchend", onDragEnd);
+      grab.addEventListener("touchcancel", onDragEnd);
+    }
+  }
 
   if (window.matchMedia) {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -513,17 +734,181 @@ function initControlsPanel() {
 }
 
 /**
- * Native <select> language control (browser/OS menu).
+ * Sync custom language picker UI to the active language code.
+ */
+function syncLangPicker(lang) {
+  const resolved = SUPPORTED_LANGS.includes(lang) ? lang : "en";
+  const opt =
+    LANG_OPTIONS.find(function (o) {
+      return o.code === resolved;
+    }) || LANG_OPTIONS[0];
+
+  const valueEl = document.getElementById("lang-value");
+  if (valueEl) valueEl.textContent = opt.label;
+
+  const menu = document.getElementById("lang-menu");
+  if (!menu) return;
+
+  menu.querySelectorAll(".lang-picker__option").forEach(function (btn) {
+    const selected = btn.getAttribute("data-lang") === resolved;
+    btn.setAttribute("aria-selected", selected ? "true" : "false");
+    btn.classList.toggle("is-selected", selected);
+  });
+}
+
+/**
+ * Custom language picker.
+ * Desktop: compact trigger + macOS-style dropdown.
+ * Mobile: options always visible in the prefs sheet (no nested popup).
  */
 function initLanguageMenu(onSelect) {
-  const select = document.getElementById("lang-select");
-  if (!select) return;
+  const picker = document.getElementById("lang-picker");
+  const trigger = document.getElementById("lang-trigger");
+  const menu = document.getElementById("lang-menu");
+  if (!picker || !trigger || !menu) return;
 
-  select.addEventListener("change", () => {
-    const lang = select.value;
-    if (!lang) return;
+  const options = Array.prototype.slice.call(
+    menu.querySelectorAll(".lang-picker__option")
+  );
+
+  function isDesktopPicker() {
+    return window.matchMedia && window.matchMedia("(min-width: 768px)").matches;
+  }
+
+  function isOpen() {
+    return !menu.hidden;
+  }
+
+  function setMenuOpen(open) {
+    /* Mobile: always show the list */
+    if (!isDesktopPicker()) {
+      menu.hidden = false;
+      trigger.setAttribute("aria-expanded", "true");
+      document.body.classList.remove("lang-picker-open");
+      return;
+    }
+    menu.hidden = !open;
+    trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    document.body.classList.toggle("lang-picker-open", open);
+    picker.classList.toggle("is-open", open);
+    if (open) {
+      const selected =
+        menu.querySelector('.lang-picker__option[aria-selected="true"]') ||
+        options[0];
+      if (selected) selected.focus();
+    }
+  }
+
+  function choose(lang) {
+    if (!lang || !SUPPORTED_LANGS.includes(lang)) return;
+    if (isDesktopPicker()) {
+      setMenuOpen(false);
+      trigger.focus();
+    }
     if (typeof onSelect === "function") onSelect(lang);
     else if (typeof applyLanguage === "function") applyLanguage(lang);
+  }
+
+  function moveFocus(delta) {
+    if (!options.length) return;
+    const i = options.indexOf(document.activeElement);
+    const next = options[(Math.max(i, 0) + delta + options.length) % options.length];
+    if (next) next.focus();
+  }
+
+  /* Ensure mobile list is visible on load / resize */
+  setMenuOpen(false);
+  if (window.matchMedia) {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onVp = function () {
+      if (!isDesktopPicker()) setMenuOpen(false);
+      else setMenuOpen(false); /* collapse desktop dropdown on breakpoint */
+    };
+    if (mq.addEventListener) mq.addEventListener("change", onVp);
+    else if (mq.addListener) mq.addListener(onVp);
+  }
+
+  trigger.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (!isDesktopPicker()) return;
+    setMenuOpen(!isOpen());
+  });
+
+  options.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      choose(btn.getAttribute("data-lang"));
+    });
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!isDesktopPicker() || !isOpen()) return;
+    if (picker.contains(e.target)) return;
+    setMenuOpen(false);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (!isDesktopPicker()) {
+      /* Mobile: simple list navigation when an option is focused */
+      if (!options.includes(document.activeElement)) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        moveFocus(1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        moveFocus(-1);
+      } else if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        choose(document.activeElement.getAttribute("data-lang"));
+      }
+      return;
+    }
+
+    if (!isOpen()) {
+      if (
+        (e.key === "ArrowDown" || e.key === "ArrowUp") &&
+        document.activeElement === trigger
+      ) {
+        e.preventDefault();
+        setMenuOpen(true);
+      }
+      return;
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      setMenuOpen(false);
+      trigger.focus();
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      moveFocus(1);
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      moveFocus(-1);
+      return;
+    }
+    if (e.key === "Home") {
+      e.preventDefault();
+      if (options[0]) options[0].focus();
+      return;
+    }
+    if (e.key === "End") {
+      e.preventDefault();
+      if (options[options.length - 1]) options[options.length - 1].focus();
+      return;
+    }
+    if (e.key === "Enter" || e.key === " ") {
+      const active = document.activeElement;
+      if (active && active.classList.contains("lang-picker__option")) {
+        e.preventDefault();
+        choose(active.getAttribute("data-lang"));
+      }
+    }
   });
 }
 
@@ -663,9 +1048,8 @@ function applyLanguage(lang) {
     }
   }
 
-  // Native <select> stays in sync with active language
-  const select = document.getElementById("lang-select");
-  if (select && select.value !== resolved) select.value = resolved;
+  // Keep custom language picker in sync
+  if (typeof syncLangPicker === "function") syncLangPicker(resolved);
 
   try {
     localStorage.setItem(STORAGE_KEY, resolved);

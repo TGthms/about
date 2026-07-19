@@ -94,25 +94,62 @@
 
         <div class="controls-backdrop" id="controls-backdrop" hidden></div>
 
-        <div class="controls-panel" id="controls-panel" role="dialog" aria-modal="true" aria-labelledby="controls-panel-title" hidden>
-          <div class="controls-panel__grab" aria-hidden="true"></div>
+        <div class="controls-panel" id="controls-panel" role="region" aria-labelledby="controls-panel-title" hidden>
+          <div class="controls-panel__grab" role="presentation" aria-hidden="true" data-sheet-grab></div>
           <p class="controls-panel__title" id="controls-panel-title" data-i18n="a11y.siteControls">Preferences</p>
 
           <div class="controls-section">
             <p class="controls-section__label" data-i18n="a11y.selectLanguage">Language</p>
-            <div class="lang-switcher">
-              <label class="visually-hidden" for="lang-select" data-i18n="a11y.selectLanguage">Language</label>
-              <select
-                id="lang-select"
-                class="lang-select"
+            <div class="lang-picker" id="lang-picker">
+              <button
+                type="button"
+                class="lang-picker__trigger"
+                id="lang-trigger"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="lang-menu"
                 data-i18n-aria="a11y.selectLanguage"
                 aria-label="Language"
               >
-                <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="zh">中文</option>
-                <option value="ja">日本語</option>
-              </select>
+                <span class="lang-picker__value" id="lang-value">English</span>
+                <svg class="lang-picker__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <ul class="lang-picker__menu" id="lang-menu" role="listbox" tabindex="-1" hidden>
+                <li role="presentation">
+                  <button type="button" class="lang-picker__option is-selected" role="option" data-lang="en" aria-selected="true">
+                    <span class="lang-picker__check" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="lang-picker__option-label">English</span>
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button type="button" class="lang-picker__option" role="option" data-lang="es" aria-selected="false">
+                    <span class="lang-picker__check" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="lang-picker__option-label">Español</span>
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button type="button" class="lang-picker__option" role="option" data-lang="zh" aria-selected="false">
+                    <span class="lang-picker__check" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="lang-picker__option-label">中文</span>
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button type="button" class="lang-picker__option" role="option" data-lang="ja" aria-selected="false">
+                    <span class="lang-picker__check" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="lang-picker__option-label">日本語</span>
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
 
