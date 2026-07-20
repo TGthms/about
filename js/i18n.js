@@ -59,8 +59,14 @@ const TRANSLATIONS = {
       },
     },
     links: {
-      label: "Work & links",
-      title: "Where to find me",
+      projects: {
+        label: "Projects",
+        title: "Things I've built",
+      },
+      connect: {
+        label: "Elsewhere",
+        title: "Where to find me",
+      },
       featured: "Featured",
       project: "Project",
       open: "Open project",
@@ -158,8 +164,14 @@ const TRANSLATIONS = {
       },
     },
     links: {
-      label: "Trabajo y enlaces",
-      title: "Dónde encontrarme",
+      projects: {
+        label: "Proyectos",
+        title: "Lo que he creado",
+      },
+      connect: {
+        label: "En la red",
+        title: "Dónde encontrarme",
+      },
       featured: "Destacado",
       project: "Proyecto",
       open: "Abrir proyecto",
@@ -257,8 +269,14 @@ const TRANSLATIONS = {
       },
     },
     links: {
-      label: "作品与链接",
-      title: "探索",
+      projects: {
+        label: "作品",
+        title: "我做的项目",
+      },
+      connect: {
+        label: "链接",
+        title: "找到我",
+      },
       featured: "推荐",
       project: "项目",
       open: "打开项目",
@@ -356,8 +374,14 @@ const TRANSLATIONS = {
       },
     },
     links: {
-      label: "作品とリンク",
-      title: "リンク集",
+      projects: {
+        label: "プロジェクト",
+        title: "つくったもの",
+      },
+      connect: {
+        label: "そのほか",
+        title: "つながる",
+      },
       featured: "注目",
       project: "プロジェクト",
       open: "開く",
