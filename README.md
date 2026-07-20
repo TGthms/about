@@ -16,14 +16,6 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Privacy Policy & Terms of Use
 
-## Local
-
-Open `index.html` in a browser, or serve the folder:
-
-```bash
-npx serve .
-```
-
 ## Files
 
 | Path | Role |
