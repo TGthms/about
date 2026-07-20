@@ -520,6 +520,11 @@ function closeControlsPanel() {
     if (panel.getAttribute("data-default-role")) {
       panel.setAttribute("role", panel.getAttribute("data-default-role"));
     }
+    var surface = panel.querySelector(".controls-panel__surface");
+    if (surface) {
+      surface.style.transform = "";
+      surface.style.transition = "";
+    }
   }
   if (backdrop) {
     backdrop.classList.remove("is-visible");
@@ -538,8 +543,35 @@ function initControlsPanel() {
   const trigger = document.getElementById("controls-trigger");
   const panel = document.getElementById("controls-panel");
   const backdrop = document.getElementById("controls-backdrop");
-  const grab = panel && panel.querySelector(".controls-panel__grab");
+  /* Entire drag zone (grabber + Preferences title) dismisses the sheet */
+  const grab = panel && panel.querySelector("[data-sheet-grab]");
+  const surface =
+    panel &&
+    (panel.querySelector(".controls-panel__surface") || panel);
   if (!cluster || !trigger || !panel) return;
+
+  function sheetHeight() {
+    return (surface || panel).getBoundingClientRect().height || 400;
+  }
+
+  /*
+   * Mobile: hoist backdrop + panel to <body> so position:fixed is viewport-true
+   * (not trapped inside the short fixed .top-bar). Desktop: keep in cluster.
+   */
+  function syncSheetLayerParent() {
+    if (!document.body) return;
+    var layers = [backdrop, panel].filter(Boolean);
+    if (isDesktopControls()) {
+      layers.forEach(function (el) {
+        if (el.parentElement !== cluster) cluster.appendChild(el);
+      });
+    } else {
+      layers.forEach(function (el) {
+        if (el.parentElement !== document.body) document.body.appendChild(el);
+      });
+    }
+  }
+  syncSheetLayerParent();
 
   /* Store non-dialog role for desktop; mobile open uses dialog */
   if (!panel.getAttribute("data-default-role")) {
@@ -547,11 +579,55 @@ function initControlsPanel() {
   }
 
   var sheetGen = 0;
+  /* Live sheet offset (px). Positive = dragged down toward dismiss. */
+  var sheetY = 0;
+  var springRaf = 0;
+
+  function prefersSheetReduceMotion() {
+    return Boolean(
+      window.matchMedia &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
+  function cancelSheetSpring() {
+    if (springRaf) {
+      window.cancelAnimationFrame(springRaf);
+      springRaf = 0;
+    }
+  }
+
+  /**
+   * Apply sheet drag offset — the ENTIRE menu moves as one unit.
+   * y > 0 → dismiss down (dimmed page shows above the sheet).
+   * y < 0 → rubber-band up; cream ::after on the panel fills the gap below
+   *          (same --bg-card). Backdrop above the sheet is unchanged.
+   */
+  function applySheetY(y) {
+    if (Math.abs(y) < 0.15) y = 0;
+    sheetY = y;
+    /* Never translate the inner surface alone — that felt like in-menu scroll */
+    if (surface) {
+      surface.style.transform = "";
+      surface.style.transition = "";
+    }
+    if (y === 0) {
+      panel.style.transform = "";
+    } else {
+      panel.style.transform = "translate3d(0, " + y + "px, 0)";
+    }
+  }
 
   function resetSheetInlineStyles() {
+    cancelSheetSpring();
+    sheetY = 0;
     panel.style.transform = "";
     panel.style.transition = "";
     panel.classList.remove("is-dragging");
+    if (surface) {
+      surface.style.transform = "";
+      surface.style.transition = "";
+    }
     if (backdrop) {
       backdrop.style.opacity = "";
       backdrop.style.transition = "";
@@ -573,6 +649,7 @@ function initControlsPanel() {
     resetSheetInlineStyles();
     panel.classList.remove("is-raised");
     if (backdrop) backdrop.classList.remove("is-visible");
+    syncSheetLayerParent();
 
     if (isDesktopControls()) {
       panel.hidden = false;
@@ -687,13 +764,16 @@ function initControlsPanel() {
     setOpen(false);
   });
 
-  /* Drag grabber to dismiss — iOS sheet pattern */
+  /*
+   * Drag top block (grabber + title) — iOS sheet:
+   * 1:1 down, rubber-band up, velocity handoff, spring settle, interruptible.
+   */
   if (grab) {
     var drag = {
       active: false,
-      startY: 0,
-      dy: 0,
-      startTime: 0,
+      fingerStart: 0,
+      yAtGrab: 0,
+      samples: [],
     };
 
     function clientY(e) {
@@ -702,30 +782,163 @@ function initControlsPanel() {
       return e.clientY;
     }
 
+    /** Progressive resistance past the open edge (Apple rubber-band). */
+    function rubberband(overshoot, dimension, constant) {
+      var c = constant == null ? 0.55 : constant;
+      var d = Math.max(1, dimension);
+      return (overshoot * d * c) / (d + c * Math.abs(overshoot));
+    }
+
+    /** Map unconstrained offset → visual Y (px). */
+    function mapDragY(desired, reduce) {
+      if (desired >= 0) return desired;
+      if (reduce) return 0;
+      var h = sheetHeight();
+      var dim = Math.max(120, h * 0.45);
+      return -rubberband(-desired, dim, 0.55);
+    }
+
+    function recordSample(y) {
+      var t = performance.now();
+      drag.samples.push({ t: t, y: y });
+      if (drag.samples.length > 6) drag.samples.shift();
+    }
+
+    /** Release velocity in px/ms (positive = downward). */
+    function sampleVelocity() {
+      if (drag.samples.length < 2) return 0;
+      var a = drag.samples[0];
+      var b = drag.samples[drag.samples.length - 1];
+      var dt = b.t - a.t;
+      if (dt < 8) return 0;
+      return (b.y - a.y) / dt;
+    }
+
+    function updateBackdropForY(y) {
+      if (!backdrop) return;
+      if (y <= 0) {
+        backdrop.style.opacity = "";
+        backdrop.classList.add("is-visible");
+        return;
+      }
+      backdrop.style.opacity = String(Math.max(0.12, 1 - y / 280));
+    }
+
+    /**
+     * Spring animate sheetY → open (target 0) with initial velocity (px/ms).
+     * Underdamped (ζ < 1) yields a light iOS-style bounce when momentum warrants it.
+     */
+    function springSheetTo(target, velocityPxMs, opts) {
+      opts = opts || {};
+      cancelSheetSpring();
+      panel.style.transition = "none";
+      panel.classList.remove("is-dragging");
+
+      var reduce = prefersSheetReduceMotion();
+      var gen = sheetGen;
+      var pos = sheetY;
+      var vel = velocityPxMs || 0;
+      var lastT = performance.now();
+
+      /* response ≈ settle feel; dampingRatio < 1 → overshoot / bounce */
+      var response = reduce ? 0.22 : opts.response != null ? opts.response : 0.32;
+      var dampingRatio = reduce
+        ? 1
+        : opts.dampingRatio != null
+          ? opts.dampingRatio
+          : 0.86;
+      var omega = (2 * Math.PI) / Math.max(0.12, response);
+      var onDone = opts.onDone;
+      var maxMs = opts.maxMs || 900;
+      var startT = lastT;
+
+      if (reduce) {
+        applySheetY(target);
+        updateBackdropForY(target);
+        panel.classList.add("is-raised");
+        if (typeof onDone === "function") onDone();
+        return;
+      }
+
+      function frame(now) {
+        if (gen !== sheetGen) {
+          springRaf = 0;
+          return;
+        }
+        var dt = Math.min(0.032, Math.max(0.001, (now - lastT) / 1000));
+        lastT = now;
+
+        var x = pos - target;
+        /* m = 1: a = −ω²x − 2ζω v */
+        var accel = -omega * omega * x - 2 * dampingRatio * omega * vel;
+        vel += accel * dt;
+        pos += vel * dt;
+
+        applySheetY(pos);
+        updateBackdropForY(pos);
+
+        if (Math.abs(pos - target) < 0.4 && Math.abs(vel) < 0.05) {
+          springRaf = 0;
+          applySheetY(target);
+          updateBackdropForY(target);
+          panel.style.transition = "";
+          panel.classList.add("is-raised");
+          if (backdrop) {
+            backdrop.style.transition = "";
+            backdrop.style.opacity = "";
+            backdrop.classList.add("is-visible");
+          }
+          if (typeof onDone === "function") onDone();
+          return;
+        }
+
+        if (now - startT > maxMs) {
+          springRaf = 0;
+          applySheetY(target);
+          updateBackdropForY(target);
+          panel.classList.add("is-raised");
+          if (typeof onDone === "function") onDone();
+          return;
+        }
+
+        springRaf = window.requestAnimationFrame(frame);
+      }
+
+      springRaf = window.requestAnimationFrame(frame);
+    }
+
     function onDragStart(e) {
       if (isDesktopControls() || panel.hidden) return;
       if (trigger.getAttribute("aria-expanded") !== "true") return;
-      drag.active = true;
-      drag.startY = clientY(e);
-      drag.dy = 0;
-      drag.startTime = Date.now();
-      panel.classList.add("is-dragging");
+
+      /* Interrupt mid-settle: continue from live presented offset */
+      cancelSheetSpring();
       panel.style.transition = "none";
+      panel.classList.add("is-dragging", "is-raised");
+
+      drag.active = true;
+      drag.fingerStart = clientY(e);
+      drag.yAtGrab = sheetY;
+      drag.samples = [];
+      recordSample(sheetY);
+
       if (e.pointerId != null && grab.setPointerCapture) {
         try {
           grab.setPointerCapture(e.pointerId);
         } catch (_) {}
       }
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
     }
 
     function onDragMove(e) {
       if (!drag.active) return;
-      drag.dy = Math.max(0, clientY(e) - drag.startY);
-      panel.style.transform = "translate3d(0, " + drag.dy + "px, 0)";
-      if (backdrop) {
-        backdrop.style.opacity = String(Math.max(0.12, 1 - drag.dy / 280));
-      }
+      var reduce = prefersSheetReduceMotion();
+      var raw = clientY(e) - drag.fingerStart;
+      var desired = drag.yAtGrab + raw;
+      var y = mapDragY(desired, reduce);
+      applySheetY(y);
+      recordSample(y);
+      updateBackdropForY(y);
       if (e.cancelable) e.preventDefault();
     }
 
@@ -734,40 +947,72 @@ function initControlsPanel() {
       drag.active = false;
       panel.classList.remove("is-dragging");
 
-      var elapsed = Math.max(1, Date.now() - drag.startTime);
-      var velocity = drag.dy / elapsed;
-      var shouldClose = drag.dy > 96 || (drag.dy > 48 && velocity > 0.45);
+      var y = sheetY;
+      var v = sampleVelocity(); /* px/ms */
+      var h = sheetHeight();
+      var reduce = prefersSheetReduceMotion();
 
-      if (shouldClose) {
-        var h = panel.getBoundingClientRect().height || 400;
-        panel.classList.remove("is-raised");
-        panel.style.transition =
-          "transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)";
-        panel.style.transform =
-          "translate3d(0, " + Math.max(h, drag.dy + 24) + "px, 0)";
+      /*
+       * Dismiss: large downward offset, or projected endpoint / flick.
+       * project uses px/s form from Apple fluid interfaces.
+       */
+      var vPxS = v * 1000;
+      var projected = y + (vPxS / 1000) * (0.998 / (1 - 0.998));
+      var shouldClose =
+        y > Math.min(120, h * 0.28) ||
+        (y > 40 && v > 0.45) ||
+        projected > Math.min(160, h * 0.38);
+
+      if (shouldClose && y > 8) {
+        /* Kinetic dismiss (accelerate off-screen) — no bounce needed */
+        cancelSheetSpring();
+        panel.classList.remove("is-raised", "is-dragging");
+        panel.style.transition = "none";
         if (backdrop) {
           backdrop.classList.remove("is-visible");
           backdrop.style.transition = "opacity 0.22s ease-out";
-          backdrop.style.opacity = "0";
         }
-        window.setTimeout(finishDragClose, 300);
+        var gen = sheetGen;
+        var pos = y;
+        var vel = Math.max(v, reduce ? 1.2 : 0.55); /* px/ms */
+        var lastT = performance.now();
+        var startT = lastT;
+
+        function dismissFrame(now) {
+          if (gen !== sheetGen) {
+            springRaf = 0;
+            return;
+          }
+          var dt = Math.min(32, Math.max(1, now - lastT));
+          lastT = now;
+          if (!reduce) vel += 0.0028 * dt; /* ease into a fall */
+          pos += vel * dt;
+          applySheetY(pos);
+          if (backdrop) {
+            backdrop.style.opacity = String(
+              Math.max(0, 1 - pos / Math.max(160, h * 0.55))
+            );
+          }
+          if (pos >= h || now - startT > 700) {
+            springRaf = 0;
+            finishDragClose();
+            return;
+          }
+          springRaf = window.requestAnimationFrame(dismissFrame);
+        }
+        springRaf = window.requestAnimationFrame(dismissFrame);
       } else {
-        panel.style.transition =
-          "transform 0.32s cubic-bezier(0.32, 0.72, 0, 1)";
-        panel.style.transform = "translate3d(0, 0, 0)";
-        if (backdrop) {
-          backdrop.style.transition = "opacity 0.2s ease-out";
-          backdrop.style.opacity = "";
-          backdrop.classList.add("is-visible");
-        }
-        window.setTimeout(function () {
-          panel.style.transition = "";
-          panel.style.transform = "";
-          panel.classList.add("is-raised");
-          if (backdrop) backdrop.style.transition = "";
-        }, 300);
+        /* Settle open — rubber-band release + light bounce with momentum */
+        var hasMomentum = Math.abs(v) > 0.12 || y < -6;
+        springSheetTo(0, v, {
+          dismiss: false,
+          dampingRatio: reduce ? 1 : hasMomentum ? 0.78 : 0.9,
+          response: reduce ? 0.2 : hasMomentum ? 0.28 : 0.34,
+          maxMs: 900,
+        });
       }
-      drag.dy = 0;
+
+      drag.samples = [];
     }
 
     if (window.PointerEvent) {
@@ -787,6 +1032,14 @@ function initControlsPanel() {
     const mq = window.matchMedia("(min-width: 768px)");
     const onChange = function () {
       syncForViewport();
+      /* Refresh host radiogroup tab stops when sheet ↔ section placement swaps */
+      if (typeof syncHostSwitcher === "function") {
+        syncHostSwitcher(
+          typeof getStoredProjectHost === "function"
+            ? getStoredProjectHost()
+            : "cloudflare"
+        );
+      }
     };
     if (mq.addEventListener) mq.addEventListener("change", onChange);
     else if (mq.addListener) mq.addListener(onChange);
@@ -1180,8 +1433,22 @@ function applyProjectUrls(host) {
 }
 
 /**
+ * Whether this host control is the active placement for the current viewport.
+ * Sheet = mobile prefs; section = desktop Projects header.
+ */
+function isHostPlacementActive(el) {
+  var root = el.closest ? el.closest("[data-host-pref]") : null;
+  if (!root || root.hidden) return false;
+  var placement = root.getAttribute("data-host-placement");
+  var desktop = isDesktopControls();
+  if (placement === "sheet") return !desktop;
+  if (placement === "section") return desktop;
+  return true;
+}
+
+/**
  * Sync radiogroup UI with the preferred host.
- * Uses roving tabindex (selected option is the tab stop).
+ * Uses roving tabindex (selected option is the tab stop) on the active placement only.
  */
 function syncHostSwitcher(host) {
   var preferred = isValidProjectHost(host) ? host : getStoredProjectHost();
@@ -1194,7 +1461,7 @@ function syncHostSwitcher(host) {
     var on = btn.getAttribute("data-host") === preferred;
     btn.classList.toggle("is-selected", on);
     btn.setAttribute("aria-checked", on ? "true" : "false");
-    if (dual) {
+    if (dual || !isHostPlacementActive(btn)) {
       btn.setAttribute("tabindex", "-1");
     } else {
       btn.setAttribute("tabindex", on ? "0" : "-1");
@@ -1213,11 +1480,10 @@ function applyProjectHostMode(lang) {
     dual ? "dual" : "single"
   );
 
-  var hostSection = document.querySelector("[data-host-pref]");
-  if (hostSection) {
+  document.querySelectorAll("[data-host-pref]").forEach(function (hostSection) {
     hostSection.hidden = dual;
     hostSection.setAttribute("aria-hidden", dual ? "true" : "false");
-  }
+  });
 
   /* Prevent focusing hidden targets (display:none is not enough for all ATs) */
   document.querySelectorAll("[data-project]").forEach(function (card) {
@@ -1284,11 +1550,13 @@ function setProjectHost(host) {
 }
 
 /**
- * Wire host radiogroup. Safe when the control is absent (legal pages).
+ * Wire host radiogroup(s). Mobile sheet + desktop section may both exist;
+ * state stays in sync via setProjectHost / syncHostSwitcher.
+ * Safe when absent (legal pages).
  */
 function initProjectHost() {
-  var switcher = document.getElementById("host-switcher");
-  if (!switcher) {
+  var switchers = document.querySelectorAll(".host-switcher");
+  if (!switchers.length) {
     /* Still apply URLs if project cards exist without the control */
     applyProjectHostMode(
       document.documentElement.lang === "zh-Hans" ? "zh" : "en"
@@ -1296,42 +1564,44 @@ function initProjectHost() {
     return;
   }
 
-  switcher.addEventListener("click", function (e) {
-    var btn = e.target.closest(".host-option[data-host]");
-    if (!btn || !switcher.contains(btn)) return;
-    e.preventDefault();
-    setProjectHost(btn.getAttribute("data-host"));
-  });
-
-  switcher.addEventListener("keydown", function (e) {
-    var options = Array.prototype.slice.call(
-      switcher.querySelectorAll(".host-option[data-host]")
-    );
-    if (!options.length) return;
-    var current = document.activeElement;
-    var idx = options.indexOf(current);
-    if (idx < 0) return;
-
-    var next = -1;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      next = (idx + 1) % options.length;
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      next = (idx - 1 + options.length) % options.length;
-    } else if (e.key === "Home") {
-      next = 0;
-    } else if (e.key === "End") {
-      next = options.length - 1;
-    } else if (e.key === " " || e.key === "Enter") {
+  switchers.forEach(function (switcher) {
+    switcher.addEventListener("click", function (e) {
+      var btn = e.target.closest(".host-option[data-host]");
+      if (!btn || !switcher.contains(btn)) return;
       e.preventDefault();
-      setProjectHost(options[idx].getAttribute("data-host"));
-      return;
-    } else {
-      return;
-    }
+      setProjectHost(btn.getAttribute("data-host"));
+    });
 
-    e.preventDefault();
-    options[next].focus();
-    setProjectHost(options[next].getAttribute("data-host"));
+    switcher.addEventListener("keydown", function (e) {
+      var options = Array.prototype.slice.call(
+        switcher.querySelectorAll(".host-option[data-host]")
+      );
+      if (!options.length) return;
+      var current = document.activeElement;
+      var idx = options.indexOf(current);
+      if (idx < 0) return;
+
+      var next = -1;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        next = (idx + 1) % options.length;
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        next = (idx - 1 + options.length) % options.length;
+      } else if (e.key === "Home") {
+        next = 0;
+      } else if (e.key === "End") {
+        next = options.length - 1;
+      } else if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        setProjectHost(options[idx].getAttribute("data-host"));
+        return;
+      } else {
+        return;
+      }
+
+      e.preventDefault();
+      options[next].focus();
+      setProjectHost(options[next].getAttribute("data-host"));
+    });
   });
 }
 

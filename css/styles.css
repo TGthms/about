@@ -256,22 +256,34 @@ button {
   opacity: 1;
 }
 
+/*
+  Mobile prefs sheet
+  ─────────────────
+  Layers (hoisted to <body> on mobile so fixed = viewport):
+    backdrop z-90  → dimmed page (visible ABOVE the sheet only)
+    panel    z-100 → entire menu; moves as one unit on drag
+
+  Drag: whole panel translates (up = rubber-band, down = dismiss).
+  ::after paints the same cream below the panel so a pull-up gap stays
+  menu-colored — without covering the dimmed page above the sheet.
+*/
 .controls-panel {
+  --sheet-radius: 20px; /* iOS-like top corners */
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 100;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  max-height: min(80vh, 540px);
-  overflow-y: auto;
-  padding: 0 var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
-  background: var(--bg-card);
+  display: block;
+  margin: 0;
+  padding: 0;
   border: none;
-  border-radius: 16px 16px 0 0;
+  background-color: var(--bg-card);
+  background-image: none;
+  border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
   box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.12);
+  /* Visible so ::after can paint under the sheet when it lifts */
+  overflow: visible;
   transform: translate3d(0, 100%, 0);
   transition: transform var(--dur-sheet) var(--ease-sheet);
   will-change: transform;
@@ -280,10 +292,69 @@ button {
 .controls-panel.is-raised {
   transform: translate3d(0, 0, 0);
 }
+.controls-panel.is-dragging {
+  transition: none !important;
+}
 
-/* iOS-style grabber: large hit target; visual pill via ::after */
-.controls-panel__grab {
+/* Cream extension under the sheet — rides with the panel on drag */
+.controls-panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background-color: var(--bg-card);
+  background-image: none;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.controls-panel__surface {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: min(85vh, 620px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 0 var(--space-3) calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  background-color: var(--bg-card);
+  background-image: none;
+  border: none;
+  /* Match panel radius so the inner cream doesn’t square off the top corners */
+  border-radius: var(--sheet-radius) var(--sheet-radius) 0 0;
+  box-shadow: none;
+  color: var(--ink);
+}
+
+/*
+  iOS-style drag dismiss zone: grabber pill + Preferences title.
+  Entire zone is the swipe/drag hit target (data-sheet-grab).
+*/
+.controls-panel__dragzone {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin: 0;
+  padding: 0 0 4px;
+  border: none;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.controls-panel__dragzone:active {
+  cursor: grabbing;
+}
+.controls-panel__grab {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -291,12 +362,7 @@ button {
   height: 28px;
   margin: 0;
   padding: 0;
-  border: none;
-  background: transparent;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
+  pointer-events: none; /* drag handled by parent zone */
 }
 .controls-panel__grab::after {
   content: "";
@@ -307,13 +373,6 @@ button {
   opacity: 0.35;
   pointer-events: none;
 }
-.controls-panel__grab:active {
-  cursor: grabbing;
-}
-.controls-panel.is-dragging {
-  overflow: hidden;
-  transition: none !important;
-}
 .controls-backdrop {
   transition: opacity 0.2s var(--ease-out);
 }
@@ -322,7 +381,8 @@ button {
   font-weight: 700;
   font-size: 1.05rem;
   letter-spacing: -0.02em;
-  margin-top: 2px;
+  margin: 2px 0 0;
+  pointer-events: none; /* part of drag zone, not a separate control */
 }
 .controls-section { display: flex; flex-direction: column; gap: 8px; }
 .controls-section__label {
@@ -531,18 +591,26 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
 }
 
 /*
-  Project host switcher — sits in the Projects section header
-  (Main Cloudflare / Backup GitHub). Hidden when dual-link (zh).
+  Project host switcher (Main Cloudflare / Backup GitHub).
+  - Mobile: settings sheet (.project-host--sheet), below theme
+  - Desktop: Projects section header (.project-host--section)
+  - Chinese dual-link: both hidden via [hidden]
 */
 .project-host {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  max-width: 22rem;
 }
 .project-host[hidden] {
   display: none !important;
+}
+/* Mobile-first: section control off; sheet control on */
+.project-host--section {
+  display: none !important;
+}
+.project-host--sheet {
+  max-width: none;
 }
 .project-host__label {
   font-size: 0.7rem;
@@ -551,6 +619,10 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
   text-transform: uppercase;
   color: var(--accent);
   margin: 0;
+}
+/* Sheet uses controls-section__label styles when both classes present */
+.project-host--sheet .project-host__label {
+  color: var(--accent);
 }
 .host-switcher {
   display: grid;
@@ -654,13 +726,38 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
 @media (min-width: 768px) {
   .controls-trigger,
   .controls-backdrop,
+  .controls-panel__dragzone,
   .controls-panel__grab,
   .controls-panel__title,
   .controls-section__label {
     display: none !important;
   }
+  /* Host control lives in Projects header on desktop, not the top bar */
+  .project-host--sheet {
+    display: none !important;
+  }
+  .project-host--section:not([hidden]) {
+    display: flex !important;
+  }
   .controls-panel {
-    position: static;
+    position: static !important;
+    display: block !important;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: transparent !important;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto;
+  }
+  .controls-panel::after {
+    display: none !important; /* no cream extension on desktop chrome */
+  }
+  .controls-panel[hidden] { display: block !important; }
+  .controls-panel__surface {
     display: flex !important;
     flex-direction: row;
     flex-wrap: wrap;
@@ -670,15 +767,11 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
     max-height: none;
     overflow: visible;
     padding: 0;
-    background: transparent;
+    background: transparent !important;
     border: none;
     border-radius: 0;
-    box-shadow: none;
-    transform: none !important;
-    transition: none !important;
-    will-change: auto;
+    box-shadow: none !important;
   }
-  .controls-panel[hidden] { display: flex !important; }
   .controls-section { flex-direction: row; gap: 10px; }
   .lang-picker {
     width: auto;
@@ -1918,9 +2011,15 @@ html[data-theme="dark"] .qr-modal__panel {
 
 /* Mobile prefs sheet */
 html[data-theme="dark"] .controls-panel {
-  background: var(--bg-card);
-  border: none;
+  background-color: var(--bg-card);
   box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.4);
+}
+html[data-theme="dark"] .controls-panel::after {
+  background-color: var(--bg-card);
+}
+html[data-theme="dark"] .controls-panel__surface {
+  background-color: var(--bg-card);
+  box-shadow: none;
 }
 html[data-theme="dark"] .controls-backdrop:not([hidden]) {
   background: rgba(8, 6, 5, 0.55);

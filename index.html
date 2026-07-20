@@ -111,10 +111,13 @@
         </button>
 
         <div class="controls-backdrop" id="controls-backdrop" hidden></div>
-
-        <div class="controls-panel" id="controls-panel" role="region" aria-labelledby="controls-panel-title" hidden>
-          <div class="controls-panel__grab" role="presentation" aria-hidden="true" data-sheet-grab></div>
-          <p class="controls-panel__title" id="controls-panel-title" data-i18n="a11y.siteControls">Preferences</p>
+<div class="controls-panel" id="controls-panel" role="region" aria-labelledby="controls-panel-title" hidden>
+          <div class="controls-panel__surface">
+          <!-- Drag dismiss zone: grabber pill + Preferences title (iOS-style) -->
+          <div class="controls-panel__dragzone" data-sheet-grab>
+            <div class="controls-panel__grab" aria-hidden="true"></div>
+            <p class="controls-panel__title" id="controls-panel-title" data-i18n="a11y.siteControls">Preferences</p>
+          </div>
 
           <div class="controls-section">
             <p class="controls-section__label" data-i18n="a11y.selectLanguage">Language</p>
@@ -199,7 +202,41 @@
               </button>
             </div>
           </div>
-        </div>
+
+          <!-- Project lines: mobile sheet only (desktop uses section header). Hidden when zh dual. -->
+          <div class="controls-section project-host project-host--sheet" data-host-pref data-host-placement="sheet">
+            <p class="controls-section__label project-host__label" id="project-host-label-sheet" data-i18n="host.label">Project links</p>
+            <div
+              class="host-switcher"
+              role="radiogroup"
+              id="host-switcher-sheet"
+              aria-labelledby="project-host-label-sheet"
+            >
+              <button
+                type="button"
+                class="host-option is-selected"
+                role="radio"
+                aria-checked="true"
+                data-host="cloudflare"
+              >
+                <span class="host-option__kicker" data-i18n="host.main">Main line</span>
+                <span class="host-option__name" data-i18n="host.cloudflare">Cloudflare</span>
+              </button>
+              <button
+                type="button"
+                class="host-option"
+                role="radio"
+                aria-checked="false"
+                data-host="github"
+              >
+                <span class="host-option__kicker" data-i18n="host.backup">Backup line</span>
+                <span class="host-option__name" data-i18n="host.github">GitHub</span>
+              </button>
+            </div>
+          </div>
+        
+          </div>
+</div>
       </nav>
     </div>
   </header>
@@ -336,14 +373,14 @@
             <h2 id="projects-heading" class="section__title" data-i18n="links.projects.title">Things I've built</h2>
           </div>
 
-          <!-- Main / Backup line — lives with projects (not global prefs). Hidden in Chinese dual-link mode. -->
-          <div class="project-host" data-host-pref>
-            <p class="project-host__label" id="project-host-label" data-i18n="host.label">Project links</p>
+          <!-- Main / Backup line — desktop section header. Mobile uses settings sheet. Hidden when zh dual. -->
+          <div class="project-host project-host--section" data-host-pref data-host-placement="section">
+            <p class="project-host__label" id="project-host-label-section" data-i18n="host.label">Project links</p>
             <div
               class="host-switcher"
               role="radiogroup"
-              id="host-switcher"
-              aria-labelledby="project-host-label"
+              id="host-switcher-section"
+              aria-labelledby="project-host-label-section"
             >
               <button
                 type="button"
@@ -351,7 +388,6 @@
                 role="radio"
                 aria-checked="true"
                 data-host="cloudflare"
-                id="host-option-cloudflare"
               >
                 <span class="host-option__kicker" data-i18n="host.main">Main line</span>
                 <span class="host-option__name" data-i18n="host.cloudflare">Cloudflare</span>
@@ -362,7 +398,6 @@
                 role="radio"
                 aria-checked="false"
                 data-host="github"
-                id="host-option-github"
               >
                 <span class="host-option__kicker" data-i18n="host.backup">Backup line</span>
                 <span class="host-option__name" data-i18n="host.github">GitHub</span>

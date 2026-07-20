@@ -73,10 +73,12 @@
         </button>
 
         <div class="controls-backdrop" id="controls-backdrop" hidden></div>
-
-        <div class="controls-panel" id="controls-panel" role="region" aria-labelledby="controls-panel-title" hidden>
-          <div class="controls-panel__grab" role="presentation" aria-hidden="true" data-sheet-grab></div>
-          <p class="controls-panel__title" id="controls-panel-title" data-i18n="a11y.siteControls">Preferences</p>
+<div class="controls-panel" id="controls-panel" role="region" aria-labelledby="controls-panel-title" hidden>
+          <div class="controls-panel__surface">
+          <div class="controls-panel__dragzone" data-sheet-grab>
+            <div class="controls-panel__grab" aria-hidden="true"></div>
+            <p class="controls-panel__title" id="controls-panel-title" data-i18n="a11y.siteControls">Preferences</p>
+          </div>
 
           <div class="controls-section">
             <p class="controls-section__label" data-i18n="a11y.selectLanguage">Language</p>
@@ -161,7 +163,9 @@
               </button>
             </div>
           </div>
-        </div>
+        
+          </div>
+</div>
       </nav>
     </div>
   </header>
