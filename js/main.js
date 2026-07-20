@@ -28,6 +28,8 @@
   if (typeof detectLanguage === "function" && typeof applyLanguage === "function") {
     currentLang = applyLanguage(detectLanguage());
   }
+  /* Host control after language so dual/single mode is correct on first paint */
+  if (typeof initProjectHost === "function") initProjectHost();
   if (typeof initControlsPanel === "function") initControlsPanel();
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {

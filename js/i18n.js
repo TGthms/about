@@ -19,6 +19,14 @@ const TRANSLATIONS = {
       selectLanguage: "Language",
       displayPrefs: "Display",
     },
+    host: {
+      label: "Project links",
+      select: "Choose project host",
+      main: "Main line",
+      backup: "Backup line",
+      cloudflare: "Cloudflare",
+      github: "GitHub",
+    },
     hero: {
       eyebrow: "Hello — welcome",
       tagline: "High school student based in the San Francisco Bay Area",
@@ -123,6 +131,14 @@ const TRANSLATIONS = {
       siteControls: "Preferencias",
       selectLanguage: "Idioma",
       displayPrefs: "Apariencia",
+    },
+    host: {
+      label: "Enlaces de proyectos",
+      select: "Elegir host del proyecto",
+      main: "Línea principal",
+      backup: "Línea de respaldo",
+      cloudflare: "Cloudflare",
+      github: "GitHub",
     },
     hero: {
       eyebrow: "Hola — bienvenido",
@@ -229,6 +245,14 @@ const TRANSLATIONS = {
       selectLanguage: "语言",
       displayPrefs: "显示",
     },
+    host: {
+      label: "项目线路",
+      select: "选择项目线路",
+      main: "主线",
+      backup: "备用",
+      cloudflare: "Cloudflare",
+      github: "GitHub",
+    },
     hero: {
       eyebrow: "Hi — 欢迎",
       tagline: "旧金山湾区",
@@ -333,6 +357,14 @@ const TRANSLATIONS = {
       siteControls: "設定",
       selectLanguage: "言語",
       displayPrefs: "外観",
+    },
+    host: {
+      label: "プロジェクトの接続先",
+      select: "プロジェクトのホストを選択",
+      main: "メイン",
+      backup: "予備",
+      cloudflare: "Cloudflare",
+      github: "GitHub",
     },
     hero: {
       eyebrow: "こんにちは — ようこそ",
@@ -442,6 +474,10 @@ const SUPPORTED_LANGS = ["en", "es", "zh", "ja"];
 const STORAGE_KEY = "timg-lang";
 const THEME_LEGACY_KEY = "timg-theme";
 const THEME_SESSION_KEY = "timg-theme-session";
+const PROJECT_HOST_KEY = "timg-project-host";
+const HOST_CLOUDFLARE = "cloudflare";
+const HOST_GITHUB = "github";
+const DEFAULT_PROJECT_HOST = HOST_CLOUDFLARE;
 
 /** Native language names shown in the custom picker (not translated). */
 const LANG_OPTIONS = [
@@ -1046,6 +1082,9 @@ function applyLanguage(lang) {
   // Instagram vs WeChat (Chinese only swaps this card)
   updateSocialCard(pack);
 
+  // Project host: dual lines in Chinese; single preferred host otherwise
+  applyProjectHostMode(resolved);
+
   // Document title + meta description + locale
   if (pack.meta) {
     if (pack.meta.title) document.title = pack.meta.title;
@@ -1082,6 +1121,218 @@ function applyLanguage(lang) {
   }
 
   return resolved;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Project host — Cloudflare (main) / GitHub (backup)                          */
+/* en/es/ja: single CTA, preference in settings (localStorage)                 */
+/* zh: both lines visible on each project card; settings control hidden        */
+/* -------------------------------------------------------------------------- */
+
+function isValidProjectHost(value) {
+  return value === HOST_CLOUDFLARE || value === HOST_GITHUB;
+}
+
+function getStoredProjectHost() {
+  try {
+    var v = localStorage.getItem(PROJECT_HOST_KEY);
+    if (isValidProjectHost(v)) return v;
+  } catch (_) {
+    /* private mode */
+  }
+  return DEFAULT_PROJECT_HOST;
+}
+
+function setStoredProjectHost(value) {
+  if (!isValidProjectHost(value)) return;
+  try {
+    localStorage.setItem(PROJECT_HOST_KEY, value);
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function isDualProjectLinks(lang) {
+  return lang === "zh";
+}
+
+/**
+ * Point each project card at the correct host URL(s).
+ * Cards declare URLs on data-url-cloudflare / data-url-github.
+ */
+function applyProjectUrls(host) {
+  var preferred = isValidProjectHost(host) ? host : getStoredProjectHost();
+  document.querySelectorAll("[data-project]").forEach(function (card) {
+    var urlCf = card.getAttribute("data-url-cloudflare") || "";
+    var urlGh = card.getAttribute("data-url-github") || "";
+    var single = card.querySelector("[data-project-single]");
+    var lineCf = card.querySelector('[data-project-line="cloudflare"]');
+    var lineGh = card.querySelector('[data-project-line="github"]');
+
+    if (lineCf && urlCf) lineCf.setAttribute("href", urlCf);
+    if (lineGh && urlGh) lineGh.setAttribute("href", urlGh);
+
+    if (single) {
+      var url = preferred === HOST_GITHUB ? urlGh : urlCf;
+      if (url) single.setAttribute("href", url);
+    }
+  });
+}
+
+/**
+ * Sync radiogroup UI with the preferred host.
+ * Uses roving tabindex (selected option is the tab stop).
+ */
+function syncHostSwitcher(host) {
+  var preferred = isValidProjectHost(host) ? host : getStoredProjectHost();
+  document.documentElement.setAttribute("data-project-host", preferred);
+
+  var dual =
+    document.documentElement.getAttribute("data-project-links") === "dual";
+
+  document.querySelectorAll(".host-option[data-host]").forEach(function (btn) {
+    var on = btn.getAttribute("data-host") === preferred;
+    btn.classList.toggle("is-selected", on);
+    btn.setAttribute("aria-checked", on ? "true" : "false");
+    if (dual) {
+      btn.setAttribute("tabindex", "-1");
+    } else {
+      btn.setAttribute("tabindex", on ? "0" : "-1");
+    }
+  });
+}
+
+/**
+ * Dual vs single presentation + host control visibility.
+ * Call whenever language changes (and on init).
+ */
+function applyProjectHostMode(lang) {
+  var dual = isDualProjectLinks(lang);
+  document.documentElement.setAttribute(
+    "data-project-links",
+    dual ? "dual" : "single"
+  );
+
+  var hostSection = document.querySelector("[data-host-pref]");
+  if (hostSection) {
+    hostSection.hidden = dual;
+    hostSection.setAttribute("aria-hidden", dual ? "true" : "false");
+  }
+
+  /* Prevent focusing hidden targets (display:none is not enough for all ATs) */
+  document.querySelectorAll("[data-project]").forEach(function (card) {
+    var single = card.querySelector("[data-project-single]");
+    var lines = card.querySelector("[data-project-lines]");
+    if (single) {
+      if (dual) {
+        single.setAttribute("tabindex", "-1");
+        single.setAttribute("aria-hidden", "true");
+      } else {
+        single.removeAttribute("tabindex");
+        single.removeAttribute("aria-hidden");
+      }
+    }
+    if (lines) {
+      lines.setAttribute("aria-hidden", dual ? "false" : "true");
+      lines.querySelectorAll("a").forEach(function (a) {
+        if (dual) {
+          a.removeAttribute("tabindex");
+          a.removeAttribute("aria-hidden");
+        } else {
+          a.setAttribute("tabindex", "-1");
+          a.setAttribute("aria-hidden", "true");
+        }
+      });
+    }
+  });
+
+  /* Dual mode still sets stable hrefs; single mode uses preferred host */
+  var preferred = getStoredProjectHost();
+  /* data-project-links must be set before syncHostSwitcher (tabindex) */
+  syncHostSwitcher(preferred);
+  applyProjectUrls(preferred);
+
+  /* Dual lines: richer accessible names (line + project title) */
+  document.querySelectorAll("[data-project]").forEach(function (card) {
+    var titleEl = card.querySelector(".featured-card__title");
+    var title = titleEl && titleEl.textContent ? titleEl.textContent.trim() : "";
+    card.querySelectorAll("[data-project-line]").forEach(function (line) {
+      if (!dual) {
+        line.removeAttribute("aria-label");
+        return;
+      }
+      var kicker = line.querySelector(".project-line__kicker");
+      var name = line.querySelector(".project-line__name");
+      var parts = [];
+      if (kicker && kicker.textContent) parts.push(kicker.textContent.trim());
+      if (name && name.textContent) parts.push(name.textContent.trim());
+      if (title) parts.push(title);
+      if (parts.length) line.setAttribute("aria-label", parts.join(" — "));
+    });
+  });
+}
+
+/**
+ * Persist + apply a host choice (ignored while dual-mode Chinese is active).
+ */
+function setProjectHost(host) {
+  if (!isValidProjectHost(host)) return getStoredProjectHost();
+  setStoredProjectHost(host);
+  syncHostSwitcher(host);
+  applyProjectUrls(host);
+  return host;
+}
+
+/**
+ * Wire host radiogroup. Safe when the control is absent (legal pages).
+ */
+function initProjectHost() {
+  var switcher = document.getElementById("host-switcher");
+  if (!switcher) {
+    /* Still apply URLs if project cards exist without the control */
+    applyProjectHostMode(
+      document.documentElement.lang === "zh-Hans" ? "zh" : "en"
+    );
+    return;
+  }
+
+  switcher.addEventListener("click", function (e) {
+    var btn = e.target.closest(".host-option[data-host]");
+    if (!btn || !switcher.contains(btn)) return;
+    e.preventDefault();
+    setProjectHost(btn.getAttribute("data-host"));
+  });
+
+  switcher.addEventListener("keydown", function (e) {
+    var options = Array.prototype.slice.call(
+      switcher.querySelectorAll(".host-option[data-host]")
+    );
+    if (!options.length) return;
+    var current = document.activeElement;
+    var idx = options.indexOf(current);
+    if (idx < 0) return;
+
+    var next = -1;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      next = (idx + 1) % options.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      next = (idx - 1 + options.length) % options.length;
+    } else if (e.key === "Home") {
+      next = 0;
+    } else if (e.key === "End") {
+      next = options.length - 1;
+    } else if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      setProjectHost(options[idx].getAttribute("data-host"));
+      return;
+    } else {
+      return;
+    }
+
+    e.preventDefault();
+    options[next].focus();
+    setProjectHost(options[next].getAttribute("data-host"));
+  });
 }
 
 /* -------------------------------------------------------------------------- */

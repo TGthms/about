@@ -27,7 +27,7 @@
   <link rel="apple-touch-icon" href="favicon.svg" />
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Theme before paint: session override, else OS preference -->
+  <!-- Theme + project-host before paint (avoid flash of wrong mode) -->
   <script>
     (function () {
       try {
@@ -47,6 +47,24 @@
               : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
+
+        /* Host preference + dual-link language guess (refined by i18n.js) */
+        var host = "cloudflare";
+        try {
+          var savedHost = localStorage.getItem("timg-project-host");
+          if (savedHost === "cloudflare" || savedHost === "github") host = savedHost;
+        } catch (e4) {}
+        root.setAttribute("data-project-host", host);
+
+        var langGuess = "en";
+        try {
+          var savedLang = localStorage.getItem("timg-lang");
+          if (savedLang === "en" || savedLang === "es" || savedLang === "zh" || savedLang === "ja") {
+            langGuess = savedLang;
+          }
+        } catch (e5) {}
+        root.setAttribute("data-project-links", langGuess === "zh" ? "dual" : "single");
+
         root.classList.add("js");
         setTimeout(function () {
           if (!root.classList.contains("app-ready")) {
@@ -312,30 +330,107 @@
     <!-- 4. Projects -->
     <section class="section projects" id="projects" aria-labelledby="projects-heading">
       <div class="container">
-        <header class="section__header reveal">
-          <p class="section__label" data-i18n="links.projects.label">Projects</p>
-          <h2 id="projects-heading" class="section__title" data-i18n="links.projects.title">Things I've built</h2>
+        <header class="section__header section__header--projects reveal">
+          <div class="section__header-copy">
+            <p class="section__label" data-i18n="links.projects.label">Projects</p>
+            <h2 id="projects-heading" class="section__title" data-i18n="links.projects.title">Things I've built</h2>
+          </div>
+
+          <!-- Main / Backup line — lives with projects (not global prefs). Hidden in Chinese dual-link mode. -->
+          <div class="project-host" data-host-pref>
+            <p class="project-host__label" id="project-host-label" data-i18n="host.label">Project links</p>
+            <div
+              class="host-switcher"
+              role="radiogroup"
+              id="host-switcher"
+              aria-labelledby="project-host-label"
+            >
+              <button
+                type="button"
+                class="host-option is-selected"
+                role="radio"
+                aria-checked="true"
+                data-host="cloudflare"
+                id="host-option-cloudflare"
+              >
+                <span class="host-option__kicker" data-i18n="host.main">Main line</span>
+                <span class="host-option__name" data-i18n="host.cloudflare">Cloudflare</span>
+              </button>
+              <button
+                type="button"
+                class="host-option"
+                role="radio"
+                aria-checked="false"
+                data-host="github"
+                id="host-option-github"
+              >
+                <span class="host-option__kicker" data-i18n="host.backup">Backup line</span>
+                <span class="host-option__name" data-i18n="host.github">GitHub</span>
+              </button>
+            </div>
+          </div>
         </header>
 
         <div class="featured-stack">
-          <a
-            class="featured-card reveal"
-            href="https://tgthms.github.io/usa-travel-guide/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <!--
+            Project cards: single CTA (en/es/ja, host from prefs) or dual lines (zh).
+            URLs live in data-url-cloudflare / data-url-github; applied by i18n.js.
+          -->
+          <article class="featured-card reveal" data-project="usa"
+            data-url-cloudflare="https://travelusa.pages.dev/"
+            data-url-github="https://tgthms.github.io/usa-travel-guide/">
+            <a
+              class="featured-card__hit"
+              data-project-single
+              href="https://travelusa.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-labelledby="project-title-usa"
+            ></a>
             <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
             <div class="featured-card__content">
-              <h3 class="featured-card__title" data-i18n="links.travelGuide.title">USA Travel Guide</h3>
+              <h3 class="featured-card__title" id="project-title-usa" data-i18n="links.travelGuide.title">USA Travel Guide</h3>
               <p class="featured-card__desc" data-i18n="links.travelGuide.desc">
                 A curated guide to places worth visiting across the United States — built as a small web project.
               </p>
-              <span class="featured-card__cta">
+              <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
+              <div class="featured-card__lines" data-project-lines>
+                <a
+                  class="project-line project-line--main"
+                  data-project-line="cloudflare"
+                  href="https://travelusa.pages.dev/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.main">Main line</span>
+                    <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                <a
+                  class="project-line project-line--backup"
+                  data-project-line="github"
+                  href="https://tgthms.github.io/usa-travel-guide/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.backup">Backup line</span>
+                    <span class="project-line__name" data-i18n="host.github">GitHub</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
             </div>
             <div class="featured-card__visual featured-card__visual--usa" aria-hidden="true">
               <svg class="featured-art" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -352,26 +447,63 @@
                 <circle cx="44" cy="42" r="1.5" fill="var(--bg)"/>
               </svg>
             </div>
-          </a>
+          </article>
 
-          <a
-            class="featured-card featured-card--japan reveal reveal-delay-1"
-            href="https://tgthms.github.io/japan-travel-guide/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <article class="featured-card featured-card--japan reveal reveal-delay-1" data-project="japan"
+            data-url-cloudflare="https://traveljapan.pages.dev/"
+            data-url-github="https://tgthms.github.io/japan-travel-guide/">
+            <a
+              class="featured-card__hit"
+              data-project-single
+              href="https://traveljapan.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-labelledby="project-title-japan"
+            ></a>
             <div class="featured-card__badge featured-card__badge--alt" data-i18n="links.project">Project</div>
             <div class="featured-card__content">
-              <h3 class="featured-card__title" data-i18n="links.japanTravelGuide.title">Japan Travel Guide</h3>
+              <h3 class="featured-card__title" id="project-title-japan" data-i18n="links.japanTravelGuide.title">Japan Travel Guide</h3>
               <p class="featured-card__desc" data-i18n="links.japanTravelGuide.desc">
                 A curated guide to places worth visiting across Japan — built as a small web project.
               </p>
-              <span class="featured-card__cta">
+              <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
+              <div class="featured-card__lines" data-project-lines>
+                <a
+                  class="project-line project-line--main"
+                  data-project-line="cloudflare"
+                  href="https://traveljapan.pages.dev/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.main">Main line</span>
+                    <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                <a
+                  class="project-line project-line--backup"
+                  data-project-line="github"
+                  href="https://tgthms.github.io/japan-travel-guide/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.backup">Backup line</span>
+                    <span class="project-line__name" data-i18n="host.github">GitHub</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
             </div>
             <div class="featured-card__visual featured-card__visual--japan" aria-hidden="true">
               <svg class="featured-art" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -384,26 +516,63 @@
                 <path d="M78 72 H122" stroke="var(--line)" stroke-width="1.75" stroke-linecap="round"/>
               </svg>
             </div>
-          </a>
+          </article>
 
-          <a
-            class="featured-card featured-card--kit reveal reveal-delay-2"
-            href="https://tgthms.github.io/kit/en/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <article class="featured-card featured-card--kit reveal reveal-delay-2" data-project="kit"
+            data-url-cloudflare="https://t-g.pages.dev/"
+            data-url-github="https://tgthms.github.io/kit/en/">
+            <a
+              class="featured-card__hit"
+              data-project-single
+              href="https://t-g.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-labelledby="project-title-kit"
+            ></a>
             <div class="featured-card__badge featured-card__badge--alt" data-i18n="links.project">Project</div>
             <div class="featured-card__content">
-              <h3 class="featured-card__title" data-i18n="links.kit.title">Kit</h3>
+              <h3 class="featured-card__title" id="project-title-kit" data-i18n="links.kit.title">Kit</h3>
               <p class="featured-card__desc" data-i18n="links.kit.desc">
                 Private on-device tools for PDF, image, audio, and text — no account, no upload.
               </p>
-              <span class="featured-card__cta">
+              <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
+              <div class="featured-card__lines" data-project-lines>
+                <a
+                  class="project-line project-line--main"
+                  data-project-line="cloudflare"
+                  href="https://t-g.pages.dev/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.main">Main line</span>
+                    <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                <a
+                  class="project-line project-line--backup"
+                  data-project-line="github"
+                  href="https://tgthms.github.io/kit/en/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.backup">Backup line</span>
+                    <span class="project-line__name" data-i18n="host.github">GitHub</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
             </div>
             <div class="featured-card__visual featured-card__visual--kit" aria-hidden="true">
               <svg class="featured-art" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -418,7 +587,7 @@
                 <rect x="118" y="98" width="12" height="12" rx="2" fill="var(--accent)" stroke="var(--line)" stroke-width="1.25"/>
               </svg>
             </div>
-          </a>
+          </article>
         </div>
       </div>
     </section>
