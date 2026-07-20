@@ -11,7 +11,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 ## Features
 
 - English, Español, 中文, 日本語
-- Light / dark from OS preference (optional session toggle)
+- Light / dark mode
 - Featured projects: USA Travel Guide, Japan Travel Guide, Kit
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Privacy Policy & Terms of Use
