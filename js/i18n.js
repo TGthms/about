@@ -104,37 +104,37 @@ const TRANSLATIONS = {
 
   es: {
     meta: {
-      title: "Tim G — Espacio personal",
+      title: "Tim G — Página personal",
       description:
-        "Tim G — estudiante de secundaria en el Área de la Bahía de San Francisco. Creador, fotógrafo, músico de erhu y viajero.",
+        "Tim G — estudiante de secundaria en el Área de la Bahía de San Francisco. Crea, fotografía, toca el erhu y viaja.",
     },
     skip: "Saltar al contenido",
     a11y: {
-      themeToggle: "Cambiar tema claro u oscuro",
+      themeToggle: "Cambiar entre tema claro y oscuro",
       themeLight: "Modo claro",
       themeDark: "Modo oscuro",
-      scrollAbout: "Ir a la sección sobre mí",
+      scrollAbout: "Ir a la sección Sobre mí",
       siteControls: "Preferencias",
       selectLanguage: "Idioma",
-      displayPrefs: "Pantalla",
+      displayPrefs: "Apariencia",
     },
     hero: {
       eyebrow: "Hola — bienvenido",
       tagline: "Estudiante de secundaria en el Área de la Bahía de San Francisco",
-      scroll: "Desplazar",
+      scroll: "Bajar",
     },
     about: {
       label: "Sobre mí",
       title: "Un poco sobre mí",
-      p1: "Soy un estudiante de secundaria en el Área de la Bahía a quien le gusta crear, capturar momentos y explorar — cerca y más lejos.",
-      p2: "Fuera de la escuela y los proyectos, me ancla el Salmo 23 — un punto de referencia personal y silencioso que me mantiene centrado en las temporadas ajetreadas.",
+      p1: "Soy estudiante de secundaria en el Área de la Bahía. Me gusta crear, capturar momentos, la música y explorar — cerca de casa y más lejos.",
+      p2: "Fuera de la escuela y de los proyectos, el Salmo 23 me mantiene con los pies en la tierra y centrado en las épocas más ajetreadas.",
     },
     interests: {
       label: "Intereses",
       title: "Lo que me importa",
       bilingual: {
         title: "Bilingüe",
-        desc: "Chino-estadounidense — fluido en mandarín e inglés",
+        desc: "Chino-estadounidense — hablo con fluidez mandarín e inglés",
       },
       erhu: {
         title: "Erhu",
@@ -142,19 +142,19 @@ const TRANSLATIONS = {
       },
       photo: {
         title: "Fotografía",
-        desc: "Buscar la luz, los encuadres y los momentos quietos",
+        desc: "Buscar la luz, el encuadre y los momentos tranquilos",
       },
       travel: {
         title: "Viajes",
-        desc: "Explorar lugares, culturas y caminos abiertos",
+        desc: "Conocer lugares, culturas y carreteras abiertas",
       },
       tech: {
         title: "Tecnología",
-        desc: "Construir cosas que funcionen — y se sientan bien de usar",
+        desc: "Hacer cosas que funcionen — y que se sientan bien al usarlas",
       },
       tt: {
         title: "Tenis de mesa",
-        desc: "Intercambios rápidos, concentración y competencia amistosa",
+        desc: "Peloteos rápidos, concentración y competencia amistosa",
       },
     },
     links: {
@@ -165,11 +165,11 @@ const TRANSLATIONS = {
       open: "Abrir proyecto",
       travelGuide: {
         title: "Guía de viaje por EE. UU.",
-        desc: "Una guía curada de lugares que vale la pena visitar en Estados Unidos — hecha como un pequeño proyecto web.",
+        desc: "Una guía de lugares que merecen la pena en Estados Unidos — un pequeño proyecto web.",
       },
       japanTravelGuide: {
         title: "Guía de viaje por Japón",
-        desc: "Una guía curada de lugares que vale la pena visitar en Japón — hecha como un pequeño proyecto web.",
+        desc: "Una guía de lugares que merecen la pena en Japón — un pequeño proyecto web.",
       },
       kit: {
         title: "Kit",
@@ -184,16 +184,16 @@ const TRANSLATIONS = {
       },
       duolingo: {
         label: "Duolingo",
-        hint: "Escanea el código en la app de Duolingo para añadirme",
+        hint: "Escanea el código en la app de Duolingo para agregarme",
         profile: "Abrir perfil",
-        enlarge: "Ver código QR completo",
+        enlarge: "Ver el código QR completo",
         enlargeShort: "Ampliar",
-        modalTitle: "QR de Duolingo",
+        modalTitle: "Código QR de Duolingo",
         close: "Cerrar",
       },
     },
     footer: {
-      signoff: "Gracias por pasar.",
+      signoff: "Gracias por tu visita.",
       contact: "Contacto:",
       built: "Hecho con cuidado",
       privacy: "Política de privacidad",
@@ -302,37 +302,37 @@ const TRANSLATIONS = {
 
   ja: {
     meta: {
-      title: "Tim G — パーソナルハブ",
+      title: "Tim G — 個人ページ",
       description:
         "Tim G — サンフランシスコ・ベイエリア在住の高校生。ものづくり、写真、二胡、旅が好きです。",
     },
-    skip: "コンテンツへスキップ",
+    skip: "本文へスキップ",
     a11y: {
-      themeToggle: "ライト／ダークテーマを切り替え",
+      themeToggle: "ライトとダークを切り替え",
       themeLight: "ライトモード",
       themeDark: "ダークモード",
-      scrollAbout: "自己紹介へスクロール",
+      scrollAbout: "自己紹介へ移動",
       siteControls: "設定",
       selectLanguage: "言語",
-      displayPrefs: "表示",
+      displayPrefs: "外観",
     },
     hero: {
       eyebrow: "こんにちは — ようこそ",
       tagline: "サンフランシスコ・ベイエリア在住の高校生",
-      scroll: "スクロール",
+      scroll: "下へ",
     },
     about: {
-      label: "について",
-      title: "少し自己紹介",
-      p1: "ベイエリアの高校生で、ものづくりや瞬間を切り取ること、そして近くも遠くも探索することが好きです。",
-      p2: "学校やプロジェクトの外では、詩篇23が静かな心の拠り所になっています。忙しい季節でも軸を保てるように。",
+      label: "自己紹介",
+      title: "少しだけ自己紹介",
+      p1: "ベイエリアの高校生です。ものづくり、写真、音楽、そして近くも遠くも出かけてみるのが好きです。",
+      p2: "学校やプロジェクトの外では、詩篇23が心の軸になっています。忙しい時期でも落ち着いていられるように。",
     },
     interests: {
-      label: "関心",
+      label: "興味",
       title: "大切にしていること",
       bilingual: {
         title: "バイリンガル",
-        desc: "中華系アメリカ人 — 中国語（普通話）と英語が流暢",
+        desc: "中華系アメリカ人 — 中国語（普通話）と英語が話せます",
       },
       erhu: {
         title: "二胡",
@@ -340,38 +340,38 @@ const TRANSLATIONS = {
       },
       photo: {
         title: "写真",
-        desc: "光、フレーミング、静かな瞬間を探す",
+        desc: "光、構図、静かな一瞬を探すこと",
       },
       travel: {
         title: "旅",
-        desc: "場所、文化、開かれた道を探索する",
+        desc: "土地、文化、ひらけた道をめぐること",
       },
       tech: {
-        title: "テック",
-        desc: "きちんと動いて、触れていて気持ちいいものを作る",
+        title: "テクノロジー",
+        desc: "ちゃんと動いて、使っていて気持ちいいものをつくる",
       },
       tt: {
         title: "卓球",
-        desc: "素早いラリー、集中、そして楽しい競争",
+        desc: "テンポの良いラリーと集中、気軽な勝負",
       },
     },
     links: {
       label: "作品とリンク",
-      title: "見つけ方",
+      title: "リンク集",
       featured: "注目",
       project: "プロジェクト",
-      open: "プロジェクトを開く",
+      open: "開く",
       travelGuide: {
-        title: "USA トラベルガイド",
-        desc: "アメリカ各地のおすすめスポットをまとめたガイド — 小さなウェブプロジェクトとして制作。",
+        title: "アメリカ旅行ガイド",
+        desc: "アメリカのおすすめスポットをまとめた小さなウェブプロジェクト。",
       },
       japanTravelGuide: {
-        title: "日本トラベルガイド",
-        desc: "日本各地のおすすめスポットをまとめたガイド — 小さなウェブプロジェクトとして制作。",
+        title: "日本旅行ガイド",
+        desc: "日本のおすすめスポットをまとめた小さなウェブプロジェクト。",
       },
       kit: {
         title: "Kit",
-        desc: "PDF・画像・音声・テキスト向けの端末内プライベートツール — アカウント不要、アップロード不要。",
+        desc: "PDF・画像・音声・テキスト向けの端末内ツール。アカウント不要、アップロード不要。",
       },
       github: "GitHub",
       social: {
@@ -382,20 +382,20 @@ const TRANSLATIONS = {
       },
       duolingo: {
         label: "Duolingo",
-        hint: "Duolingoアプリでコードをスキャンして追加",
+        hint: "DuolingoアプリでQRコードを読み取って追加できます",
         profile: "プロフィールを開く",
         enlarge: "QRコードを大きく表示",
         enlargeShort: "拡大",
-        modalTitle: "Duolingo QR",
+        modalTitle: "DuolingoのQRコード",
         close: "閉じる",
       },
     },
     footer: {
-      signoff: "立ち寄ってくれてありがとう。",
+      signoff: "見てくれてありがとう。",
       contact: "連絡先：",
       built: "丁寧に作りました",
       privacy: "プライバシーポリシー",
-      terms: "ウェブサイト利用規約",
+      terms: "利用規約",
     },
   },
 };
