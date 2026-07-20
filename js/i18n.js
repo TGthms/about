@@ -271,7 +271,7 @@ const TRANSLATIONS = {
     links: {
       projects: {
         label: "作品",
-        title: "我做的项目",
+        title: "一些小项目",
       },
       connect: {
         label: "链接",
