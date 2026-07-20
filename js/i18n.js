@@ -28,7 +28,7 @@ const TRANSLATIONS = {
       label: "About",
       title: "A little about me",
       p1: "I'm a high school student in the Bay Area who likes building things, capturing moments, music, and exploring — both nearby and farther afield.",
-      p2: "Outside of school and projects, I'm grounded by Psalm 23 — a quiet personal touchstone that keeps me centered through busy seasons.",
+      p2: "Outside of school and projects, Psalm 23 keeps me grounded and centered through busy seasons.",
     },
     interests: {
       label: "Interests",
