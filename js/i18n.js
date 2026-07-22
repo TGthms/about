@@ -29,7 +29,7 @@ const TRANSLATIONS = {
     },
     hero: {
       eyebrow: "Hello — welcome",
-      tagline: "High school student based in the San Francisco Bay Area",
+      tagline: "High school student based in San Francisco Bay Area",
       scroll: "Scroll",
     },
     about: {
