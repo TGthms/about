@@ -7,7 +7,7 @@ const TRANSLATIONS = {
     meta: {
       title: "Tim G — Personal Hub",
       description:
-        "Tim G — high school student based in the San Francisco Bay Area. Builder, photographer, erhu player, and traveler.",
+        "Tim G — high school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler.",
     },
     skip: "Skip to content",
     a11y: {
