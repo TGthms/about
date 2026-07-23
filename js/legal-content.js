@@ -11,7 +11,7 @@ const LEGAL = {
         "How Tim G’s personal hub handles privacy, local preferences, and contact information.",
       label: "Legal",
       title: "Privacy Policy",
-      updated: "Last updated: July 10, 2026",
+      updated: "Last updated: July 22, 2026",
       intro:
         "This Privacy Policy describes how information is collected, used, disclosed, and stored when you visit this personal hub website (the “Site”), how on-device preferences work, and how to contact the Site operator with questions.",
       sections: [
@@ -19,8 +19,9 @@ const LEGAL = {
           id: "overview",
           title: "Overview",
           paragraphs: [
-            "The Site is a personal, static landing page operated by Tim G (“I,” “me,” or “we”). It introduces the operator and links to projects and profiles hosted elsewhere. It is not an online store, social network, or account-based service.",
+            "The Site is a personal, static landing page operated by Tim G (“I,” “me,” or “the Site operator”). It introduces the operator and links to projects and profiles hosted elsewhere. It is not an online store, social network, or account-based service.",
             "Collection is intentionally limited. Language preference and similar settings that improve your visit are stored on your device, unless you choose to contact me by email.",
+            "For purposes of applicable privacy laws, the operator of this Site is responsible for information directly collected through the Site, such as email correspondence.",
           ],
         },
         {
@@ -29,7 +30,8 @@ const LEGAL = {
           paragraphs: [
             "Information you choose to send. If you email contact.timg@icloud.com (or another address I publish), I receive the contents of that message, which may include your email address, name, and message body. That information is used to respond and, where reasonably necessary, to retain a record of the correspondence.",
             "Preferences stored on your device. The Site may save your language choice in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. These values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site.",
-            "Technical data processed by hosting. When you load the Site, your browser communicates with the hosting provider (for example, GitHub Pages or a similar service). That process typically involves standard technical data such as IP address, browser type, device or operating-system information, referring URL, and timestamps. That processing is performed by the host under its own systems and policies. I do not operate a separate analytics dashboard on this Site unless one is clearly disclosed in a future update of this Policy.",
+            "Technical data processed by hosting. The Site is hosted by GitHub Pages or Cloudflare. The hosting provider may process technical information such as IP addresses, browser type, device or operating-system information, referring URL, and request timestamps as part of delivering the Site. That processing is performed by the host under its own systems and policies.",
+            "Analytics and tracking. This Site does not use advertising trackers, behavioral profiling, or third-party analytics tools unless disclosed in a future update of this Policy.",
           ],
         },
         {
@@ -78,7 +80,7 @@ const LEGAL = {
           id: "rights",
           title: "Your Choices and Rights",
           paragraphs: [
-            "Depending on where you live, you may have rights to access, correct, delete, or restrict certain personal information, or to object to certain processing. Because the Site minimizes collection, many requests concern email correspondence or host logs held by providers.",
+            "Depending on applicable law, you may have certain rights regarding personal information. Because this Site collects very limited information, requests are generally limited to contact correspondence or information controlled by service providers.",
             "To make a request, email contact.timg@icloud.com. I will respond within a reasonable time.",
             "You may control local preferences at any time using the language and theme controls on the Site, or by clearing browser storage.",
           ],
@@ -120,7 +122,7 @@ const LEGAL = {
       metaDesc: "Terms governing use of Tim G’s personal hub website.",
       label: "Legal",
       title: "Terms of Use",
-      updated: "Last updated: July 10, 2026",
+      updated: "Last updated: July 22, 2026",
       intro:
         "These Terms of Use (the “Terms”) apply to this personal hub website and related pages operated by Tim G (the “Site”). BY USING THE SITE, YOU AGREE TO THESE TERMS. IF YOU DO NOT AGREE, DO NOT USE THE SITE.",
       sections: [
@@ -137,8 +139,9 @@ const LEGAL = {
           title: "Site Content and Ownership",
           paragraphs: [
             "Unless otherwise noted, text, design, layout, graphics, icons, and other materials on the Site (collectively, “Content”) are owned by Tim G or used with permission, and are protected by applicable intellectual property laws.",
-            "You may view and temporarily store Content for your personal, non-commercial use. You may not copy, modify, distribute, sell, lease, reverse engineer, or create derivative works from the Site or Content for commercial purposes without prior written permission, except as allowed by law (including fair use where applicable).",
+            "You may view and temporarily store Content for your personal, non-commercial use. You may not copy, distribute, sell, or create derivative works from the Site or Content for commercial purposes without prior written permission, except as allowed by law (including fair use where applicable).",
             "Names, marks, and branding of third parties that appear via links or references remain the property of their respective owners. The Site is not affiliated with, endorsed by, or sponsored by third parties unless expressly stated.",
+            "The website's source code may be available separately under an open-source license (for example, via its GitHub repository). That license covers the code only — it does not grant rights to trademarks, personal information, photographs, or other Site content unless separately stated.",
           ],
         },
         {
@@ -183,24 +186,15 @@ const LEGAL = {
           id: "liability",
           title: "Limitation of Liability",
           paragraphs: [
-            "TO THE FULLEST EXTENT PERMITTED BY LAW, TIM G WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF OR RELATED TO YOUR USE OF THE SITE OR CONTENT, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.",
-            "TO THE FULLEST EXTENT PERMITTED BY LAW, WE WILL NOT BE LIABLE FOR ANY CLAIM ARISING OUT OF OR RELATING TO THE SITE OR THESE TERMS, EXCEPT TO THE EXTENT SUCH LIABILITY CANNOT BE EXCLUDED OR LIMITED UNDER APPLICABLE LAW.",
-            "Some jurisdictions do not allow certain limitations; in those cases, liability is limited to the maximum extent permitted by law.",
-          ],
-        },
-        {
-          id: "indemnity",
-          title: "Indemnity",
-          paragraphs: [
-            "You agree to defend, indemnify, and hold harmless Tim G from and against claims, damages, losses, and expenses (including reasonable attorneys’ fees) arising from your misuse of the Site or violation of these Terms, to the extent permitted by law.",
+            "To the fullest extent permitted by law, Tim G is not liable for indirect, incidental, special, consequential, or punitive damages, or for any loss of profits, data, or goodwill, arising from your use of the Site or Content.",
+            "Some jurisdictions do not allow these limitations; in those cases, liability is limited to the maximum extent the law allows.",
           ],
         },
         {
           id: "governing",
           title: "Governing Law",
           paragraphs: [
-            "These Terms are governed by and construed in accordance with the laws of the State of California and applicable United States federal laws, without regard to conflict-of-law principles.",
-            "Notwithstanding the foregoing, if mandatory consumer protection laws in your country, state, or place of residence apply, those protections will remain available to you.",
+            "These Terms are governed by applicable laws of the State of California, unless mandatory laws in your location provide otherwise.",
           ],
         },
         {
@@ -208,7 +202,7 @@ const LEGAL = {
           title: "Miscellaneous",
           paragraphs: [
             "If any provision of these Terms is found unenforceable, the remaining provisions will continue in effect. These Terms, together with the Privacy Policy, constitute the entire agreement between you and Tim G regarding the Site and supersede prior understandings on that subject.",
-            "Failure to enforce any provision is not a waiver of the right to do so later. You may not assign these Terms without consent; I may assign them in connection with a reorganization or similar event.",
+            "Failure to enforce any provision is not a waiver of the right to do so later.",
           ],
         },
         {
@@ -238,7 +232,7 @@ const LEGAL = {
         "Tratamiento de la información, preferencias locales y datos de contacto en el sitio personal de Tim G.",
       label: "Legal",
       title: "Política de privacidad",
-      updated: "Última actualización: 10 de julio de 2026",
+      updated: "Última actualización: 22 de julio de 2026",
       intro:
         "La presente Política de privacidad describe de qué modo se recopila, utiliza, comunica y conserva la información cuando usted visita este sitio personal (el «Sitio»), el funcionamiento de las preferencias en su dispositivo y el modo de contactar con el operador del Sitio.",
       sections: [
@@ -248,6 +242,7 @@ const LEGAL = {
           paragraphs: [
             "El Sitio es una página personal de carácter estático operada por Tim G (en adelante, «yo», «mí» o «el operador»). Su finalidad es presentar al operador y facilitar enlaces a proyectos y perfiles alojados en terceros. No constituye una tienda en línea, una red social ni un servicio basado en cuentas de usuario.",
             "La recopilación de información se limita de forma deliberada. La preferencia de idioma y ajustes análogos que mejoran la visita se almacenan en su dispositivo, salvo que usted decida contactarme por correo electrónico.",
+            "A los efectos de la normativa de privacidad aplicable, el operador de este Sitio es responsable de la información recabada directamente a través del Sitio, como la correspondencia por correo electrónico.",
           ],
         },
         {
@@ -256,7 +251,8 @@ const LEGAL = {
           paragraphs: [
             "Información que usted decide enviar. Si escribe a contact.timg@icloud.com (u otra dirección que publique), recibo el contenido del mensaje, que puede incluir su dirección de correo electrónico, nombre y cuerpo del mensaje. Dicha información se utiliza para responder y, cuando resulte razonablemente necesario, para conservar un registro de la correspondencia.",
             "Preferencias almacenadas en su dispositivo. El Sitio puede guardar su elección de idioma en el almacenamiento local del navegador. La apariencia sigue la configuración clara u oscura del dispositivo, con una posible anulación temporal de sesión. Esos valores permanecen en su dispositivo y no se transmiten a un servidor de datos personales operado por mí en el curso ordinario del funcionamiento del Sitio.",
-            "Datos técnicos tratados por el alojamiento. Al cargar el Sitio, su navegador se comunica con el proveedor de alojamiento (por ejemplo, GitHub Pages o un servicio similar). Ese proceso suele implicar datos técnicos habituales, tales como dirección IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas temporales. Dicho tratamiento lo realiza el proveedor conforme a sus propios sistemas y políticas. No opero un panel de analítica propio en este Sitio, salvo que se declare de forma expresa en una actualización futura de esta Política.",
+            "Datos técnicos tratados por el alojamiento. El Sitio está alojado en GitHub Pages o Cloudflare. El proveedor de alojamiento puede tratar información técnica, como direcciones IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas temporales, como parte de la prestación del Sitio. Dicho tratamiento lo realiza el proveedor conforme a sus propios sistemas y políticas.",
+            "Analítica y rastreo. Este Sitio no utiliza rastreadores publicitarios, perfilado de comportamiento ni herramientas de analítica de terceros, salvo que se declare en una actualización futura de esta Política.",
           ],
         },
         {
@@ -305,7 +301,7 @@ const LEGAL = {
           id: "rights",
           title: "Derechos y opciones del interesado",
           paragraphs: [
-            "En función de su lugar de residencia, puede disponer de derechos de acceso, rectificación, supresión o limitación del tratamiento de determinada información personal, o de oposición a determinados tratamientos. Dado que el Sitio minimiza la recopilación, muchas solicitudes se refieren a la correspondencia por correo electrónico o a registros del alojamiento en poder de los proveedores.",
+            "En función de la normativa aplicable, es posible que disponga de determinados derechos respecto de su información personal. Dado que este Sitio recopila información muy limitada, las solicitudes suelen limitarse a la correspondencia de contacto o a la información en poder de los proveedores de servicios.",
             "Para ejercer un derecho, escriba a contact.timg@icloud.com. Responderé en un plazo razonable.",
             "Puede gestionar en todo momento las preferencias locales mediante los controles de idioma y tema del Sitio, o borrando el almacenamiento del navegador.",
           ],
@@ -348,7 +344,7 @@ const LEGAL = {
         "Condiciones que rigen el uso del sitio personal de Tim G.",
       label: "Legal",
       title: "Condiciones de uso",
-      updated: "Última actualización: 10 de julio de 2026",
+      updated: "Última actualización: 22 de julio de 2026",
       intro:
         "Las presentes Condiciones de uso (las «Condiciones») se aplican a este sitio personal y a las páginas relacionadas operadas por Tim G (el «Sitio»). AL UTILIZAR EL SITIO, USTED ACEPTA ESTAS CONDICIONES. SI NO ESTÁ DE ACUERDO, NO UTILICE EL SITIO.",
       sections: [
@@ -365,8 +361,9 @@ const LEGAL = {
           title: "Contenido y titularidad",
           paragraphs: [
             "Salvo indicación en contrario, los textos, el diseño, la maquetación, los gráficos, los iconos y demás materiales del Sitio (en conjunto, el «Contenido») son propiedad de Tim G o se utilizan con autorización, y están protegidos por la legislación aplicable en materia de propiedad intelectual.",
-            "Usted puede visualizar y almacenar temporalmente el Contenido para su uso personal y no comercial. No podrá copiar, modificar, distribuir, vender, arrendar, descompilar ni crear obras derivadas del Sitio o del Contenido con fines comerciales sin autorización previa por escrito, salvo en la medida en que lo permita la ley (incluido el fair use o usos legítimos análogos, cuando resulten de aplicación).",
+            "Usted puede visualizar y almacenar temporalmente el Contenido para su uso personal y no comercial. No podrá copiar, distribuir, vender ni crear obras derivadas del Sitio o del Contenido con fines comerciales sin autorización previa por escrito, salvo en la medida en que lo permita la ley (incluido el fair use o usos legítimos análogos, cuando resulten de aplicación).",
             "Los nombres, marcas y signos de terceros que figuren mediante enlaces o referencias siguen siendo propiedad de sus respectivos titulares. El Sitio no está afiliado, avalado ni patrocinado por terceros, salvo declaración expresa en contrario.",
+            "El código fuente del sitio web puede estar disponible por separado bajo una licencia de código abierto (por ejemplo, a través de su repositorio en GitHub). Dicha licencia cubre únicamente el código: no otorga derechos sobre marcas, información personal, fotografías u otro contenido del Sitio, salvo que se indique expresamente.",
           ],
         },
         {
@@ -411,24 +408,15 @@ const LEGAL = {
           id: "liability",
           title: "Limitación de responsabilidad",
           paragraphs: [
-            "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, TIM G NO SERÁ RESPONSABLE DE DAÑOS INDIRECTOS, INCIDENTALES, ESPECIALES, CONSECUENCIALES, EJEMPLARES O PUNITIVOS, NI DE PÉRDIDA DE BENEFICIOS, DATOS O FONDO DE COMERCIO, DERIVADOS O RELACIONADOS CON EL USO DEL SITIO O DEL CONTENIDO, AUNQUE SE HUBIERA ADVERTIDO DE LA POSIBILIDAD DE TALES DAÑOS.",
-            "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, NO SEREMOS RESPONSABLES POR NINGÚN RECLAMO QUE SURJA DE O ESTÉ RELACIONADO CON EL SITIO O ESTOS TÉRMINOS, EXCEPTO EN LA MEDIDA EN QUE DICHA RESPONSABILIDAD NO PUEDA SER EXCLUIDA O LIMITADA CONFORME A LA LEGISLACIÓN APLICABLE.",
-            "Algunas jurisdicciones no permiten determinadas limitaciones; en tales casos, la responsabilidad se limita en la medida máxima que permita la ley aplicable.",
-          ],
-        },
-        {
-          id: "indemnity",
-          title: "Indemnidad",
-          paragraphs: [
-            "Usted se compromete a defender, indemnizar y mantener indemne a Tim G frente a reclamaciones, daños, pérdidas y gastos (incluidos honorarios razonables de abogados) derivados del uso indebido del Sitio o del incumplimiento de estas Condiciones, en la medida permitida por la ley.",
+            "En la máxima medida permitida por la ley, Tim G no será responsable de daños indirectos, incidentales, especiales, consecuenciales o punitivos, ni de la pérdida de beneficios, datos o fondo de comercio, derivados del uso del Sitio o del Contenido.",
+            "Algunas jurisdicciones no permiten estas limitaciones; en tales casos, la responsabilidad se limita en la medida máxima que permita la ley aplicable.",
           ],
         },
         {
           id: "governing",
-          title: "Ley aplicable y jurisdicción",
+          title: "Ley aplicable",
           paragraphs: [
-            "Estos Términos se regirán e interpretarán de conformidad con las leyes del Estado de California y las leyes federales aplicables de los Estados Unidos, sin tener en cuenta los principios sobre conflictos de leyes.",
-            "No obstante lo anterior, si las leyes obligatorias de protección al consumidor de su país, estado o lugar de residencia resultan aplicables, dichas protecciones seguirán estando disponibles para usted.",
+            "Estos Términos se rigen por las leyes aplicables del Estado de California, salvo que las leyes imperativas de su lugar de residencia dispongan otra cosa.",
           ],
         },
         {
@@ -436,7 +424,7 @@ const LEGAL = {
           title: "Disposiciones generales",
           paragraphs: [
             "Si alguna disposición de estas Condiciones se declara inaplicable, las restantes permanecerán en vigor. Estas Condiciones, junto con la Política de privacidad, constituyen el acuerdo íntegro entre usted y Tim G en relación con el Sitio y sustituyen cualesquiera entendimientos previos sobre la misma materia.",
-            "La falta de ejercicio de un derecho no implica renuncia a ejercerlo con posterioridad. Usted no podrá ceder estas Condiciones sin consentimiento; yo podré cederlas en el marco de una reorganización o acontecimiento análogo.",
+            "La falta de ejercicio de un derecho no implica renuncia a ejercerlo con posterioridad.",
           ],
         },
         {
@@ -466,7 +454,7 @@ const LEGAL = {
         "Tim G 个人主页对个人信息、本地偏好及联系方式的处理说明。",
       label: "法律信息",
       title: "隐私政策",
-      updated: "最近更新日期：2026 年 7 月 10 日",
+      updated: "最近更新日期：2026 年 7 月 22 日",
       intro:
         "本隐私政策说明您访问本个人主页网站（以下简称“本网站”）时，相关信息如何被收集、使用、披露与保存；设备端偏好如何运作；以及如何就本政策向网站运营者提出问询。",
       sections: [
@@ -476,6 +464,7 @@ const LEGAL = {
           paragraphs: [
             "本网站为由 Tim G（以下简称“本人”或“运营者”）运营的个人静态展示页面，用于介绍运营者本人，并链接至其他处托管的项目与主页。本网站不是网店、社交网络，亦非基于用户账户的服务。",
             "本网站有意限制信息收集范围。语言偏好及类似、用于改善访问体验的设置保存在您的设备上，除非您选择通过电子邮件与本人联系。",
+            "就适用的隐私法律而言，本网站运营者对通过本网站直接收集的信息（如电子邮件通信）负责。",
           ],
         },
         {
@@ -484,7 +473,8 @@ const LEGAL = {
           paragraphs: [
             "您主动发送的信息。如您向 contact.timg@icloud.com（或本人公布的其他地址）发送电子邮件，本人将收到该邮件所载内容，其中可能包括您的电子邮箱地址、姓名及正文。该等信息仅用于回复，并在合理必要时保留通信记录。",
             "保存在您设备上的偏好。本网站可能通过浏览器本地存储保存您的语言选择。界面外观遵循设备的浅色或深色设置，并允许在会话期间临时覆盖。上述数值保留在您的设备上；在本网站正常运营过程中，不会传输至由本人运营的个人数据服务器。",
-            "由托管服务处理的技术数据。当您加载本网站时，浏览器会与托管服务提供商（例如 GitHub Pages 或类似服务）通信。该过程通常涉及 IP 地址、浏览器类型、设备或操作系统信息、来源网址及时间戳等常规技术数据。相关处理由托管方依其自身系统与政策实施。除非日后在本政策中明确披露，本人不在本网站另行运营独立的分析后台。",
+            "由托管服务处理的技术数据。本网站由 GitHub Pages 或 Cloudflare 托管。托管服务提供商在提供本网站服务过程中，可能处理 IP 地址、浏览器类型、设备或操作系统信息、来源网址及时间戳等技术信息。相关处理由托管方依其自身系统与政策实施。",
+            "分析与追踪。除非日后在本政策中明确披露，本网站不使用广告追踪器、行为画像或第三方分析工具。",
           ],
         },
         {
@@ -502,7 +492,7 @@ const LEGAL = {
           title: "信息的共享",
           paragraphs: [
             "本人不出售您的个人信息。",
-            "服务提供商。托管与基础设施提供商为提供本网站，在必要范围内处理技术数据。外链（例如指向 GitHub、微信 或项目页面的链接）由第三方依其各自隐私政策运营。",
+            "服务提供商。托管与基础设施提供商为提供本网站，在必要范围内处理技术数据。外链（例如指向 GitHub、Instagram 或项目页面的链接）由第三方依其各自隐私政策运营。",
             "法律要求。在法律或司法程序要求，或为保护权利、安全或公共安全所必要时，本人可能披露相关信息。",
           ],
         },
@@ -533,7 +523,7 @@ const LEGAL = {
           id: "rights",
           title: "您的选择与权利",
           paragraphs: [
-            "视您所在地适用法律，您可能享有访问、更正、删除或限制处理特定个人信息，或对特定处理提出异议等权利。由于本网站尽量减少收集，许多请求可能涉及电子邮件通信，或由托管方持有的日志。",
+            "根据适用法律，您可能就您的个人信息享有若干权利。由于本网站收集的信息非常有限，相关请求通常仅限于联系通信内容，或由服务提供商掌握的信息。",
             "如需提出请求，请发送电子邮件至 contact.timg@icloud.com。本人将在合理时间内予以回复。",
             "您可随时通过本网站的语言与主题控件管理本地偏好，或清除浏览器存储。",
           ],
@@ -575,7 +565,7 @@ const LEGAL = {
       metaDesc: "Tim G 个人主页网站的使用条款。",
       label: "法律信息",
       title: "使用条款",
-      updated: "最近更新日期：2026 年 7 月 10 日",
+      updated: "最近更新日期：2026 年 7 月 22 日",
       intro:
         "本使用条款（以下简称“本条款”）适用于由 Tim G 运营的本个人主页网站及相关页面（以下简称“本网站”）。使用本网站，即表示您同意受本条款约束。如不同意，请勿使用本网站。",
       sections: [
@@ -592,8 +582,9 @@ const LEGAL = {
           title: "网站内容与权利归属",
           paragraphs: [
             "除另有说明外，本网站上的文字、设计、版式、图形、图标及其他材料（统称“内容”）由 Tim G 享有权利或经许可使用，并受适用知识产权法律保护。",
-            "您可为个人非商业目的浏览并临时存储内容。除法律允许的情形（包括在适用时的合理使用）外，未经事先书面许可，不得为商业目的复制、修改、传播、出售、出租、反向工程本网站或内容，或基于本网站或内容创作衍生作品。",
+            "您可为个人非商业目的浏览并临时存储内容。除法律允许的情形（包括在适用时的合理使用）外，未经事先书面许可，不得为商业目的复制、传播、出售本网站或内容，或基于本网站或内容创作衍生作品。",
             "通过链接或引用出现的第三方名称、标识与品牌归其各自权利人所有。除非明确声明，本网站与任何第三方不存在关联、背书或赞助关系。",
+            "本网站的源代码可能单独依据开源许可协议提供（例如通过其 GitHub 代码仓库）。该许可仅适用于代码本身，除另行声明外，不授予有关商标、个人信息、照片或本网站其他内容的任何权利。",
           ],
         },
         {
@@ -608,7 +599,7 @@ const LEGAL = {
           id: "links",
           title: "第三方链接",
           paragraphs: [
-            "本网站可能包含指向第三方网站、代码仓库、社交平台或项目的链接（例如 GitHub、微信 或项目页面）。上述目的地不在本人控制之下。本人对其内容、可用性或运营做法不承担责任。您使用第三方网站的风险由您自行承担，并受其条款与政策约束。",
+            "本网站可能包含指向第三方网站、代码仓库、社交平台或项目的链接（例如 GitHub、Instagram 或项目页面）。上述目的地不在本人控制之下。本人对其内容、可用性或运营做法不承担责任。您使用第三方网站的风险由您自行承担，并受其条款与政策约束。",
           ],
         },
         {
@@ -638,24 +629,15 @@ const LEGAL = {
           id: "liability",
           title: "责任限制",
           paragraphs: [
-            "在法律允许的最大范围内，Tim G 不对因使用本网站或内容而引起或与之相关的任何间接、附带、特殊、后果性、惩戒性或惩罚性损害，或利润、数据或商誉损失承担责任，即使已被告知可能发生此类损害。",
-            "在法律允许的最大范围内，对于因网站或本条款引起或与之相关的任何索赔，我们概不承担责任，但适用法律禁止排除或限制的责任除外。",
+            "在法律允许的最大范围内，Tim G 不对因使用本网站或内容而引起的间接、附带、特殊、后果性或惩罚性损害，或利润、数据或商誉损失承担责任。",
             "部分司法辖区不允许某些责任限制；在此情况下，责任以适用法律允许的最大范围为限。",
-          ],
-        },
-        {
-          id: "indemnity",
-          title: "赔偿",
-          paragraphs: [
-            "在法律允许的范围内，您同意就因滥用本网站或违反本条款而引起的索赔、损害、损失与费用（包括合理的律师费用）为 Tim G 进行抗辩、赔偿并使其免受损害。",
           ],
         },
         {
           id: "governing",
           title: "适用法律",
           paragraphs: [
-            "本条款受美国加利福尼亚州法律及适用的美国联邦法律管辖并依其解释，且不适用法律冲突原则。",
-            "尽管有上述规定，如果您所在国家、州或居住地的强制性消费者保护法律适用，则您仍享有该等法律规定的保护。",
+            "本条款受适用的美国加利福尼亚州法律管辖，但您所在地的强制性法律另有规定的除外。",
           ],
         },
         {
@@ -663,7 +645,7 @@ const LEGAL = {
           title: "其他约定",
           paragraphs: [
             "如本条款任一规定被认定不可执行，其余规定继续有效。本条款与《隐私政策》共同构成您与 Tim G 就本网站达成的完整约定，并取代此前就同一事项的任何理解。",
-            "未行使任何权利，不构成放弃日后行使该权利。未经同意，您不得转让本条款；本人可在重组或类似情形中转让本条款。",
+            "未行使任何权利，不构成放弃日后行使该权利。",
           ],
         },
         {
@@ -693,7 +675,7 @@ const LEGAL = {
         "Tim G の個人向けサイトにおける情報の取扱い、端末上の設定、およびお問い合わせ方法について。",
       label: "法的情報",
       title: "プライバシーポリシー",
-      updated: "最終更新日：2026年7月10日",
+      updated: "最終更新日：2026年7月22日",
       intro:
         "本プライバシーポリシーは、本個人向けハブウェブサイト（以下「本サイト」）への訪問に際し、情報がどのように収集、利用、開示および保存されるか、端末上の設定がどのように機能するか、ならびに本サイト運営者へのお問い合わせ方法を定めるものです。",
       sections: [
@@ -703,6 +685,7 @@ const LEGAL = {
           paragraphs: [
             "本サイトは、Tim G（以下「私」または「運営者」）が運営する静的な個人向けランディングページであり、運営者の紹介ならびに他でホストされるプロジェクトおよびプロフィールへのリンクを目的とします。オンラインストア、ソーシャルネットワーク、またはアカウント制のサービスではありません。",
             "情報の収集は意図的に限定しています。言語設定その他、閲覧体験の向上に資する設定は、電子メールによる連絡を選択されない限り、お客様の端末に保存されます。",
+            "適用されるプライバシー関連法令の観点から、本サイトを通じて直接収集される情報（電子メールでのやり取りなど）については、本サイトの運営者が責任を負います。",
           ],
         },
         {
@@ -711,7 +694,8 @@ const LEGAL = {
           paragraphs: [
             "お客様が自ら送信する情報。contact.timg@icloud.com（または私が公表する他のアドレス）宛てに電子メールを送信された場合、私は当該メッセージの内容（電子メールアドレス、氏名、本文等を含み得ます）を受領します。当該情報は返信のため、および合理的に必要な範囲で通信記録を保持するために利用します。",
             "端末に保存される設定。本サイトは、ブラウザのローカルストレージに言語選択を保存することがあります。表示は端末のライト／ダーク設定に従い、セッション中の一時的な上書きが可能です。これらの値はお客様の端末に留まり、本サイトの通常の運用において、私が運営する個人データ用サーバーへは送信されません。",
-            "ホスティングにより処理される技術データ。本サイトを読み込む際、ブラウザはホスティング提供者（例：GitHub Pages 等）と通信します。この過程では通常、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、タイムスタンプ等の標準的な技術データが扱われます。当該処理はホストのシステムおよび方針に従って行われます。今後本ポリシーで明示しない限り、本サイト上で独自の分析ダッシュボードは運用していません。",
+            "ホスティングにより処理される技術データ。本サイトは GitHub Pages または Cloudflare によりホストされています。ホスティング提供者は、本サイトの提供に伴い、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、リクエストのタイムスタンプ等の技術情報を処理することがあります。当該処理はホストのシステムおよび方針に従って行われます。",
+            "分析およびトラッキング。今後本ポリシーで明示しない限り、本サイトは広告用トラッカー、行動プロファイリング、または第三者の分析ツールを使用しません。",
           ],
         },
         {
@@ -760,7 +744,7 @@ const LEGAL = {
           id: "rights",
           title: "お客様の権利および選択",
           paragraphs: [
-            "お住まいの地域により、一定の個人情報へのアクセス、訂正、削除、処理の制限、または特定の処理への異議申立て等の権利が認められる場合があります。本サイトは収集を最小限にしているため、多くのご請求は電子メールによる通信、またはプロバイダが保持するホストログに関するものとなります。",
+            "適用法令により、お客様の個人情報について一定の権利が認められる場合があります。本サイトが収集する情報は非常に限定的であるため、ご請求の対象は通常、お問い合わせの通信内容、またはサービス提供者が保有する情報に限られます。",
             "権利行使のご請求は contact.timg@icloud.com まで電子メールでご連絡ください。合理的な期間内に対応します。",
             "言語およびテーマのコントロール、またはブラウザストレージの削除により、いつでも端末上の設定を管理できます。",
           ],
@@ -802,7 +786,7 @@ const LEGAL = {
       metaDesc: "Tim G の個人向けウェブサイトの利用規約。",
       label: "法的情報",
       title: "利用規約",
-      updated: "最終更新日：2026年7月10日",
+      updated: "最終更新日：2026年7月22日",
       intro:
         "本利用規約（以下「本規約」）は、Tim G が運営する本個人向けハブウェブサイトおよび関連ページ（以下「本サイト」）に適用されます。本サイトを利用することにより、お客様は本規約に同意したものとみなされます。同意されない場合は、本サイトを利用しないでください。",
       sections: [
@@ -819,8 +803,9 @@ const LEGAL = {
           title: "コンテンツおよび権利帰属",
           paragraphs: [
             "特段の記載がない限り、本サイト上のテキスト、デザイン、レイアウト、グラフィック、アイコンその他の資料（以下総称して「コンテンツ」）は Tim G が所有するか許可の下で使用されており、適用される知的財産法令により保護されています。",
-            "お客様は、個人的かつ非商業的な目的に限り、コンテンツを閲覧および一時的に保存することができます。法令で認められる場合（該当する場合のフェアユースを含む）を除き、事前の書面による許可なく、商業目的で本サイトまたはコンテンツを複製、改変、頒布、販売、貸与、リバースエンジニアリングし、または二次的著作物を作成してはなりません。",
+            "お客様は、個人的かつ非商業的な目的に限り、コンテンツを閲覧および一時的に保存することができます。法令で認められる場合（該当する場合のフェアユースを含む）を除き、事前の書面による許可なく、商業目的で本サイトまたはコンテンツを複製、頒布、販売し、または二次的著作物を作成してはなりません。",
             "リンクまたは言及により表示される第三者の名称・標章は、各権利者に帰属します。明示のない限り、本サイトは他の第三者と提携、後援、またはスポンサー関係にありません。",
+            "本ウェブサイトのソースコードは、別途オープンソースライセンスの下で提供されることがあります（例：GitHub リポジトリを通じて）。当該ライセンスはコードのみを対象とし、別段の明示がない限り、商標、個人情報、写真その他のサイトコンテンツに関する権利を付与するものではありません。",
           ],
         },
         {
@@ -865,24 +850,15 @@ const LEGAL = {
           id: "liability",
           title: "責任の制限",
           paragraphs: [
-            "法令で認められる最大限の範囲において、Tim G は、本サイトまたはコンテンツの利用に起因または関連する間接損害、付随的損害、特別損害、結果的損害、懲罰的損害、逸失利益、データの喪失、のれんの喪失について、当該損害の可能性を知らされていた場合であっても責任を負いません。",
-            "法律で認められる最大限の範囲において、当社は、本サイトまたは本規約に起因または関連するいかなる請求についても責任を負わないものとします。ただし、適用法により除外または制限することができない範囲の責任については、この限りではありません。",
+            "法令で認められる最大限の範囲において、Tim G は、本サイトまたはコンテンツの利用に起因する間接損害、付随的損害、特別損害、結果的損害、懲罰的損害、逸失利益、データの喪失またはのれんの喪失について責任を負いません。",
             "一部の法域では特定の制限が認められないため、その場合は法令で認められる最大限の範囲で責任が制限されます。",
-          ],
-        },
-        {
-          id: "indemnity",
-          title: "補償",
-          paragraphs: [
-            "お客様は、本サイトの不正利用または本規約違反に起因または関連する請求、損害、損失および費用（合理的な弁護士費用を含む）について、法令で認められる範囲で Tim G を防御、補償および免責することに同意するものとします。",
           ],
         },
         {
           id: "governing",
           title: "準拠法",
           paragraphs: [
-            "本規約は、抵触法の原則を適用することなく、米国カリフォルニア州法および適用される米国連邦法に準拠し、これらに従って解釈されるものとします。",
-            "ただし、前項にかかわらず、お客様の国、州、または居住地における強行的な消費者保護法が適用される場合、当該法令に基づく保護は引き続き適用されます。",
+            "本規約は、適用されるカリフォルニア州法に準拠します。ただし、お客様の所在地における強行法規がこれと異なる定めを置く場合は、その限りではありません。",
           ],
         },
         {
@@ -890,7 +866,7 @@ const LEGAL = {
           title: "一般条項",
           paragraphs: [
             "本規約のいずれかの条項が執行不能と判断された場合でも、残りの条項は引き続き効力を有します。本規約およびプライバシーポリシーは、本サイトに関するお客様と Tim G との完全な合意を構成し、従前の了解に優先します。",
-            "いずれかの条項の不行使は、後日行使する権利の放棄とはみなされません。お客様は同意なく本規約を譲渡できません。私は再編その他類似の事由に関連して本規約を譲渡できるものとします。",
+            "いずれかの条項の不行使は、後日行使する権利の放棄とはみなされません。",
           ],
         },
         {
