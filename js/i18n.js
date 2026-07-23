@@ -83,7 +83,7 @@ const TRANSLATIONS = {
         desc: "A curated guide to places worth visiting across the United States — built as a small web project.",
       },
       usaGallery: {
-        title: "USA Travel Guide — Gallery",
+        title: "Travel Gallery",
         desc: "A photo gallery companion to the USA Travel Guide.",
       },
       japanTravelGuide: {
@@ -200,7 +200,7 @@ const TRANSLATIONS = {
         desc: "Una guía de lugares que merecen la pena en Estados Unidos — un pequeño proyecto web.",
       },
       usaGallery: {
-        title: "Guía de viaje por EE. UU. — Galería",
+        title: "Galería de viajes",
         desc: "Una galería de fotos que acompaña a la guía de viaje por Estados Unidos.",
       },
       japanTravelGuide: {
@@ -317,7 +317,7 @@ const TRANSLATIONS = {
         desc: "一份精心制作的指南 — 小型网页项目",
       },
       usaGallery: {
-        title: "美国旅行指南 — 相册",
+        title: "旅行相册",
         desc: "美国旅行指南的配套相册",
       },
       japanTravelGuide: {
@@ -434,7 +434,7 @@ const TRANSLATIONS = {
         desc: "アメリカのおすすめスポットをまとめた小さなウェブプロジェクト。",
       },
       usaGallery: {
-        title: "アメリカ旅行ガイド — ギャラリー",
+        title: "旅行ギャラリー",
         desc: "アメリカ旅行ガイドの写真ギャラリー。",
       },
       japanTravelGuide: {
