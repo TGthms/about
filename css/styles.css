@@ -1313,6 +1313,11 @@ html[data-project-links="dual"] .featured-card__lines {
     radial-gradient(circle at 78% 28%, var(--accent-soft), transparent 42%),
     linear-gradient(160deg, color-mix(in srgb, var(--accent) 8%, var(--bg)) 0%, var(--bg) 70%);
 }
+.featured-card__visual--gallery {
+  background:
+    radial-gradient(circle at 32% 24%, var(--accent-soft), transparent 46%),
+    linear-gradient(150deg, var(--bg) 0%, color-mix(in srgb, var(--ink) 3%, var(--bg)) 75%);
+}
 .featured-card__visual--japan {
   background:
     radial-gradient(circle at 50% 42%, var(--accent-soft), transparent 48%),
@@ -1960,6 +1965,11 @@ html[data-theme="dark"] .featured-card__visual--usa {
   background:
     radial-gradient(circle at 78% 28%, rgba(224, 122, 86, 0.22), transparent 44%),
     linear-gradient(160deg, #2a221c 0%, #181512 70%);
+}
+html[data-theme="dark"] .featured-card__visual--gallery {
+  background:
+    radial-gradient(circle at 32% 24%, rgba(224, 122, 86, 0.2), transparent 48%),
+    linear-gradient(150deg, #181512 0%, #211c18 75%);
 }
 html[data-theme="dark"] .featured-card__visual--japan {
   background:

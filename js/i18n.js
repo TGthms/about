@@ -82,6 +82,10 @@ const TRANSLATIONS = {
         title: "USA Travel Guide",
         desc: "A curated guide to places worth visiting across the United States — built as a small web project.",
       },
+      usaGallery: {
+        title: "USA Travel Guide — Gallery",
+        desc: "A photo gallery companion to the USA Travel Guide.",
+      },
       japanTravelGuide: {
         title: "Japan Travel Guide",
         desc: "A curated guide to places worth visiting across Japan — built as a small web project.",
@@ -194,6 +198,10 @@ const TRANSLATIONS = {
       travelGuide: {
         title: "Guía de viaje por EE. UU.",
         desc: "Una guía de lugares que merecen la pena en Estados Unidos — un pequeño proyecto web.",
+      },
+      usaGallery: {
+        title: "Guía de viaje por EE. UU. — Galería",
+        desc: "Una galería de fotos que acompaña a la guía de viaje por Estados Unidos.",
       },
       japanTravelGuide: {
         title: "Guía de viaje por Japón",
@@ -308,13 +316,17 @@ const TRANSLATIONS = {
         title: "美国旅行指南",
         desc: "一份精心制作的指南 — 小型网页项目",
       },
+      usaGallery: {
+        title: "美国旅行指南 — 相册",
+        desc: "美国旅行指南的配套相册",
+      },
       japanTravelGuide: {
         title: "日本旅行指南",
         desc: "一份关于日本值得一去之地的指南 — 小型网页项目",
       },
       kit: {
         title: "Kit",
-        desc: "在设备上运行的私密工具：PDF、图片、音视频与文本 — 无需账号，无需上传。",
+        desc: "在设备上运行的私密工具：PDF、图片、音视频与文本 — 无需账号，无需上传至服务器",
       },
       github: "GitHub",
       social: {
@@ -325,7 +337,7 @@ const TRANSLATIONS = {
       },
       duolingo: {
         label: "多邻国",
-        hint: "在多邻国 App 中扫描二维码添加我",
+        hint: "在多邻国 App 中扫描二维码关注我",
         profile: "打开主页",
         enlarge: "查看完整二维码",
         enlargeShort: "放大",
@@ -336,7 +348,7 @@ const TRANSLATIONS = {
     footer: {
       signoff: "谢谢你的到访。",
       contact: "联系：",
-      built: "精心制作",
+      built: "个人主页",
       privacy: "隐私政策",
       terms: "使用条款",
     },
@@ -420,6 +432,10 @@ const TRANSLATIONS = {
       travelGuide: {
         title: "アメリカ旅行ガイド",
         desc: "アメリカのおすすめスポットをまとめた小さなウェブプロジェクト。",
+      },
+      usaGallery: {
+        title: "アメリカ旅行ガイド — ギャラリー",
+        desc: "アメリカ旅行ガイドの写真ギャラリー。",
       },
       japanTravelGuide: {
         title: "日本旅行ガイド",
