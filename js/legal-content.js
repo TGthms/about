@@ -184,7 +184,7 @@ const LEGAL = {
           title: "Limitation of Liability",
           paragraphs: [
             "TO THE FULLEST EXTENT PERMITTED BY LAW, TIM G WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, DATA, OR GOODWILL, ARISING OUT OF OR RELATED TO YOUR USE OF THE SITE OR CONTENT, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.",
-            "TO THE FULLEST EXTENT PERMITTED BY LAW, TOTAL LIABILITY FOR ANY CLAIM ARISING OUT OF OR RELATING TO THE SITE OR THESE TERMS WILL NOT EXCEED ONE HUNDRED U.S. DOLLARS (US $100).",
+            "TO THE FULLEST EXTENT PERMITTED BY LAW, WE WILL NOT BE LIABLE FOR ANY CLAIM ARISING OUT OF OR RELATING TO THE SITE OR THESE TERMS, EXCEPT TO THE EXTENT SUCH LIABILITY CANNOT BE EXCLUDED OR LIMITED UNDER APPLICABLE LAW.",
             "Some jurisdictions do not allow certain limitations; in those cases, liability is limited to the maximum extent permitted by law.",
           ],
         },
@@ -199,8 +199,8 @@ const LEGAL = {
           id: "governing",
           title: "Governing Law",
           paragraphs: [
-            "These Terms are governed by the laws of the State of California and the United States, without regard to conflict-of-law principles, except where mandatory consumer protections in your place of residence require otherwise.",
-            "Where permitted, courts located in California will have jurisdiction over disputes, except that consumers in jurisdictions with mandatory local venue rules may bring claims in their place of residence as required by law.",
+            "These Terms are governed by and construed in accordance with the laws of the State of California and applicable United States federal laws, without regard to conflict-of-law principles.",
+            "Notwithstanding the foregoing, if mandatory consumer protection laws in your country, state, or place of residence apply, those protections will remain available to you.",
           ],
         },
         {
@@ -412,7 +412,7 @@ const LEGAL = {
           title: "Limitación de responsabilidad",
           paragraphs: [
             "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, TIM G NO SERÁ RESPONSABLE DE DAÑOS INDIRECTOS, INCIDENTALES, ESPECIALES, CONSECUENCIALES, EJEMPLARES O PUNITIVOS, NI DE PÉRDIDA DE BENEFICIOS, DATOS O FONDO DE COMERCIO, DERIVADOS O RELACIONADOS CON EL USO DEL SITIO O DEL CONTENIDO, AUNQUE SE HUBIERA ADVERTIDO DE LA POSIBILIDAD DE TALES DAÑOS.",
-            "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, LA RESPONSABILIDAD TOTAL POR CUALQUIER RECLAMACIÓN DERIVADA O RELACIONADA CON EL SITIO O ESTAS CONDICIONES NO EXCEDERÁ DE CIEN DÓLARES ESTADOUNIDENSES (100 USD).",
+            "EN LA MÁXIMA MEDIDA PERMITIDA POR LA LEY, NO SEREMOS RESPONSABLES POR NINGÚN RECLAMO QUE SURJA DE O ESTÉ RELACIONADO CON EL SITIO O ESTOS TÉRMINOS, EXCEPTO EN LA MEDIDA EN QUE DICHA RESPONSABILIDAD NO PUEDA SER EXCLUIDA O LIMITADA CONFORME A LA LEGISLACIÓN APLICABLE.",
             "Algunas jurisdicciones no permiten determinadas limitaciones; en tales casos, la responsabilidad se limita en la medida máxima que permita la ley aplicable.",
           ],
         },
@@ -427,8 +427,8 @@ const LEGAL = {
           id: "governing",
           title: "Ley aplicable y jurisdicción",
           paragraphs: [
-            "Estas Condiciones se rigen por las leyes del Estado de California y de los Estados Unidos de América, sin perjuicio de las normas sobre conflicto de leyes, salvo que las protecciones imperativas de su lugar de residencia dispongan otra cosa.",
-            "Cuando la ley lo permita, los tribunales situados en California tendrán competencia sobre las controversias, sin perjuicio de que los consumidores de jurisdicciones con normas imperativas de fuero local puedan formular reclamaciones en su lugar de residencia cuando la ley así lo exija.",
+            "Estos Términos se regirán e interpretarán de conformidad con las leyes del Estado de California y las leyes federales aplicables de los Estados Unidos, sin tener en cuenta los principios sobre conflictos de leyes.",
+            "No obstante lo anterior, si las leyes obligatorias de protección al consumidor de su país, estado o lugar de residencia resultan aplicables, dichas protecciones seguirán estando disponibles para usted.",
           ],
         },
         {
@@ -502,7 +502,7 @@ const LEGAL = {
           title: "信息的共享",
           paragraphs: [
             "本人不出售您的个人信息。",
-            "服务提供商。托管与基础设施提供商为提供本网站，在必要范围内处理技术数据。外链（例如指向 GitHub、Instagram 或项目页面的链接）由第三方依其各自隐私政策运营。",
+            "服务提供商。托管与基础设施提供商为提供本网站，在必要范围内处理技术数据。外链（例如指向 GitHub、微信 或项目页面的链接）由第三方依其各自隐私政策运营。",
             "法律要求。在法律或司法程序要求，或为保护权利、安全或公共安全所必要时，本人可能披露相关信息。",
           ],
         },
@@ -511,14 +511,14 @@ const LEGAL = {
           title: "Cookie 与本地存储",
           paragraphs: [
             "本网站主要以本地存储保存偏好设置，而非依赖广告类 Cookie。作为正常网络请求的一部分，您的浏览器仍可能向托管方发送常规技术数据。",
-            "您可在浏览器设置中清除网站数据、阻止存储，或使用私密浏览模式。此等操作可能导致语言或外观偏好被重置。",
+            "您可在浏览器设置中清除网站数据、阻止存储，或使用隐私浏览模式。此等操作可能导致语言或外观偏好被重置。",
           ],
         },
         {
           id: "retention",
           title: "保存期限",
           paragraphs: [
-            "偏好设置将保留在您的设备上，直至您予以清除或在本网站上更改。",
+            "偏好设置将保留在您的设备上，直至您清除或在本网站上更改。",
             "您发送的电子邮件仅在为实现回复与管理通信所合理必要的期间内保存，法律另有更长期限要求的除外。",
           ],
         },
@@ -608,7 +608,7 @@ const LEGAL = {
           id: "links",
           title: "第三方链接",
           paragraphs: [
-            "本网站可能包含指向第三方网站、代码仓库、社交平台或项目的链接（例如 GitHub、Instagram 或精选项目页面）。上述目的地不在本人控制之下。本人对其内容、可用性或运营做法不承担责任。您使用第三方网站的风险由您自行承担，并受其条款与政策约束。",
+            "本网站可能包含指向第三方网站、代码仓库、社交平台或项目的链接（例如 GitHub、微信 或项目页面）。上述目的地不在本人控制之下。本人对其内容、可用性或运营做法不承担责任。您使用第三方网站的风险由您自行承担，并受其条款与政策约束。",
           ],
         },
         {
@@ -639,7 +639,7 @@ const LEGAL = {
           title: "责任限制",
           paragraphs: [
             "在法律允许的最大范围内，Tim G 不对因使用本网站或内容而引起或与之相关的任何间接、附带、特殊、后果性、惩戒性或惩罚性损害，或利润、数据或商誉损失承担责任，即使已被告知可能发生此类损害。",
-            "在法律允许的最大范围内，与本网站或本条款相关的任何索赔的累计责任不超过一百美元（US $100）。",
+            "在法律允许的最大范围内，对于因网站或本条款引起或与之相关的任何索赔，我们概不承担责任，但适用法律禁止排除或限制的责任除外。",
             "部分司法辖区不允许某些责任限制；在此情况下，责任以适用法律允许的最大范围为限。",
           ],
         },
@@ -654,8 +654,8 @@ const LEGAL = {
           id: "governing",
           title: "适用法律",
           paragraphs: [
-            "本条款适用美国加利福尼亚州法律及美国联邦法律，不适用法律冲突原则；但您所在地强制性消费者保护规定另有要求的除外。",
-            "在法律允许的情况下，与争议有关的管辖权归位于加利福尼亚州的法院；但在强制规定本地管辖的司法辖区，消费者可依法律要求在其居住地提出主张。",
+            "本条款受美国加利福尼亚州法律及适用的美国联邦法律管辖并依其解释，且不适用法律冲突原则。",
+            "尽管有上述规定，如果您所在国家、州或居住地的强制性消费者保护法律适用，则您仍享有该等法律规定的保护。",
           ],
         },
         {
@@ -866,7 +866,7 @@ const LEGAL = {
           title: "責任の制限",
           paragraphs: [
             "法令で認められる最大限の範囲において、Tim G は、本サイトまたはコンテンツの利用に起因または関連する間接損害、付随的損害、特別損害、結果的損害、懲罰的損害、逸失利益、データの喪失、のれんの喪失について、当該損害の可能性を知らされていた場合であっても責任を負いません。",
-            "法令で認められる最大限の範囲において、本サイトまたは本規約に関する請求についての責任総額は、100米ドル（US $100）を上限とします。",
+            "法律で認められる最大限の範囲において、当社は、本サイトまたは本規約に起因または関連するいかなる請求についても責任を負わないものとします。ただし、適用法により除外または制限することができない範囲の責任については、この限りではありません。",
             "一部の法域では特定の制限が認められないため、その場合は法令で認められる最大限の範囲で責任が制限されます。",
           ],
         },
@@ -881,8 +881,8 @@ const LEGAL = {
           id: "governing",
           title: "準拠法",
           paragraphs: [
-            "本規約は、抵触法の原則にかかわらず、カリフォルニア州法および米国法に準拠します。ただし、お客様の居住地における強行的な消費者保護規定が適用される場合を除きます。",
-            "法令で認められる場合、紛争についてはカリフォルニア州に所在する裁判所が管轄権を有します。ただし、現地の専属的管轄が強制される法域の消費者は、法令に従い居住地で請求できる場合があります。",
+            "本規約は、抵触法の原則を適用することなく、米国カリフォルニア州法および適用される米国連邦法に準拠し、これらに従って解釈されるものとします。",
+            "ただし、前項にかかわらず、お客様の国、州、または居住地における強行的な消費者保護法が適用される場合、当該法令に基づく保護は引き続き適用されます。",
           ],
         },
         {
