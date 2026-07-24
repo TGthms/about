@@ -114,7 +114,7 @@ const TRANSLATIONS = {
     footer: {
       signoff: "Thanks for stopping by.",
       contact: "Contact:",
-      built: "Built with care",
+      built: "Personal Hub",
       privacy: "Privacy Policy",
       terms: "Terms of Use",
     },
@@ -231,7 +231,7 @@ const TRANSLATIONS = {
     footer: {
       signoff: "Gracias por tu visita.",
       contact: "Contacto:",
-      built: "Hecho con cuidado",
+      built: "Personal Hub",
       privacy: "Política de privacidad",
       terms: "Condiciones de uso",
     },
