@@ -465,7 +465,7 @@ const TRANSLATIONS = {
     footer: {
       signoff: "見てくれてありがとう。",
       contact: "連絡先：",
-      built: "丁寧に作りました",
+      built: "個人ページ",
       privacy: "プライバシーポリシー",
       terms: "利用規約",
     },

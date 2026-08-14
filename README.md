@@ -11,10 +11,11 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 ## Features
 
 - English, Español, 中文, 日本語
-- Light / dark mode
-- Featured projects: USA Travel Guide, Japan Travel Guide, Kit, and more.
+- Light / dark mode (system default, session override)
+- Projects: Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, Kit
+- Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
-- Privacy Policy & Terms of Use
+- Privacy Policy & Terms of Use (last updated 22 July 2026)
 
 ## Files
 
@@ -24,10 +25,12 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 | `privacy.html` / `terms.html` | Legal |
 | `css/styles.css` | Site chrome + home |
 | `css/legal.css` | Legal layout |
-| `js/i18n.js` | Translations, language, theme, mobile prefs |
+| `js/i18n.js` | Translations, language, theme, mobile prefs, project hosts |
 | `js/main.js` | Home interactions |
 | `js/legal.js` + `js/legal-content.js` | Legal rendering |
 | `assets/` | Duolingo QR (dark + light) |
+| `og-image.png` | Social preview (1200×630) |
+| `favicon.svg` | Tab / touch icon |
 
 ## Accessibility
 
