@@ -1369,8 +1369,8 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
 }
 .featured-card__visual--nimbus {
   background:
-    radial-gradient(circle at 28% 32%, var(--accent-soft), transparent 46%),
-    linear-gradient(200deg, color-mix(in srgb, var(--ink) 4%, var(--bg)) 0%, var(--bg) 70%);
+    radial-gradient(circle at 30% 36%, var(--accent-soft), transparent 42%),
+    linear-gradient(195deg, color-mix(in srgb, var(--accent) 10%, var(--bg)) 0%, var(--bg) 68%);
 }
 .featured-card__visual--folio {
   background:
@@ -2037,8 +2037,8 @@ html[data-theme="dark"] .featured-card__visual--kit {
 }
 html[data-theme="dark"] .featured-card__visual--nimbus {
   background:
-    radial-gradient(circle at 28% 32%, rgba(224, 122, 86, 0.2), transparent 48%),
-    linear-gradient(200deg, #241f1b 0%, #181512 72%);
+    radial-gradient(circle at 30% 36%, rgba(224, 122, 86, 0.26), transparent 44%),
+    linear-gradient(195deg, #2c221b 0%, #181512 70%);
 }
 html[data-theme="dark"] .featured-card__visual--folio {
   background:
