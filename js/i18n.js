@@ -77,6 +77,7 @@ const TRANSLATIONS = {
       },
       featured: "Featured",
       project: "Project",
+      madeByGrok: "Made by Grok",
       open: "Open project",
       travelGuide: {
         title: "USA Travel Guide",
@@ -93,6 +94,18 @@ const TRANSLATIONS = {
       kit: {
         title: "Kit",
         desc: "Private on-device tools for PDF, image, audio, and text — no account, no upload.",
+      },
+      nimbus: {
+        title: "Nimbus",
+        desc: "Cinematic native macOS weather, powered by Open-Meteo.",
+      },
+      folio: {
+        title: "Folio",
+        desc: "A local-only macOS PDF toolbox — no account, no upload.",
+      },
+      kiln: {
+        title: "Kiln",
+        desc: "Native macOS converter for files and units.",
       },
       github: "GitHub",
       social: {
@@ -194,6 +207,7 @@ const TRANSLATIONS = {
       },
       featured: "Destacado",
       project: "Proyecto",
+      madeByGrok: "Hecho con Grok",
       open: "Abrir proyecto",
       travelGuide: {
         title: "Guía de viaje por EE. UU.",
@@ -210,6 +224,18 @@ const TRANSLATIONS = {
       kit: {
         title: "Kit",
         desc: "Herramientas privadas en tu dispositivo para PDF, imagen, audio y texto — sin cuenta ni subidas.",
+      },
+      nimbus: {
+        title: "Nimbus",
+        desc: "Tiempo nativo y cinematográfico para macOS, con Open-Meteo.",
+      },
+      folio: {
+        title: "Folio",
+        desc: "Caja de herramientas PDF local para macOS — sin cuenta ni subidas.",
+      },
+      kiln: {
+        title: "Kiln",
+        desc: "Conversor nativo de macOS para archivos y unidades.",
       },
       github: "GitHub",
       social: {
@@ -311,6 +337,7 @@ const TRANSLATIONS = {
       },
       featured: "推荐",
       project: "项目",
+      madeByGrok: "由 Grok 制作",
       open: "打开项目",
       travelGuide: {
         title: "美国旅行指南",
@@ -327,6 +354,18 @@ const TRANSLATIONS = {
       kit: {
         title: "Kit",
         desc: "在设备上运行的私密工具：PDF、图片、音视频与文本 — 无需账号，无需上传至服务器",
+      },
+      nimbus: {
+        title: "Nimbus",
+        desc: "原生 macOS 天气应用，画面电影感，数据来自 Open-Meteo。",
+      },
+      folio: {
+        title: "Folio",
+        desc: "仅在本地运行的 macOS PDF 工具箱 — 无需账号，无需上传。",
+      },
+      kiln: {
+        title: "Kiln",
+        desc: "原生 macOS 转换器：文件与单位。",
       },
       github: "GitHub",
       social: {
@@ -428,6 +467,7 @@ const TRANSLATIONS = {
       },
       featured: "注目",
       project: "プロジェクト",
+      madeByGrok: "Grokで制作",
       open: "開く",
       travelGuide: {
         title: "アメリカ旅行ガイド",
@@ -444,6 +484,18 @@ const TRANSLATIONS = {
       kit: {
         title: "Kit",
         desc: "PDF・画像・音声・テキスト向けの端末内ツール。アカウント不要、アップロード不要。",
+      },
+      nimbus: {
+        title: "Nimbus",
+        desc: "Open-Meteoを使った、映画のようなネイティブmacOS天気アプリ。",
+      },
+      folio: {
+        title: "Folio",
+        desc: "端末内だけで動くmacOSのPDFツール。アカウント不要、アップロード不要。",
+      },
+      kiln: {
+        title: "Kiln",
+        desc: "ファイルと単位のためのネイティブmacOSコンバーター。",
       },
       github: "GitHub",
       social: {
@@ -1503,10 +1555,11 @@ function applyProjectHostMode(lang) {
 
   /* Prevent focusing hidden targets (display:none is not enough for all ATs) */
   document.querySelectorAll("[data-project]").forEach(function (card) {
+    var repoOnly = card.getAttribute("data-project-kind") === "repo";
     var single = card.querySelector("[data-project-single]");
     var lines = card.querySelector("[data-project-lines]");
     if (single) {
-      if (dual) {
+      if (dual && !repoOnly) {
         single.setAttribute("tabindex", "-1");
         single.setAttribute("aria-hidden", "true");
       } else {

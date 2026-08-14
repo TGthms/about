@@ -1109,7 +1109,7 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
   border-radius: inherit;
   /* Keep hit in tab order; label via aria-labelledby on the element */
 }
-html[data-project-links="dual"] .featured-card__hit {
+html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__hit {
   display: none !important;
 }
 html[data-project-links="single"] .featured-card:has(.featured-card__hit:focus-visible) {
@@ -1160,14 +1160,27 @@ html[data-project-links="single"] .featured-card:has(.featured-card__hit:active)
   background: var(--ink);
   color: var(--bg);
 }
+.featured-card__badge--grok {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
 .featured-card__content {
   padding-top: var(--space-4);
   position: relative;
   z-index: 1;
   pointer-events: none; /* clicks pass to hit in single mode */
 }
-html[data-project-links="dual"] .featured-card__content {
+html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__content {
   pointer-events: auto;
+}
+html[data-project-links="dual"] .featured-card[data-project-kind="repo"] .featured-card__content {
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  html[data-project-links="dual"] .featured-card[data-project-kind="repo"].is-settled:hover {
+    transform: translate3d(0, calc(var(--lift-strong) * -1), 0);
+    box-shadow: var(--shadow-hover);
+  }
 }
 .featured-card__title {
   font-size: 1.35rem;
@@ -1205,10 +1218,10 @@ html[data-project-links="dual"] .featured-card__content {
 .featured-card__lines {
   display: none;
 }
-html[data-project-links="dual"] .featured-card__cta--single {
+html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__cta--single {
   display: none !important;
 }
-html[data-project-links="dual"] .featured-card__lines {
+html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__lines {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
@@ -1219,7 +1232,7 @@ html[data-project-links="dual"] .featured-card__lines {
 }
 /* Very narrow: keep two columns if possible; allow wrap only when necessary */
 @media (max-width: 360px) {
-  html[data-project-links="dual"] .featured-card__lines {
+  html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__lines {
     grid-template-columns: 1fr;
   }
 }
@@ -1308,6 +1321,32 @@ html[data-project-links="dual"] .featured-card__lines {
   overflow: hidden;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 8%, transparent);
 }
+.featured-card__visual--photo {
+  padding: 0;
+  min-height: 160px;
+  align-self: stretch;
+}
+.featured-card__visual--photo img {
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+@media (min-width: 720px) {
+  .featured-card__visual--photo {
+    min-height: 180px;
+  }
+  .featured-card__visual--photo img {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+  }
+  .featured-card__visual--photo {
+    position: relative;
+  }
+}
 .featured-card__visual--usa {
   background:
     radial-gradient(circle at 78% 28%, var(--accent-soft), transparent 42%),
@@ -1327,6 +1366,21 @@ html[data-project-links="dual"] .featured-card__lines {
   background:
     linear-gradient(135deg, var(--accent-soft) 0%, transparent 45%),
     linear-gradient(0deg, color-mix(in srgb, var(--ink) 3%, var(--bg)) 0%, var(--bg) 100%);
+}
+.featured-card__visual--nimbus {
+  background:
+    radial-gradient(circle at 28% 32%, var(--accent-soft), transparent 46%),
+    linear-gradient(200deg, color-mix(in srgb, var(--ink) 4%, var(--bg)) 0%, var(--bg) 70%);
+}
+.featured-card__visual--folio {
+  background:
+    linear-gradient(160deg, var(--accent-soft) 0%, transparent 50%),
+    linear-gradient(0deg, color-mix(in srgb, var(--ink) 3%, var(--bg)) 0%, var(--bg) 100%);
+}
+.featured-card__visual--kiln {
+  background:
+    radial-gradient(circle at 50% 70%, var(--accent-soft), transparent 48%),
+    linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--accent) 8%, var(--bg)) 100%);
 }
 .featured-art {
   width: 100%;
@@ -1980,6 +2034,21 @@ html[data-theme="dark"] .featured-card__visual--kit {
   background:
     linear-gradient(135deg, rgba(224, 122, 86, 0.16) 0%, transparent 48%),
     linear-gradient(0deg, #1c1916 0%, #181512 100%);
+}
+html[data-theme="dark"] .featured-card__visual--nimbus {
+  background:
+    radial-gradient(circle at 28% 32%, rgba(224, 122, 86, 0.2), transparent 48%),
+    linear-gradient(200deg, #241f1b 0%, #181512 72%);
+}
+html[data-theme="dark"] .featured-card__visual--folio {
+  background:
+    linear-gradient(160deg, rgba(224, 122, 86, 0.16) 0%, transparent 52%),
+    linear-gradient(0deg, #1c1916 0%, #181512 100%);
+}
+html[data-theme="dark"] .featured-card__visual--kiln {
+  background:
+    radial-gradient(circle at 50% 70%, rgba(224, 122, 86, 0.22), transparent 50%),
+    linear-gradient(180deg, #181512 0%, #2a2018 100%);
 }
 
 /* Controls expanded trigger: readable on accent */
