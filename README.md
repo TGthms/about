@@ -37,3 +37,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 - Skip link, landmarks, focus styles
 - `prefers-reduced-motion` disables motion
 - System light/dark and language detection with local storage for language only
+
+## License
+
+- [CC BY-NC 4.0](LICENSE.md).
