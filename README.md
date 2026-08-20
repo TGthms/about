@@ -40,4 +40,4 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 
 ## License
 
-- [CC BY-NC 4.0](LICENSE.md).
+[Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](LICENSE.md).
