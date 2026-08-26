@@ -103,13 +103,17 @@
         (section.paragraphs || []).forEach(function (text) {
           var paragraph = document.createElement("p");
           paragraph.className = "legal-section__p";
-          if (text.indexOf("contact.timg@icloud.com") !== -1) {
-            paragraph.innerHTML = text.replace(
-              /contact\.timg@icloud\.com/g,
-              '<a href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>'
-            );
-          } else {
+          var email = "contact.timg@icloud.com";
+          var emailIndex = text.indexOf(email);
+          if (emailIndex === -1) {
             paragraph.textContent = text;
+          } else {
+            paragraph.appendChild(document.createTextNode(text.slice(0, emailIndex)));
+            var emailLink = document.createElement("a");
+            emailLink.href = "mailto:" + email;
+            emailLink.textContent = email;
+            paragraph.appendChild(emailLink);
+            paragraph.appendChild(document.createTextNode(text.slice(emailIndex + email.length)));
           }
           article.appendChild(paragraph);
         });
@@ -122,7 +126,7 @@
     if (typeof applyLanguage === "function") applyLanguage(resolved);
 
     try {
-      localStorage.setItem("timg-lang", resolved);
+      localStorage.setItem(STORAGE_KEY, resolved);
     } catch (_) {}
 
     return resolved;
