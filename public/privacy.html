@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Privacy Policy — Tim G</title>
+  <meta name="description" content="How Tim G’s personal hub handles privacy, local preferences, and contact information." />
+  <meta name="author" content="Tim G" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://tgthms.github.io/about/privacy.html" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tgthms.github.io/about/privacy.html" />
+  <meta property="og:title" content="Privacy Policy — Tim G" />
+  <meta property="og:description" content="How Tim G’s personal hub handles privacy, local preferences, and contact information." />
+  <meta property="og:image" content="https://tgthms.github.io/about/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:locale" content="en_US" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Privacy Policy — Tim G" />
+  <meta name="twitter:description" content="How Tim G’s personal hub handles privacy, local preferences, and contact information." />
+  <meta name="twitter:image" content="https://tgthms.github.io/about/og-image.png" />
+
+  <meta name="theme-color" content="#f3eee4" id="meta-theme-color" />
+  <link rel="icon" href="https://tgthms.github.io/about/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="https://tgthms.github.io/about/favicon.svg" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/legal.css" />
+  <script>
+    (function () {
+      try {
+        var root = document.documentElement;
+        try {
+          localStorage.removeItem("timg-theme");
+        } catch (e2) {}
+        var override = null;
+        try {
+          override = sessionStorage.getItem("timg-theme-session");
+        } catch (e3) {}
+        var theme =
+          override === "light" || override === "dark"
+            ? override
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        root.setAttribute("data-theme", theme);
+        root.style.colorScheme = theme;
+        root.classList.add("js");
+        setTimeout(function () {
+          if (!root.classList.contains("app-ready")) root.classList.add("reveal-fallback");
+        }, 2500);
+      } catch (e) {}
+    })();
+  </script>
+  <noscript>
+    <style>
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .top-bar { position: static; }
+      .legal-noscript-note { display: block !important; }
+    </style>
+  </noscript>
+</head>
+<body class="legal-page" data-legal-page="privacy">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="top-bar" role="banner">
+    <div class="top-bar__inner">
+      <div data-preferences-root></div>
+    </div>
+  </header>
+
+  <main id="main" class="legal-main">
+    <div class="legal-shell">
+      <div class="legal-toolbar">
+        <a class="legal-back" href="index.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="legal-back">Back to home</span>
+        </a>
+        <ul class="legal-related" role="list">
+          <li><a href="privacy.html" class="is-current" data-legal-ui="privacyLink" aria-current="page">Privacy Policy</a></li>
+          <li><a href="terms.html" data-legal-ui="termsLink">Terms of Use</a></li>
+        </ul>
+      </div>
+
+      <article class="legal-article">
+        <header class="legal-hero">
+          <p class="legal-hero__label" id="legal-label">Legal</p>
+          <h1 class="legal-hero__title" id="legal-title">Privacy Policy</h1>
+          <p class="legal-hero__updated" id="legal-updated">Last updated: July 22, 2026</p>
+          <p class="legal-hero__intro" id="legal-intro">
+            This Privacy Policy describes how information is collected, used, disclosed, and stored when you visit this personal hub website (the “Site”), how on-device preferences work, and how to contact the Site operator with questions.
+          </p>
+        </header>
+
+        <nav class="legal-toc-block" aria-labelledby="legal-toc-title">
+          <p class="legal-toc-block__heading" id="legal-toc-title">On this page</p>
+          <ul class="legal-toc" id="legal-toc" role="list">
+            <li><a class="legal-toc__link" href="#overview">Overview</a></li>
+            <li><a class="legal-toc__link" href="#information">Information Handled</a></li>
+            <li><a class="legal-toc__link" href="#use">How Information Is Used</a></li>
+            <li><a class="legal-toc__link" href="#sharing">Sharing</a></li>
+            <li><a class="legal-toc__link" href="#cookies">Cookies and Local Storage</a></li>
+            <li><a class="legal-toc__link" href="#retention">Retention</a></li>
+            <li><a class="legal-toc__link" href="#children">Children</a></li>
+            <li><a class="legal-toc__link" href="#rights">Your Choices and Rights</a></li>
+            <li><a class="legal-toc__link" href="#security">Security</a></li>
+            <li><a class="legal-toc__link" href="#links">Links to Other Sites</a></li>
+            <li><a class="legal-toc__link" href="#changes">Changes to This Policy</a></li>
+            <li><a class="legal-toc__link" href="#contact">Contact</a></li>
+        </ul>
+        </nav>
+
+        <p class="legal-noscript-note" hidden>
+          This policy is available in English without JavaScript. Enable JavaScript to switch languages. You can also email
+          <a href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>.
+        </p>
+
+        <div id="legal-body" class="legal-body">
+        <section class="legal-section" id="overview">
+          <h2 class="legal-section__title">Overview</h2>
+        <p class="legal-section__p">The Site is a personal, static landing page operated by Tim G (“I,” “me,” or “the Site operator”). It introduces the operator and links to projects and profiles hosted elsewhere. It is not an online store, social network, or account-based service.</p>
+        <p class="legal-section__p">Collection is intentionally limited. Language preference and similar settings that improve your visit are stored on your device, unless you choose to contact me by email.</p>
+        <p class="legal-section__p">For purposes of applicable privacy laws, the operator of this Site is responsible for information directly collected through the Site, such as email correspondence.</p>
+        </section>
+        <section class="legal-section" id="information">
+          <h2 class="legal-section__title">Information Handled</h2>
+        <p class="legal-section__p">Information you choose to send. If you email <a href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a> (or another address I publish), I receive the contents of that message, which may include your email address, name, and message body. That information is used to respond and, where reasonably necessary, to retain a record of the correspondence.</p>
+        <p class="legal-section__p">Preferences stored on your device. The Site may save your language choice in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. These values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site.</p>
+        <p class="legal-section__p">Technical data processed by hosting. The Site is hosted by GitHub Pages or Cloudflare. The hosting provider may process technical information such as IP addresses, browser type, device or operating-system information, referring URL, and request timestamps as part of delivering the Site. That processing is performed by the host under its own systems and policies.</p>
+        <p class="legal-section__p">Analytics and tracking. This Site does not use advertising trackers, behavioral profiling, or third-party analytics tools unless disclosed in a future update of this Policy.</p>
+        </section>
+        <section class="legal-section" id="use">
+          <h2 class="legal-section__title">How Information Is Used</h2>
+        <p class="legal-section__p">To display the Site and remember preferences you set.</p>
+        <p class="legal-section__p">To respond when you contact me.</p>
+        <p class="legal-section__p">To maintain security, diagnose issues, and improve the Site over time.</p>
+        <p class="legal-section__p">To comply with applicable law when required.</p>
+        </section>
+        <section class="legal-section" id="sharing">
+          <h2 class="legal-section__title">Sharing</h2>
+        <p class="legal-section__p">I do not sell your personal information.</p>
+        <p class="legal-section__p">Service providers. Hosting and infrastructure providers process technical data as needed to deliver the Site. Outbound links (for example to GitHub, Instagram, or project pages) are operated by third parties under their own privacy policies.</p>
+        <p class="legal-section__p">Legal requirements. I may disclose information if required by law or legal process, or to protect rights, safety, or security.</p>
+        </section>
+        <section class="legal-section" id="cookies">
+          <h2 class="legal-section__title">Cookies and Local Storage</h2>
+        <p class="legal-section__p">The Site is designed to rely primarily on local storage for preferences rather than advertising cookies. Your browser may still send routine technical data to the host as part of ordinary web requests.</p>
+        <p class="legal-section__p">You may clear site data, block storage, or use private browsing in your browser settings. Doing so may reset language or appearance preferences.</p>
+        </section>
+        <section class="legal-section" id="retention">
+          <h2 class="legal-section__title">Retention</h2>
+        <p class="legal-section__p">Preferences remain on your device until you clear them or change them on the Site.</p>
+        <p class="legal-section__p">Email you send is retained only as long as reasonably necessary to respond and manage correspondence, unless a longer period is required by law.</p>
+        </section>
+        <section class="legal-section" id="children">
+          <h2 class="legal-section__title">Children</h2>
+        <p class="legal-section__p">The Site is a general personal page and is not directed to children under 13 (or the equivalent age under the laws of your jurisdiction). I do not knowingly collect personal information from children under that age. If you believe a child has provided personal information, contact me and I will take appropriate steps.</p>
+        </section>
+        <section class="legal-section" id="rights">
+          <h2 class="legal-section__title">Your Choices and Rights</h2>
+        <p class="legal-section__p">Depending on applicable law, you may have certain rights regarding personal information. Because this Site collects very limited information, requests are generally limited to contact correspondence or information controlled by service providers.</p>
+        <p class="legal-section__p">To make a request, email <a href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>. I will respond within a reasonable time.</p>
+        <p class="legal-section__p">You may control local preferences at any time using the language and theme controls on the Site, or by clearing browser storage.</p>
+        </section>
+        <section class="legal-section" id="security">
+          <h2 class="legal-section__title">Security</h2>
+        <p class="legal-section__p">I take reasonable steps appropriate to a personal static website. No method of transmission or storage is completely secure. Please use care when sending sensitive information by email.</p>
+        </section>
+        <section class="legal-section" id="links">
+          <h2 class="legal-section__title">Links to Other Sites</h2>
+        <p class="legal-section__p">The Site links to third-party websites and services. Their privacy practices are their own. Review their policies before providing information to them.</p>
+        </section>
+        <section class="legal-section" id="changes">
+          <h2 class="legal-section__title">Changes to This Policy</h2>
+        <p class="legal-section__p">I may update this Privacy Policy from time to time. The “Last updated” date at the top will change when revisions are posted. Continued use of the Site after an update constitutes acknowledgment of the revised Policy.</p>
+        </section>
+        <section class="legal-section" id="contact">
+          <h2 class="legal-section__title">Contact</h2>
+        <p class="legal-section__p">Questions about this Privacy Policy or privacy practices:</p>
+        <p class="legal-section__p">Email: <a href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a></p>
+        <p class="legal-section__p">Site operator: Tim G — San Francisco Bay Area</p>
+        </section>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <nav class="footer__legal" aria-label="Legal">
+        <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
+        <span class="footer__dot" aria-hidden="true">·</span>
+        <a href="terms.html" data-i18n="footer.terms">Terms of Use</a>
+      </nav>
+      <p class="footer__contact">
+        <span data-i18n="footer.contact">Contact:</span>
+        <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
+      </p>
+      <p class="footer__copy">
+        <span>&copy; <span id="year"></span> Tim G</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/preferences.js"></script>
+  <script src="js/i18n/data.js"></script>
+  <script src="js/i18n/core.js"></script>
+  <script src="js/i18n/theme.js"></script>
+  <script src="js/i18n/controls.js"></script>
+  <script src="js/i18n/project-host.js"></script>
+  <script src="js/i18n/language.js"></script>
+  <script src="js/legal/ui-content.js"></script>
+  <script src="js/legal/privacy-content.js"></script>
+  <script src="js/legal.js"></script>
+</body>
+</html>

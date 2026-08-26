@@ -1,43 +1,102 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Validate and deploy the curated public site to GitHub Pages.
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  validate:
+    name: Validate site
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+          done < <(find public/js -type f -name '*.js' -print0)
+
+      - name: Check HTML integrity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          root = Path("public")
+          errors = []
+
+          class Checker(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+                  self.duplicate_ids = set()
+                  self.local_refs = []
+                  self.blank_target_issues = []
+
+              def handle_starttag(self, tag, attrs):
+                  attributes = dict(attrs)
+                  element_id = attributes.get("id")
+                  if element_id:
+                      if element_id in self.ids:
+                          self.duplicate_ids.add(element_id)
+                      self.ids.add(element_id)
+                  for key in ("href", "src"):
+                      value = attributes.get(key, "")
+                      if value and not value.startswith(("#", "http:", "https:", "mailto:", "javascript:")):
+                          self.local_refs.append(value.split("#", 1)[0])
+                  if tag == "a" and attributes.get("target") == "_blank":
+                      rel = set(attributes.get("rel", "").split())
+                      if not {"noopener", "noreferrer"}.issubset(rel):
+                          self.blank_target_issues.append(attributes.get("href", ""))
+
+          for page in sorted(root.glob("*.html")):
+              checker = Checker()
+              checker.feed(page.read_text(encoding="utf-8"))
+              if checker.duplicate_ids:
+                  errors.append(f"{page}: duplicate IDs: {sorted(checker.duplicate_ids)}")
+              if checker.blank_target_issues:
+                  errors.append(f"{page}: unsafe _blank links: {checker.blank_target_issues}")
+              for ref in checker.local_refs:
+                  if ref and not (root / ref).exists():
+                      errors.append(f"{page}: missing local reference: {ref}")
+
+          if errors:
+              raise SystemExit("\n".join(errors))
+          print("HTML integrity checks passed")
+          PY
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - name: Upload public artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          # Upload entire repository
-          path: '.'
+          path: "public"
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

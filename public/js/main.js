@@ -1,6 +1,6 @@
 /**
  * Home page interactions.
- * Depends on js/i18n.js (theme, language, controls).
+ * Depends on the focused modules in js/i18n/ and js/preferences.js.
  */
 (function () {
   "use strict";

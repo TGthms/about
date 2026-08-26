@@ -5,7 +5,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 ## Stack
 
 - Plain HTML / CSS / JS (no build step)
-- GitHub Pages (`static.yml` deploys the repo root)
+- GitHub Pages (`.github/workflows/static.yml` validates and deploys `public/`)
 - Craft Brutal design: cream paper / warm charcoal, hard borders, offset shadows, terracotta accent
 
 ## Features
@@ -15,28 +15,35 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 - Projects: Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, Kit, plus GitHub apps Nimbus, Folio, and Kiln
 - Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
-- Privacy Policy & Terms of Use (last updated 22 July 2026)
+- Privacy Policy & Terms of Use with localized content and complete English no-JavaScript fallback (last updated 22 July 2026)
 
 ## Files
 
 | Path | Role |
 |------|------|
-| `index.html` | Home |
-| `privacy.html` / `terms.html` | Legal |
-| `css/styles.css` | Site chrome + home |
-| `css/legal.css` | Legal layout |
-| `js/i18n.js` | Translations, language, theme, mobile prefs, project hosts |
-| `js/main.js` | Home interactions |
-| `js/legal.js` + `js/legal-content.js` | Legal rendering |
-| `assets/` | Duolingo QR (dark + light) |
-| `og-image.png` | Social preview (1200×630) |
-| `favicon.svg` | Tab / touch icon |
+| `public/index.html` | Home page |
+| `public/privacy.html` / `public/terms.html` | Legal pages |
+| `public/css/styles.css` | Site chrome + home |
+| `public/css/legal.css` | Legal layout |
+| `public/js/preferences.js` | Centralized preferences markup |
+| `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
+| `public/js/main.js` | Home interactions |
+| `public/js/legal.js` | Legal rendering |
+| `public/js/legal/` | Legal UI, privacy, and terms content split by responsibility |
+| `public/assets/` | Project previews and Duolingo QR assets |
+| `public/og-image.png` | Social preview (1200×630) |
+| `public/favicon.svg` | Tab / touch icon |
+
+Repository documentation and licensing stay outside `public/`, so the deployment artifact contains only intentional site files.
 
 ## Accessibility
 
-- Skip link, landmarks, focus styles
-- `prefers-reduced-motion` disables motion
-- System light/dark and language detection with local storage for language only
+- Skip link, landmarks, focus-visible styles, and named controls
+- Complete English legal content without JavaScript
+- Modal and mobile-sheet focus management, Escape handling, and focus containment
+- Localized page language, metadata, live language-change announcements, and QR alternative text
+- `prefers-reduced-motion` disables non-essential transitions and animations
+- System light/dark detection; language and project-host preferences use local storage; theme overrides use session storage
 
 ## License
 
