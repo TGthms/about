@@ -27,6 +27,7 @@
   var currentLang = "en";
   if (typeof detectLanguage === "function" && typeof applyLanguage === "function") {
     currentLang = applyLanguage(detectLanguage());
+    if (typeof renderErhuWiki === "function") renderErhuWiki(currentLang);
   }
   /* Host control after language so dual/single mode is correct on first paint */
   if (typeof initProjectHost === "function") initProjectHost();
@@ -35,8 +36,14 @@
     initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
       if (typeof applyLanguage === "function") currentLang = applyLanguage(lang);
+      if (typeof renderErhuWiki === "function") renderErhuWiki(currentLang);
     });
   }
+
+  /* Put the personal utility first in both visual and keyboard order. */
+  var projectStack = document.querySelector(".featured-stack");
+  var kitCard = projectStack && projectStack.querySelector('[data-project="kit"]');
+  if (projectStack && kitCard) projectStack.insertBefore(kitCard, projectStack.firstElementChild);
 
   /* ---------- Scroll entrance ---------- */
   function settle(el) {

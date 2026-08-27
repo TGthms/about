@@ -52,6 +52,7 @@ const TRANSLATIONS = {
       erhu: {
         title: "Erhu",
         desc: "Traditional Chinese two-string instrument",
+        learnMore: "Explore the erhu · see my performance",
       },
       photo: {
         title: "Photography",
@@ -132,6 +133,8 @@ const TRANSLATIONS = {
     footer: {
       signoff: "Thanks for stopping by.",
       contact: "Contact:",
+      verse: "For God has not given us the spirit of fear; but of power, and of love, and of a sound mind.",
+      verseReference: "— 2 Timothy 1:7",
       built: "Personal Hub",
       privacy: "Privacy Policy",
       terms: "Terms of Use",
@@ -183,6 +186,7 @@ const TRANSLATIONS = {
       erhu: {
         title: "Erhu",
         desc: "Instrumento tradicional chino de dos cuerdas",
+        learnMore: "Conoce el erhu · mira mi interpretación",
       },
       photo: {
         title: "Fotografía",
@@ -263,6 +267,8 @@ const TRANSLATIONS = {
     footer: {
       signoff: "Gracias por tu visita.",
       contact: "Contacto:",
+      verse: "Pues Dios no nos ha dado un espíritu de timidez, sino de poder, de amor y de dominio propio.",
+      verseReference: "— 2 Timoteo 1:7",
       built: "Personal Hub",
       privacy: "Política de privacidad",
       terms: "Condiciones de uso",
@@ -314,6 +320,7 @@ const TRANSLATIONS = {
       erhu: {
         title: "二胡",
         desc: "传统两弦乐器",
+        learnMore: "探索二胡 · 查看我的演奏",
       },
       photo: {
         title: "摄影",
@@ -394,6 +401,8 @@ const TRANSLATIONS = {
     footer: {
       signoff: "谢谢你的到访。",
       contact: "联系：",
+      verse: "因为神赐给我们不是胆怯的心，乃是刚强、仁爱、谨守的心。",
+      verseReference: "— 提摩太后书 1:7",
       built: "个人主页",
       privacy: "隐私政策",
       terms: "使用条款",
@@ -445,6 +454,7 @@ const TRANSLATIONS = {
       erhu: {
         title: "二胡",
         desc: "中国の伝統的な二弦楽器",
+        learnMore: "二胡を知る · 演奏を観る",
       },
       photo: {
         title: "写真",
@@ -525,6 +535,8 @@ const TRANSLATIONS = {
     footer: {
       signoff: "見てくれてありがとう。",
       contact: "連絡先：",
+      verse: "というのは、神がわたしたちに下さったのは、臆する霊ではなく、力と愛と慎みとの霊なのである。",
+      verseReference: "— テモテへの第二の手紙 1:7",
       built: "個人ページ",
       privacy: "プライバシーポリシー",
       terms: "利用規約",

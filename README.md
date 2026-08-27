@@ -15,6 +15,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 - Projects: Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, Kit, plus GitHub apps Nimbus, Folio, and Kiln
 - Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
+- Erhu interest card with a responsive, localized wiki dialog, museum image, and performance video
 - Privacy Policy & Terms of Use with localized content rendered by JavaScript (Terms last updated 26 August 2026)
 
 ## Files
@@ -28,9 +29,10 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 | `public/js/preferences.js` | Centralized preferences markup |
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
+| `public/js/erhu.js` / `public/js/erhu-content.js` | Erhu wiki dialog behavior and localized content |
 | `public/js/legal.js` | Legal rendering |
 | `public/js/legal/` | Legal UI, privacy, and terms content split by responsibility |
-| `public/assets/` | Project previews and Duolingo QR assets |
+| `public/assets/` | Project previews, Duolingo QR assets, and erhu media |
 | `public/og-image.png` | Social preview (1200×630) |
 | `public/favicon.svg` | Tab / touch icon |
 

@@ -172,6 +172,7 @@
             </div>
             <h3 class="interest-card__title" data-i18n="interests.erhu.title">Erhu</h3>
             <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
+            <button type="button" class="interest-card__learn" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" data-i18n="interests.erhu.learnMore">Wanna know more?</button>
           </li>
           <li class="interest-card reveal" style="--stagger: 2">
             <div class="interest-card__icon" aria-hidden="true">
@@ -270,7 +271,7 @@
             Project cards: single CTA (en/es/ja, host from prefs) or dual lines (zh).
             URLs live in data-url-cloudflare / data-url-github; applied by the project-host module.
           -->
-          <article class="featured-card reveal" data-project="usa-gallery"
+          <article class="featured-card reveal reveal-delay-1" data-project="usa-gallery"
             data-url-cloudflare="https://travelusa.pages.dev/gallery/"
             data-url-github="https://tgthms.github.io/usa-travel-guide/gallery.html">
             <a
@@ -331,7 +332,7 @@
             </div>
           </article>
           
-          <article class="featured-card featured-card--kit reveal reveal-delay-2" data-project="kit"
+          <article class="featured-card featured-card--kit reveal" data-project="kit"
             data-url-cloudflare="https://trykit.pages.dev/"
             data-url-github="https://tgthms.github.io/kit/">
             <a
@@ -805,6 +806,32 @@
     </div>
   </div>
 
+  <!-- Erhu wiki -->
+  <div
+    class="erhu-modal"
+    id="erhu-wiki-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="erhu-wiki-title"
+    hidden
+  >
+    <div class="erhu-modal__backdrop" data-erhu-close tabindex="-1"></div>
+    <article class="erhu-modal__panel" role="document">
+      <div class="erhu-modal__top">
+        <div>
+          <p class="erhu-modal__eyebrow" id="erhu-wiki-eyebrow"></p>
+          <h2 class="erhu-modal__title" id="erhu-wiki-title"></h2>
+        </div>
+        <button type="button" class="erhu-modal__close" data-erhu-close aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="erhu-modal__body" id="erhu-wiki-body"></div>
+    </article>
+  </div>
+
   <!-- 5. Footer -->
   <footer class="footer" id="footer">
     <div class="container footer__inner reveal">
@@ -813,6 +840,10 @@
         <span data-i18n="footer.contact">Contact:</span>
         <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
       </p>
+      <blockquote class="footer__verse">
+        <p data-i18n="footer.verse">For God has not given us the spirit of fear; but of power, and of love, and of a sound mind.</p>
+        <cite data-i18n="footer.verseReference">— 2 Timothy 1:7</cite>
+      </blockquote>
       <nav class="footer__legal" aria-label="Legal">
         <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
         <span class="footer__dot" aria-hidden="true">·</span>
@@ -833,6 +864,8 @@
   <script src="js/i18n/controls.js"></script>
   <script src="js/i18n/project-host.js"></script>
   <script src="js/i18n/language.js"></script>
+  <script src="js/erhu-content.js"></script>
+  <script src="js/erhu.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
