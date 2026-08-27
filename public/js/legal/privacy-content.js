@@ -7,7 +7,7 @@ window.LEGAL_DOCUMENTS.privacy = {
     "label": "Legal",
     "title": "Privacy Policy",
     "updated": "Last updated: July 22, 2026",
-    "intro": "This Privacy Policy describes how information is collected, used, disclosed, and stored when you visit this personal hub website (the “Site”), how on-device preferences work, and how to contact the Site operator with questions.",
+    "intro": "This Privacy Policy explains what information is handled when you visit this personal hub website (the “Site”), how on-device preferences work, and how to contact the Site operator with questions.",
     "sections": [
       {
         "id": "overview",
@@ -20,11 +20,11 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "information",
-        "title": "Information Handled",
+        "title": "Information and Data Practices",
         "paragraphs": [
           "Information you choose to send. If you email contact.timg@icloud.com (or another address I publish), I receive the contents of that message, which may include your email address, name, and message body. That information is used to respond and, where reasonably necessary, to retain a record of the correspondence.",
-          "Preferences stored on your device. The Site may save your language choice in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. These values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site.",
-          "Technical data processed by hosting. The Site is hosted by GitHub Pages or Cloudflare. The hosting provider may process technical information such as IP addresses, browser type, device or operating-system information, referring URL, and request timestamps as part of delivering the Site. That processing is performed by the host under its own systems and policies.",
+          "Preferences stored on your device. The Site may save your language choice in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. These preference values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site.",
+          "Technical data processed by hosting. The Site is hosted by Cloudflare, with GitHub Pages available as a backup. The hosting provider may process technical information such as IP addresses, browser type, device or operating-system information, referring URL, and request timestamps as part of delivering the Site. That processing is performed by the host under its own systems and policies.",
           "Analytics and tracking. This Site does not use advertising trackers, behavioral profiling, or third-party analytics tools unless disclosed in a future update of this Policy."
         ]
       },
@@ -42,7 +42,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "id": "sharing",
         "title": "Sharing",
         "paragraphs": [
-          "I do not sell your personal information.",
+          "I do not sell your personal information or share it for cross-context behavioral advertising.",
           "Service providers. Hosting and infrastructure providers process technical data as needed to deliver the Site. Outbound links (for example to GitHub, Instagram, or project pages) are operated by third parties under their own privacy policies.",
           "Legal requirements. I may disclose information if required by law or legal process, or to protect rights, safety, or security."
         ]
@@ -97,7 +97,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "id": "changes",
         "title": "Changes to This Policy",
         "paragraphs": [
-          "I may update this Privacy Policy from time to time. The “Last updated” date at the top will change when revisions are posted. Continued use of the Site after an update constitutes acknowledgment of the revised Policy."
+          "I may revise this Privacy Policy from time to time by posting an updated version on the Site. The “Last updated” date at the top will indicate when revisions were made. Continued use of the Site after an update constitutes acknowledgment of the revised Policy."
         ]
       },
       {
@@ -117,14 +117,14 @@ window.LEGAL_DOCUMENTS.privacy = {
     "label": "Legal",
     "title": "Política de privacidad",
     "updated": "Última actualización: 22 de julio de 2026",
-    "intro": "La presente Política de privacidad describe de qué modo se recopila, utiliza, comunica y conserva la información cuando usted visita este sitio personal (el «Sitio»), el funcionamiento de las preferencias en su dispositivo y el modo de contactar con el operador del Sitio.",
+    "intro": "La presente Política de privacidad explica qué información se trata cuando usted visita este sitio personal (el «Sitio»), cómo funcionan las preferencias en su dispositivo y cómo puede ponerse en contacto con el operador del Sitio.",
     "sections": [
       {
         "id": "overview",
         "title": "Objeto y ámbito",
         "paragraphs": [
-          "El Sitio es una página personal de carácter estático operada por Tim G (en adelante, «yo», «mí» o «el operador»). Su finalidad es presentar al operador y facilitar enlaces a proyectos y perfiles alojados en terceros. No constituye una tienda en línea, una red social ni un servicio basado en cuentas de usuario.",
-          "La recopilación de información se limita de forma deliberada. La preferencia de idioma y ajustes análogos que mejoran la visita se almacenan en su dispositivo, salvo que usted decida contactarme por correo electrónico.",
+          "El Sitio es una página personal de carácter estático operada por Tim G (en adelante, «yo», «mí» o «el operador»). Su finalidad es presentar al operador y facilitar enlaces a proyectos y perfiles alojados en servicios de terceros. No constituye una tienda en línea, una red social ni un servicio basado en cuentas de usuario.",
+          "La recopilación de información se limita deliberadamente. La preferencia de idioma y otras preferencias que mejoran la visita se almacenan en su dispositivo, salvo que usted decida contactarme por correo electrónico.",
           "A los efectos de la normativa de privacidad aplicable, el operador de este Sitio es responsable de la información recabada directamente a través del Sitio, como la correspondencia por correo electrónico."
         ]
       },
@@ -134,7 +134,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "paragraphs": [
           "Información que usted decide enviar. Si escribe a contact.timg@icloud.com (u otra dirección que publique), recibo el contenido del mensaje, que puede incluir su dirección de correo electrónico, nombre y cuerpo del mensaje. Dicha información se utiliza para responder y, cuando resulte razonablemente necesario, para conservar un registro de la correspondencia.",
           "Preferencias almacenadas en su dispositivo. El Sitio puede guardar su elección de idioma en el almacenamiento local del navegador. La apariencia sigue la configuración clara u oscura del dispositivo, con una posible anulación temporal de sesión. Esos valores permanecen en su dispositivo y no se transmiten a un servidor de datos personales operado por mí en el curso ordinario del funcionamiento del Sitio.",
-          "Datos técnicos tratados por el alojamiento. El Sitio está alojado en GitHub Pages o Cloudflare. El proveedor de alojamiento puede tratar información técnica, como direcciones IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas temporales, como parte de la prestación del Sitio. Dicho tratamiento lo realiza el proveedor conforme a sus propios sistemas y políticas.",
+          "Datos técnicos tratados por el alojamiento. El Sitio está alojado en Cloudflare, con GitHub Pages disponible como respaldo. El proveedor de alojamiento puede tratar información técnica, como direcciones IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas de tiempo, como parte de la prestación del Sitio. Dicho tratamiento lo realiza el proveedor conforme a sus propios sistemas y políticas.",
           "Analítica y rastreo. Este Sitio no utiliza rastreadores publicitarios, perfilado de comportamiento ni herramientas de analítica de terceros, salvo que se declare en una actualización futura de esta Política."
         ]
       },
@@ -207,7 +207,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "id": "changes",
         "title": "Modificaciones de esta Política",
         "paragraphs": [
-          "Podré actualizar esta Política de privacidad periódicamente. La fecha de «Última actualización» que figura en la cabecera se modificará cuando se publiquen revisiones. El uso continuado del Sitio tras una actualización implica el conocimiento de la Política revisada."
+          "Podré revisar periódicamente esta Política de privacidad mediante la publicación de una versión actualizada en el Sitio. La fecha de «Última actualización» que figura en la cabecera indicará cuándo se realizaron las revisiones. El uso continuado del Sitio tras una actualización implica que usted conoce la Política revisada."
         ]
       },
       {
@@ -227,24 +227,24 @@ window.LEGAL_DOCUMENTS.privacy = {
     "label": "法律信息",
     "title": "隐私政策",
     "updated": "最近更新日期：2026 年 7 月 22 日",
-    "intro": "本隐私政策说明您访问本个人主页网站（以下简称“本网站”）时，相关信息如何被收集、使用、披露与保存；设备端偏好如何运作；以及如何就本政策向网站运营者提出问询。",
+    "intro": "本隐私政策说明您访问本个人主页网站（以下简称“本网站”）时会处理哪些信息、设备端偏好如何运作，以及如何就本政策联系网站运营者。",
     "sections": [
       {
         "id": "overview",
         "title": "概述",
         "paragraphs": [
-          "本网站为由 Tim G（以下简称“本人”或“运营者”）运营的个人静态展示页面，用于介绍运营者本人，并链接至其他处托管的项目与主页。本网站不是网店、社交网络，亦非基于用户账户的服务。",
+          "本网站为由 Tim G（以下简称“本人”或“运营者”）运营的个人静态展示页面，用于介绍运营者本人，并链接至第三方服务上托管的项目与主页。本网站不是网店、社交网络，亦非基于用户账户的服务。",
           "本网站有意限制信息收集范围。语言偏好及类似、用于改善访问体验的设置保存在您的设备上，除非您选择通过电子邮件与本人联系。",
           "就适用的隐私法律而言，本网站运营者对通过本网站直接收集的信息（如电子邮件通信）负责。"
         ]
       },
       {
         "id": "information",
-        "title": "所处理的信息",
+        "title": "信息处理方式",
         "paragraphs": [
           "您主动发送的信息。如您向 contact.timg@icloud.com（或本人公布的其他地址）发送电子邮件，本人将收到该邮件所载内容，其中可能包括您的电子邮箱地址、姓名及正文。该等信息仅用于回复，并在合理必要时保留通信记录。",
-          "保存在您设备上的偏好。本网站可能通过浏览器本地存储保存您的语言选择。界面外观遵循设备的浅色或深色设置，并允许在会话期间临时覆盖。上述数值保留在您的设备上；在本网站正常运营过程中，不会传输至由本人运营的个人数据服务器。",
-          "由托管服务处理的技术数据。本网站由 GitHub Pages 或 Cloudflare 托管。托管服务提供商在提供本网站服务过程中，可能处理 IP 地址、浏览器类型、设备或操作系统信息、来源网址及时间戳等技术信息。相关处理由托管方依其自身系统与政策实施。",
+          "保存在您设备上的偏好。本网站可能通过浏览器本地存储保存您的语言选择。界面外观遵循设备的浅色或深色设置，并允许在会话期间临时覆盖。上述偏好设置保留在您的设备上；在本网站正常运营过程中，不会传输至由本人运营的个人数据服务器。",
+          "由托管服务处理的技术数据。本网站由 Cloudflare 托管，并以 GitHub Pages 作为备用。托管服务提供商在提供本网站服务过程中，可能处理 IP 地址、浏览器类型、设备或操作系统信息、来源网址及时间戳等技术信息。相关处理由托管方依其自身系统与政策实施。",
           "分析与追踪。除非日后在本政策中明确披露，本网站不使用广告追踪器、行为画像或第三方分析工具。"
         ]
       },
@@ -317,7 +317,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "id": "changes",
         "title": "本政策的变更",
         "paragraphs": [
-          "本人可能不时更新本隐私政策。发布修订时，文首“最近更新日期”将相应变更。更新后继续使用本网站，即视为知悉修订后的政策。"
+          "本人可能不时通过在本网站发布更新版本来修订本隐私政策。发布修订时，文首“最近更新日期”将相应变更。更新后继续使用本网站，即表示您知悉修订后的政策。"
         ]
       },
       {
@@ -343,7 +343,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "id": "overview",
         "title": "総則",
         "paragraphs": [
-          "本サイトは、Tim G（以下「私」または「運営者」）が運営する静的な個人向けランディングページであり、運営者の紹介ならびに他でホストされるプロジェクトおよびプロフィールへのリンクを目的とします。オンラインストア、ソーシャルネットワーク、またはアカウント制のサービスではありません。",
+          "本サイトは、Tim G（以下「私」または「運営者」）が運営する静的な個人向けランディングページであり、運営者の紹介ならびに第三者のサービス上でホストされるプロジェクトおよびプロフィールへのリンクを目的とします。オンラインストア、ソーシャルネットワーク、またはアカウント制のサービスではありません。",
           "情報の収集は意図的に限定しています。言語設定その他、閲覧体験の向上に資する設定は、電子メールによる連絡を選択されない限り、お客様の端末に保存されます。",
           "適用されるプライバシー関連法令の観点から、本サイトを通じて直接収集される情報（電子メールでのやり取りなど）については、本サイトの運営者が責任を負います。"
         ]
@@ -353,8 +353,8 @@ window.LEGAL_DOCUMENTS.privacy = {
         "title": "取り扱う情報",
         "paragraphs": [
           "お客様が自ら送信する情報。contact.timg@icloud.com（または私が公表する他のアドレス）宛てに電子メールを送信された場合、私は当該メッセージの内容（電子メールアドレス、氏名、本文等を含み得ます）を受領します。当該情報は返信のため、および合理的に必要な範囲で通信記録を保持するために利用します。",
-          "端末に保存される設定。本サイトは、ブラウザのローカルストレージに言語選択を保存することがあります。表示は端末のライト／ダーク設定に従い、セッション中の一時的な上書きが可能です。これらの値はお客様の端末に留まり、本サイトの通常の運用において、私が運営する個人データ用サーバーへは送信されません。",
-          "ホスティングにより処理される技術データ。本サイトは GitHub Pages または Cloudflare によりホストされています。ホスティング提供者は、本サイトの提供に伴い、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、リクエストのタイムスタンプ等の技術情報を処理することがあります。当該処理はホストのシステムおよび方針に従って行われます。",
+          "端末に保存される設定。本サイトは、ブラウザのローカルストレージに言語選択を保存することがあります。表示は端末のライト／ダーク設定に従い、セッション中の一時的な上書きが可能です。これらの設定値はお客様の端末に留まり、本サイトの通常の運用において、私が運営する個人データ用サーバーへは送信されません。",
+          "ホスティングにより処理される技術データ。本サイトは Cloudflare によりホストされ、GitHub Pages をバックアップとして利用できます。ホスティング提供者は、本サイトの提供に伴い、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、リクエストのタイムスタンプ等の技術情報を処理することがあります。当該処理はホストのシステムおよび方針に従って行われます。",
           "分析およびトラッキング。今後本ポリシーで明示しない限り、本サイトは広告用トラッカー、行動プロファイリング、または第三者の分析ツールを使用しません。"
         ]
       },
@@ -362,7 +362,7 @@ window.LEGAL_DOCUMENTS.privacy = {
         "id": "use",
         "title": "利用目的",
         "paragraphs": [
-          "本サイトの表示、およびお客様が設定した設定の保持のため。",
+          "本サイトを表示し、お客様が設定した内容を保持するため。",
           "お問い合わせへの返信のため。",
           "セキュリティの維持、障害の診断、および本サイトの改善のため。",
           "適用法令の遵守が求められる場合のため。"

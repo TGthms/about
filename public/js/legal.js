@@ -34,6 +34,25 @@
     if (element && value) element.setAttribute("content", value);
   }
 
+  function appendLegalText(paragraph, text) {
+    var tokens = /(contact\.timg@icloud\.com|https:\/\/creativecommons\.org\/licenses\/by-nc-nd\/4\.0\/)/g;
+    var lastIndex = 0;
+    var match;
+    while ((match = tokens.exec(text))) {
+      paragraph.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      var link = document.createElement("a");
+      link.href = match[0].indexOf("@") !== -1 ? "mailto:" + match[0] : match[0];
+      if (match[0].indexOf("@") === -1) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      link.textContent = match[0];
+      paragraph.appendChild(link);
+      lastIndex = match.index + match[0].length;
+    }
+    paragraph.appendChild(document.createTextNode(text.slice(lastIndex)));
+  }
+
   function render(lang) {
     var resolved = documents[page][lang] ? lang : "en";
     var doc = documentFor(resolved);
@@ -103,18 +122,7 @@
         (section.paragraphs || []).forEach(function (text) {
           var paragraph = document.createElement("p");
           paragraph.className = "legal-section__p";
-          var email = "contact.timg@icloud.com";
-          var emailIndex = text.indexOf(email);
-          if (emailIndex === -1) {
-            paragraph.textContent = text;
-          } else {
-            paragraph.appendChild(document.createTextNode(text.slice(0, emailIndex)));
-            var emailLink = document.createElement("a");
-            emailLink.href = "mailto:" + email;
-            emailLink.textContent = email;
-            paragraph.appendChild(emailLink);
-            paragraph.appendChild(document.createTextNode(text.slice(emailIndex + email.length)));
-          }
+          appendLegalText(paragraph, text);
           article.appendChild(paragraph);
         });
 

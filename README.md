@@ -15,7 +15,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 - Projects: Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, Kit, plus GitHub apps Nimbus, Folio, and Kiln
 - Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
-- Privacy Policy & Terms of Use with localized content rendered by JavaScript (last updated 22 July 2026)
+- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Terms last updated 26 August 2026)
 
 ## Files
 

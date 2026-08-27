@@ -6,15 +6,15 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Terms governing use of Tim G’s personal hub website.",
     "label": "Legal",
     "title": "Terms of Use",
-    "updated": "Last updated: July 22, 2026",
-    "intro": "These Terms of Use (the “Terms”) apply to this personal hub website and related pages operated by Tim G (the “Site”). BY USING THE SITE, YOU AGREE TO THESE TERMS. IF YOU DO NOT AGREE, DO NOT USE THE SITE.",
+    "updated": "Last updated: August 26, 2026",
+    "intro": "These Terms of Use (the “Terms”) apply to this personal hub website and related pages operated by Tim G (the “Site”). By using the Site, you agree to these Terms. If you do not agree, please do not use the Site.",
     "sections": [
       {
         "id": "acceptance",
-        "title": "Agreement to Terms",
+        "title": "Acceptance of These Terms",
         "paragraphs": [
           "The Site is a personal landing page that introduces Tim G and links to projects, profiles, and other resources. It is provided for personal, non-commercial informational use.",
-          "I may update these Terms by posting a revised version on the Site. The “Last updated” date will reflect changes. Your continued use after changes are posted constitutes acceptance of the revised Terms."
+          "I may revise these Terms by posting an updated version on the Site. The “Last updated” date will indicate when revisions were made. Your continued use of the Site after revised Terms are posted constitutes acceptance of those Terms."
         ]
       },
       {
@@ -22,9 +22,9 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "Site Content and Ownership",
         "paragraphs": [
           "Unless otherwise noted, text, design, layout, graphics, icons, and other materials on the Site (collectively, “Content”) are owned by Tim G or used with permission, and are protected by applicable intellectual property laws.",
-          "You may view and temporarily store Content for your personal, non-commercial use. You may not copy, distribute, sell, or create derivative works from the Site or Content for commercial purposes without prior written permission, except as allowed by law (including fair use where applicable).",
+          "You may view and temporarily store Content for your personal, non-commercial use. Unless a particular item is marked otherwise, the Site’s Content is made available under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license (CC BY-NC-ND 4.0). That license permits sharing the unchanged Content for non-commercial purposes with appropriate attribution; it does not permit distributing adapted material. These permissions do not limit uses allowed by law, including applicable exceptions and limitations such as fair use.",
           "Names, marks, and branding of third parties that appear via links or references remain the property of their respective owners. The Site is not affiliated with, endorsed by, or sponsored by third parties unless expressly stated.",
-          "The website's source code may be available separately under an open-source license (for example, via its GitHub repository). That license covers the code only — it does not grant rights to trademarks, personal information, photographs, or other Site content unless separately stated."
+          "The CC BY-NC-ND 4.0 license is not an open-source software license. Unless a separate license is expressly provided, the same license notice applies to repository materials to the extent Tim G has the rights to license them. Third-party materials, trademarks, personal information, photographs, and other items identified as belonging to someone else are not granted under this license. The license summary is available at https://creativecommons.org/licenses/by-nc-nd/4.0/."
         ]
       },
       {
@@ -32,7 +32,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "Acceptable Use",
         "paragraphs": [
           "You agree to use the Site only for lawful purposes and in a manner that does not infringe the rights of others or unreasonably interfere with their use of the Site.",
-          "You may not: attempt to gain unauthorized access to the Site or related systems or networks; probe or test vulnerability except with express permission; interfere with the Site’s operation; use automated means to scrape or harvest Content in a way that imposes an unreasonable load or circumvents access controls; transmit malware; or use the Site for any unlawful, harmful, or fraudulent activity."
+          "You may not: attempt to gain unauthorized access to the Site or related systems or networks; probe or test vulnerabilities without express permission; interfere with the Site’s operation; use automated means to scrape or harvest Content in a way that imposes an unreasonable load or circumvents access controls; transmit malware; or use the Site for any unlawful, harmful, or fraudulent activity."
         ]
       },
       {
@@ -60,7 +60,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "disclaimer",
         "title": "Disclaimers",
         "paragraphs": [
-          "THE SITE AND CONTENT ARE PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS. TO THE FULLEST EXTENT PERMITTED BY LAW, I DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF ACCURACY, MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.",
+          "The Site and Content are provided on an “as is” and “as available” basis. To the fullest extent permitted by law, I disclaim all warranties, express or implied, including warranties of accuracy, merchantability, fitness for a particular purpose, and non-infringement.",
           "I do not warrant that the Site will be uninterrupted, secure, or error-free, or that defects will be corrected. Information on the Site may change without notice and may not always be complete or current.",
           "You assume responsibility for your use of the Site and any linked sites. Your sole remedy for dissatisfaction with the Site is to stop using it."
         ]
@@ -104,15 +104,15 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Condiciones que rigen el uso del sitio personal de Tim G.",
     "label": "Legal",
     "title": "Condiciones de uso",
-    "updated": "Última actualización: 22 de julio de 2026",
-    "intro": "Las presentes Condiciones de uso (las «Condiciones») se aplican a este sitio personal y a las páginas relacionadas operadas por Tim G (el «Sitio»). AL UTILIZAR EL SITIO, USTED ACEPTA ESTAS CONDICIONES. SI NO ESTÁ DE ACUERDO, NO UTILICE EL SITIO.",
+    "updated": "Última actualización: 26 de agosto de 2026",
+    "intro": "Las presentes Condiciones de uso (las «Condiciones») se aplican a este sitio personal y a las páginas relacionadas operadas por Tim G (el «Sitio»). Al utilizar el Sitio, usted acepta estas Condiciones. Si no está de acuerdo, no utilice el Sitio.",
     "sections": [
       {
         "id": "acceptance",
-        "title": "Aceptación de las Condiciones",
+        "title": "Aceptación de estas Condiciones",
         "paragraphs": [
           "El Sitio es una página personal de aterrizaje que presenta a Tim G y enlaza a proyectos, perfiles y otros recursos. Se ofrece para un uso personal, no comercial e informativo.",
-          "Podré actualizar estas Condiciones mediante la publicación de una versión revisada en el Sitio. La fecha de «Última actualización» reflejará los cambios. Su uso continuado tras la publicación de las modificaciones constituye la aceptación de las Condiciones revisadas."
+          "Podré revisar estas Condiciones mediante la publicación de una versión actualizada en el Sitio. La fecha de «Última actualización» indicará cuándo se realizaron las revisiones. El uso continuado del Sitio tras la publicación de las Condiciones revisadas constituye la aceptación de dichas Condiciones."
         ]
       },
       {
@@ -120,9 +120,9 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "Contenido y titularidad",
         "paragraphs": [
           "Salvo indicación en contrario, los textos, el diseño, la maquetación, los gráficos, los iconos y demás materiales del Sitio (en conjunto, el «Contenido») son propiedad de Tim G o se utilizan con autorización, y están protegidos por la legislación aplicable en materia de propiedad intelectual.",
-          "Usted puede visualizar y almacenar temporalmente el Contenido para su uso personal y no comercial. No podrá copiar, distribuir, vender ni crear obras derivadas del Sitio o del Contenido con fines comerciales sin autorización previa por escrito, salvo en la medida en que lo permita la ley (incluido el fair use o usos legítimos análogos, cuando resulten de aplicación).",
+          "Usted puede visualizar y almacenar temporalmente el Contenido para su uso personal y no comercial. Salvo que un elemento concreto indique lo contrario, el Contenido del Sitio se ofrece bajo la licencia Creative Commons Atribución-NoComercial-SinDerivadas 4.0 Internacional (CC BY-NC-ND 4.0). Esta licencia permite compartir el Contenido sin modificaciones, con fines no comerciales y con la atribución correspondiente; no permite distribuir material adaptado. Estos permisos no limitan los usos permitidos por la ley, incluidas las excepciones y limitaciones aplicables, como el fair use.",
           "Los nombres, marcas y signos de terceros que figuren mediante enlaces o referencias siguen siendo propiedad de sus respectivos titulares. El Sitio no está afiliado, avalado ni patrocinado por terceros, salvo declaración expresa en contrario.",
-          "El código fuente del sitio web puede estar disponible por separado bajo una licencia de código abierto (por ejemplo, a través de su repositorio en GitHub). Dicha licencia cubre únicamente el código: no otorga derechos sobre marcas, información personal, fotografías u otro contenido del Sitio, salvo que se indique expresamente."
+          "La licencia CC BY-NC-ND 4.0 no es una licencia de software de código abierto. Salvo que se conceda expresamente una licencia distinta, el mismo aviso de licencia se aplica a los materiales del repositorio en la medida en que Tim G tenga derechos para licenciarlos. Los materiales de terceros, las marcas, la información personal, las fotografías y otros elementos identificados como pertenecientes a otra persona no se conceden bajo esta licencia. El resumen de la licencia está disponible en https://creativecommons.org/licenses/by-nc-nd/4.0/."
         ]
       },
       {
@@ -202,15 +202,15 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Tim G 个人主页网站的使用条款。",
     "label": "法律信息",
     "title": "使用条款",
-    "updated": "最近更新日期：2026 年 7 月 22 日",
-    "intro": "本使用条款（以下简称“本条款”）适用于由 Tim G 运营的本个人主页网站及相关页面（以下简称“本网站”）。使用本网站，即表示您同意受本条款约束。如不同意，请勿使用本网站。",
+    "updated": "最近更新日期：2026 年 8 月 26 日",
+    "intro": "本使用条款（以下简称“本条款”）适用于由 Tim G 运营的本个人主页网站及相关页面（以下简称“本网站”）。使用本网站即表示您同意本条款。如不同意，请勿使用本网站。",
     "sections": [
       {
         "id": "acceptance",
-        "title": "条款的接受",
+        "title": "接受本条款",
         "paragraphs": [
           "本网站为个人展示页面，用于介绍 Tim G，并链接至项目、主页及其他资源，供个人非商业性信息用途使用。",
-          "本人可通过在本网站发布修订版本更新本条款。“最近更新日期”将反映变更情况。变更发布后您继续使用本网站，即构成对修订后条款的接受。"
+          "本人可能通过在本网站发布更新版本来修订本条款。“最近更新日期”将标明修订日期。修订后的条款发布后，您继续使用本网站即表示您接受该等条款。"
         ]
       },
       {
@@ -218,9 +218,9 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "网站内容与权利归属",
         "paragraphs": [
           "除另有说明外，本网站上的文字、设计、版式、图形、图标及其他材料（统称“内容”）由 Tim G 享有权利或经许可使用，并受适用知识产权法律保护。",
-          "您可为个人非商业目的浏览并临时存储内容。除法律允许的情形（包括在适用时的合理使用）外，未经事先书面许可，不得为商业目的复制、传播、出售本网站或内容，或基于本网站或内容创作衍生作品。",
+          "您可为个人非商业目的浏览并临时存储内容。除非特定内容另有标注，本网站内容依据知识共享署名—非商业性使用—禁止演绎 4.0 国际许可协议（CC BY-NC-ND 4.0）提供。该许可允许您在非商业目的下，以适当署名分享未经修改的内容；但不允许传播改编后的材料。上述许可不限制法律允许的使用，包括适用的著作权例外与限制（例如合理使用）。",
           "通过链接或引用出现的第三方名称、标识与品牌归其各自权利人所有。除非明确声明，本网站与任何第三方不存在关联、背书或赞助关系。",
-          "本网站的源代码可能单独依据开源许可协议提供（例如通过其 GitHub 代码仓库）。该许可仅适用于代码本身，除另行声明外，不授予有关商标、个人信息、照片或本网站其他内容的任何权利。"
+          "CC BY-NC-ND 4.0 不是开源软件许可协议。除非另行明确授予其他许可，在 Tim G 有权进行许可的范围内，同一许可声明适用于代码仓库中的材料。第三方材料、商标、个人信息、照片，以及明确标注属于他人的其他内容，不在本许可授予范围内。许可摘要见 https://creativecommons.org/licenses/by-nc-nd/4.0/。"
         ]
       },
       {
@@ -300,15 +300,15 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Tim G の個人向けウェブサイトの利用規約。",
     "label": "法的情報",
     "title": "利用規約",
-    "updated": "最終更新日：2026年7月22日",
+    "updated": "最終更新日：2026年8月26日",
     "intro": "本利用規約（以下「本規約」）は、Tim G が運営する本個人向けハブウェブサイトおよび関連ページ（以下「本サイト」）に適用されます。本サイトを利用することにより、お客様は本規約に同意したものとみなされます。同意されない場合は、本サイトを利用しないでください。",
     "sections": [
       {
         "id": "acceptance",
-        "title": "本規約への同意",
+        "title": "本規約の承諾",
         "paragraphs": [
           "本サイトは、Tim G を紹介し、プロジェクト、プロフィールその他のリソースへリンクする個人向けランディングページであり、個人的かつ非商業的な情報利用のために提供されます。",
-          "私は、改定版を本サイトに掲載することにより本規約を更新することがあります。「最終更新日」は変更を反映します。変更の掲載後も本サイトを継続して利用された場合、改定後の本規約に同意されたものとみなします。"
+          "私は、本サイトに改定版を掲載することにより本規約を改定することがあります。「最終更新日」は改定日を示します。改定後も本サイトを継続して利用された場合、改定後の本規約に同意されたものとみなします。"
         ]
       },
       {
@@ -316,9 +316,9 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "コンテンツおよび権利帰属",
         "paragraphs": [
           "特段の記載がない限り、本サイト上のテキスト、デザイン、レイアウト、グラフィック、アイコンその他の資料（以下総称して「コンテンツ」）は Tim G が所有するか許可の下で使用されており、適用される知的財産法令により保護されています。",
-          "お客様は、個人的かつ非商業的な目的に限り、コンテンツを閲覧および一時的に保存することができます。法令で認められる場合（該当する場合のフェアユースを含む）を除き、事前の書面による許可なく、商業目的で本サイトまたはコンテンツを複製、頒布、販売し、または二次的著作物を作成してはなりません。",
+          "お客様は、個人的かつ非商業的な目的に限り、コンテンツを閲覧および一時的に保存することができます。特定の項目に別段の表示がない限り、本サイトのコンテンツは、クリエイティブ・コモンズ 表示—非営利—改変禁止 4.0 国際（CC BY-NC-ND 4.0）ライセンスの下で提供されます。同ライセンスは、適切な表示を付して、改変していないコンテンツを非商業目的で共有することを認めますが、改変された素材を頒布することは認めません。これらの許可は、適用されるフェアユースなど、法令上認められる例外および制限による利用を妨げません。",
           "リンクまたは言及により表示される第三者の名称・標章は、各権利者に帰属します。明示のない限り、本サイトは他の第三者と提携、後援、またはスポンサー関係にありません。",
-          "本ウェブサイトのソースコードは、別途オープンソースライセンスの下で提供されることがあります（例：GitHub リポジトリを通じて）。当該ライセンスはコードのみを対象とし、別段の明示がない限り、商標、個人情報、写真その他のサイトコンテンツに関する権利を付与するものではありません。"
+          "CC BY-NC-ND 4.0 はオープンソースソフトウェアライセンスではありません。別のライセンスが明示的に付与されていない限り、Tim G がライセンスを付与する権利を有する範囲で、同じライセンス表示がリポジトリの資料にも適用されます。第三者の資料、商標、個人情報、写真その他、他者に帰属すると明示された項目については、本ライセンスによる許諾はありません。ライセンスの概要は https://creativecommons.org/licenses/by-nc-nd/4.0/ で確認できます。"
         ]
       },
       {
