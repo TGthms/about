@@ -4,7 +4,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 
 ## Stack
 
-- Plain HTML / CSS / JS (no build step)
+- Plain HTML / CSS / JS 
 - GitHub Pages (`.github/workflows/static.yml` validates and deploys `public/`)
 - Craft Brutal design: cream paper / warm charcoal, hard borders, offset shadows, terracotta accent
 
