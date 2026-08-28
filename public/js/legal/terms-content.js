@@ -24,7 +24,8 @@ window.LEGAL_DOCUMENTS.terms = {
           "Unless otherwise noted, text, design, layout, graphics, icons, and other materials on the Site (collectively, “Content”) are owned by Tim G or used with permission, and are protected by applicable intellectual property laws.",
           "You may view and temporarily store Content for your personal, non-commercial use. Unless a particular item is marked otherwise, the Site’s Content is made available under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International license (CC BY-NC-ND 4.0). That license permits sharing the unchanged Content for non-commercial purposes with appropriate attribution; it does not permit distributing adapted material. These permissions do not limit uses allowed by law, including applicable exceptions and limitations such as fair use.",
           "Names, marks, and branding of third parties that appear via links or references remain the property of their respective owners. The Site is not affiliated with, endorsed by, or sponsored by third parties unless expressly stated.",
-          "The CC BY-NC-ND 4.0 license is not an open-source software license. Unless a separate license is expressly provided, the same license notice applies to repository materials to the extent Tim G has the rights to license them. Third-party materials, trademarks, personal information, photographs, and other items identified as belonging to someone else are not granted under this license. The license summary is available at https://creativecommons.org/licenses/by-nc-nd/4.0/."
+          "Site code (HTML, CSS, and JavaScript) is licensed separately under the MIT License; see the LICENSE file in the repository. Photographs, video, and other media (including files under /assets/, the social preview image, and the favicon) are licensed under CC BY-NC-ND 4.0 as described above; see LICENSE-CONTENT.md. Third-party materials, trademarks, and other items identified as belonging to someone else are not granted under either license. The CC BY-NC-ND license summary is available at https://creativecommons.org/licenses/by-nc-nd/4.0/.",
+          "Tim G's name, photographs, and likeness appear on this Site for identification purposes only. Nothing in this Site or its licenses grants permission to use them to suggest endorsement, sponsorship, or affiliation, or in any way that implies impersonation."
         ]
       },
       {
@@ -122,7 +123,8 @@ window.LEGAL_DOCUMENTS.terms = {
           "Salvo indicación en contrario, los textos, el diseño, la maquetación, los gráficos, los iconos y demás materiales del Sitio (en conjunto, el «Contenido») son propiedad de Tim G o se utilizan con autorización, y están protegidos por la legislación aplicable en materia de propiedad intelectual.",
           "Usted puede visualizar y almacenar temporalmente el Contenido para su uso personal y no comercial. Salvo que un elemento concreto indique lo contrario, el Contenido del Sitio se ofrece bajo la licencia Creative Commons Atribución-NoComercial-SinDerivadas 4.0 Internacional (CC BY-NC-ND 4.0). Esta licencia permite compartir el Contenido sin modificaciones, con fines no comerciales y con la atribución correspondiente; no permite distribuir material adaptado. Estos permisos no limitan los usos permitidos por la ley, incluidas las excepciones y limitaciones aplicables, como el fair use.",
           "Los nombres, marcas y signos de terceros que figuren mediante enlaces o referencias siguen siendo propiedad de sus respectivos titulares. El Sitio no está afiliado, avalado ni patrocinado por terceros, salvo declaración expresa en contrario.",
-          "La licencia CC BY-NC-ND 4.0 no es una licencia de software de código abierto. Salvo que se conceda expresamente una licencia distinta, el mismo aviso de licencia se aplica a los materiales del repositorio en la medida en que Tim G tenga derechos para licenciarlos. Los materiales de terceros, las marcas, la información personal, las fotografías y otros elementos identificados como pertenecientes a otra persona no se conceden bajo esta licencia. El resumen de la licencia está disponible en https://creativecommons.org/licenses/by-nc-nd/4.0/."
+          "El código del Sitio (HTML, CSS y JavaScript) se licencia por separado bajo la Licencia MIT; véase el archivo LICENSE en el repositorio. Las fotografías, el vídeo y demás contenido multimedia (incluidos los archivos en /assets/, la imagen de vista previa social y el favicon) se licencian bajo CC BY-NC-ND 4.0 como se describe arriba; véase LICENSE-CONTENT.md. Los materiales de terceros y las marcas, así como otros elementos identificados como pertenecientes a otra persona, no se conceden bajo ninguna de estas licencias. El resumen de la licencia CC BY-NC-ND está disponible en https://creativecommons.org/licenses/by-nc-nd/4.0/.",
+          "El nombre, las fotografías y la imagen de Tim G aparecen en este Sitio únicamente con fines de identificación. Nada en este Sitio ni en sus licencias otorga permiso para utilizarlos de manera que sugiera aval, patrocinio o afiliación, ni de forma que implique suplantación de identidad."
         ]
       },
       {
@@ -220,7 +222,8 @@ window.LEGAL_DOCUMENTS.terms = {
           "除另有说明外，本网站上的文字、设计、版式、图形、图标及其他材料（统称“内容”）由 Tim G 享有权利或经许可使用，并受适用知识产权法律保护。",
           "您可为个人非商业目的浏览并临时存储内容。除非特定内容另有标注，本网站内容依据知识共享署名—非商业性使用—禁止演绎 4.0 国际许可协议（CC BY-NC-ND 4.0）提供。该许可允许您在非商业目的下，以适当署名分享未经修改的内容；但不允许传播改编后的材料。上述许可不限制法律允许的使用，包括适用的著作权例外与限制（例如合理使用）。",
           "通过链接或引用出现的第三方名称、标识与品牌归其各自权利人所有。除非明确声明，本网站与任何第三方不存在关联、背书或赞助关系。",
-          "CC BY-NC-ND 4.0 不是开源软件许可协议。除非另行明确授予其他许可，在 Tim G 有权进行许可的范围内，同一许可声明适用于代码仓库中的材料。第三方材料、商标、个人信息、照片，以及明确标注属于他人的其他内容，不在本许可授予范围内。许可摘要见 https://creativecommons.org/licenses/by-nc-nd/4.0/。"
+          "本网站代码（HTML、CSS 及 JavaScript）单独依据 MIT 许可协议提供，详见代码仓库中的 LICENSE 文件。照片、视频及其他媒体内容（包括 /assets/ 目录下的文件、社交预览图与网站图标）依据上述 CC BY-NC-ND 4.0 许可协议提供，详见 LICENSE-CONTENT.md。第三方材料、商标以及明确标注属于他人的其他内容，不在上述任一许可授予范围内。CC BY-NC-ND 许可摘要见 https://creativecommons.org/licenses/by-nc-nd/4.0/。",
+          "Tim G 的姓名、照片及肖像仅用于本网站的身份识别目的。本网站及其许可协议均不授予任何权利，以暗示背书、赞助或关联关系，或以任何方式暗示冒用身份。"
         ]
       },
       {
@@ -318,7 +321,8 @@ window.LEGAL_DOCUMENTS.terms = {
           "特段の記載がない限り、本サイト上のテキスト、デザイン、レイアウト、グラフィック、アイコンその他の資料（以下総称して「コンテンツ」）は Tim G が所有するか許可の下で使用されており、適用される知的財産法令により保護されています。",
           "お客様は、個人的かつ非商業的な目的に限り、コンテンツを閲覧および一時的に保存することができます。特定の項目に別段の表示がない限り、本サイトのコンテンツは、クリエイティブ・コモンズ 表示—非営利—改変禁止 4.0 国際（CC BY-NC-ND 4.0）ライセンスの下で提供されます。同ライセンスは、適切な表示を付して、改変していないコンテンツを非商業目的で共有することを認めますが、改変された素材を頒布することは認めません。これらの許可は、適用されるフェアユースなど、法令上認められる例外および制限による利用を妨げません。",
           "リンクまたは言及により表示される第三者の名称・標章は、各権利者に帰属します。明示のない限り、本サイトは他の第三者と提携、後援、またはスポンサー関係にありません。",
-          "CC BY-NC-ND 4.0 はオープンソースソフトウェアライセンスではありません。別のライセンスが明示的に付与されていない限り、Tim G がライセンスを付与する権利を有する範囲で、同じライセンス表示がリポジトリの資料にも適用されます。第三者の資料、商標、個人情報、写真その他、他者に帰属すると明示された項目については、本ライセンスによる許諾はありません。ライセンスの概要は https://creativecommons.org/licenses/by-nc-nd/4.0/ で確認できます。"
+          "本サイトのコード（HTML、CSS、JavaScript）は別途 MIT ライセンスの下で提供されます。詳細はリポジトリ内の LICENSE ファイルをご参照ください。写真、動画その他のメディア（/assets/ 配下のファイル、ソーシャルプレビュー画像、ファビコンを含む）は、上記のとおり CC BY-NC-ND 4.0 の下で提供されます。詳細は LICENSE-CONTENT.md をご参照ください。第三者の資料、商標その他、他者に帰属すると明示された項目は、いずれのライセンスによっても許諾されません。CC BY-NC-ND ライセンスの概要は https://creativecommons.org/licenses/by-nc-nd/4.0/ で確認できます。",
+          "Tim G の氏名、写真および肖像は、本人確認のためにのみ本サイトに掲載されています。本サイトおよびそのライセンスは、これらを推奨、後援、提携関係を示唆する目的、またはなりすましを示唆する形で使用する権利を一切許諾するものではありません。"
         ]
       },
       {

@@ -49,4 +49,5 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 ## License
 
-[Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)](LICENSE.md)
+- Code (`public/` HTML/CSS/JS, excluding `public/assets/`): [MIT License](LICENSE)
+- Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
