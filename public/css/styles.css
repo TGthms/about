@@ -1383,6 +1383,14 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
     radial-gradient(circle at 50% 42%, var(--accent-soft), transparent 48%),
     linear-gradient(200deg, color-mix(in srgb, var(--ink) 4%, var(--bg)) 0%, var(--bg) 75%);
 }
+.featured-card__visual--duskline {
+  background:
+    linear-gradient(180deg, #164a9b 0%, #ff9078 62%, #0d2e6e 62%, #0d2e6e 100%);
+}
+.featured-card__visual--duskline img {
+  object-fit: cover;
+  object-position: center;
+}
 .featured-card__visual--kit {
   background:
     linear-gradient(135deg, var(--accent-soft) 0%, transparent 45%),

@@ -12,7 +12,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 
 - English, Español, 中文, 日本語
 - Light / dark mode (system default, session override)
-- Projects: Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, Kit, plus GitHub apps Nimbus, Folio, and Kiln
+- Projects: Kit, Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, duskline, plus GitHub apps Nimbus, Folio, and Kiln
 - Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Erhu interest card with a responsive, localized wiki dialog, museum image, and performance video

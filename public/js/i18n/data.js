@@ -96,6 +96,10 @@ const TRANSLATIONS = {
         title: "Japan Travel Guide",
         desc: "A curated guide to places worth visiting across Japan — built as a small web project.",
       },
+      duskline: {
+        title: "duskline",
+        desc: "A weather project with a calm, dusk-inspired visual identity.",
+      },
       kit: {
         title: "Kit",
         desc: "Private on-device tools for PDF, image, audio, and text — no account, no upload.",
@@ -229,6 +233,10 @@ const TRANSLATIONS = {
       japanTravelGuide: {
         title: "Guía de viaje por Japón",
         desc: "Una guía de lugares que merecen la pena en Japón — un pequeño proyecto web.",
+      },
+      duskline: {
+        title: "duskline",
+        desc: "Un proyecto meteorológico con una identidad visual serena inspirada en el atardecer.",
       },
       kit: {
         title: "Kit",
@@ -364,6 +372,10 @@ const TRANSLATIONS = {
         title: "日本旅行指南",
         desc: "一份关于日本值得一去之地的指南 — 小型网页项目",
       },
+      duskline: {
+        title: "duskline",
+        desc: "一个以黄昏为灵感、视觉风格宁静的天气项目。",
+      },
       kit: {
         title: "Kit",
         desc: "在设备上运行的私密工具：PDF、图片、音视频与文本 — 无需账号，无需上传至服务器",
@@ -497,6 +509,10 @@ const TRANSLATIONS = {
       japanTravelGuide: {
         title: "日本旅行ガイド",
         desc: "日本のおすすめスポットをまとめた小さなウェブプロジェクト。",
+      },
+      duskline: {
+        title: "duskline",
+        desc: "夕暮れを思わせる、穏やかなビジュアルの天気プロジェクト。",
       },
       kit: {
         title: "Kit",
