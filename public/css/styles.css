@@ -1134,8 +1134,12 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
     box-shadow var(--dur) var(--ease-out);
 }
 .archived-projects-trigger:hover {
-  transform: translate3d(0, calc(var(--lift-strong) * -1), 0);
+  transform: translate3d(0, calc(var(--lift) * -1), 0);
   box-shadow: var(--shadow-hover);
+}
+.archived-projects-trigger:active {
+  transform: scale(0.99);
+  box-shadow: 2px 2px 0 var(--line);
 }
 .archived-projects-trigger:focus-visible {
   outline: none;
@@ -1170,8 +1174,11 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
   color: var(--accent);
   transition: transform var(--dur) var(--ease-out);
 }
-.archived-projects-trigger:hover .archived-projects-trigger__arrow {
-  transform: translateX(3px);
+@media (hover: hover) and (pointer: fine) {
+  .archived-projects-trigger:hover .archived-projects-trigger__arrow {
+    transform: translate3d(2px, -2px, 0);
+    color: var(--accent);
+  }
 }
 body.archived-projects-open { overflow: hidden; }
 .archived-projects-modal {
