@@ -43,6 +43,11 @@
   /* Put the personal utility first in both visual and keyboard order. */
   var projectStack = document.querySelector(".featured-stack");
   var kitCard = projectStack && projectStack.querySelector('[data-project="kit"]');
+  var galleryCard = projectStack && projectStack.querySelector('[data-project="usa-gallery"]');
+  var dusklineCard = projectStack && projectStack.querySelector('[data-project="duskline"]');
+  if (projectStack && galleryCard && dusklineCard) {
+    projectStack.insertBefore(dusklineCard, galleryCard.nextElementSibling);
+  }
   if (projectStack && kitCard) projectStack.insertBefore(kitCard, projectStack.firstElementChild);
 
   /* ---------- Scroll entrance ---------- */
