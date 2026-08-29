@@ -98,11 +98,11 @@ const TRANSLATIONS = {
       },
       duskline: {
         title: "duskline",
-        desc: "A weather project with a calm, dusk-inspired visual identity.",
+        desc: "Weather, beautifully clear. Anywhere in the world.",
       },
       kit: {
         title: "Kit",
-        desc: "Private on-device tools for PDF, image, audio, and text — no account, no upload.",
+        desc: "Everyday tools in your browser. Private by design.",
       },
       nimbus: {
         title: "Nimbus",
@@ -236,11 +236,11 @@ const TRANSLATIONS = {
       },
       duskline: {
         title: "duskline",
-        desc: "Un proyecto meteorológico con una identidad visual serena inspirada en el atardecer.",
+        desc: "El clima, con total claridad. En cualquier parte del mundo.",
       },
       kit: {
         title: "Kit",
-        desc: "Herramientas privadas en tu dispositivo para PDF, imagen, audio y texto — sin cuenta ni subidas.",
+        desc: "Herramientas de cada día, en tu navegador. Privadas desde el diseño.",
       },
       nimbus: {
         title: "Nimbus",
@@ -374,11 +374,11 @@ const TRANSLATIONS = {
       },
       duskline: {
         title: "duskline",
-        desc: "一个以黄昏为灵感、视觉风格宁静的天气项目。",
+        desc: "天气，一目了然。遍及世界每一处。",
       },
       kit: {
         title: "Kit",
-        desc: "在设备上运行的私密工具：PDF、图片、音视频与文本 — 无需账号，无需上传至服务器",
+        desc: "日常工具，尽在设备端运行 — 力保隐私安全，这很Kit。",
       },
       nimbus: {
         title: "Nimbus",
@@ -512,11 +512,11 @@ const TRANSLATIONS = {
       },
       duskline: {
         title: "duskline",
-        desc: "夕暮れを思わせる、穏やかなビジュアルの天気プロジェクト。",
+        desc: "天気を、どこまでもクリアに。世界のどこにいても。",
       },
       kit: {
         title: "Kit",
-        desc: "PDF・画像・音声・テキスト向けの端末内ツール。アカウント不要、アップロード不要。",
+        desc: "日常のツールを、すべて端末内で。プライバシーを守り抜く、それがKitらしさ。",
       },
       nimbus: {
         title: "Nimbus",
