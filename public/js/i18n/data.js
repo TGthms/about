@@ -83,6 +83,12 @@ const TRANSLATIONS = {
       featured: "Featured",
       project: "Project",
       madeByGrok: "Made by Grok",
+      archived: {
+        eyebrow: "A quieter shelf",
+        title: "Archived Projects",
+        open: "Click to view",
+        close: "Close archived projects",
+      },
       open: "Open project",
       travelGuide: {
         title: "USA Travel Guide",
@@ -221,6 +227,12 @@ const TRANSLATIONS = {
       featured: "Destacado",
       project: "Proyecto",
       madeByGrok: "Hecho con Grok",
+      archived: {
+        eyebrow: "Una estantería más tranquila",
+        title: "Proyectos archivados",
+        open: "Ver proyectos archivados",
+        close: "Cerrar proyectos archivados",
+      },
       open: "Abrir proyecto",
       travelGuide: {
         title: "Guía de viaje por EE. UU.",
@@ -359,6 +371,12 @@ const TRANSLATIONS = {
       featured: "推荐",
       project: "项目",
       madeByGrok: "由 Grok 制作",
+      archived: {
+        eyebrow: "安静的一角",
+        title: "已归档项目",
+        open: "轻点以查看",
+        close: "关闭已归档项目",
+      },
       open: "打开项目",
       travelGuide: {
         title: "美国旅行指南",
@@ -497,6 +515,12 @@ const TRANSLATIONS = {
       featured: "注目",
       project: "プロジェクト",
       madeByGrok: "Grokで制作",
+      archived: {
+        eyebrow: "静かな棚",
+        title: "アーカイブプロジェクト",
+        open: "アーカイブプロジェクトを表示",
+        close: "アーカイブプロジェクトを閉じる",
+      },
       open: "開く",
       travelGuide: {
         title: "アメリカ旅行ガイド",

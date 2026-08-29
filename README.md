@@ -12,7 +12,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 
 - English, Español, 中文, 日本語
 - Light / dark mode (system default, session override)
-- Projects: Kit, Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, duskline, plus GitHub apps Nimbus, Folio, and Kiln
+- Projects: Kit, Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, and duskline, with Folio, Nimbus, and Kiln available in an archived-project shelf
 - Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Erhu interest card with a responsive, localized wiki dialog, museum image, and performance video
@@ -29,6 +29,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 | `public/js/preferences.js` | Centralized preferences markup |
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
+| `public/js/archived-projects.js` | Archived project shelf dialog behavior and focus management |
 | `public/js/erhu.js` / `public/js/erhu-content.js` | Erhu wiki dialog behavior and localized content |
 | `public/js/legal.js` | Legal rendering |
 | `public/js/legal/` | Legal UI, privacy, and terms content split by responsibility |
