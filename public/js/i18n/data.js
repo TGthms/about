@@ -78,7 +78,7 @@ const TRANSLATIONS = {
       },
       connect: {
         label: "Elsewhere",
-        title: "Where to find me",
+        title: "Where to find me & Links",
       },
       featured: "Featured",
       project: "Project",
@@ -216,7 +216,7 @@ const TRANSLATIONS = {
       },
       connect: {
         label: "En la red",
-        title: "Dónde encontrarme",
+        title: "Dónde encontrarme y enlaces",
       },
       featured: "Destacado",
       project: "Proyecto",
@@ -354,7 +354,7 @@ const TRANSLATIONS = {
       },
       connect: {
         label: "链接",
-        title: "如何找到我",
+        title: "如何找到我 & 友情链接",
       },
       featured: "推荐",
       project: "项目",
@@ -492,7 +492,7 @@ const TRANSLATIONS = {
       },
       connect: {
         label: "そのほか",
-        title: "つながる",
+        title: "リンクとつながり",
       },
       featured: "注目",
       project: "プロジェクト",

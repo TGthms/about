@@ -1473,6 +1473,22 @@ a.link-card:active,
   border-radius: var(--radius-sm);
   transition: transform var(--dur) var(--ease-out);
 }
+.link-card__icon--image { overflow: hidden; background: #ffffff; }
+.link-card__icon--image img { width: 100%; height: 100%; object-fit: contain; }
+.link-grid__divider {
+  grid-column: 1 / -1;
+  height: 4px;
+  margin: var(--space-2) 0;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--line) 46%, transparent) 1.35px,
+    transparent 1.5px
+  );
+  background-position: left center;
+  background-size: 16px 4px;
+  background-repeat: repeat-x;
+}
+.link-grid__link-item { grid-column: 1 / -1; }
 .link-card__arrow {
   transition:
     transform var(--dur) var(--ease-out),
