@@ -354,7 +354,7 @@ const TRANSLATIONS = {
       },
       connect: {
         label: "链接",
-        title: "找到我",
+        title: "如何找到我",
       },
       featured: "推荐",
       project: "项目",
