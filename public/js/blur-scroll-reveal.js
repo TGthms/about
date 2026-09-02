@@ -17,6 +17,8 @@
   var listening = false;
   var useBlur = true;
   var reduced = false;
+  var stableVh = 0;
+  var lastInnerWidth = 0;
 
   function currentLang() {
     return document.documentElement.getAttribute("data-language") || "en";
@@ -56,9 +58,15 @@
     return trimmed.split(" ").filter(Boolean);
   }
 
+  function readStableVh() {
+    lastInnerWidth = window.innerWidth;
+    /* Capture once per width so iOS URL-bar show/hide doesn’t retarget progress */
+    stableVh = window.innerHeight || document.documentElement.clientHeight;
+  }
+
   function progressFor(el) {
     var rect = el.getBoundingClientRect();
-    var vh = window.innerHeight || document.documentElement.clientHeight;
+    var vh = stableVh || window.innerHeight || document.documentElement.clientHeight;
     var startY = vh;
     var endY = vh * 0.6 - rect.height;
     var span = startY - endY;
@@ -219,12 +227,18 @@
     }
   }
 
+  function onResize() {
+    if (window.innerWidth !== lastInnerWidth) readStableVh();
+    requestUpdate();
+  }
+
   function initBlurScrollReveal() {
+    readStableVh();
     build();
     if (listening) return;
     listening = true;
     window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
+    window.addEventListener("resize", onResize);
     if (window.matchMedia) {
       var motion = window.matchMedia("(prefers-reduced-motion: reduce)");
       var onMotion = function () {
