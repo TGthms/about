@@ -41,11 +41,13 @@
       if (typeof renderErhuWiki === "function") renderErhuWiki(currentLang);
       if (typeof refreshBlurScrollReveal === "function") refreshBlurScrollReveal();
       if (typeof refreshGithubCardCopy === "function") refreshGithubCardCopy();
+      if (typeof refreshImageLoaderCopy === "function") refreshImageLoaderCopy();
     });
   }
 
   if (typeof initBlurScrollReveal === "function") initBlurScrollReveal();
   if (typeof initGithubCard === "function") initGithubCard();
+  if (typeof initImageLoaders === "function") initImageLoaders();
 
   /* Put the personal utility first in both visual and keyboard order. */
   var projectStack = document.querySelector(".featured-stack");

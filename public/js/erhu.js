@@ -34,6 +34,8 @@
 
     var intro = document.createElement("div");
     intro.className = "erhu-wiki__intro";
+    var photo = document.createElement("div");
+    photo.className = "erhu-wiki__photo img-load";
     var image = document.createElement("img");
     image.src = "assets/erhu/erhu-instrument.jpg";
     image.alt = copy.imageAlt;
@@ -41,7 +43,9 @@
     image.height = 4000;
     image.loading = "lazy";
     image.decoding = "async";
-    intro.appendChild(image);
+    photo.appendChild(image);
+    intro.appendChild(photo);
+    if (typeof attachImageLoader === "function") attachImageLoader(image);
     var credit = text("p", "erhu-wiki__credit", copy.imageCredit + " ");
     var source = document.createElement("a");
     source.href = "https://commons.wikimedia.org/w/index.php?curid=192017131";

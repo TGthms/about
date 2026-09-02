@@ -133,11 +133,11 @@
           <h2 id="about-heading" class="section__title" data-i18n="about.title">A little about me</h2>
         </header>
         <div class="about__body" data-blur-reveal>
-          <p class="about__text" data-i18n="about.p1">
-            I'm a high school student in the Bay Area who likes building things, capturing moments, music, and exploring — both nearby and farther afield.
+          <p class="about__text" data-about-copy="p1">
+            I'm a high school student in the Bay Area who loves <a class="about__link" href="#projects">building things</a>, <a class="about__link" href="#project-usa-gallery">capturing moments</a>, <a class="about__link" href="#interest-erhu">playing erhu</a>, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.
           </p>
-          <p class="about__text" data-i18n="about.p2">
-            Outside of school and projects, Psalm 23 keeps me grounded and centered through busy seasons.
+          <p class="about__text" data-about-copy="p2">
+            Outside of school and projects, Psalm 23 keeps me grounded through busy seasons and reminds me of what matters most.
           </p>
         </div>
       </div>
@@ -163,7 +163,7 @@
             <h3 class="interest-card__title" data-i18n="interests.bilingual.title">Bilingual</h3>
             <p class="interest-card__desc" data-i18n="interests.bilingual.desc">Chinese-American — fluent in Mandarin Chinese and English</p>
           </li>
-          <li class="interest-card reveal" style="--stagger: 1">
+          <li class="interest-card reveal" id="interest-erhu" style="--stagger: 1">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Erhu-inspired abstract bow/string -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -274,7 +274,7 @@
             Project cards: single CTA (en/es/ja, host from prefs) or dual lines (zh).
             URLs live in data-url-cloudflare / data-url-github; applied by the project-host module.
           -->
-          <article class="featured-card reveal reveal-delay-1" data-project="usa-gallery"
+          <article class="featured-card reveal reveal-delay-1" id="project-usa-gallery" data-project="usa-gallery"
             data-url-cloudflare="https://travelusa.pages.dev/gallery/"
             data-url-github="https://tgthms.github.io/usa-travel-guide/gallery.html">
             <a
@@ -529,7 +529,7 @@
               rel="noopener noreferrer"
               aria-labelledby="project-title-duskline"
             ></a>
-            <div class="featured-card__badge featured-card__badge--alt" data-i18n="links.project">Project</div>
+            <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
             <div class="featured-card__content">
               <h3 class="featured-card__title" id="project-title-duskline" data-i18n="links.duskline.title">duskline</h3>
               <p class="featured-card__desc" data-i18n="links.duskline.desc">
@@ -995,6 +995,7 @@
   <script src="js/archived-projects.js"></script>
   <script src="js/blur-scroll-reveal.js"></script>
   <script src="js/github-card.js"></script>
+  <script src="js/image-loader.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

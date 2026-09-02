@@ -22,6 +22,7 @@ const TRANSLATIONS = {
       siteControls: "Preferences",
       selectLanguage: "Language",
       displayPrefs: "Display",
+      loading: "Loading",
     },
     host: {
       label: "Project links",
@@ -39,8 +40,13 @@ const TRANSLATIONS = {
     about: {
       label: "About",
       title: "A little about me",
-      p1: "I'm a high school student in the Bay Area who likes building things, capturing moments, music, and exploring — both nearby and farther afield.",
-      p2: "Outside of school and projects, Psalm 23 keeps me grounded and centered through busy seasons.",
+      p1: "I'm a high school student in the Bay Area who loves {build}, {photo}, {erhu}, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.",
+      p2: "Outside of school and projects, Psalm 23 keeps me grounded through busy seasons and reminds me of what matters most.",
+      links: {
+        build: "building things",
+        photo: "capturing moments",
+        erhu: "playing erhu",
+      },
     },
     interests: {
       label: "Interests",
@@ -171,6 +177,7 @@ const TRANSLATIONS = {
       siteControls: "Preferencias",
       selectLanguage: "Idioma",
       displayPrefs: "Apariencia",
+      loading: "Cargando",
     },
     host: {
       label: "Enlaces de proyectos",
@@ -188,8 +195,13 @@ const TRANSLATIONS = {
     about: {
       label: "Sobre mí",
       title: "Un poco sobre mí",
-      p1: "Soy estudiante de secundaria en el Área de la Bahía. Me gusta crear, capturar momentos, la música y explorar — cerca de casa y más lejos.",
-      p2: "Fuera de la escuela y de los proyectos, el Salmo 23 me mantiene con los pies en la tierra y centrado en las épocas más ajetreadas.",
+      p1: "Soy estudiante de secundaria en el Área de la Bahía. Me encanta {build}, {photo}, {erhu} y el tenis de mesa. Ya sea un proyecto, una experiencia nueva o aprender inglés, siempre tengo curiosidad por crear y descubrir algo nuevo.",
+      p2: "Fuera de la escuela y de los proyectos, el Salmo 23 me mantiene con los pies en la tierra en las épocas más ajetreadas y me recuerda lo que más importa.",
+      links: {
+        build: "crear cosas",
+        photo: "capturar momentos",
+        erhu: "tocar el erhu",
+      },
     },
     interests: {
       label: "Intereses",
@@ -320,6 +332,7 @@ const TRANSLATIONS = {
       siteControls: "偏好设置",
       selectLanguage: "语言",
       displayPrefs: "显示",
+      loading: "加载中",
     },
     host: {
       label: "项目线路",
@@ -337,8 +350,13 @@ const TRANSLATIONS = {
     about: {
       label: "关于",
       title: "一点自我介绍",
-      p1: "我是位于旧金山湾区的一名高中生，喜欢创作、多元音乐和探索",
-      p2: "在学业与项目之外，诗篇 23 是我内心安静的支点——在忙碌的日子里让我保持踏实与平和",
+      p1: "我是旧金山湾区的一名高中生，喜欢{build}、{photo}、{erhu}和乒乓球。无论是项目、新体验，还是学英语，我总想创造、发现一点新的东西。",
+      p2: "在学业与项目之外，诗篇 23 让我在忙碌的日子里保持踏实，也提醒我什么最重要。",
+      links: {
+        build: "动手做东西",
+        photo: "捕捉瞬间",
+        erhu: "拉二胡",
+      },
     },
     interests: {
       label: "兴趣特长",
@@ -469,6 +487,7 @@ const TRANSLATIONS = {
       siteControls: "設定",
       selectLanguage: "言語",
       displayPrefs: "外観",
+      loading: "読込中",
     },
     host: {
       label: "プロジェクトの接続先",
@@ -486,8 +505,13 @@ const TRANSLATIONS = {
     about: {
       label: "自己紹介",
       title: "少しだけ自己紹介",
-      p1: "ベイエリアの高校生です。ものづくり、写真、音楽、そして近くも遠くも出かけてみるのが好きです。",
-      p2: "学校やプロジェクトの外では、詩篇23が心の軸になっています。忙しい時期でも落ち着いていられるように。",
+      p1: "ベイエリアの高校生です。{build}、{photo}、{erhu}、それに卓球が好きです。プロジェクトでも、新しい体験でも、英語の勉強でも、つくることと見つけることにいつも好奇心があります。",
+      p2: "学校やプロジェクトの外では、詩篇23が忙しい時期の軸になり、いちばん大切なことを思い出させてくれます。",
+      links: {
+        build: "ものづくり",
+        photo: "写真を撮ること",
+        erhu: "二胡を弾くこと",
+      },
     },
     interests: {
       label: "興味",

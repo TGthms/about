@@ -123,22 +123,74 @@
     raf = window.requestAnimationFrame(update);
   }
 
-  function fillParagraph(p, language) {
-    var tokens = tokenize(p.textContent, language);
-    var joinCjk = isCjk(language);
+  var LINK_HREFS = {
+    build: "#projects",
+    photo: "#project-usa-gallery",
+    erhu: "#interest-erhu",
+  };
+
+  function aboutPack(language) {
+    if (typeof TRANSLATIONS !== "object") return null;
+    return TRANSLATIONS[language] || TRANSLATIONS.en;
+  }
+
+  function renderAboutParagraph(p, language) {
+    var key = p.getAttribute("data-about-copy");
+    var pack = aboutPack(language);
+    if (!key || !pack || !pack.about) return;
+    var template = pack.about[key];
+    if (typeof template !== "string") return;
+    var labels = pack.about.links || (TRANSLATIONS.en && TRANSLATIONS.en.about && TRANSLATIONS.en.about.links) || {};
+
     p.textContent = "";
-    var frag = document.createDocumentFragment();
+    var parts = template.split(/(\{(?:build|photo|erhu)\})/g);
+    for (var i = 0; i < parts.length; i++) {
+      var part = parts[i];
+      var match = part.match(/^\{(build|photo|erhu)\}$/);
+      if (match) {
+        var a = document.createElement("a");
+        a.className = "about__link about__word";
+        a.href = LINK_HREFS[match[1]];
+        a.textContent = labels[match[1]] || match[1];
+        p.appendChild(a);
+        words.push(a);
+      } else if (part) {
+        wrapPlainText(p, part, language);
+      }
+    }
+  }
+
+  function wrapPlainText(parent, text, language) {
+    var joinCjk = isCjk(language);
+    var tokens = tokenize(text, language);
+    if (!tokens.length) {
+      if (text) parent.appendChild(document.createTextNode(text));
+      return;
+    }
+    var lead = text.match(/^\s*/);
+    var trail = text.match(/\s*$/);
+    if (lead && lead[0]) parent.appendChild(document.createTextNode(lead[0]));
     for (var i = 0; i < tokens.length; i++) {
       var span = document.createElement("span");
       span.className = "about__word";
       span.textContent = tokens[i];
-      frag.appendChild(span);
+      parent.appendChild(span);
       if (!joinCjk && i < tokens.length - 1) {
-        frag.appendChild(document.createTextNode(" "));
+        parent.appendChild(document.createTextNode(" "));
       }
       words.push(span);
     }
-    p.appendChild(frag);
+    if (trail && trail[0]) parent.appendChild(document.createTextNode(trail[0]));
+  }
+
+  function fillParagraph(p, language) {
+    if (p.getAttribute("data-about-copy")) {
+      renderAboutParagraph(p, language);
+      return;
+    }
+    var text = p.textContent;
+    p.textContent = "";
+    wrapPlainText(p, text, language);
   }
 
   function build() {

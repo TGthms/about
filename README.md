@@ -33,6 +33,7 @@ Static personal landing site for [tgthms.github.io/about](https://tgthms.github.
 | `public/js/main.js` | Home interactions |
 | `public/js/blur-scroll-reveal.js` | Scroll-linked about-text blur reveal |
 | `public/js/github-card.js` | GitHub contribution calendar popover |
+| `public/js/image-loader.js` | Loading flicker for raster images |
 | `public/js/archived-projects.js` | Archived project shelf dialog behavior and focus management |
 | `public/js/erhu.js` / `public/js/erhu-content.js` | Erhu wiki dialog behavior and localized content |
 | `public/js/legal.js` | Legal rendering |
