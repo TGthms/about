@@ -123,6 +123,11 @@ const TRANSLATIONS = {
         desc: "Native macOS converter for files and units.",
       },
       github: "GitHub",
+      githubCard: {
+        contributions: "{count} contributions in {year}",
+        day: "{count} on {date}",
+        loading: "Loading contributions…",
+      },
       social: {
         label: "Instagram",
         sub: "@timg.ins",
@@ -267,6 +272,11 @@ const TRANSLATIONS = {
         desc: "Conversor nativo de macOS para archivos y unidades.",
       },
       github: "GitHub",
+      githubCard: {
+        contributions: "{count} contribuciones en {year}",
+        day: "{count} el {date}",
+        loading: "Cargando contribuciones…",
+      },
       social: {
         label: "Instagram",
         sub: "@timg.ins",
@@ -411,6 +421,11 @@ const TRANSLATIONS = {
         desc: "原生 macOS 转换器：文件与单位。",
       },
       github: "GitHub",
+      githubCard: {
+        contributions: "{year} 年共 {count} 次贡献",
+        day: "{date}：{count} 次",
+        loading: "正在加载贡献…",
+      },
       social: {
         label: "微信",
         sub: "realTimGong",
@@ -555,6 +570,11 @@ const TRANSLATIONS = {
         desc: "ファイルと単位のためのネイティブmacOSコンバーター。",
       },
       github: "GitHub",
+      githubCard: {
+        contributions: "{year}年に{count}件のコントリビューション",
+        day: "{date}：{count}件",
+        loading: "読み込み中…",
+      },
       social: {
         label: "Instagram",
         sub: "@timg.ins",

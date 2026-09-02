@@ -86,6 +86,7 @@
   <noscript>
     <style>
       .reveal { opacity: 1 !important; transform: none !important; }
+      .hero__char { opacity: 1 !important; animation: none !important; }
       .top-bar { position: static; }
     </style>
   </noscript>
@@ -105,8 +106,10 @@
     <section class="hero" id="hero" aria-labelledby="hero-name">
       <div class="container hero__inner">
         <p class="hero__eyebrow reveal" data-i18n="hero.eyebrow">Hello — welcome</p>
-        <h1 id="hero-name" class="hero__name reveal reveal-delay-1">
-          <span class="hero__name-text">Tim&nbsp;G</span>
+        <h1 id="hero-name" class="hero__name">
+          <span class="hero__name-text" aria-label="Tim G">
+            <span class="hero__char" style="--i: 0" aria-hidden="true">T</span><span class="hero__char" style="--i: 1" aria-hidden="true">i</span><span class="hero__char" style="--i: 2" aria-hidden="true">m</span><span class="hero__char" style="--i: 3" aria-hidden="true">&nbsp;</span><span class="hero__char" style="--i: 4" aria-hidden="true">G</span>
+          </span>
         </h1>
         <p class="hero__tagline reveal reveal-delay-2" data-i18n="hero.tagline">
           High school student based in the San Francisco Bay Area
@@ -129,7 +132,7 @@
           <p class="section__label" data-i18n="about.label">About</p>
           <h2 id="about-heading" class="section__title" data-i18n="about.title">A little about me</h2>
         </header>
-        <div class="about__body reveal reveal-delay-1">
+        <div class="about__body" data-blur-reveal>
           <p class="about__text" data-i18n="about.p1">
             I'm a high school student in the Bay Area who likes building things, capturing moments, music, and exploring — both nearby and farther afield.
           </p>
@@ -734,7 +737,7 @@
         </header>
 
         <ul class="link-grid" role="list">
-          <li class="reveal" style="--stagger: 0">
+          <li class="reveal github-hover" data-github-card="TGthms" style="--stagger: 0">
             <a class="link-card" href="https://github.com/TGthms" target="_blank" rel="noopener noreferrer">
               <div class="link-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
@@ -990,6 +993,8 @@
   <script src="js/erhu-content.js"></script>
   <script src="js/erhu.js"></script>
   <script src="js/archived-projects.js"></script>
+  <script src="js/blur-scroll-reveal.js"></script>
+  <script src="js/github-card.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

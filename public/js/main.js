@@ -35,10 +35,17 @@
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
+      var about = document.querySelector("[data-blur-reveal]");
+      if (about) about.classList.remove("is-ready");
       if (typeof applyLanguage === "function") currentLang = applyLanguage(lang);
       if (typeof renderErhuWiki === "function") renderErhuWiki(currentLang);
+      if (typeof refreshBlurScrollReveal === "function") refreshBlurScrollReveal();
+      if (typeof refreshGithubCardCopy === "function") refreshGithubCardCopy();
     });
   }
+
+  if (typeof initBlurScrollReveal === "function") initBlurScrollReveal();
+  if (typeof initGithubCard === "function") initGithubCard();
 
   /* Put the personal utility first in both visual and keyboard order. */
   var projectStack = document.querySelector(".featured-stack");

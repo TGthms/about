@@ -850,18 +850,51 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
   margin-bottom: var(--space-3);
 }
 .hero__name {
+  --glow-mid:
+    0 0 14px color-mix(in srgb, var(--accent) 82%, transparent),
+    0 0 28px color-mix(in srgb, var(--ink) 24%, transparent);
   font-family: var(--font-display);
   font-size: clamp(3.25rem, 12vw, 5.75rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.02;
   margin-bottom: var(--space-3);
+  white-space: nowrap;
+}
+
+html[data-theme="dark"] .hero__name {
+  --glow-mid:
+    0 0 16px rgba(245, 240, 230, 0.88),
+    0 0 32px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .hero__name-text {
   font-family: inherit;
   font-weight: inherit;
   color: var(--ink);
+}
+
+.hero__char {
+  display: inline;
+  white-space: pre;
+  opacity: 0;
+  animation: glowIn 1s var(--ease-out) forwards;
+  animation-delay: calc(var(--i) * 50ms + 80ms);
+}
+
+@keyframes glowIn {
+  0% {
+    opacity: 0;
+    text-shadow: 0 0 0 transparent, 0 0 0 transparent;
+  }
+  48% {
+    opacity: 1;
+    text-shadow: var(--glow-mid);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 0 transparent, 0 0 0 transparent;
+  }
 }
 .hero__tagline {
   font-size: clamp(1.05rem, 2.5vw, 1.3rem);
@@ -1011,11 +1044,19 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
   text-wrap: balance;
 }
 .about__body { max-width: 36rem; }
+html.js .about__body:not(.is-ready) { opacity: 0; }
 .about__text {
   color: var(--mute);
   font-size: 1.1rem;
   margin-bottom: var(--space-2);
   font-weight: 500;
+}
+.about__word {
+  display: inline-block;
+  will-change: opacity, filter, transform;
+}
+.about__body.is-complete .about__word {
+  will-change: auto;
 }
 
 /* Interests */
@@ -1585,6 +1626,7 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-2);
+  overflow: visible;
 }
 @media (min-width: 560px) {
   .link-grid { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
@@ -1667,6 +1709,171 @@ a.link-card:active,
 }
 .link-card--copy { cursor: pointer; }
 .link-card--copy.is-copied .link-card__sub { color: var(--accent); font-weight: 700; }
+
+/* GitHub contribution popover — adapted from Great UI GithubCard (MIT) */
+.github-hover {
+  position: relative;
+  --gh-0: #e6dfd4;
+  --gh-1: #9be9a8;
+  --gh-2: #40c463;
+  --gh-3: #30a14e;
+  --gh-4: #216e39;
+}
+html[data-theme="dark"] .github-hover {
+  --gh-0: #2a2622;
+  --gh-1: #0e4429;
+  --gh-2: #006d32;
+  --gh-3: #26a641;
+  --gh-4: #39d353;
+}
+.github-hover.is-open {
+  z-index: 12;
+}
+.github-popover {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  z-index: 8;
+  width: min(20.5rem, calc(100vw - 32px));
+  perspective: 1000px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 8px, 0) scale(0.98);
+  filter: blur(2px);
+  transform-origin: bottom left;
+  transition:
+    opacity 0.22s var(--ease-out),
+    transform 0.22s var(--ease-out),
+    filter 0.22s var(--ease-out);
+}
+.github-popover.is-below {
+  bottom: auto;
+  top: calc(100% + 10px);
+  transform-origin: top left;
+}
+.github-hover.is-open .github-popover {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: none;
+}
+.github-popover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 14px;
+}
+.github-popover:not(.is-below)::after { top: 100%; }
+.github-popover.is-below::after { bottom: 100%; top: auto; }
+
+.github-popover__card {
+  padding: 18px;
+  background: var(--bg-card);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-hover);
+  transform-style: preserve-3d;
+  transform-origin: bottom center;
+}
+.github-hover.is-open .github-popover__card {
+  will-change: transform;
+}
+.github-popover.is-below .github-popover__card {
+  transform-origin: top center;
+}
+
+.github-popover__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.github-popover__avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  border: var(--border-w) solid var(--line);
+  background: var(--bg);
+}
+.github-popover__name {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.github-popover__user {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--faint);
+}
+
+.github-cal {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 10px);
+  grid-auto-columns: 10px;
+  gap: 3px;
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto;
+  user-select: none;
+}
+.github-cal__cell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--gh-0);
+}
+.github-cal__cell[data-level="1"] { background: var(--gh-1); }
+.github-cal__cell[data-level="2"] { background: var(--gh-2); }
+.github-cal__cell[data-level="3"] { background: var(--gh-3); }
+.github-cal__cell[data-level="4"] { background: var(--gh-4); }
+@media (hover: hover) and (pointer: fine) {
+  .github-cal__cell {
+    transition: transform 160ms var(--ease-out);
+    cursor: pointer;
+  }
+  .github-cal__cell:hover {
+    transform: scale(1.28);
+    z-index: 1;
+  }
+}
+
+.github-cal__tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  padding: 4px 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: var(--bg);
+  background: var(--ink);
+  border: var(--border-w) solid var(--line);
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, calc(-100% - 8px));
+}
+.github-cal__tip.is-on { opacity: 1; }
+
+.github-popover__meta {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--faint);
+  letter-spacing: 0.01em;
+}
 
 /* Footer */
 .footer {
@@ -1843,6 +2050,18 @@ html.reveal-fallback .reveal {
   will-change: auto !important;
 }
 
+html:not(.js) .hero__char,
+html.reveal-fallback .hero__char {
+  opacity: 1 !important;
+  animation: none !important;
+  text-shadow: none !important;
+}
+
+html:not(.js) .about__body,
+html.reveal-fallback .about__body {
+  opacity: 1 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1892,6 +2111,34 @@ html.reveal-fallback .reveal {
   }
   .lang-picker.is-open .lang-picker__menu:not([hidden]) {
     animation: none !important;
+  }
+
+  .hero__char {
+    opacity: 1 !important;
+    animation: none !important;
+    text-shadow: none !important;
+  }
+  html.js .about__body:not(.is-ready) {
+    opacity: 1 !important;
+  }
+  .about__word {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    will-change: auto !important;
+  }
+  .github-popover {
+    filter: none !important;
+    transform: none !important;
+    transition: opacity 0.001ms !important;
+  }
+  .github-hover.is-open .github-popover {
+    transform: none !important;
+  }
+  .github-popover__card,
+  .github-cal__cell {
+    transform: none !important;
+    transition: none !important;
   }
 }
 
