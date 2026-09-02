@@ -1577,35 +1577,41 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
   display: block;
 }
 
-/* Image loaders — Craft Brutal take on a neon “Loading” flicker */
+/* Image loaders — sliding monospace “Loading...” with growing underline */
 .img-load {
   position: relative;
 }
 .img-loader {
-  --loader-1: var(--ink);
-  --loader-2: var(--accent);
+  --loader-ink: var(--ink);
+  --loader-shift: 10ch;
+  --loader-bar: 3px;
+  display: none;
   position: absolute;
   left: 50%;
   top: 50%;
   z-index: 2;
+  width: fit-content;
+  max-width: calc(100% - 16px);
+  padding-bottom: 5px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  font-family: var(--font);
-  font-weight: 800;
-  font-size: clamp(0.78rem, 2.2vw, 1.2rem);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--loader-1);
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.6vw, 1.875rem);
+  line-height: 1.15;
   white-space: nowrap;
-  opacity: 0;
-  animation: imgLoader 2.5s linear infinite;
+  color: #0000;
+  text-shadow:
+    0 0 0 var(--loader-ink),
+    var(--loader-shift) 0 0 var(--loader-ink);
+  background: linear-gradient(var(--loader-ink) 0 0) bottom left / 0% var(--loader-bar) no-repeat;
+  animation: imgLoader 1.5s infinite;
 }
-html[data-language="zh"] .img-loader,
-html[data-language="ja"] .img-loader {
-  letter-spacing: 0.12em;
-  text-transform: none;
+.img-loader::before {
+  content: attr(data-label);
 }
-.img-load.is-img-loading .img-loader { opacity: 1; }
+.img-load.is-img-loading .img-loader { display: block; }
 .img-load.is-img-ready .img-loader { display: none; }
 .img-load.is-img-loading > img { opacity: 0; }
 .img-load.is-img-ready > img {
@@ -1613,35 +1619,28 @@ html[data-language="ja"] .img-loader {
   transition: opacity 0.4s var(--ease-out);
 }
 @keyframes imgLoader {
-  0%,
-  19%,
-  21%,
-  23%,
-  25%,
-  54%,
-  56%,
+  80% {
+    text-shadow:
+      0 0 0 var(--loader-ink),
+      var(--loader-shift) 0 0 var(--loader-ink);
+    background-size: 100% var(--loader-bar);
+  }
   100% {
     text-shadow:
-      0 0 0.08em var(--loader-1),
-      0 0 0.22em var(--loader-1),
-      0 0 0.4em var(--loader-2),
-      0 0 0.85em var(--loader-2);
-    opacity: 1;
+      calc(-1 * var(--loader-shift)) 0 0 var(--loader-ink),
+      0 0 0 var(--loader-ink);
   }
-  20%,
-  24%,
-  55% {
-    text-shadow: none;
-    opacity: 0.38;
-  }
-}
-.featured-card__visual .img-loader {
-  font-size: clamp(0.92rem, 2.4vw, 1.35rem);
 }
 .duolingo-card__frame .img-loader,
 .qr-modal__frame .img-loader {
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
+  --loader-bar: 2px;
+  padding-bottom: 3px;
+}
+.duolingo-card__frame .img-loader {
+  font-size: 0.72rem;
+}
+.qr-modal__frame .img-loader {
+  font-size: 1.05rem;
 }
 @media (min-width: 720px) {
   .featured-card__visual--photo {
@@ -2241,8 +2240,9 @@ html.reveal-fallback .about__body {
   }
   .img-loader {
     animation: none !important;
+    color: var(--ink) !important;
     text-shadow: none !important;
-    opacity: 0.7 !important;
+    background-size: 100% var(--loader-bar) !important;
   }
 }
 

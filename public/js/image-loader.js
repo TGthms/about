@@ -1,5 +1,5 @@
 /**
- * Photo-frame “Loading” flicker while raster images decode.
+ * Photo-frame sliding “Loading...” label while raster images decode.
  */
 (function () {
   "use strict";
@@ -26,14 +26,31 @@
     return img.closest(FRAME_SEL) || img.parentElement;
   }
 
+  function loaderLabel() {
+    var lang = document.documentElement.getAttribute("data-language") || "en";
+    var word = loadingWord();
+    if (lang === "zh" || lang === "ja") return word;
+    if (word.slice(-3) !== "...") return word + "...";
+    return word;
+  }
+
+  function applyLoaderLabel(loader) {
+    var lang = document.documentElement.getAttribute("data-language") || "en";
+    var label = loaderLabel();
+    var unit = lang === "zh" || lang === "ja" ? "em" : "ch";
+    loader.setAttribute("data-label", label);
+    loader.style.setProperty("--loader-shift", String(label.length) + unit);
+  }
+
   function ensureLoader(frame) {
     var loader = frame.querySelector(".img-loader");
-    if (loader) return loader;
-    loader = document.createElement("span");
-    loader.className = "img-loader";
-    loader.setAttribute("aria-hidden", "true");
-    loader.textContent = loadingWord();
-    frame.appendChild(loader);
+    if (!loader) {
+      loader = document.createElement("div");
+      loader.className = "img-loader";
+      loader.setAttribute("aria-hidden", "true");
+      frame.appendChild(loader);
+    }
+    applyLoaderLabel(loader);
     return loader;
   }
 
@@ -94,10 +111,7 @@
   }
 
   function refreshImageLoaderCopy() {
-    var word = loadingWord();
-    document.querySelectorAll(".img-loader").forEach(function (el) {
-      el.textContent = word;
-    });
+    document.querySelectorAll(".img-loader").forEach(applyLoaderLabel);
     document.querySelectorAll(".img-load").forEach(setFrameState);
   }
 
