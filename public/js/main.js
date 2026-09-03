@@ -27,7 +27,6 @@
   var currentLang = "en";
   if (typeof detectLanguage === "function" && typeof applyLanguage === "function") {
     currentLang = applyLanguage(detectLanguage());
-    if (typeof renderErhuWiki === "function") renderErhuWiki(currentLang);
   }
   /* Host control after language so dual/single mode is correct on first paint */
   if (typeof initProjectHost === "function") initProjectHost();
@@ -38,7 +37,13 @@
       var about = document.querySelector("[data-blur-reveal]");
       if (about) about.classList.remove("is-ready");
       if (typeof applyLanguage === "function") currentLang = applyLanguage(lang);
-      if (typeof renderErhuWiki === "function") renderErhuWiki(currentLang);
+      var erhuModal = document.getElementById("erhu-wiki-modal");
+      if (erhuModal && !erhuModal.hidden && typeof renderErhuWiki === "function") {
+        renderErhuWiki(currentLang);
+        if (typeof loadDeferredImages === "function") loadDeferredImages(erhuModal);
+        var erhuClose = erhuModal.querySelector(".erhu-modal__close");
+        if (erhuClose) erhuClose.focus();
+      }
       if (typeof refreshBlurScrollReveal === "function") refreshBlurScrollReveal();
       if (typeof refreshGithubCardCopy === "function") refreshGithubCardCopy();
       if (typeof refreshImageLoaderCopy === "function") refreshImageLoaderCopy();
@@ -47,7 +52,6 @@
 
   if (typeof initBlurScrollReveal === "function") initBlurScrollReveal();
   if (typeof initGithubCard === "function") initGithubCard();
-  if (typeof initImageLoaders === "function") initImageLoaders();
 
   /* Put the personal utility first in both visual and keyboard order. */
   var projectStack = document.querySelector(".featured-stack");
@@ -58,6 +62,8 @@
     projectStack.insertBefore(dusklineCard, galleryCard.nextElementSibling);
   }
   if (projectStack && kitCard) projectStack.insertBefore(kitCard, projectStack.firstElementChild);
+
+  if (typeof initImageLoaders === "function") initImageLoaders();
 
   /* ---------- Scroll entrance ---------- */
   function settle(el) {
@@ -283,6 +289,8 @@
       modal.classList.remove("is-shown");
       document.body.classList.add("qr-modal-open");
       openBtn.setAttribute("aria-expanded", "true");
+      if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
+      if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           if (gen !== modalGen) return;
@@ -308,6 +316,7 @@
         if (gen !== modalGen) return;
         modal.hidden = true;
         document.body.classList.remove("qr-modal-open");
+        if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
         if (lastFocus && typeof lastFocus.focus === "function") {
           try {
             lastFocus.focus();

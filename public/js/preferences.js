@@ -5,6 +5,42 @@
 (function () {
   "use strict";
 
+  function inertExcept(root, keep, on) {
+    var children = root.children;
+    for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      if (keep && (child === keep || child.contains(keep))) {
+        if (child !== keep) inertExcept(child, keep, on);
+        continue;
+      }
+      if (on) child.setAttribute("inert", "");
+      else child.removeAttribute("inert");
+    }
+  }
+
+  window.setBackgroundInert = function (activeModal, on) {
+    var roots = document.querySelectorAll("[data-page-root]");
+    for (var i = 0; i < roots.length; i++) {
+      var el = roots[i];
+      if (activeModal && el.contains(activeModal)) {
+        inertExcept(el, activeModal, on);
+        continue;
+      }
+      if (on) el.setAttribute("inert", "");
+      else el.removeAttribute("inert");
+    }
+    var dialogs = document.querySelectorAll('[role="dialog"]');
+    for (var j = 0; j < dialogs.length; j++) {
+      var dialog = dialogs[j];
+      if (dialog === activeModal) {
+        dialog.removeAttribute("inert");
+        continue;
+      }
+      if (on) dialog.setAttribute("inert", "");
+      else dialog.removeAttribute("inert");
+    }
+  };
+
   var root = document.querySelector("[data-preferences-root]");
   if (!root) return;
 

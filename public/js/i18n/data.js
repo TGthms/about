@@ -159,6 +159,7 @@ const TRANSLATIONS = {
       built: "Personal Hub",
       privacy: "Privacy Policy",
       terms: "Terms of Use",
+      legalNav: "Legal",
     },
   },
 
@@ -314,6 +315,7 @@ const TRANSLATIONS = {
       built: "Personal Hub",
       privacy: "Política de privacidad",
       terms: "Condiciones de uso",
+      legalNav: "Legal",
     },
   },
 
@@ -321,7 +323,7 @@ const TRANSLATIONS = {
     meta: {
       title: "Tim G — 个人主页",
       description:
-        "Tim G - San Francisco",
+        "Tim G — 旧金山湾区高中生。喜欢做项目、摄影、拉二胡，也喜欢旅行。",
     },
     skip: "跳到主要内容",
     a11y: {
@@ -469,6 +471,7 @@ const TRANSLATIONS = {
       built: "个人主页",
       privacy: "隐私政策",
       terms: "使用条款",
+      legalNav: "法律信息",
     },
   },
 
@@ -624,6 +627,7 @@ const TRANSLATIONS = {
       built: "個人ページ",
       privacy: "プライバシーポリシー",
       terms: "利用規約",
+      legalNav: "法的情報",
     },
   },
 };

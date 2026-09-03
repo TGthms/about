@@ -26,6 +26,8 @@
   var open = false;
   var reduced = false;
   var canHover = false;
+  var remoteStarted = false;
+  var remoteReady = false;
   var data = {
     name: "Tim G",
     avatarUrl: PROFILE_URL + ".png?size=96",
@@ -175,7 +177,6 @@
     avatarEl.width = 44;
     avatarEl.height = 44;
     avatarEl.decoding = "async";
-    avatarEl.src = data.avatarUrl;
 
     var identity = el("div", "github-popover__identity");
     nameEl = el("span", "github-popover__name");
@@ -224,12 +225,27 @@
 
   function refreshGithubCardCopy() {
     if (!meta) return;
-    meta.textContent = fill(copy("contributions"), {
-      count: formatCount(data.total),
-      year: String(data.year),
-    });
+    if (!remoteReady) {
+      meta.textContent = copy("loading");
+    } else {
+      meta.textContent = fill(copy("contributions"), {
+        count: formatCount(data.total),
+        year: String(data.year),
+      });
+    }
     if (nameEl) nameEl.textContent = data.name;
-    if (avatarEl && avatarEl.src !== data.avatarUrl) avatarEl.src = data.avatarUrl;
+    if (remoteStarted && avatarEl && data.avatarUrl && avatarEl.getAttribute("src") !== data.avatarUrl) {
+      avatarEl.src = data.avatarUrl;
+    }
+  }
+
+  function ensureRemote() {
+    if (remoteStarted) return;
+    remoteStarted = true;
+    if (avatarEl && data.avatarUrl && !avatarEl.getAttribute("src")) {
+      avatarEl.src = data.avatarUrl;
+    }
+    loadRemote();
   }
 
   function hideTip() {
@@ -268,6 +284,7 @@
     open = Boolean(next);
     wrap.classList.toggle("is-open", open);
     if (open) {
+      ensureRemote();
       placePopover();
     } else {
       hideTip();
@@ -373,6 +390,7 @@
     if (payload.days && payload.days.length) data.days = payload.days;
     if (typeof payload.total === "number") data.total = payload.total;
     if (payload.year) data.year = payload.year;
+    remoteReady = true;
     paintDays();
   }
 
@@ -427,10 +445,12 @@
             return sum + day.count;
           }, 0);
         }
+        remoteReady = true;
         paintDays();
         writeCache(data);
       })
       .catch(function () {
+        remoteReady = true;
         refreshGithubCardCopy();
       });
   }
@@ -447,15 +467,6 @@
     buildPopover();
     paintDays();
     bind();
-
-    var start = function () {
-      loadRemote();
-    };
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(start, { timeout: 1200 });
-    } else {
-      window.setTimeout(start, 400);
-    }
 
     if (window.matchMedia) {
       var hoverMq = window.matchMedia("(hover: hover) and (pointer: fine)");

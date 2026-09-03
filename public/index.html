@@ -7,32 +7,63 @@
   <title>Tim G — Personal Hub</title>
   <meta name="description" content="Tim G — high school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
   <meta name="author" content="Tim G" />
+  <meta name="robots" content="index,follow" />
   <meta name="format-detection" content="telephone=no" />
 
-  <link rel="canonical" href="https://tgthms.github.io/about/" />
+  <link rel="canonical" href="https://timgong.me/" />
+  <link rel="sitemap" type="application/xml" href="https://timgong.me/sitemap.xml" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://tgthms.github.io/about/" />
+  <meta property="og:url" content="https://timgong.me/" />
   <meta property="og:title" content="Tim G — Personal Hub" />
   <meta property="og:description" content="High school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
-  <meta property="og:image" content="https://tgthms.github.io/about/og-image.png" />
+  <meta property="og:image" content="https://timgong.me/og-image.png" />
+  <meta property="og:image:alt" content="Tim G — Personal Hub" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="es_ES" />
+  <meta property="og:locale:alternate" content="zh_CN" />
+  <meta property="og:locale:alternate" content="ja_JP" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Tim G — Personal Hub" />
   <meta name="twitter:description" content="High school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
-  <meta name="twitter:image" content="https://tgthms.github.io/about/og-image.png" />
+  <meta name="twitter:image" content="https://timgong.me/og-image.png" />
+  <meta name="twitter:image:alt" content="Tim G — Personal Hub" />
 
   <meta name="theme-color" content="#f3eee4" id="meta-theme-color" />
 
-  <link rel="icon" href="https://tgthms.github.io/about/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="https://tgthms.github.io/about/favicon.svg" />
+  <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <link rel="stylesheet" href="css/styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "Tim G — Personal Hub",
+        "url": "https://timgong.me/"
+      },
+      {
+        "@type": "Person",
+        "name": "Tim G",
+        "url": "https://timgong.me/",
+        "email": "mailto:contact.timg@icloud.com",
+        "sameAs": [
+          "https://github.com/TGthms",
+          "https://www.instagram.com/timg.ins/",
+          "https://www.duolingo.com/profile/AAPL.TimGong"
+        ]
+      }
+    ]
+  }
+  </script>
 
   <!-- Theme + project-host before paint (avoid flash of wrong mode) -->
   <script>
@@ -95,13 +126,13 @@
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 
   <!-- Top controls: language + theme -->
-  <header class="top-bar" role="banner">
+  <header class="top-bar" role="banner" data-page-root>
     <div class="top-bar__inner">
       <div data-preferences-root></div>
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" data-page-root>
     <!-- 1. Hero -->
     <section class="hero" id="hero" aria-labelledby="hero-name">
       <div class="container hero__inner">
@@ -175,7 +206,7 @@
             </div>
             <h3 class="interest-card__title" data-i18n="interests.erhu.title">Erhu</h3>
             <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
-            <button type="button" class="interest-card__learn" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" data-i18n="interests.erhu.learnMore">Wanna know more?</button>
+            <button type="button" class="interest-card__learn" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false" data-i18n="interests.erhu.learnMore">Explore the erhu · see my performance</button>
           </li>
           <li class="interest-card reveal" style="--stagger: 2">
             <div class="interest-card__icon" aria-hidden="true">
@@ -331,7 +362,7 @@
               </div>
             </div>
             <div class="featured-card__visual featured-card__visual--photo featured-card__visual--gallery" aria-hidden="true">
-              <img src="assets/projects/gallery-og.jpg" alt="" width="1200" height="630" loading="lazy" decoding="async" />
+              <img data-src="assets/projects/gallery-og.jpg" alt="" width="1200" height="630" decoding="async" />
             </div>
           </article>
 
@@ -350,7 +381,7 @@
             <div class="featured-card__content">
               <h3 class="featured-card__title" id="project-title-kit" data-i18n="links.kit.title">Kit</h3>
               <p class="featured-card__desc" data-i18n="links.kit.desc">
-                Private on-device tools for PDF, image, audio, and text — no account, no upload.
+                Everyday tools in your browser. Private by design.
               </p>
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
@@ -392,7 +423,7 @@
               </div>
             </div>
             <div class="featured-card__visual featured-card__visual--photo featured-card__visual--kit" aria-hidden="true">
-              <img src="assets/projects/kit-og.jpg" alt="" width="1200" height="630" loading="lazy" decoding="async" />
+              <img data-src="assets/projects/kit-og.jpg" alt="" width="1200" height="630" decoding="async" />
             </div>
           </article>
 
@@ -453,7 +484,7 @@
               </div>
             </div>
             <div class="featured-card__visual featured-card__visual--photo featured-card__visual--usa" aria-hidden="true">
-              <img src="assets/projects/usa-og.jpg" alt="" width="1200" height="675" loading="lazy" decoding="async" />
+              <img data-src="assets/projects/usa-og.jpg" alt="" width="1200" height="675" decoding="async" />
             </div>
           </article>
 
@@ -514,7 +545,7 @@
               </div>
             </div>
             <div class="featured-card__visual featured-card__visual--photo featured-card__visual--japan" aria-hidden="true">
-              <img src="assets/projects/japan-og.jpg" alt="" width="1200" height="675" loading="lazy" decoding="async" />
+              <img data-src="assets/projects/japan-og.jpg" alt="" width="1200" height="675" decoding="async" />
             </div>
           </article>
 
@@ -533,7 +564,7 @@
             <div class="featured-card__content">
               <h3 class="featured-card__title" id="project-title-duskline" data-i18n="links.duskline.title">duskline</h3>
               <p class="featured-card__desc" data-i18n="links.duskline.desc">
-                A weather project with a calm, dusk-inspired visual identity.
+                Weather, beautifully clear. Anywhere in the world.
               </p>
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
@@ -575,7 +606,7 @@
               </div>
             </div>
             <div class="featured-card__visual featured-card__visual--photo featured-card__visual--duskline" aria-hidden="true">
-              <img src="assets/projects/duskline.jpg" alt="" width="1152" height="864" loading="lazy" decoding="async" />
+              <img data-src="assets/projects/duskline.jpg" alt="" width="1152" height="864" decoding="async" />
             </div>
           </article>
 
@@ -591,7 +622,7 @@
             <span class="archived-projects-trigger__copy">
               <span class="archived-projects-trigger__eyebrow" data-i18n="links.archived.eyebrow">A quieter shelf</span>
               <span class="archived-projects-trigger__title" data-i18n="links.archived.title">Archived Projects</span>
-              <span class="archived-projects-trigger__hint" data-i18n="links.archived.open">View Folio, Nimbus, and Kiln</span>
+              <span class="archived-projects-trigger__hint" data-i18n="links.archived.open">Click to view</span>
             </span>
             <svg class="archived-projects-trigger__arrow" width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -825,26 +856,25 @@
                 id="duolingo-qr-open"
                 aria-haspopup="dialog"
                 aria-controls="duolingo-qr-modal"
+                aria-expanded="false"
                 data-i18n-aria="links.duolingo.enlarge"
                 aria-label="View full QR code"
               >
                 <span class="duolingo-card__frame">
                   <img
                     class="duolingo-card__img duolingo-card__img--dark"
-                    src="assets/duolingo-qr.jpg"
+                    data-src="assets/duolingo-qr.jpg"
                     alt=""
                     width="936"
                     height="1229"
-                    loading="lazy"
                     decoding="async"
                   />
                   <img
                     class="duolingo-card__img duolingo-card__img--light"
-                    src="assets/duolingo-qr-light.jpg"
+                    data-src="assets/duolingo-qr-light.jpg"
                     alt=""
                     width="936"
                     height="1229"
-                    loading="lazy"
                     decoding="async"
                   />
                 </span>
@@ -856,7 +886,7 @@
           <li class="reveal link-grid__link-item" style="--stagger: 3">
             <a class="link-card" href="https://trivalleymarssociety.com" target="_blank" rel="noopener noreferrer">
               <div class="link-card__icon link-card__icon--image" aria-hidden="true">
-                <img src="assets/projects/tri-valley-mars-society.png" alt="" width="768" height="768" loading="lazy" decoding="async" />
+                <img data-src="assets/projects/tri-valley-mars-society.png" alt="" width="768" height="768" decoding="async" />
               </div>
               <div class="link-card__text">
                 <span class="link-card__label">Tri Valley Mars Society</span>
@@ -903,7 +933,7 @@
       <div class="qr-modal__frame">
         <img
           class="qr-modal__img qr-modal__img--dark"
-          src="assets/duolingo-qr.jpg"
+          data-src="assets/duolingo-qr.jpg"
           data-i18n-alt="links.duolingo.qrAlt" alt="Duolingo QR code for Tim G, @AAPL.TimGong"
           width="936"
           height="1229"
@@ -911,7 +941,7 @@
         />
         <img
           class="qr-modal__img qr-modal__img--light"
-          src="assets/duolingo-qr-light.jpg"
+          data-src="assets/duolingo-qr-light.jpg"
           data-i18n-alt="links.duolingo.qrAlt" alt="Duolingo QR code for Tim G, @AAPL.TimGong"
           width="936"
           height="1229"
@@ -946,7 +976,7 @@
       <div class="erhu-modal__top">
         <div>
           <p class="erhu-modal__eyebrow" id="erhu-wiki-eyebrow"></p>
-          <h2 class="erhu-modal__title" id="erhu-wiki-title"></h2>
+          <h2 class="erhu-modal__title" id="erhu-wiki-title">Erhu</h2>
         </div>
         <button type="button" class="erhu-modal__close" data-erhu-close aria-label="Close">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -959,7 +989,7 @@
   </div>
 
   <!-- 5. Footer -->
-  <footer class="footer" id="footer">
+  <footer class="footer" id="footer" data-page-root>
     <div class="container footer__inner reveal">
       <p class="footer__signoff" data-i18n="footer.signoff">Thanks for stopping by.</p>
       <blockquote class="footer__verse">
@@ -970,13 +1000,13 @@
         <span data-i18n="footer.contact">Contact:</span>
         <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
       </p>
-      <nav class="footer__legal" aria-label="Legal">
+      <nav class="footer__legal" aria-label="Legal" data-i18n-aria="footer.legalNav">
         <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
         <span class="footer__dot" aria-hidden="true">·</span>
         <a href="terms.html" data-i18n="footer.terms">Terms of Use</a>
       </nav>
       <p class="footer__copy">
-        <span>&copy; <span id="year"></span> Tim G</span>
+        <span>&copy; <span id="year">2026</span> Tim G</span>
         <span class="footer__dot" aria-hidden="true">·</span>
         <span data-i18n="footer.built">Personal Hub</span>
       </p>

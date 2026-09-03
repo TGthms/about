@@ -26,7 +26,7 @@ window.LEGAL_DOCUMENTS.privacy = {
           "Preferences stored on your device. The Site may save your language choice in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. These preference values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site.",
           "Technical data processed by hosting. The Site is hosted by Cloudflare, with GitHub Pages available as a backup. The hosting provider may process technical information such as IP addresses, browser type, device or operating-system information, referring URL, and request timestamps as part of delivering the Site. That processing is performed by the host under its own systems and policies.",
           "Analytics and tracking. This Site does not use advertising trackers, behavioral profiling, or third-party analytics tools unless disclosed in a future update of this Policy.",
-          "Public GitHub calendar. Opening the GitHub card preview may cause your browser to request public profile and contribution data from GitHub and from a public contributions API. Those requests are made from your device to those services under their own policies."
+          "Public GitHub calendar. Hovering, focusing, or opening the GitHub card preview may cause your browser to request public profile and contribution data from GitHub and from a public contributions API. Those requests are made from your device to those services under their own policies."
         ]
       },
       {
@@ -137,7 +137,7 @@ window.LEGAL_DOCUMENTS.privacy = {
           "Preferencias almacenadas en su dispositivo. El Sitio puede guardar su elección de idioma en el almacenamiento local del navegador. La apariencia sigue la configuración clara u oscura del dispositivo, con una posible anulación temporal de sesión. Esos valores permanecen en su dispositivo y no se transmiten a un servidor de datos personales operado por mí en el curso ordinario del funcionamiento del Sitio.",
           "Datos técnicos tratados por el alojamiento. El Sitio está alojado en Cloudflare, con GitHub Pages disponible como respaldo. El proveedor de alojamiento puede tratar información técnica, como direcciones IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas de tiempo, como parte de la prestación del Sitio. Dicho tratamiento lo realiza el proveedor conforme a sus propios sistemas y políticas.",
           "Analítica y rastreo. Este Sitio no utiliza rastreadores publicitarios, perfilado de comportamiento ni herramientas de analítica de terceros, salvo que se declare en una actualización futura de esta Política.",
-          "Calendario público de GitHub. Al abrir la vista previa de la tarjeta de GitHub, su navegador puede solicitar datos públicos de perfil y contribuciones a GitHub y a una API pública de contribuciones. Esas solicitudes se realizan desde su dispositivo hacia esos servicios, con arreglo a sus propias políticas."
+          "Calendario público de GitHub. Al pasar el cursor, enfocar o abrir la vista previa de la tarjeta de GitHub, su navegador puede solicitar datos públicos de perfil y contribuciones a GitHub y a una API pública de contribuciones. Esas solicitudes se realizan desde su dispositivo hacia esos servicios, con arreglo a sus propias políticas."
         ]
       },
       {
@@ -248,7 +248,7 @@ window.LEGAL_DOCUMENTS.privacy = {
           "保存在您设备上的偏好。本网站可能通过浏览器本地存储保存您的语言选择。界面外观遵循设备的浅色或深色设置，并允许在会话期间临时覆盖。上述偏好设置保留在您的设备上；在本网站正常运营过程中，不会传输至由本人运营的个人数据服务器。",
           "由托管服务处理的技术数据。本网站由 Cloudflare 托管，并以 GitHub Pages 作为备用。托管服务提供商在提供本网站服务过程中，可能处理 IP 地址、浏览器类型、设备或操作系统信息、来源网址及时间戳等技术信息。相关处理由托管方依其自身系统与政策实施。",
           "分析与追踪。除非日后在本政策中明确披露，本网站不使用广告追踪器、行为画像或第三方分析工具。",
-          "公开的 GitHub 贡献日历。打开 GitHub 卡片预览时，您的浏览器可能会向 GitHub 及公开的贡献数据接口请求公开的个人资料与贡献数据。这些请求由您的设备直接发往上述服务，并适用其各自的隐私政策。"
+          "公开的 GitHub 贡献日历。将指针悬停、聚焦或打开 GitHub 卡片预览时，您的浏览器可能会向 GitHub 及公开的贡献数据接口请求公开的个人资料与贡献数据。这些请求由您的设备直接发往上述服务，并适用其各自的隐私政策。"
         ]
       },
       {
@@ -359,7 +359,7 @@ window.LEGAL_DOCUMENTS.privacy = {
           "端末に保存される設定。本サイトは、ブラウザのローカルストレージに言語選択を保存することがあります。表示は端末のライト／ダーク設定に従い、セッション中の一時的な上書きが可能です。これらの設定値はお客様の端末に留まり、本サイトの通常の運用において、私が運営する個人データ用サーバーへは送信されません。",
           "ホスティングにより処理される技術データ。本サイトは Cloudflare によりホストされ、GitHub Pages をバックアップとして利用できます。ホスティング提供者は、本サイトの提供に伴い、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、リクエストのタイムスタンプ等の技術情報を処理することがあります。当該処理はホストのシステムおよび方針に従って行われます。",
           "分析およびトラッキング。今後本ポリシーで明示しない限り、本サイトは広告用トラッカー、行動プロファイリング、または第三者の分析ツールを使用しません。",
-          "公開の GitHub コントリビューションカレンダー。GitHub カードのプレビューを開くと、ブラウザが GitHub および公開のコントリビューション API に対して、公開プロフィールと貢献データをリクエストする場合があります。これらのリクエストはお使いの端末から各サービスへ直接送られ、各サービスの方針が適用されます。"
+          "公開の GitHub コントリビューションカレンダー。GitHub カードにポインターを合わせる、フォーカスする、またはプレビューを開くと、ブラウザが GitHub および公開のコントリビューション API に対して、公開プロフィールと貢献データをリクエストする場合があります。これらのリクエストはお使いの端末から各サービスへ直接送られ、各サービスの方針が適用されます。"
         ]
       },
       {

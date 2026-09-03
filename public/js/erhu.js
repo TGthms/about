@@ -37,11 +37,10 @@
     var photo = document.createElement("div");
     photo.className = "erhu-wiki__photo img-load";
     var image = document.createElement("img");
-    image.src = "assets/erhu/erhu-instrument.jpg";
+    image.setAttribute("data-src", "assets/erhu/erhu-instrument.jpg");
     image.alt = copy.imageAlt;
     image.width = 2766;
     image.height = 4000;
-    image.loading = "lazy";
     image.decoding = "async";
     photo.appendChild(image);
     intro.appendChild(photo);
@@ -97,15 +96,25 @@
     document.body.classList.add("erhu-modal-open");
     openButton.setAttribute("aria-expanded", "true");
     isOpen = true;
+    if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
+    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
     modal.querySelector(".erhu-modal__close").focus();
   }
 
   function close() {
     if (!isOpen) return;
+    var video = modal.querySelector("video");
+    if (video) {
+      video.pause();
+      try {
+        video.currentTime = 0;
+      } catch (_) {}
+    }
     modal.hidden = true;
     document.body.classList.remove("erhu-modal-open");
     openButton.setAttribute("aria-expanded", "false");
     isOpen = false;
+    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
   }
 

@@ -74,7 +74,7 @@
 }
 
 .legal-related a.is-current {
-  background: var(--accent);
+  background: var(--accent-text);
   color: var(--on-accent);
 }
 
@@ -162,7 +162,7 @@ html[data-theme="dark"] .legal-section + .legal-section {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
   margin-bottom: var(--space-2);
 }
 
@@ -174,11 +174,13 @@ html[data-theme="dark"] .legal-section + .legal-section {
 }
 
 .legal-toc__link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--mute);
-  padding: 6px 12px;
+  padding: 8px 12px;
   border: var(--border-card) solid var(--line);
   border-radius: 99px;
   background: var(--bg);
@@ -225,7 +227,7 @@ html[data-theme="dark"] .legal-section + .legal-section {
 }
 
 .legal-section__p a {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 3px;
   font-weight: 600;

@@ -31,11 +31,12 @@
   --bg-card: #faf6ee;
   --ink: #12100e;
   --mute: #5a534c;
-  --faint: #8a8278;
+  --faint: #6e675f;
   --line: #12100e;
   --accent: #c45c3e;
-  --accent-soft: rgba(196, 92, 62, 0.14);
-  --on-accent: #f3eee4; /* paper text on terracotta (light) */
+  --accent-text: #9a3f28;
+  --accent-soft: rgba(154, 63, 40, 0.14);
+  --on-accent: #f3eee4; /* paper text on darker terracotta fill */ */
   --shadow: 3px 3px 0 #12100e;
   --shadow-hover: 5px 5px 0 #12100e;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
@@ -66,9 +67,10 @@ html[data-theme="dark"] {
   --bg-card: #1e1b18;
   --ink: #f5f0e6;
   --mute: #b7aea3;
-  --faint: #8f867c;
+  --faint: #a39a90;
   --line: #e6dfd3;
   --accent: #e07a56;
+  --accent-text: #e07a56;
   --accent-soft: rgba(224, 122, 86, 0.18);
   --on-accent: #12100e; /* deep ink on terracotta for dark contrast */
   --shadow: 3px 3px 0 #050403;
@@ -236,7 +238,7 @@ button {
   box-shadow: 2px 2px 0 var(--line);
 }
 .controls-trigger[aria-expanded="true"] {
-  background: var(--accent);
+  background: var(--accent-text);
   color: var(--on-accent);
   border-color: var(--line);
 }
@@ -394,7 +396,7 @@ button {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* Language picker — craft trigger + macOS-style menu (unified across platforms) */
@@ -621,12 +623,12 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
   margin: 0;
 }
 /* Sheet uses controls-section__label styles when both classes present */
 .project-host--sheet .project-host__label {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .host-switcher {
   display: grid;
@@ -676,7 +678,7 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
   color: var(--faint);
 }
 .host-option.is-selected .host-option__kicker {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .host-option__name {
   font-size: 0.92rem;
@@ -846,7 +848,7 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  background: var(--accent);
+  background: var(--accent-text);
   color: var(--on-accent);
   padding: 6px 10px;
   border: var(--border-w) solid var(--line);
@@ -1073,8 +1075,8 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
   border-radius: 2px;
 }
 .about__link:hover {
-  color: var(--accent);
-  text-decoration-color: var(--accent);
+  color: var(--accent-text);
+  text-decoration-color: var(--accent-text);
 }
 #project-usa-gallery,
 #interest-erhu {
@@ -1120,7 +1122,7 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
   justify-content: center;
   border: var(--border-card) solid var(--line);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-2);
   transition: transform var(--dur) var(--ease-out);
@@ -1139,12 +1141,14 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
 }
 .interest-card__learn {
   display: inline-flex;
+  align-items: center;
   margin-top: var(--space-2);
-  padding: 0;
+  min-height: 44px;
+  padding: 8px 0;
   border: 0;
   border-bottom: 2px solid var(--line);
   background: transparent;
-  color: var(--accent);
+  color: var(--accent-text);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 750;
@@ -1154,7 +1158,7 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
 }
 .interest-card__learn:hover,
 .interest-card__learn:focus-visible {
-  border-color: var(--accent);
+  border-color: var(--accent-text);
   text-decoration: underline;
 }
 .interest-card__learn:focus-visible { outline: none; box-shadow: var(--focus); }
@@ -1216,7 +1220,7 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
 }
 .archived-projects-trigger__eyebrow,
 .archived-projects-modal__eyebrow {
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -1234,13 +1238,13 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
 }
 .archived-projects-trigger__arrow {
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-text);
   transition: transform var(--dur) var(--ease-out);
 }
 @media (hover: hover) and (pointer: fine) {
   .archived-projects-trigger:hover .archived-projects-trigger__arrow {
     transform: translate3d(2px, -2px, 0);
-    color: var(--accent);
+    color: var(--accent-text);
   }
 }
 body.archived-projects-open { overflow: hidden; }
@@ -1288,9 +1292,9 @@ body.archived-projects-open { overflow: hidden; }
   letter-spacing: -0.04em;
 }
 .archived-projects-modal__close {
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1302,7 +1306,7 @@ body.archived-projects-open { overflow: hidden; }
   cursor: pointer;
   transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
 }
-.archived-projects-modal__close:hover { background: var(--accent-soft); color: var(--accent); }
+.archived-projects-modal__close:hover { background: var(--accent-soft); color: var(--accent-text); }
 .archived-projects-modal__close:focus-visible { outline: none; box-shadow: var(--focus); }
 .archived-projects-modal__grid { display: grid; gap: var(--space-3); }
 @media (min-width: 720px) {
@@ -1396,7 +1400,7 @@ html[data-project-links="single"] .featured-card:has(.featured-card__hit:active)
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  background: var(--accent);
+  background: var(--accent-text);
   color: var(--on-accent);
   border: var(--border-w) solid var(--line);
   padding: 4px 10px;
@@ -1449,7 +1453,7 @@ html[data-project-links="dual"] .featured-card[data-project-kind="repo"] .featur
   font-weight: 750;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--accent);
+  color: var(--accent-text);
   transition: color var(--dur) var(--ease-out);
   position: relative;
   z-index: 1;
@@ -1522,7 +1526,7 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
   color: var(--faint);
 }
 .project-line--main .project-line__kicker {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 .project-line__name {
   font-size: 0.88rem;
@@ -1534,7 +1538,7 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
   color: var(--faint);
 }
 .project-line--main .project-line__arrow {
-  color: var(--accent);
+  color: var(--accent-text);
 }
 @media (hover: hover) and (pointer: fine) {
   .project-line:hover {
@@ -1619,6 +1623,11 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
 .img-load.is-img-ready .img-loader { display: none; }
 .img-load.is-img-loading > img { opacity: 0; }
 .img-load.is-img-ready > img {
+  opacity: 1;
+  transition: opacity 0.4s var(--ease-out);
+}
+html.js .link-card__icon--image img:not(.is-img-ready) { opacity: 0; }
+html.js .link-card__icon--image img.is-img-ready {
   opacity: 1;
   transition: opacity 0.4s var(--ease-out);
 }
@@ -1744,7 +1753,7 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
   a.link-card:hover .link-card__arrow,
   .link-card--copy:hover .link-card__arrow {
     transform: translate3d(2px, -2px, 0);
-    color: var(--accent);
+    color: var(--accent-text);
   }
 }
 a.link-card:active,
@@ -1761,7 +1770,7 @@ a.link-card:active,
   justify-content: center;
   border: var(--border-w) solid var(--line);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   border-radius: var(--radius-sm);
   transition: transform var(--dur) var(--ease-out);
 }
@@ -1796,7 +1805,7 @@ a.link-card:active,
   display: none !important;
 }
 .link-card--copy { cursor: pointer; }
-.link-card--copy.is-copied .link-card__sub { color: var(--accent); font-weight: 700; }
+.link-card--copy.is-copied .link-card__sub { color: var(--accent-text); font-weight: 700; }
 
 /* GitHub contribution popover — adapted from Great UI GithubCard (MIT) */
 .github-hover {
@@ -1991,7 +2000,7 @@ html[data-theme="dark"] .github-hover {
 .footer__email {
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out);
@@ -2011,7 +2020,7 @@ html[data-theme="dark"] .github-hover {
     color var(--dur) var(--ease-out),
     border-color var(--dur) var(--ease-out);
 }
-.footer__legal a:hover { color: var(--accent); border-color: var(--accent); }
+.footer__legal a:hover { color: var(--accent-text); border-color: var(--accent-text); }
 .footer__copy {
   font-size: 0.75rem;
   color: var(--faint);
@@ -2053,7 +2062,7 @@ html[data-theme="dark"] .github-hover {
 .erhu-modal__top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
 .erhu-modal__eyebrow {
   margin-bottom: 4px;
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -2061,8 +2070,8 @@ html[data-theme="dark"] .github-hover {
 }
 .erhu-modal__title { font-size: clamp(1.5rem, 4vw, 2.25rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; }
 .erhu-modal__close {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -2094,7 +2103,7 @@ html[data-theme="dark"] .github-hover {
   background: var(--bg);
 }
 .erhu-wiki__credit { margin-top: 8px; color: var(--faint); font-size: 0.72rem; line-height: 1.45; }
-.erhu-wiki__credit a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.erhu-wiki__credit a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 2px; }
 .erhu-wiki__section, .erhu-wiki__media { min-width: 0; }
 .erhu-wiki__heading { margin-bottom: 8px; font-size: 1.08rem; font-weight: 800; letter-spacing: -0.02em; }
 .erhu-wiki__paragraph { margin-bottom: 10px; color: var(--mute); font-size: 0.92rem; line-height: 1.62; }
@@ -2248,6 +2257,10 @@ html.reveal-fallback .about__body {
     text-shadow: none !important;
     background-size: 100% var(--loader-bar) !important;
   }
+  .img-load.is-img-ready > img,
+  html.js .link-card__icon--image img.is-img-ready {
+    transition: none !important;
+  }
 }
 
 @media (max-width: 480px) {
@@ -2300,7 +2313,7 @@ html.reveal-fallback .about__body {
   border: var(--border-card) solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 800;
   font-size: 0.95rem;
 }
@@ -2343,7 +2356,7 @@ html.reveal-fallback .about__body {
   font-weight: 750;
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-text);
   width: fit-content;
 }
 .duolingo-card__profile:hover {
@@ -2424,7 +2437,7 @@ html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
     box-shadow: 4px 4px 0 var(--line);
   }
   .duolingo-card__qr:hover .duolingo-card__expand {
-    color: var(--accent);
+    color: var(--accent-text);
   }
 }
 
@@ -2509,8 +2522,8 @@ html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
 }
 
 .qr-modal__close {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2578,7 +2591,7 @@ html[data-theme="dark"] .qr-modal__img--dark { display: block; }
   padding: 10px 14px;
   border: var(--border-w) solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--accent);
+  background: var(--accent-text);
   color: var(--on-accent);
   font-size: 0.85rem;
   font-weight: 750;
@@ -2665,7 +2678,7 @@ html[data-theme="dark"] .section__label {
 
 /* Tagline bar + secondary text a touch brighter for long reads */
 html[data-theme="dark"] .hero__tagline {
-  border-left-color: var(--accent);
+  border-left-color: var(--accent-text);
   color: var(--mute);
 }
 html[data-theme="dark"] .about__text,
@@ -2718,7 +2731,7 @@ html[data-theme="dark"] .featured-card__visual--kiln {
 
 /* Controls expanded trigger: readable on accent */
 html[data-theme="dark"] .controls-trigger[aria-expanded="true"] {
-  background: var(--accent);
+  background: var(--accent-text);
   color: var(--on-accent);
   border-color: var(--line);
 }

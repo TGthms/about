@@ -142,6 +142,7 @@
 
   var current = render(resolveLang());
   if (typeof initTheme === "function") initTheme();
+  if (typeof initProjectHost === "function") initProjectHost();
   if (typeof initControlsPanel === "function") initControlsPanel();
   if (typeof initLanguageMenu === "function") {
     initLanguageMenu(function (lang) {
