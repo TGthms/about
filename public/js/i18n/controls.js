@@ -10,6 +10,7 @@ function closeControlsPanel() {
   const trigger = document.getElementById("controls-trigger");
   const panel = document.getElementById("controls-panel");
   const backdrop = document.getElementById("controls-backdrop");
+  var wasOpen = document.body.classList.contains("controls-open");
   if (cluster) cluster.classList.remove("is-open");
   if (trigger) trigger.setAttribute("aria-expanded", "false");
   if (panel && !isDesktopControls()) {
@@ -34,6 +35,7 @@ function closeControlsPanel() {
     backdrop.style.transition = "";
   }
   document.body.classList.remove("controls-open");
+  if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
 }
 
 /**
@@ -188,6 +190,7 @@ function initControlsPanel() {
     panel.classList.remove("is-raised");
     if (backdrop) backdrop.classList.remove("is-visible");
     syncSheetLayerParent();
+    var wasOpen = document.body.classList.contains("controls-open");
 
     if (isDesktopControls()) {
       panel.hidden = false;
@@ -204,16 +207,20 @@ function initControlsPanel() {
       document.body.classList.remove("controls-open");
       setSheetDialogMode(false);
     }
+    if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
   }
 
   function setOpen(open) {
     if (isDesktopControls()) return;
     sheetGen += 1;
     var gen = sheetGen;
+    var wasOpen = document.body.classList.contains("controls-open");
 
     cluster.classList.toggle("is-open", open);
     trigger.setAttribute("aria-expanded", open ? "true" : "false");
     document.body.classList.toggle("controls-open", open);
+    if (open && !wasOpen && typeof lockPageScroll === "function") lockPageScroll();
+    if (!open && wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
 
     if (open) {
       lastFocus = document.activeElement;
@@ -268,9 +275,11 @@ function initControlsPanel() {
   /** Finalize after drag-dismiss animation (panel already off-screen). */
   function finishDragClose() {
     sheetGen += 1;
+    var wasOpen = document.body.classList.contains("controls-open");
     cluster.classList.remove("is-open");
     trigger.setAttribute("aria-expanded", "false");
     document.body.classList.remove("controls-open");
+    if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
     setSheetDialogMode(false);
     panel.classList.remove("is-raised", "is-dragging");
     panel.hidden = true;

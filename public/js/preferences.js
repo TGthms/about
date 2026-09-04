@@ -41,6 +41,106 @@
     }
   };
 
+  /* iOS ignores overflow:hidden on body. Freeze the page under dialogs. */
+  (function initPageScrollLock() {
+    var locks = 0;
+    var lockedY = 0;
+    var touchY = 0;
+    var listening = false;
+    var SCROLLABLE =
+      ".archived-projects-modal__panel, .erhu-modal__panel, .qr-modal__panel, .controls-panel__surface";
+
+    function scrollPanel(target) {
+      return target && target.closest ? target.closest(SCROLLABLE) : null;
+    }
+
+    function allowNativeTouch(target) {
+      return Boolean(
+        target &&
+          target.closest &&
+          target.closest("video, audio, input, textarea, select, [contenteditable='true']")
+      );
+    }
+
+    function onTouchStart(event) {
+      if (!event.touches || !event.touches.length) return;
+      touchY = event.touches[0].clientY;
+    }
+
+    function onTouchMove(event) {
+      if (locks === 0 || event.touches.length !== 1) return;
+      if (allowNativeTouch(event.target)) return;
+      var panel = scrollPanel(event.target);
+      if (!panel) {
+        event.preventDefault();
+        return;
+      }
+      var y = event.touches[0].clientY;
+      var dy = y - touchY;
+      touchY = y;
+      var atTop = panel.scrollTop <= 0 && dy > 0;
+      var atBottom =
+        panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1 && dy < 0;
+      if (atTop || atBottom) event.preventDefault();
+    }
+
+    function onWheel(event) {
+      if (locks === 0) return;
+      if (scrollPanel(event.target)) return;
+      event.preventDefault();
+    }
+
+    function addListeners() {
+      if (listening) return;
+      listening = true;
+      document.addEventListener("touchstart", onTouchStart, {
+        passive: true,
+        capture: true,
+      });
+      document.addEventListener("touchmove", onTouchMove, {
+        passive: false,
+        capture: true,
+      });
+      document.addEventListener("wheel", onWheel, {
+        passive: false,
+        capture: true,
+      });
+    }
+
+    function removeListeners() {
+      if (!listening) return;
+      listening = false;
+      document.removeEventListener("touchstart", onTouchStart, true);
+      document.removeEventListener("touchmove", onTouchMove, true);
+      document.removeEventListener("wheel", onWheel, true);
+    }
+
+    window.lockPageScroll = function () {
+      if (locks === 0) {
+        lockedY = window.scrollY || window.pageYOffset || 0;
+        var root = document.documentElement;
+        var gutter = window.innerWidth - root.clientWidth;
+        root.style.setProperty("--scroll-lock-top", "-" + lockedY + "px");
+        if (gutter > 0) root.style.paddingRight = gutter + "px";
+        root.classList.add("page-scroll-locked");
+        addListeners();
+      }
+      locks += 1;
+    };
+
+    window.unlockPageScroll = function () {
+      if (locks === 0) return;
+      locks -= 1;
+      if (locks > 0) return;
+      var root = document.documentElement;
+      root.classList.remove("page-scroll-locked");
+      root.style.removeProperty("--scroll-lock-top");
+      root.style.paddingRight = "";
+      removeListeners();
+      window.scrollTo(0, lockedY);
+    };
+  })();
+
   var root = document.querySelector("[data-preferences-root]");
   if (!root) return;
 

@@ -24,6 +24,7 @@
     document.body.classList.add("archived-projects-open");
     openButton.setAttribute("aria-expanded", "true");
     isOpen = true;
+    if (typeof lockPageScroll === "function") lockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
 
     var closeButton = modal.querySelector(".archived-projects-modal__close");
@@ -37,6 +38,7 @@
     document.body.classList.remove("archived-projects-open");
     openButton.setAttribute("aria-expanded", "false");
     isOpen = false;
+    if (typeof unlockPageScroll === "function") unlockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
 
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();

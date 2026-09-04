@@ -2,6 +2,7 @@
 (function () {
   "use strict";
 
+  var VIDEO_SRC = "assets/erhu/always-with-me-performance.mov";
   var openButton = document.getElementById("erhu-wiki-open");
   var modal = document.getElementById("erhu-wiki-modal");
   var body = document.getElementById("erhu-wiki-body");
@@ -9,6 +10,9 @@
 
   var lastFocus = null;
   var isOpen = false;
+  var videoEl = null;
+  var videoStash = null;
+  var preloadStarted = false;
 
   function activeLanguage() {
     return document.documentElement.getAttribute("data-language") || "en";
@@ -21,6 +25,79 @@
     return el;
   }
 
+  function ensureStash() {
+    if (videoStash && videoStash.isConnected) return videoStash;
+    videoStash = document.createElement("div");
+    videoStash.className = "erhu-video-stash";
+    videoStash.setAttribute("aria-hidden", "true");
+    document.body.appendChild(videoStash);
+    return videoStash;
+  }
+
+  function ensureVideo(label) {
+    if (!videoEl) {
+      videoEl = document.createElement("video");
+      videoEl.className = "erhu-wiki__video";
+      videoEl.controls = true;
+      videoEl.playsInline = true;
+      videoEl.setAttribute("playsinline", "");
+      videoEl.setAttribute("webkit-playsinline", "");
+      videoEl.preload = "auto";
+      var sourceEl = document.createElement("source");
+      sourceEl.src = VIDEO_SRC;
+      videoEl.appendChild(sourceEl);
+    }
+    if (label) videoEl.setAttribute("aria-label", label);
+    return videoEl;
+  }
+
+  function stashVideo() {
+    if (!videoEl) return;
+    ensureStash().appendChild(videoEl);
+  }
+
+  function kickVideoLoad() {
+    if (!videoEl) return;
+    videoEl.preload = "auto";
+    if (videoEl.readyState >= 2) return;
+    if (videoEl.networkState === 2) return;
+    try {
+      videoEl.load();
+    } catch (_) {}
+  }
+
+  function canSilentPreload() {
+    var conn =
+      navigator.connection ||
+      navigator.mozConnection ||
+      navigator.webkitConnection;
+    if (!conn) return true;
+    if (conn.saveData) return false;
+    var type = String(conn.effectiveType || "");
+    return type !== "slow-2g" && type !== "2g";
+  }
+
+  function startSilentPreload() {
+    if (preloadStarted) return;
+    if (!canSilentPreload()) return;
+    preloadStarted = true;
+    ensureVideo();
+    if (!isOpen) stashVideo();
+    kickVideoLoad();
+  }
+
+  function scheduleSilentPreload() {
+    function run() {
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(startSilentPreload, { timeout: 2000 });
+      } else {
+        window.setTimeout(startSilentPreload, 600);
+      }
+    }
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run, { once: true });
+  }
+
   function render(lang) {
     var copy = ERHU_WIKI[lang] || ERHU_WIKI.en;
     var title = document.getElementById("erhu-wiki-title");
@@ -30,6 +107,8 @@
     if (eyebrow) eyebrow.textContent = copy.eyebrow;
     if (close) close.setAttribute("aria-label", copy.close);
 
+    var video = ensureVideo(copy.videoTitle);
+    if (video.parentNode) video.parentNode.removeChild(video);
     body.replaceChildren();
 
     var intro = document.createElement("div");
@@ -68,17 +147,8 @@
     media.className = "erhu-wiki__media";
     media.appendChild(text("h3", "erhu-wiki__heading", copy.videoTitle));
     media.appendChild(text("p", "erhu-wiki__paragraph", copy.videoIntro));
-    var video = document.createElement("video");
-    video.className = "erhu-wiki__video";
-    video.controls = true;
-    video.preload = "metadata";
-    video.playsInline = true;
-    video.setAttribute("aria-label", copy.videoTitle);
-    var sourceEl = document.createElement("source");
-    sourceEl.src = "assets/erhu/always-with-me-performance.mov";
-    video.appendChild(sourceEl);
-    video.load();
     media.appendChild(video);
+    kickVideoLoad();
     media.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
     body.appendChild(media);
   }
@@ -96,6 +166,7 @@
     document.body.classList.add("erhu-modal-open");
     openButton.setAttribute("aria-expanded", "true");
     isOpen = true;
+    if (typeof lockPageScroll === "function") lockPageScroll();
     if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
     modal.querySelector(".erhu-modal__close").focus();
@@ -103,17 +174,18 @@
 
   function close() {
     if (!isOpen) return;
-    var video = modal.querySelector("video");
-    if (video) {
-      video.pause();
+    if (videoEl) {
+      videoEl.pause();
       try {
-        video.currentTime = 0;
+        videoEl.currentTime = 0;
       } catch (_) {}
+      stashVideo();
     }
     modal.hidden = true;
     document.body.classList.remove("erhu-modal-open");
     openButton.setAttribute("aria-expanded", "false");
     isOpen = false;
+    if (typeof unlockPageScroll === "function") unlockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
   }
@@ -121,6 +193,7 @@
   window.renderErhuWiki = render;
   openButton.setAttribute("aria-expanded", "false");
   openButton.addEventListener("click", open);
+  scheduleSilentPreload();
   modal.querySelectorAll("[data-erhu-close]").forEach(function (el) {
     el.addEventListener("click", close);
   });

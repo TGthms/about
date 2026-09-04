@@ -283,12 +283,14 @@
       if (typeof closeControlsPanel === "function") closeControlsPanel();
       modalGen += 1;
       var gen = modalGen;
+      var wasOpen = isOpen;
       isOpen = true;
       lastFocus = document.activeElement;
       modal.hidden = false;
       modal.classList.remove("is-shown");
       document.body.classList.add("qr-modal-open");
       openBtn.setAttribute("aria-expanded", "true");
+      if (!wasOpen && typeof lockPageScroll === "function") lockPageScroll();
       if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
       if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
       requestAnimationFrame(function () {
@@ -311,6 +313,7 @@
       isOpen = false;
       modal.classList.remove("is-shown");
       openBtn.setAttribute("aria-expanded", "false");
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
       var closeMs = prefersReducedMotion() ? 0 : 240;
       window.setTimeout(function () {
         if (gen !== modalGen) return;
