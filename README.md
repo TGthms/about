@@ -19,7 +19,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Erhu interest card with a responsive, localized wiki dialog, museum image, and performance video
-- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Privacy last updated 1 September 2026; Terms last updated 26 August 2026)
+- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Privacy last updated 5 September 2026; Terms last updated 26 August 2026)
 
 ## Files
 
@@ -37,6 +37,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/image-loader.js` | Sequential raster loading (`data-src`) and sliding “Loading...” label |
 | `public/apple-touch-icon.png` | iOS home-screen icon (180×180) |
 | `public/sitemap.xml` | Search-engine sitemap |
+| `public/robots.txt` | Crawler allow list + sitemap pointer |
 | `public/js/archived-projects.js` | Archived project shelf dialog behavior and focus management |
 | `public/js/erhu.js` / `public/js/erhu-content.js` | Erhu wiki dialog behavior and localized content |
 | `public/js/legal.js` | Legal rendering |

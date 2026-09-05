@@ -53,6 +53,7 @@
 
   function stashVideo() {
     if (!videoEl) return;
+    videoEl.tabIndex = -1;
     ensureStash().appendChild(videoEl);
   }
 
@@ -147,6 +148,7 @@
     media.className = "erhu-wiki__media";
     media.appendChild(text("h3", "erhu-wiki__heading", copy.videoTitle));
     media.appendChild(text("p", "erhu-wiki__paragraph", copy.videoIntro));
+    video.removeAttribute("tabindex");
     media.appendChild(video);
     kickVideoLoad();
     media.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
@@ -160,6 +162,7 @@
   }
 
   function open() {
+    if (isOpen) return;
     lastFocus = document.activeElement;
     render(activeLanguage());
     modal.hidden = false;

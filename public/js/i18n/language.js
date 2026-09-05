@@ -237,7 +237,7 @@ function updateSocialCard(pack) {
 
   if (isWeChat) {
     // Valid focusable control without navigation (no empty href)
-    card.setAttribute("href", "#wechat");
+    card.setAttribute("href", "#");
     card.removeAttribute("target");
     card.removeAttribute("rel");
     card.setAttribute("role", "button");

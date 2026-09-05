@@ -36,7 +36,7 @@
   --accent: #c45c3e;
   --accent-text: #9a3f28;
   --accent-soft: rgba(154, 63, 40, 0.14);
-  --on-accent: #f3eee4; /* paper text on darker terracotta fill */ */
+  --on-accent: #f3eee4; /* paper text on darker terracotta fill */
   --shadow: 3px 3px 0 #12100e;
   --shadow-hover: 5px 5px 0 #12100e;
   --focus: 0 0 0 3px var(--bg), 0 0 0 5px var(--accent);
@@ -955,6 +955,7 @@ html[data-theme="dark"] .hero__name {
   transition: transform var(--dur) var(--ease-out);
   display: flex;
 }
+.scroll-cue.is-settled:active,
 .scroll-cue:active {
   transform: scale(0.97);
   box-shadow: 2px 2px 0 var(--line);
@@ -1214,10 +1215,11 @@ html.js .about__body:not(.is-ready) { opacity: 0; }
     transform var(--dur) var(--ease-out),
     box-shadow var(--dur) var(--ease-out);
 }
-.archived-projects-trigger:hover {
+.archived-projects-trigger.is-settled:hover {
   transform: translate3d(0, calc(var(--lift) * -1), 0);
   box-shadow: var(--shadow-hover);
 }
+.archived-projects-trigger.is-settled:active,
 .archived-projects-trigger:active {
   transform: scale(0.99);
   box-shadow: 2px 2px 0 var(--line);
@@ -1353,7 +1355,7 @@ body.archived-projects-open { overflow: hidden; }
   box-shadow: var(--shadow);
   border-radius: var(--radius);
   padding: var(--space-4);
-  overflow: hidden;
+  overflow: visible;
   transition: transform var(--dur) var(--ease-out);
 }
 @media (min-width: 720px) {
@@ -1737,6 +1739,9 @@ html.js .link-card__icon--image img.is-img-ready {
   gap: var(--space-2);
   overflow: visible;
 }
+.link-grid > li {
+  overflow: visible;
+}
 @media (min-width: 560px) {
   .link-grid { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 }
@@ -2069,6 +2074,7 @@ html[data-theme="dark"] .github-hover {
   position: relative;
   z-index: 1;
   width: min(100%, 900px);
+  max-height: min(86vh, 860px);
   max-height: min(86svh, 860px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -2149,6 +2155,7 @@ body.erhu-modal-open { overflow: hidden; }
 @media (max-width: 680px) {
   .erhu-modal__panel {
     width: 100%;
+    max-height: min(86vh, 860px);
     max-height: min(86svh, 860px);
     padding: 18px 16px;
   }
@@ -2176,7 +2183,10 @@ body.erhu-modal-open { overflow: hidden; }
   transform: translate3d(0, 0, 0);
 }
 .reveal.is-settled {
+  /* none, not 0,0,0: a leftover transform makes WebKit clip child box-shadows */
+  transform: none;
   will-change: auto;
+  overflow: visible;
   transition: transform var(--dur) var(--ease-out);
   transition-delay: 0ms;
 }
@@ -2530,6 +2540,7 @@ html[data-theme="dark"] .duolingo-card__img--dark { display: block; }
   position: relative;
   z-index: 1;
   width: min(100%, 420px);
+  max-height: min(86vh, 920px);
   max-height: min(86svh, 920px);
   overflow: auto;
   -webkit-overflow-scrolling: touch;

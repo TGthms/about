@@ -19,6 +19,7 @@
   }
 
   function open() {
+    if (isOpen) return;
     lastFocus = document.activeElement;
     modal.hidden = false;
     document.body.classList.add("archived-projects-open");

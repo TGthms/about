@@ -2,10 +2,13 @@
  * Tim G Personal Hub - Controls.
  * Split from the former monolithic i18n.js module.
  */
+var controlsSheetGen = 0;
+
 /**
  * Close mobile preferences bottom sheet immediately (no exit animation).
  */
 function closeControlsPanel() {
+  controlsSheetGen += 1;
   const cluster = document.querySelector("[data-controls]");
   const trigger = document.getElementById("controls-trigger");
   const panel = document.getElementById("controls-panel");
@@ -36,6 +39,7 @@ function closeControlsPanel() {
   }
   document.body.classList.remove("controls-open");
   if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
+  if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
 }
 
 /**
@@ -81,7 +85,7 @@ function initControlsPanel() {
     panel.setAttribute("data-default-role", panel.getAttribute("role") || "region");
   }
 
-  var sheetGen = 0;
+  /* controlsSheetGen is shared with closeControlsPanel so QR-open can cancel in-flight open */
   /* Live sheet offset (px). Positive = dragged down toward dismiss. */
   var sheetY = 0;
   var springRaf = 0;
@@ -185,7 +189,7 @@ function initControlsPanel() {
   }
 
   function syncForViewport() {
-    sheetGen += 1;
+    controlsSheetGen += 1;
     resetSheetInlineStyles();
     panel.classList.remove("is-raised");
     if (backdrop) backdrop.classList.remove("is-visible");
@@ -208,12 +212,13 @@ function initControlsPanel() {
       setSheetDialogMode(false);
     }
     if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
+    if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
   }
 
   function setOpen(open) {
     if (isDesktopControls()) return;
-    sheetGen += 1;
-    var gen = sheetGen;
+    controlsSheetGen += 1;
+    var gen = controlsSheetGen;
     var wasOpen = document.body.classList.contains("controls-open");
 
     cluster.classList.toggle("is-open", open);
@@ -221,6 +226,8 @@ function initControlsPanel() {
     document.body.classList.toggle("controls-open", open);
     if (open && !wasOpen && typeof lockPageScroll === "function") lockPageScroll();
     if (!open && wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
+    if (open && !wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, true);
+    if (!open && wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
 
     if (open) {
       lastFocus = document.activeElement;
@@ -234,7 +241,7 @@ function initControlsPanel() {
       resetSheetInlineStyles();
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          if (gen !== sheetGen) return;
+          if (gen !== controlsSheetGen) return;
           panel.classList.add("is-raised");
           if (backdrop) backdrop.classList.add("is-visible");
           focusSheet();
@@ -264,7 +271,7 @@ function initControlsPanel() {
     }
 
     window.setTimeout(function () {
-      if (gen !== sheetGen) return;
+      if (gen !== controlsSheetGen) return;
       panel.hidden = true;
       resetSheetInlineStyles();
       if (backdrop) backdrop.hidden = true;
@@ -274,12 +281,13 @@ function initControlsPanel() {
 
   /** Finalize after drag-dismiss animation (panel already off-screen). */
   function finishDragClose() {
-    sheetGen += 1;
+    controlsSheetGen += 1;
     var wasOpen = document.body.classList.contains("controls-open");
     cluster.classList.remove("is-open");
     trigger.setAttribute("aria-expanded", "false");
     document.body.classList.remove("controls-open");
     if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
+    if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
     setSheetDialogMode(false);
     panel.classList.remove("is-raised", "is-dragging");
     panel.hidden = true;
@@ -403,7 +411,7 @@ function initControlsPanel() {
       panel.classList.remove("is-dragging");
 
       var reduce = prefersSheetReduceMotion();
-      var gen = sheetGen;
+      var gen = controlsSheetGen;
       var pos = sheetY;
       var vel = velocityPxMs || 0;
       var lastT = performance.now();
@@ -429,7 +437,7 @@ function initControlsPanel() {
       }
 
       function frame(now) {
-        if (gen !== sheetGen) {
+        if (gen !== controlsSheetGen) {
           springRaf = 0;
           return;
         }
@@ -540,14 +548,14 @@ function initControlsPanel() {
           backdrop.classList.remove("is-visible");
           backdrop.style.transition = "opacity 0.22s ease-out";
         }
-        var gen = sheetGen;
+        var gen = controlsSheetGen;
         var pos = y;
         var vel = Math.max(v, reduce ? 1.2 : 0.55); /* px/ms */
         var lastT = performance.now();
         var startT = lastT;
 
         function dismissFrame(now) {
-          if (gen !== sheetGen) {
+          if (gen !== controlsSheetGen) {
             springRaf = 0;
             return;
           }
