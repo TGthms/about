@@ -59,6 +59,7 @@
   function locale() {
     var lang = document.documentElement.getAttribute("data-language") || "en";
     if (lang === "zh") return "zh-Hans";
+    if (lang === "zh-Hant") return "zh-Hant";
     if (lang === "ja") return "ja";
     if (lang === "es") return "es";
     return "en";

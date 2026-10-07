@@ -23,5 +23,6 @@ THE SOFTWARE.
 
 Scope: this license covers the source code in this repository (HTML, CSS,
 and JavaScript under `public/`, excluding `public/assets/`). Photographs,
-video, and other media under `public/assets/`, `public/og-image.png`, and
-`public/favicon.svg` are licensed separately — see LICENSE-CONTENT.md.
+video, and other media under `public/assets/`, `public/og-image.png`,
+`public/og-image.svg`, and `public/favicon.svg` are licensed separately — see
+LICENSE-CONTENT.md.

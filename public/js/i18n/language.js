@@ -244,7 +244,7 @@ function updateSocialCard(pack) {
     card.setAttribute("tabindex", "0");
     card.setAttribute(
       "aria-label",
-      (social.label || "微信") + ": " + (social.sub || "realTimGong") + " — 点击复制"
+      (social.label || "微信") + ": " + (social.sub || "realTimGong") + " — " + (social.copyHint || "点击复制")
     );
     card.classList.add("link-card--copy");
   } else {
@@ -262,6 +262,7 @@ const LANGUAGE_ANNOUNCEMENTS = {
   en: "Language changed to",
   es: "Idioma cambiado a",
   zh: "语言已切换为",
+  "zh-Hant": "語言已切換為",
   ja: "言語を変更しました：",
 };
 
@@ -276,7 +277,7 @@ function applyLanguage(lang) {
   const isLegalPage = document.body && document.body.classList.contains("legal-page");
 
   const htmlLang =
-    resolved === "zh" ? "zh-Hans" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
+    resolved === "zh" ? "zh-Hans" : resolved === "zh-Hant" ? "zh-Hant" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
   document.documentElement.lang = htmlLang;
   document.documentElement.setAttribute("data-language", resolved);
 
@@ -306,7 +307,7 @@ function applyLanguage(lang) {
   applyProjectHostMode(resolved);
 
   if (pack.meta) {
-    const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", ja: "ja_JP" };
+    const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", "zh-Hant": "zh_TW", ja: "ja_JP" };
     const ogLocale = document.querySelector('meta[property="og:locale"]');
     if (ogLocale) ogLocale.setAttribute("content", localeMap[resolved] || "en_US");
 

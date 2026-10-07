@@ -58,7 +58,7 @@
     var doc = documentFor(resolved);
     var ui = uiFor(resolved);
     var htmlLang =
-      resolved === "zh" ? "zh-Hans" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
+      resolved === "zh" ? "zh-Hans" : resolved === "zh-Hant" ? "zh-Hant" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
 
     document.documentElement.lang = htmlLang;
     document.title = doc.metaTitle;
@@ -71,6 +71,7 @@
       en: "en_US",
       es: "es_ES",
       zh: "zh_CN",
+      "zh-Hant": "zh_TW",
       ja: "ja_JP",
     }[resolved] || "en_US");
 

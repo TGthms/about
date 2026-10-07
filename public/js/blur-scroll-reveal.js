@@ -31,7 +31,7 @@
   }
 
   function isCjk(language) {
-    return language === "zh" || language === "ja";
+    return language === "zh" || language === "zh-Hant" || language === "ja";
   }
 
   function tokenize(text, language) {
@@ -39,7 +39,7 @@
     if (!trimmed) return [];
 
     if (isCjk(language) && typeof Intl !== "undefined" && typeof Intl.Segmenter === "function") {
-      var locale = language === "zh" ? "zh-Hans" : "ja";
+      var locale = language === "zh" ? "zh-Hans" : language === "zh-Hant" ? "zh-Hant" : "ja";
       var seg = new Intl.Segmenter(locale, { granularity: "word" });
       var out = [];
       var parts = seg.segment(trimmed);

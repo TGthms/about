@@ -10,10 +10,10 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 
 ## Features
 
-- English, Español, 中文, 日本語
+- English, Español, 简体中文, 繁體中文, 日本語
 - Light / dark mode (system default, session override)
-- Projects: Kit, Travel Gallery (featured), USA Travel Guide, Japan Travel Guide, and duskline, with Folio, Nimbus, and Kiln available in an archived-project shelf
-- Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Chinese shows both CTAs
+- Projects: duskline, Kit, Travel Gallery (featured), USA Travel Guide, and Japan Travel Guide, with Folio, Nimbus, and Kiln available in an archived-project shelf
+- Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Simplified and Traditional Chinese show both CTAs
 - Hero name glows in letter by letter; about copy sharpens from blur as it scrolls into view
 - GitHub link card: hover (or keyboard focus) opens a contribution calendar for TGthms (profile and calendar data load on that first interaction)
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
@@ -43,7 +43,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/legal.js` | Legal rendering |
 | `public/js/legal/` | Legal UI, privacy, and terms content split by responsibility |
 | `public/assets/` | Project previews, Duolingo QR assets, and erhu media |
-| `public/og-image.png` | Social preview (1200×630) |
+| `public/og-image.png` / `public/og-image.svg` | Social preview graphics (original SVG artwork; the PNG is referenced by page metadata) |
 | `public/favicon.svg` | Tab icon |
 
 Repository documentation and licensing stay outside `public/`, so the deployment artifact contains only intentional site files.
@@ -60,4 +60,4 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 ## License
 
 - Code (`public/` HTML/CSS/JS, excluding `public/assets/`): [MIT License](LICENSE)
-- Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
+- Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/og-image.svg`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)

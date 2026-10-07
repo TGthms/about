@@ -29,3 +29,11 @@ window.LEGAL_UI = {
     "related": "関連文書"
   }
 };
+
+window.LEGAL_UI["zh-Hant"] = {
+  "back": "返回首頁",
+  "onThisPage": "本頁目錄",
+  "privacyLink": "隱私政策",
+  "related": "相關文件",
+  "termsLink": "使用條款"
+};

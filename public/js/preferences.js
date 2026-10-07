@@ -220,7 +220,15 @@
                     <span class="lang-picker__check" aria-hidden="true">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </span>
-                    <span class="lang-picker__option-label">中文</span>
+                    <span class="lang-picker__option-label">简体中文</span>
+                  </button>
+                </li>
+                <li role="presentation">
+                  <button type="button" class="lang-picker__option" role="option" data-lang="zh-Hant" aria-selected="false">
+                    <span class="lang-picker__check" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="lang-picker__option-label">繁體中文</span>
                   </button>
                 </li>
                 <li role="presentation">

@@ -53,16 +53,6 @@
   if (typeof initBlurScrollReveal === "function") initBlurScrollReveal();
   if (typeof initGithubCard === "function") initGithubCard();
 
-  /* Put the personal utility first in both visual and keyboard order. */
-  var projectStack = document.querySelector(".featured-stack");
-  var kitCard = projectStack && projectStack.querySelector('[data-project="kit"]');
-  var galleryCard = projectStack && projectStack.querySelector('[data-project="usa-gallery"]');
-  var dusklineCard = projectStack && projectStack.querySelector('[data-project="duskline"]');
-  if (projectStack && galleryCard && dusklineCard) {
-    projectStack.insertBefore(dusklineCard, galleryCard.nextElementSibling);
-  }
-  if (projectStack && kitCard) projectStack.insertBefore(kitCard, projectStack.firstElementChild);
-
   if (typeof initImageLoaders === "function") initImageLoaders();
 
   /* ---------- Scroll entrance ---------- */
@@ -162,10 +152,17 @@
   if (socialCard) {
     var copyTimer = 0;
 
+    function copiedLabel() {
+      var lang = document.documentElement.getAttribute("data-language") || "en";
+      var pack = typeof TRANSLATIONS === "object" ? TRANSLATIONS[lang] : null;
+      var social = pack && pack.links && pack.links.social;
+      return (social && social.copySuccess) || (lang === "zh-Hant" ? "已複製" : "已复制");
+    }
+
     function weChatId() {
       var sub = socialCard.querySelector(".link-card__sub");
       var text = sub && sub.textContent ? sub.textContent.trim() : "";
-      if (!text || text === "已复制" || text === "Copied") return WECHAT_ID;
+      if (!text || text === copiedLabel() || text === "已复制" || text === "已複製" || text === "Copied") return WECHAT_ID;
       return text;
     }
 
@@ -196,7 +193,7 @@
 
       function showCopied() {
         socialCard.classList.add("is-copied");
-        if (sub) sub.textContent = "已复制";
+        if (sub) sub.textContent = copiedLabel();
         if (copyTimer) window.clearTimeout(copyTimer);
         copyTimer = window.setTimeout(function () {
           socialCard.classList.remove("is-copied");

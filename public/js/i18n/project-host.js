@@ -32,7 +32,7 @@ function setStoredProjectHost(value) {
 }
 
 function isDualProjectLinks(lang) {
-  return lang === "zh";
+  return lang === "zh" || lang === "zh-Hant";
 }
 
 /**
@@ -186,7 +186,11 @@ function initProjectHost() {
   if (!switchers.length) {
     /* Still apply URLs if project cards exist without the control */
     applyProjectHostMode(
-      document.documentElement.lang === "zh-Hans" ? "zh" : "en"
+      document.documentElement.lang === "zh-Hans"
+        ? "zh"
+        : document.documentElement.lang === "zh-Hant"
+          ? "zh-Hant"
+          : "en"
     );
     return;
   }

@@ -632,6 +632,163 @@ const TRANSLATIONS = {
   },
 };
 
+TRANSLATIONS["zh-Hant"] = {
+  "a11y": {
+    "displayPrefs": "顯示",
+    "loading": "載入中",
+    "scrollAbout": "捲動至關於區塊",
+    "selectLanguage": "語言",
+    "siteControls": "偏好設定",
+    "themeDark": "深色模式",
+    "themeLight": "淺色模式",
+    "themeToggle": "切換淺色或深色主題"
+  },
+  "about": {
+    "label": "關於",
+    "links": {
+      "build": "動手做東西",
+      "erhu": "拉二胡",
+      "photo": "捕捉瞬間"
+    },
+    "p1": "我是舊金山灣區的一名高中生，喜歡{build}、{photo}、{erhu}和乒乓球。無論是專案、新體驗，還是學英語，我總想創造、發現一點新的東西。",
+    "p2": "在學業與專案之外，詩篇 23 讓我在忙碌的日子裡保持踏實，也提醒我什麼最重要。",
+    "title": "一點自我介紹"
+  },
+  "footer": {
+    "built": "個人主頁",
+    "contact": "聯絡：",
+    "legalNav": "法律資訊",
+    "privacy": "隱私政策",
+    "signoff": "謝謝你的到訪。",
+    "terms": "使用條款",
+    "verse": "因為神賜給我們不是膽怯的心，乃是剛強、仁愛、謹守的心。",
+    "verseReference": "— 提摩太后書 1:7"
+  },
+  "hero": {
+    "eyebrow": "Hi — 歡迎",
+    "scroll": "向下瀏覽",
+    "tagline": "舊金山灣區"
+  },
+  "host": {
+    "backup": "備用",
+    "cloudflare": "Cloudflare",
+    "github": "GitHub",
+    "label": "專案線路",
+    "main": "主線",
+    "select": "選擇專案線路"
+  },
+  "interests": {
+    "bilingual": {
+      "desc": "流利的中文普通話與英語",
+      "title": "雙語"
+    },
+    "erhu": {
+      "desc": "傳統兩弦樂器",
+      "learnMore": "探索二胡 · 查看我的演奏",
+      "title": "二胡"
+    },
+    "label": "興趣特長",
+    "photo": {
+      "desc": "尋找光線、構圖與安靜的瞬間",
+      "title": "攝影"
+    },
+    "tech": {
+      "desc": "一些實用有趣的小專案",
+      "title": "科技"
+    },
+    "title": "我的愛好與特長...",
+    "travel": {
+      "desc": "探索地方、文化與開放的道路",
+      "title": "旅行"
+    },
+    "tt": {
+      "desc": "快節奏的回合對抗，友好而充滿樂趣的競技",
+      "title": "乒乓球"
+    }
+  },
+  "links": {
+    "archived": {
+      "close": "關閉已歸檔專案",
+      "eyebrow": "安靜的一角",
+      "open": "輕點以查看",
+      "title": "已歸檔專案"
+    },
+    "connect": {
+      "label": "連結",
+      "title": "如何找到我 & 友情連結"
+    },
+    "duolingo": {
+      "close": "關閉",
+      "enlarge": "查看完整二維碼",
+      "enlargeShort": "放大",
+      "hint": "在多鄰國 App 中掃描二維碼關注我",
+      "label": "多鄰國",
+      "modalTitle": "多鄰國二維碼",
+      "profile": "查看個人檔案",
+      "qrAlt": "Tim G 的多鄰國二維碼，使用者名 @AAPL.TimGong"
+    },
+    "duskline": {
+      "desc": "天氣，一目瞭然。遍及世界每一處。",
+      "title": "duskline"
+    },
+    "featured": "推薦",
+    "folio": {
+      "desc": "僅在本地運行的 macOS PDF 工具箱 — 無需帳戶，無需上傳。",
+      "title": "Folio"
+    },
+    "github": "GitHub",
+    "githubCard": {
+      "contributions": "{year} 年共 {count} 次貢獻",
+      "day": "{date}：{count} 次",
+      "loading": "正在載入貢獻…"
+    },
+    "japanTravelGuide": {
+      "desc": "一份關於日本值得一去之地的指南 — 小型網頁專案",
+      "title": "日本旅行指南"
+    },
+    "kiln": {
+      "desc": "原生 macOS 轉換器：文件與單位。",
+      "title": "Kiln"
+    },
+    "kit": {
+      "desc": "日常工具，盡在裝置端運行 — 力保隱私安全，這很Kit。",
+      "title": "Kit"
+    },
+    "madeByGrok": "由 Grok 製作",
+    "nimbus": {
+      "desc": "原生 macOS 天氣應用，畫面電影感，資料來自 Open-Meteo。",
+      "title": "Nimbus"
+    },
+    "open": "開啟專案",
+    "project": "專案",
+    "projects": {
+      "label": "作品",
+      "title": "一些小專案"
+    },
+    "social": {
+      "href": null,
+      "label": "微信",
+      "mode": "wechat",
+      "sub": "realTimGong",
+      "copyHint": "點擊複製",
+      "copySuccess": "已複製"
+    },
+    "travelGuide": {
+      "desc": "一份精心製作的指南 — 小型網頁專案",
+      "title": "美國旅行指南"
+    },
+    "usaGallery": {
+      "desc": "美國旅行指南的配套相簿",
+      "title": "旅行相簿"
+    }
+  },
+  "meta": {
+    "description": "Tim G — 舊金山灣區高中生。喜歡做專案、攝影、拉二胡，也喜歡旅行。",
+    "title": "Tim G — 個人主頁"
+  },
+  "skip": "跳到主要內容"
+};
+
 /** Map BCP 47 / browser codes → our language keys */
 const LANG_ALIASES = {
   en: "en",
@@ -639,14 +796,24 @@ const LANG_ALIASES = {
   zh: "zh",
   "zh-cn": "zh",
   "zh-hans": "zh",
+  "zh-chs": "zh",
   "zh-sg": "zh",
-  "zh-tw": "zh", // Simplified UI text; still use zh pack
+  "zh-hans-cn": "zh",
+  // Browser Chinese locale hints default to Simplified; Traditional is a saved manual choice.
   "zh-hant": "zh",
+  "zh-cht": "zh",
+  "zh-tw": "zh",
+  "zh-hk": "zh",
+  "zh-mo": "zh",
+  "zh-hant-sg": "zh",
+  "zh-hant-tw": "zh",
+  "zh-hant-hk": "zh",
+  "zh-hant-mo": "zh",
   ja: "ja",
   "ja-jp": "ja",
 };
 
-const SUPPORTED_LANGS = ["en", "es", "zh", "ja"];
+const SUPPORTED_LANGS = ["en", "es", "zh", "zh-Hant", "ja"];
 const STORAGE_KEY = "timg-lang";
 const THEME_LEGACY_KEY = "timg-theme";
 const THEME_SESSION_KEY = "timg-theme-session";
@@ -659,6 +826,7 @@ const DEFAULT_PROJECT_HOST = HOST_CLOUDFLARE;
 const LANG_OPTIONS = [
   { code: "en", label: "English" },
   { code: "es", label: "Español" },
-  { code: "zh", label: "中文" },
+  { code: "zh", label: "简体中文" },
+  { code: "zh-Hant", label: "繁體中文" },
   { code: "ja", label: "日本語" },
 ];

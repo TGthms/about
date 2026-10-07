@@ -46,7 +46,7 @@
   function loaderLabel() {
     var lang = document.documentElement.getAttribute("data-language") || "en";
     var word = loadingWord();
-    if (lang === "zh" || lang === "ja") return word;
+    if (lang === "zh" || lang === "zh-Hant" || lang === "ja") return word;
     if (word.slice(-3) !== "...") return word + "...";
     return word;
   }
@@ -54,7 +54,7 @@
   function applyLoaderLabel(loader) {
     var lang = document.documentElement.getAttribute("data-language") || "en";
     var label = loaderLabel();
-    var unit = lang === "zh" || lang === "ja" ? "em" : "ch";
+    var unit = lang === "zh" || lang === "zh-Hant" || lang === "ja" ? "em" : "ch";
     loader.setAttribute("data-label", label);
     loader.style.setProperty("--loader-shift", String(label.length) + unit);
   }
