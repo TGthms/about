@@ -4,8 +4,7 @@
  */
 /* -------------------------------------------------------------------------- */
 /* Project host — Cloudflare (main) / GitHub (backup)                          */
-/* en/es/ja: single CTA, preference in settings (localStorage)                 */
-/* zh: both lines visible on each project card; settings control hidden        */
+/* Every language uses one CTA selected by the saved host preference.          */
 /* -------------------------------------------------------------------------- */
 
 function isValidProjectHost(value) {
@@ -29,10 +28,6 @@ function setStoredProjectHost(value) {
   } catch (_) {
     /* ignore */
   }
-}
-
-function isDualProjectLinks(lang) {
-  return lang === "zh" || lang === "zh-Hant";
 }
 
 /**
@@ -80,14 +75,11 @@ function syncHostSwitcher(host) {
   var preferred = isValidProjectHost(host) ? host : getStoredProjectHost();
   document.documentElement.setAttribute("data-project-host", preferred);
 
-  var dual =
-    document.documentElement.getAttribute("data-project-links") === "dual";
-
   document.querySelectorAll(".host-option[data-host]").forEach(function (btn) {
     var on = btn.getAttribute("data-host") === preferred;
     btn.classList.toggle("is-selected", on);
     btn.setAttribute("aria-checked", on ? "true" : "false");
-    if (dual || !isHostPlacementActive(btn)) {
+    if (!isHostPlacementActive(btn)) {
       btn.setAttribute("tabindex", "-1");
     } else {
       btn.setAttribute("tabindex", on ? "0" : "-1");
@@ -95,78 +87,44 @@ function syncHostSwitcher(host) {
   });
 }
 
-/**
- * Dual vs single presentation + host control visibility.
- * Call whenever language changes (and on init).
- */
-function applyProjectHostMode(lang) {
-  var dual = isDualProjectLinks(lang);
-  document.documentElement.setAttribute(
-    "data-project-links",
-    dual ? "dual" : "single"
-  );
+/** Apply the same host preference control in every language. */
+function applyProjectHostMode() {
+  document.documentElement.setAttribute("data-project-links", "single");
 
   document.querySelectorAll("[data-host-pref]").forEach(function (hostSection) {
-    hostSection.hidden = dual;
-    hostSection.setAttribute("aria-hidden", dual ? "true" : "false");
+    hostSection.hidden = false;
+    hostSection.setAttribute("aria-hidden", "false");
   });
 
-  /* Prevent focusing hidden targets (display:none is not enough for all ATs) */
+  /* Keep only the selected-host card link in the tab order. */
   document.querySelectorAll("[data-project]").forEach(function (card) {
-    var repoOnly = card.getAttribute("data-project-kind") === "repo";
     var single = card.querySelector("[data-project-single]");
     var lines = card.querySelector("[data-project-lines]");
     if (single) {
-      if (dual && !repoOnly) {
-        single.setAttribute("tabindex", "-1");
-        single.setAttribute("aria-hidden", "true");
-      } else {
-        single.removeAttribute("tabindex");
-        single.removeAttribute("aria-hidden");
-      }
+      single.removeAttribute("tabindex");
+      single.removeAttribute("aria-hidden");
     }
     if (lines) {
-      lines.setAttribute("aria-hidden", dual ? "false" : "true");
+      lines.setAttribute("aria-hidden", "true");
       lines.querySelectorAll("a").forEach(function (a) {
-        if (dual) {
-          a.removeAttribute("tabindex");
-          a.removeAttribute("aria-hidden");
-        } else {
-          a.setAttribute("tabindex", "-1");
-          a.setAttribute("aria-hidden", "true");
-        }
+        a.setAttribute("tabindex", "-1");
+        a.setAttribute("aria-hidden", "true");
       });
     }
   });
 
-  /* Dual mode still sets stable hrefs; single mode uses preferred host */
   var preferred = getStoredProjectHost();
-  /* data-project-links must be set before syncHostSwitcher (tabindex) */
   syncHostSwitcher(preferred);
   applyProjectUrls(preferred);
-
-  /* Dual lines: richer accessible names (line + project title) */
   document.querySelectorAll("[data-project]").forEach(function (card) {
-    var titleEl = card.querySelector(".featured-card__title");
-    var title = titleEl && titleEl.textContent ? titleEl.textContent.trim() : "";
     card.querySelectorAll("[data-project-line]").forEach(function (line) {
-      if (!dual) {
-        line.removeAttribute("aria-label");
-        return;
-      }
-      var kicker = line.querySelector(".project-line__kicker");
-      var name = line.querySelector(".project-line__name");
-      var parts = [];
-      if (kicker && kicker.textContent) parts.push(kicker.textContent.trim());
-      if (name && name.textContent) parts.push(name.textContent.trim());
-      if (title) parts.push(title);
-      if (parts.length) line.setAttribute("aria-label", parts.join(" — "));
+      line.removeAttribute("aria-label");
     });
   });
 }
 
 /**
- * Persist + apply a host choice (ignored while dual-mode Chinese is active).
+ * Persist + apply a host choice.
  */
 function setProjectHost(host) {
   if (!isValidProjectHost(host)) return getStoredProjectHost();
@@ -185,13 +143,7 @@ function initProjectHost() {
   var switchers = document.querySelectorAll(".host-switcher");
   if (!switchers.length) {
     /* Still apply URLs if project cards exist without the control */
-    applyProjectHostMode(
-      document.documentElement.lang === "zh-Hans"
-        ? "zh"
-        : document.documentElement.lang === "zh-Hant"
-          ? "zh-Hant"
-          : "en"
-    );
+    applyProjectHostMode();
     return;
   }
 

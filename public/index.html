@@ -41,6 +41,10 @@
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
 
   <script type="application/ld+json">
   {
@@ -87,7 +91,7 @@
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
 
-        /* Host preference + dual-link language guess (refined by i18n modules) */
+        /* Project host preference */
         var host = "cloudflare";
         try {
           var savedHost = localStorage.getItem("timg-project-host");
@@ -95,14 +99,7 @@
         } catch (e4) {}
         root.setAttribute("data-project-host", host);
 
-        var langGuess = "en";
-        try {
-          var savedLang = localStorage.getItem("timg-lang");
-          if (savedLang === "en" || savedLang === "es" || savedLang === "zh" || savedLang === "zh-Hant" || savedLang === "ja") {
-            langGuess = savedLang;
-          }
-        } catch (e5) {}
-        root.setAttribute("data-project-links", langGuess === "zh" || langGuess === "zh-Hant" ? "dual" : "single");
+        root.setAttribute("data-project-links", "single");
 
         root.classList.add("js");
         setTimeout(function () {
@@ -123,12 +120,18 @@
     </style>
   </noscript>
 </head>
-<body>
+<body class="home-page">
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 
   <!-- Top controls: language + theme -->
   <header class="top-bar" role="banner" data-page-root>
     <div class="top-bar__inner">
+      <a class="site-signature" href="#hero" aria-label="Tim G">tg<span aria-hidden="true">.</span></a>
+      <nav class="site-nav" aria-label="Sections" data-i18n-aria="a11y.sections">
+        <a href="#about" data-i18n="about.label">About</a>
+        <a href="#projects" data-i18n="links.projects.label">Projects</a>
+        <a href="#connect" data-i18n="links.connect.label">Elsewhere</a>
+      </nav>
       <div data-preferences-root></div>
     </div>
   </header>
@@ -137,34 +140,28 @@
     <!-- 1. Hero -->
     <section class="hero" id="hero" aria-labelledby="hero-name">
       <div class="container hero__inner">
-        <p class="hero__eyebrow reveal" data-i18n="hero.eyebrow">Hello — welcome</p>
-        <h1 id="hero-name" class="hero__name">
-          <span class="hero__name-text" aria-label="Tim G">
-            <span class="hero__char" style="--i: 0" aria-hidden="true">T</span><span class="hero__char" style="--i: 1" aria-hidden="true">i</span><span class="hero__char" style="--i: 2" aria-hidden="true">m</span><span class="hero__char" style="--i: 3" aria-hidden="true">&nbsp;</span><span class="hero__char" style="--i: 4" aria-hidden="true">G</span>
-          </span>
-        </h1>
-        <p class="hero__tagline reveal reveal-delay-2" data-i18n="hero.tagline">
-          High school student based in the San Francisco Bay Area
-        </p>
-        <a class="scroll-cue reveal reveal-delay-3" href="#about" data-i18n-aria="a11y.scrollAbout" aria-label="Scroll to about">
-          <span class="scroll-cue__label" data-i18n="hero.scroll">Scroll</span>
-          <span class="scroll-cue__icon" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </a>
+        <div class="hero__intro">
+          <p class="hero__eyebrow" data-i18n="hero.eyebrow">Hi, I'm</p>
+          <h1 id="hero-name" class="hero__name">Tim G<span class="hero__period" aria-hidden="true">.</span></h1>
+          <p class="hero__tagline" data-i18n="hero.tagline">High school student in the San Francisco Bay Area.</p>
+          <p class="hero__note" data-i18n="hero.note">I make websites, take photos, and play the erhu. This is where I keep a little of each.</p>
+        </div>
+        <aside class="hero__index" aria-label="Explore" data-i18n-aria="a11y.explore">
+          <a href="#footer"><span data-i18n="hero.contact">Contact</span><span aria-hidden="true">→</span></a>
+          <a href="#interest-erhu"><span data-i18n="interests.erhu.title">Erhu</span><span aria-hidden="true">→</span></a>
+          <a href="#projects"><span data-i18n="links.projects.label">Projects</span><span aria-hidden="true">→</span></a>
+        </aside>
       </div>
     </section>
 
     <!-- 2. About -->
     <section class="section about" id="about" aria-labelledby="about-heading">
       <div class="container">
-        <header class="section__header reveal">
+        <header class="section__header">
           <p class="section__label" data-i18n="about.label">About</p>
-          <h2 id="about-heading" class="section__title" data-i18n="about.title">A little about me</h2>
+          <h2 id="about-heading" class="section__title" data-i18n="about.title">A little more about me</h2>
         </header>
-        <div class="about__body" data-blur-reveal>
+        <div class="about__body" data-about-content>
           <p class="about__text" data-about-copy="p1">
             I'm a high school student in the Bay Area who loves <a class="about__link" href="#projects">building things</a>, <a class="about__link" href="#project-usa-gallery">capturing moments</a>, <a class="about__link" href="#interest-erhu">playing erhu</a>, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.
           </p>
@@ -178,12 +175,12 @@
     <!-- 3. Interests -->
     <section class="section interests" id="interests" aria-labelledby="interests-heading">
       <div class="container">
-        <header class="section__header reveal">
+        <header class="section__header">
           <p class="section__label" data-i18n="interests.label">Interests</p>
-          <h2 id="interests-heading" class="section__title" data-i18n="interests.title">What I care about</h2>
+          <h2 id="interests-heading" class="section__title" data-i18n="interests.title">Interests</h2>
         </header>
         <ul class="interests__grid" role="list">
-          <li class="interest-card reveal" style="--stagger: 0">
+          <li class="interest-card" style="--stagger: 0">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Bilingual / speech -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -195,7 +192,7 @@
             <h3 class="interest-card__title" data-i18n="interests.bilingual.title">Bilingual</h3>
             <p class="interest-card__desc" data-i18n="interests.bilingual.desc">Chinese-American — fluent in Mandarin Chinese and English</p>
           </li>
-          <li class="interest-card reveal" id="interest-erhu" style="--stagger: 1">
+          <li class="interest-card" id="interest-erhu" style="--stagger: 1">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Erhu-inspired abstract bow/string -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -209,7 +206,7 @@
             <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
             <button type="button" class="interest-card__learn" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false" data-i18n="interests.erhu.learnMore">Explore the erhu · see my performance</button>
           </li>
-          <li class="interest-card reveal" style="--stagger: 2">
+          <li class="interest-card" style="--stagger: 2">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Camera aperture -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -221,7 +218,7 @@
             <h3 class="interest-card__title" data-i18n="interests.photo.title">Photography</h3>
             <p class="interest-card__desc" data-i18n="interests.photo.desc">Finding light, frames, and quiet moments</p>
           </li>
-          <li class="interest-card reveal" style="--stagger: 3">
+          <li class="interest-card" style="--stagger: 3">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Globe / travel -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -233,7 +230,7 @@
             <h3 class="interest-card__title" data-i18n="interests.travel.title">Travel</h3>
             <p class="interest-card__desc" data-i18n="interests.travel.desc">Exploring places, cultures, and open roads</p>
           </li>
-          <li class="interest-card reveal" style="--stagger: 4">
+          <li class="interest-card" style="--stagger: 4">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Code / build -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -243,7 +240,7 @@
             <h3 class="interest-card__title" data-i18n="interests.tech.title">Tech</h3>
             <p class="interest-card__desc" data-i18n="interests.tech.desc">Building things that work — and feel good to use</p>
           </li>
-          <li class="interest-card reveal" style="--stagger: 5">
+          <li class="interest-card" style="--stagger: 5">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Table tennis paddle abstract -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -262,13 +259,13 @@
     <!-- 4. Projects -->
     <section class="section projects" id="projects" aria-labelledby="projects-heading">
       <div class="container">
-        <header class="section__header section__header--projects reveal">
+        <header class="section__header section__header--projects">
           <div class="section__header-copy">
             <p class="section__label" data-i18n="links.projects.label">Projects</p>
             <h2 id="projects-heading" class="section__title" data-i18n="links.projects.title">Things I've built</h2>
           </div>
 
-          <!-- Main / Backup line — desktop section header. Mobile uses settings sheet. Hidden when zh dual. -->
+          <!-- Main / Backup line — desktop section header. Mobile uses settings sheet. -->
           <div class="project-host project-host--section" data-host-pref data-host-placement="section">
             <p class="project-host__label" id="project-host-label-section" data-i18n="host.label">Project links</p>
             <div
@@ -303,10 +300,10 @@
 
         <div class="featured-stack">
           <!--
-            Project cards: single CTA (en/es/ja, host from prefs) or dual lines (zh).
+            Project cards use one CTA, selected from the host preference.
             URLs live in data-url-cloudflare / data-url-github; applied by the project-host module.
           -->
-          <article class="featured-card featured-card--duskline reveal" data-project="duskline"
+          <article class="featured-card featured-card--duskline" data-project="duskline"
             data-url-cloudflare="https://dusklineweather.pages.dev"
             data-url-github="https://tgthms.github.io/duskline/">
             <a
@@ -326,7 +323,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="featured-card__lines" data-project-lines>
@@ -342,7 +339,7 @@
                     <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
                 <a
@@ -357,7 +354,7 @@
                     <span class="project-line__name" data-i18n="host.github">GitHub</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
               </div>
@@ -367,7 +364,7 @@
             </div>
           </article>
 
-          <article class="featured-card featured-card--kit reveal" data-project="kit"
+          <article class="featured-card featured-card--kit" data-project="kit"
             data-url-cloudflare="https://trykit.pages.dev/"
             data-url-github="https://tgthms.github.io/kit/">
             <a
@@ -387,7 +384,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="featured-card__lines" data-project-lines>
@@ -403,7 +400,7 @@
                     <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
                 <a
@@ -418,7 +415,7 @@
                     <span class="project-line__name" data-i18n="host.github">GitHub</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
               </div>
@@ -428,7 +425,7 @@
             </div>
           </article>
 
-          <article class="featured-card reveal reveal-delay-1" id="project-usa-gallery" data-project="usa-gallery"
+          <article class="featured-card" id="project-usa-gallery" data-project="usa-gallery"
             data-url-cloudflare="https://travelusa.pages.dev/gallery/"
             data-url-github="https://tgthms.github.io/usa-travel-guide/gallery.html">
             <a
@@ -448,7 +445,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="featured-card__lines" data-project-lines>
@@ -464,7 +461,7 @@
                     <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
                 <a
@@ -479,7 +476,7 @@
                     <span class="project-line__name" data-i18n="host.github">GitHub</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
               </div>
@@ -489,7 +486,7 @@
             </div>
           </article>
 
-          <article class="featured-card reveal reveal-delay-1" data-project="usa"
+          <article class="featured-card" data-project="usa"
             data-url-cloudflare="https://travelusa.pages.dev/"
             data-url-github="https://tgthms.github.io/usa-travel-guide/">
             <a
@@ -509,7 +506,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="featured-card__lines" data-project-lines>
@@ -525,7 +522,7 @@
                     <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
                 <a
@@ -540,7 +537,7 @@
                     <span class="project-line__name" data-i18n="host.github">GitHub</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
               </div>
@@ -550,7 +547,7 @@
             </div>
           </article>
 
-          <article class="featured-card featured-card--japan reveal reveal-delay-1" data-project="japan"
+          <article class="featured-card featured-card--japan" data-project="japan"
             data-url-cloudflare="https://traveljapan.pages.dev/"
             data-url-github="https://tgthms.github.io/japan-travel-guide/">
             <a
@@ -570,7 +567,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
               <div class="featured-card__lines" data-project-lines>
@@ -586,7 +583,7 @@
                     <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
                 <a
@@ -601,7 +598,7 @@
                     <span class="project-line__name" data-i18n="host.github">GitHub</span>
                   </span>
                   <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
               </div>
@@ -614,7 +611,7 @@
           <div class="archived-projects-divider" aria-hidden="true"></div>
           <button
             type="button"
-            class="archived-projects-trigger reveal"
+            class="archived-projects-trigger"
             id="archived-projects-open"
             aria-haspopup="dialog"
             aria-controls="archived-projects-modal"
@@ -653,7 +650,7 @@
               </div>
               <div class="archived-projects-modal__grid">
 
-          <article class="featured-card featured-card--folio reveal reveal-delay-2" data-project="folio" data-project-kind="repo">
+          <article class="featured-card featured-card--folio" data-project="folio" data-project-kind="repo">
             <a
               class="featured-card__hit"
               data-project-single
@@ -671,7 +668,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
             </div>
@@ -687,7 +684,7 @@
             </div>
           </article>
 
-          <article class="featured-card featured-card--nimbus reveal reveal-delay-2" data-project="nimbus" data-project-kind="repo">
+          <article class="featured-card featured-card--nimbus" data-project="nimbus" data-project-kind="repo">
             <a
               class="featured-card__hit"
               data-project-single
@@ -705,7 +702,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
             </div>
@@ -721,7 +718,7 @@
             </div>
           </article>
 
-          <article class="featured-card featured-card--kiln reveal reveal-delay-2" data-project="kiln" data-project-kind="repo">
+          <article class="featured-card featured-card--kiln" data-project="kiln" data-project-kind="repo">
             <a
               class="featured-card__hit"
               data-project-single
@@ -739,7 +736,7 @@
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
             </div>
@@ -763,13 +760,13 @@
     <!-- 5. Social / elsewhere -->
     <section class="section connect" id="connect" aria-labelledby="connect-heading">
       <div class="container">
-        <header class="section__header reveal">
+        <header class="section__header">
           <p class="section__label" data-i18n="links.connect.label">Elsewhere</p>
-          <h2 id="connect-heading" class="section__title" data-i18n="links.connect.title">Where to find me &amp; Links</h2>
+          <h2 id="connect-heading" class="section__title" data-i18n="links.connect.title">Elsewhere</h2>
         </header>
 
         <ul class="link-grid" role="list">
-          <li class="reveal github-hover" data-github-card="TGthms" style="--stagger: 0">
+          <li class="github-hover" data-github-card="TGthms" style="--stagger: 0">
             <a class="link-card" href="https://github.com/TGthms" target="_blank" rel="noopener noreferrer">
               <div class="link-card__icon" aria-hidden="true">
                 <svg viewBox="0 0 32 32" width="28" height="28" fill="none">
@@ -787,7 +784,7 @@
               </span>
             </a>
           </li>
-          <li class="reveal" style="--stagger: 1">
+          <li class="" style="--stagger: 1">
             <!-- Instagram for most languages; WeChat ID when Chinese (swapped by language.js) -->
             <a
               class="link-card"
@@ -828,7 +825,7 @@
             </a>
           </li>
           <!-- Duolingo friend QR — full code visible; click QR for large view -->
-          <li class="link-grid__full reveal" style="--stagger: 2">
+          <li class="link-grid__full" style="--stagger: 2">
             <div class="duolingo-card">
               <div class="duolingo-card__body">
                 <div class="duolingo-card__header">
@@ -884,7 +881,7 @@
             </div>
           </li>
           <li class="link-grid__divider" aria-hidden="true"></li>
-          <li class="reveal link-grid__link-item" style="--stagger: 3">
+          <li class="link-grid__link-item" style="--stagger: 3">
             <a class="link-card" href="https://trivalleymarssociety.com" target="_blank" rel="noopener noreferrer">
               <div class="link-card__icon link-card__icon--image" aria-hidden="true">
                 <img data-src="assets/projects/tri-valley-mars-society.png" alt="" width="768" height="768" decoding="async" />
@@ -991,7 +988,7 @@
 
   <!-- 5. Footer -->
   <footer class="footer" id="footer" data-page-root>
-    <div class="container footer__inner reveal">
+    <div class="container footer__inner">
       <p class="footer__signoff" data-i18n="footer.signoff">Thanks for stopping by.</p>
       <blockquote class="footer__verse">
         <p data-i18n="footer.verse">For God has not given us the spirit of fear; but of power, and of love, and of a sound mind.</p>
@@ -1019,12 +1016,12 @@
   <script src="js/i18n/core.js"></script>
   <script src="js/i18n/theme.js"></script>
   <script src="js/i18n/controls.js"></script>
-  <script src="js/i18n/project-host.js"></script>
+  <script src="js/i18n/project-host.js?v=2"></script>
   <script src="js/i18n/language.js"></script>
   <script src="js/erhu-content.js"></script>
   <script src="js/erhu.js"></script>
   <script src="js/archived-projects.js"></script>
-  <script src="js/blur-scroll-reveal.js"></script>
+  <script src="js/about.js"></script>
   <script src="js/github-card.js"></script>
   <script src="js/image-loader.js"></script>
   <script src="js/main.js"></script>

@@ -108,9 +108,7 @@ body {
   min-height: 100vh;
   min-height: 100svh;
   -webkit-font-smoothing: antialiased;
-  transition:
-    background-color 0.35s var(--ease-out),
-    color 0.35s var(--ease-out);
+  transition: background-color 0.12s linear;
 }
 
 html[data-theme="dark"] body {
@@ -252,6 +250,8 @@ button {
   box-shadow: 2px 2px 0 var(--line);
 }
 .controls-trigger[aria-expanded="true"] {
+  position: relative;
+  z-index: 91;
   background: var(--accent-text);
   color: var(--on-accent);
   border-color: var(--line);
@@ -614,7 +614,6 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
   Project host switcher (Main Cloudflare / Backup GitHub).
   - Mobile: settings sheet (.project-host--sheet), below theme
   - Desktop: Projects section header (.project-host--section)
-  - Chinese dual-link: both hidden via [hidden]
 */
 .project-host {
   display: flex;
@@ -1066,7 +1065,6 @@ html[data-theme="dark"] .hero__name {
   text-wrap: balance;
 }
 .about__body { max-width: 36rem; }
-html.js .about__body:not(.is-ready) { opacity: 0; }
 .about__text {
   color: var(--mute);
   font-size: 1.1rem;
@@ -1373,9 +1371,6 @@ body.archived-projects-open { overflow: hidden; }
   border-radius: inherit;
   /* Keep hit in tab order; label via aria-labelledby on the element */
 }
-html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__hit {
-  display: none !important;
-}
 html[data-project-links="single"] .featured-card:has(.featured-card__hit:focus-visible) {
   outline: none;
   box-shadow: var(--focus);
@@ -1387,11 +1382,6 @@ html[data-project-links="single"] .featured-card:has(.featured-card__hit:focus-v
   }
   html[data-project-links="single"] .featured-card.is-settled:hover .featured-card__cta--single svg {
     transform: translate3d(3px, 0, 0);
-  }
-  html[data-project-links="dual"] .featured-card.is-settled:hover {
-    /* Dual: card is not a single target */
-    transform: none;
-    box-shadow: var(--shadow);
   }
 }
 .featured-card__cta svg,
@@ -1434,18 +1424,6 @@ html[data-project-links="single"] .featured-card:has(.featured-card__hit:active)
   z-index: 1;
   pointer-events: none; /* clicks pass to hit in single mode */
 }
-html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__content {
-  pointer-events: auto;
-}
-html[data-project-links="dual"] .featured-card[data-project-kind="repo"] .featured-card__content {
-  pointer-events: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  html[data-project-links="dual"] .featured-card[data-project-kind="repo"].is-settled:hover {
-    transform: translate3d(0, calc(var(--lift-strong) * -1), 0);
-    box-shadow: var(--shadow-hover);
-  }
-}
 .featured-card__title {
   font-size: 1.35rem;
   font-weight: 800;
@@ -1473,32 +1451,9 @@ html[data-project-links="dual"] .featured-card[data-project-kind="repo"] .featur
   z-index: 1;
 }
 
-/*
-  Project link modes (set on <html>):
-  - single (en/es/ja): one CTA + host preference
-  - dual (zh): Main (Cloudflare) left + Backup (GitHub) right
-  Default (no attr / single): hide dual lines so no flash of both.
-*/
+/* One project link follows the selected host in every language. */
 .featured-card__lines {
   display: none;
-}
-html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__cta--single {
-  display: none !important;
-}
-html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__lines {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 2px;
-  position: relative;
-  z-index: 3;
-  pointer-events: auto;
-}
-/* Very narrow: keep two columns if possible; allow wrap only when necessary */
-@media (max-width: 360px) {
-  html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .featured-card__lines {
-    grid-template-columns: 1fr;
-  }
 }
 
 .project-line {
@@ -1640,6 +1595,18 @@ html[data-project-links="dual"] .featured-card:not([data-project-kind="repo"]) .
   opacity: 1;
   transition: opacity 0.4s var(--ease-out);
 }
+.img-load.is-img-error .img-loader {
+  display: block;
+  animation: none;
+  text-shadow: none;
+  background: none;
+  color: var(--mute);
+  font-family: var(--font);
+  font-size: 0.875rem;
+  white-space: normal;
+  text-align: center;
+}
+.img-load.is-img-error > img[data-load-failed="1"] { opacity: 0; }
 html.js .link-card__icon--image img:not(.is-img-ready) { opacity: 0; }
 html.js .link-card__icon--image img.is-img-ready {
   opacity: 1;
@@ -1735,15 +1702,16 @@ html.js .link-card__icon--image img.is-img-ready {
 /* Links */
 .link-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
   overflow: visible;
 }
 .link-grid > li {
+  min-width: 0;
   overflow: visible;
 }
 @media (min-width: 560px) {
-  .link-grid { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  .link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
 }
 .link-card {
   display: flex;
@@ -1814,7 +1782,7 @@ a.link-card:active,
 }
 .link-card__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .link-card__label { font-weight: 750; letter-spacing: -0.01em; }
-.link-card__sub { font-size: 0.85rem; color: var(--faint); font-family: var(--font-mono); }
+.link-card__sub { font-size: 0.85rem; color: var(--faint); font-family: var(--font-mono); overflow-wrap: anywhere; }
 .link-card__arrow { color: var(--faint); flex-shrink: 0; }
 .social-icon[hidden],
 .social-arrow--external[hidden],

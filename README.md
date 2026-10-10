@@ -6,15 +6,15 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 
 - Plain HTML / CSS / JS 
 - GitHub Pages (`.github/workflows/static.yml` validates and deploys `public/`)
-- Craft Brutal design: cream paper / warm charcoal, hard borders, offset shadows, terracotta accent
+- Personal editorial design: cream paper / warm charcoal, serif headings, open layouts, and terracotta links
 
 ## Features
 
 - English, Español, 简体中文, 繁體中文, 日本語
 - Light / dark mode (system default, session override)
-- Projects: duskline, Kit, Travel Gallery (featured), USA Travel Guide, and Japan Travel Guide, with Folio, Nimbus, and Kiln available in an archived-project shelf
-- Dual hosts for each project (Cloudflare main / GitHub backup). English, Spanish, and Japanese pick a line in settings; Simplified and Traditional Chinese show both CTAs
-- Hero name glows in letter by letter; about copy sharpens from blur as it scrolls into view
+- Projects: duskline, Kit, Travel Gallery, USA Travel Guide, and Japan Travel Guide, with Folio, Nimbus, and Kiln available in an archived-project shelf
+- Dual hosts for each project (Cloudflare main / GitHub backup). Every language uses the selected host preference
+- Compact introduction and section navigation; all home content is readable immediately
 - GitHub link card: hover (or keyboard focus) opens a contribution calendar for TGthms (profile and calendar data load on that first interaction)
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
@@ -27,12 +27,13 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 |------|------|
 | `public/index.html` | Home page |
 | `public/privacy.html` / `public/terms.html` | Legal pages |
-| `public/css/styles.css` | Site chrome + home |
+| `public/css/styles.css` | Shared chrome, components, and dialogs |
+| `public/css/home.css` | Home-page editorial layout and responsive styles |
 | `public/css/legal.css` | Legal layout |
 | `public/js/preferences.js` | Centralized preferences markup |
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
-| `public/js/blur-scroll-reveal.js` | Scroll-linked about-text blur reveal |
+| `public/js/about.js` | Localized about paragraphs and links |
 | `public/js/github-card.js` | GitHub contribution calendar popover |
 | `public/js/image-loader.js` | Sequential raster loading (`data-src`) and sliding “Loading...” label |
 | `public/apple-touch-icon.png` | iOS home-screen icon (180×180) |
@@ -61,3 +62,7 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 - Code (`public/` HTML/CSS/JS, excluding `public/assets/`): [MIT License](LICENSE)
 - Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/og-image.svg`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
+
+## Local checks
+
+Run `node --test tests/*.test.cjs` for image-error/timeout recovery, clipboard language-switch races, section navigation, and home translation coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.

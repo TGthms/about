@@ -4,6 +4,12 @@
  */
 var controlsSheetGen = 0;
 
+function restoreControlsTrigger(cluster, trigger) {
+  if (!cluster || !trigger) return;
+  if (trigger.parentElement !== cluster) cluster.insertBefore(trigger, cluster.firstChild);
+  trigger.classList.remove("is-sheet-open");
+}
+
 /**
  * Close mobile preferences bottom sheet immediately (no exit animation).
  */
@@ -16,6 +22,7 @@ function closeControlsPanel() {
   var wasOpen = document.body.classList.contains("controls-open");
   if (cluster) cluster.classList.remove("is-open");
   if (trigger) trigger.setAttribute("aria-expanded", "false");
+  restoreControlsTrigger(cluster, trigger);
   if (panel && !isDesktopControls()) {
     panel.classList.remove("is-raised", "is-dragging");
     panel.hidden = true;
@@ -62,8 +69,9 @@ function initControlsPanel() {
   }
 
   /*
-   * Mobile: hoist backdrop + panel to <body> so position:fixed is viewport-true
-   * (not trapped inside the short fixed .top-bar). Desktop: keep in cluster.
+   * Mobile: hoist the sheet layers to <body> so fixed positioning is viewport-true.
+   * The open trigger also moves to <body> so it can stay above the dimming backdrop.
+   * Desktop keeps all controls in the top bar.
    */
   function syncSheetLayerParent() {
     if (!document.body) return;
@@ -194,6 +202,7 @@ function initControlsPanel() {
     panel.classList.remove("is-raised");
     if (backdrop) backdrop.classList.remove("is-visible");
     syncSheetLayerParent();
+    restoreControlsTrigger(cluster, trigger);
     var wasOpen = document.body.classList.contains("controls-open");
 
     if (isDesktopControls()) {
@@ -223,6 +232,12 @@ function initControlsPanel() {
 
     cluster.classList.toggle("is-open", open);
     trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) {
+      document.body.appendChild(trigger);
+      trigger.classList.add("is-sheet-open");
+    } else {
+      restoreControlsTrigger(cluster, trigger);
+    }
     document.body.classList.toggle("controls-open", open);
     if (open && !wasOpen && typeof lockPageScroll === "function") lockPageScroll();
     if (!open && wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
@@ -285,6 +300,7 @@ function initControlsPanel() {
     var wasOpen = document.body.classList.contains("controls-open");
     cluster.classList.remove("is-open");
     trigger.setAttribute("aria-expanded", "false");
+    restoreControlsTrigger(cluster, trigger);
     document.body.classList.remove("controls-open");
     if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
     if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);

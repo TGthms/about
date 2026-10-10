@@ -218,6 +218,7 @@ function updateSocialCard(pack) {
   if (!card || !pack.links || !pack.links.social) return;
 
   const social = pack.links.social;
+  card.dispatchEvent(new Event("social-card-reset"));
   const isWeChat = social.mode === "wechat" || !social.href;
 
   card.setAttribute("data-mode", isWeChat ? "wechat" : "instagram");
@@ -304,7 +305,7 @@ function applyLanguage(lang) {
   });
 
   updateSocialCard(pack);
-  applyProjectHostMode(resolved);
+  applyProjectHostMode();
 
   if (pack.meta) {
     const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", "zh-Hant": "zh_TW", ja: "ja_JP" };

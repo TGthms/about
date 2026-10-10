@@ -53,7 +53,9 @@
 
   function applyLoaderLabel(loader) {
     var lang = document.documentElement.getAttribute("data-language") || "en";
-    var label = loaderLabel();
+    var errors = { en: "Image unavailable", es: "Imagen no disponible", zh: "图片暂不可用", "zh-Hant": "圖片暫不可用", ja: "画像を表示できません" };
+    var failed = loader.parentElement.classList.contains("is-img-error");
+    var label = failed ? errors[lang] || errors.en : loaderLabel();
     var unit = lang === "zh" || lang === "zh-Hant" || lang === "ja" ? "em" : "ch";
     loader.setAttribute("data-label", label);
     loader.style.setProperty("--loader-shift", String(label.length) + unit);
@@ -84,6 +86,7 @@
     for (var i = 0; i < imgs.length; i++) {
       var img = imgs[i];
       if (isHidden(img)) continue;
+      if (img.getAttribute("data-load-failed") === "1") continue;
       if (!img.getAttribute("src") || !img.complete || img.naturalWidth === 0) {
         return true;
       }
@@ -95,6 +98,10 @@
     if (!frame) return;
     if (!usesLabel(frame)) return;
     ensureLoader(frame);
+    var failed = Array.prototype.some.call(frame.querySelectorAll("img"), function (img) {
+      return !isHidden(img) && img.getAttribute("data-load-failed") === "1";
+    });
+    frame.classList.toggle("is-img-error", failed);
     if (visibleIncomplete(frame)) {
       frame.classList.add("img-load", "is-img-loading");
       frame.classList.remove("is-img-ready");
@@ -102,6 +109,7 @@
       frame.classList.add("img-load", "is-img-ready");
       frame.classList.remove("is-img-loading");
     }
+    applyLoaderLabel(frame.querySelector(".img-loader"));
   }
 
   function markImgReady(img) {
@@ -175,6 +183,11 @@
     }
 
     function afterBytes() {
+      img.removeAttribute("data-load-failed");
+      if (settled) {
+        markImgReady(img);
+        return;
+      }
       if (typeof img.decode === "function" && img.naturalWidth > 0) {
         img.decode().then(finish, finish);
       } else {
@@ -182,15 +195,21 @@
       }
     }
 
+    function fail() {
+      img.setAttribute("data-load-failed", "1");
+      if (settled) setFrameState(frame);
+      else finish();
+    }
+
     if (!url) {
-      finish();
+      fail();
       return;
     }
 
     setFrameState(frame);
-    hangTimer = window.setTimeout(finish, 12000);
+    hangTimer = window.setTimeout(fail, 12000);
     img.addEventListener("load", afterBytes, { once: true });
-    img.addEventListener("error", finish, { once: true });
+    img.addEventListener("error", fail, { once: true });
     img.setAttribute("src", url);
     img.setAttribute("decoding", "async");
 

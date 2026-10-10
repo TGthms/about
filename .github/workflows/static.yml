@@ -31,6 +31,9 @@ jobs:
             node --check "$file"
           done < <(find public/js -type f -name '*.js' -print0)
 
+      - name: Check interaction regressions
+        run: node --test tests/*.test.cjs
+
       - name: Check HTML integrity
         shell: bash
         run: |
@@ -59,7 +62,7 @@ jobs:
                   for key in ("href", "src", "data-src"):
                       value = attributes.get(key, "")
                       if value and not value.startswith(("#", "http:", "https:", "mailto:", "javascript:")):
-                          self.local_refs.append(value.split("#", 1)[0])
+                          self.local_refs.append(value.split("#", 1)[0].split("?", 1)[0])
                   if tag == "a" and attributes.get("target") == "_blank":
                       rel = set(attributes.get("rel", "").split())
                       if not {"noopener", "noreferrer"}.issubset(rel):

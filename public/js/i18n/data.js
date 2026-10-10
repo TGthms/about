@@ -15,6 +15,8 @@ const TRANSLATIONS = {
     },
     skip: "Skip to content",
     a11y: {
+      sections: "Sections",
+      explore: "Explore",
       themeToggle: "Toggle light or dark theme",
       themeLight: "Light mode",
       themeDark: "Dark mode",
@@ -33,13 +35,15 @@ const TRANSLATIONS = {
       github: "GitHub",
     },
     hero: {
-      eyebrow: "Hello — welcome",
-      tagline: "High school student based in San Francisco Bay Area",
+      eyebrow: "Hi, I’m",
+      tagline: "High school student in the San Francisco Bay Area.",
+      note: "I make websites, take photos, and play the erhu. This is where I keep a little of each.",
+      contact: "Contact",
       scroll: "Scroll",
     },
     about: {
       label: "About",
-      title: "A little about me",
+      title: "A little more about me",
       p1: "I'm a high school student in the Bay Area who loves {build}, {photo}, {erhu}, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.",
       p2: "Outside of school and projects, Psalm 23 keeps me grounded through busy seasons and reminds me of what matters most.",
       links: {
@@ -50,7 +54,7 @@ const TRANSLATIONS = {
     },
     interests: {
       label: "Interests",
-      title: "What I care about",
+      title: "Interests",
       bilingual: {
         title: "Bilingual",
         desc: "Chinese-American — fluent in Mandarin Chinese and English",
@@ -84,7 +88,7 @@ const TRANSLATIONS = {
       },
       connect: {
         label: "Elsewhere",
-        title: "Where to find me & Links",
+        title: "Elsewhere",
       },
       featured: "Featured",
       project: "Project",
@@ -171,6 +175,8 @@ const TRANSLATIONS = {
     },
     skip: "Saltar al contenido",
     a11y: {
+      sections: "Secciones",
+      explore: "Explorar",
       themeToggle: "Cambiar entre tema claro y oscuro",
       themeLight: "Modo claro",
       themeDark: "Modo oscuro",
@@ -189,8 +195,10 @@ const TRANSLATIONS = {
       github: "GitHub",
     },
     hero: {
-      eyebrow: "Hola — bienvenido",
-      tagline: "Estudiante de secundaria en el Área de la Bahía de San Francisco",
+      eyebrow: "Hola, soy",
+      tagline: "Estudiante de secundaria en el área de la bahía de San Francisco.",
+      note: "Hago sitios web, tomo fotos y toco el erhu. Aquí reúno un poco de todo.",
+      contact: "Contacto",
       scroll: "Bajar",
     },
     about: {
@@ -327,6 +335,8 @@ const TRANSLATIONS = {
     },
     skip: "跳到主要内容",
     a11y: {
+      sections: "页面导航",
+      explore: "探索",
       themeToggle: "切换浅色或深色主题",
       themeLight: "浅色模式",
       themeDark: "深色模式",
@@ -345,8 +355,10 @@ const TRANSLATIONS = {
       github: "GitHub",
     },
     hero: {
-      eyebrow: "Hi — 欢迎",
-      tagline: "旧金山湾区",
+      eyebrow: "你好，我是",
+      tagline: "住在旧金山湾区的高中生。",
+      note: "我做网站、拍照，也拉二胡。这里收集着我的一些作品和日常兴趣。",
+      contact: "联系",
       scroll: "向下浏览",
     },
     about: {
@@ -483,6 +495,8 @@ const TRANSLATIONS = {
     },
     skip: "本文へスキップ",
     a11y: {
+      sections: "セクション",
+      explore: "見てみる",
       themeToggle: "ライトとダークを切り替え",
       themeLight: "ライトモード",
       themeDark: "ダークモード",
@@ -501,8 +515,10 @@ const TRANSLATIONS = {
       github: "GitHub",
     },
     hero: {
-      eyebrow: "こんにちは — ようこそ",
-      tagline: "サンフランシスコ・ベイエリア在住の高校生",
+      eyebrow: "こんにちは、",
+      tagline: "サンフランシスコ・ベイエリアの高校生です。",
+      note: "ウェブサイトを作ったり、写真を撮ったり、二胡を弾いたり。ここに少しずつまとめています。",
+      contact: "連絡先",
       scroll: "下へ",
     },
     about: {
@@ -634,6 +650,8 @@ const TRANSLATIONS = {
 
 TRANSLATIONS["zh-Hant"] = {
   "a11y": {
+    "sections": "頁面導覽",
+    "explore": "探索",
     "displayPrefs": "顯示",
     "loading": "載入中",
     "scrollAbout": "捲動至關於區塊",
@@ -665,9 +683,11 @@ TRANSLATIONS["zh-Hant"] = {
     "verseReference": "— 提摩太后書 1:7"
   },
   "hero": {
-    "eyebrow": "Hi — 歡迎",
+    "eyebrow": "你好，我是",
+    "contact": "聯絡",
+    "note": "我做網站、拍照，也拉二胡。這裡收集著我的一些作品和日常興趣。",
     "scroll": "向下瀏覽",
-    "tagline": "舊金山灣區"
+    "tagline": "住在舊金山灣區的高中生。"
   },
   "host": {
     "backup": "備用",
