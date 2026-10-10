@@ -1,3 +1,8 @@
+/* CJK display fonts — Noto Sans SC / Noto Serif SC (Simplified Chinese) and
+   Noto Sans JP / Noto Serif JP (Japanese). All SIL Open Font License 1.1,
+   served by Google Fonts with font-display: swap. */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap");
+
 /* Personal homepage: open layouts, quiet rules, and readable content. */
 @font-face {
   font-family: "Public Sans";
@@ -119,3 +124,97 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
 }
 
 .home-page .about { padding-top: 0; }
+
+/* ============ Per-language typography ============
+   The English design gives each project card its own typographic voice.
+   These rules mirror those personalities for CJK scripts, where Latin
+   fonts (Public Sans, Fraunces) have no glyphs. Selectors key off the
+   data-language attribute set on <html> by the i18n system. */
+
+/* ---- Simplified Chinese ---- */
+[data-language="zh"] .home-page {
+  --font-zh-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-zh-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+}
+/* Duskline: airy and open — CJK glyphs are wider, so tracking goes wider too */
+[data-language="zh"] .home-page .featured-card--duskline .featured-card__title {
+  font-family: var(--font-zh-sans);
+  letter-spacing: 0.16em;
+}
+/* Kit: crisp and technical */
+[data-language="zh"] .home-page .featured-card--kit .featured-card__title,
+[data-language="zh"] .home-page .featured-card--kit .featured-card__desc {
+  font-family: var(--font-zh-sans);
+  letter-spacing: 0.02em;
+}
+/* USA Gallery: confident grotesque */
+[data-language="zh"] .home-page #project-usa-gallery .featured-card__title {
+  font-family: var(--font-zh-sans);
+  letter-spacing: 0.04em;
+}
+/* USA project: editorial serif voice, mirrored in a Song-style serif */
+[data-language="zh"] .home-page [data-project="usa"] .featured-card__title {
+  font-family: var(--font-zh-serif);
+  letter-spacing: 0.02em;
+}
+/* Japan card: quiet competence */
+[data-language="zh"] .home-page .featured-card--japan .featured-card__title {
+  font-family: var(--font-zh-sans);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+/* Hero: the tight Latin tracking does nothing for hanzi — use weight instead */
+[data-language="zh"] .home-page .hero__name {
+  font-family: var(--font-zh-sans);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+[data-language="zh"] .home-page .hero__note {
+  font-family: var(--font-zh-sans);
+}
+
+/* ---- Japanese ---- */
+[data-language="ja"] .home-page {
+  --font-ja-sans: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-ja-serif: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+[data-language="ja"] .home-page .featured-card--duskline .featured-card__title {
+  font-family: var(--font-ja-sans);
+  letter-spacing: 0.14em;
+}
+[data-language="ja"] .home-page .featured-card--kit .featured-card__title,
+[data-language="ja"] .home-page .featured-card--kit .featured-card__desc {
+  font-family: var(--font-ja-sans);
+  letter-spacing: 0.02em;
+}
+[data-language="ja"] .home-page #project-usa-gallery .featured-card__title {
+  font-family: var(--font-ja-sans);
+  letter-spacing: 0.04em;
+}
+[data-language="ja"] .home-page [data-project="usa"] .featured-card__title {
+  font-family: var(--font-ja-serif);
+  letter-spacing: 0.02em;
+}
+[data-language="ja"] .home-page .featured-card--japan .featured-card__title {
+  font-family: var(--font-ja-sans);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+[data-language="ja"] .home-page .hero__name {
+  font-family: var(--font-ja-sans);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+[data-language="ja"] .home-page .hero__note {
+  font-family: var(--font-ja-sans);
+}
+
+/* ---- Spanish ---- */
+/* Latin script: Public Sans already covers it. Keep the English voices,
+   with slightly relaxed tracking — Spanish words run longer. */
+[data-language="es"] .home-page .featured-card--duskline .featured-card__title {
+  letter-spacing: 0.08em;
+}
+[data-language="es"] .home-page .hero__name {
+  letter-spacing: -0.04em;
+}
