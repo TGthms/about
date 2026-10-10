@@ -356,7 +356,7 @@ const TRANSLATIONS = {
     },
     hero: {
       eyebrow: "你好，我是",
-      tagline: "住在旧金山湾区的高中生。",
+      tagline: "位于旧金山湾区的高中生。",
       note: "我做网站、拍照，也拉二胡。这里收集着我的一些作品和日常兴趣。",
       contact: "联系",
       scroll: "向下浏览",
@@ -687,7 +687,7 @@ TRANSLATIONS["zh-Hant"] = {
     "contact": "聯絡",
     "note": "我做網站、拍照，也拉二胡。這裡收集著我的一些作品和日常興趣。",
     "scroll": "向下瀏覽",
-    "tagline": "住在舊金山灣區的高中生。"
+    "tagline": "位于舊金山灣區的高中生。"
   },
   "host": {
     "backup": "備用",
