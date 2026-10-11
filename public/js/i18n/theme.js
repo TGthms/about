@@ -59,7 +59,7 @@ function applyTheme(theme) {
 
   var btn = document.getElementById("theme-toggle");
   if (btn) {
-    btn.setAttribute("aria-pressed", resolved === "dark" ? "true" : "false");
+    btn.checked = resolved === "dark";
   }
 }
 
@@ -88,10 +88,7 @@ function initTheme() {
 
   var themeBtn = document.getElementById("theme-toggle");
   if (themeBtn) {
-    themeBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      toggleTheme();
-    });
+    themeBtn.addEventListener("change", toggleTheme);
   }
 
   if (!window.matchMedia) return;

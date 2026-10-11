@@ -218,3 +218,190 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
 [data-language="es"] .home-page .hero__name {
   letter-spacing: -0.04em;
 }
+
+/* Editorial system: one rhythm, quiet surfaces, and consistent utility type.
+   Scope to the homepage, including its dialogs; legal layouts stay independent. */
+html .home-page {
+  --rule: color-mix(in srgb, var(--ink) 16%, transparent);
+  --control-line: color-mix(in srgb, var(--ink) 32%, transparent);
+  --section-pad: clamp(48px, 6vw, 72px);
+  --radius: 4px;
+  --radius-sm: 4px;
+  background-image: none;
+}
+html[data-theme="dark"] .home-page {
+  background-image: none;
+  --rule: color-mix(in srgb, var(--ink) 15%, transparent);
+  --control-line: color-mix(in srgb, var(--ink) 30%, transparent);
+}
+/* Give adjacent sections a single interval instead of two stacked paddings. */
+.home-page .section { padding-block: 0 var(--section-pad); }
+.home-page .section > .container { padding-top: 28px; }
+.home-page .section__header { margin-bottom: 28px; }
+.home-page .about__text { line-height: 1.8; }
+.home-page .about__text:last-child { margin-bottom: 0; }
+.home-page .interest-card { border-radius: 0; }
+.home-page .featured-stack { gap: 40px 32px; }
+.home-page .featured-card__content { display: flex; flex: 1; flex-direction: column; align-items: flex-start; }
+.home-page .featured-card__cta { margin-top: auto; padding-top: 12px; }
+
+/* Project names retain their own identity; supporting copy shares one voice. */
+html .home-page .featured-card .featured-card__desc,
+html .home-page #project-usa-gallery .featured-card__desc {
+  font-family: var(--font);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--mute);
+}
+html .home-page :is(.featured-card__cta, .duolingo-card__profile, .qr-modal__profile,
+  .duolingo-card__expand, .host-option__kicker, .project-host__label, .controls-section__label) {
+  font-family: var(--font);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.home-page .featured-card__cta,
+.home-page .duolingo-card__profile { font-size: 0.875rem; }
+.home-page .project-host__label { color: var(--mute); font-size: 0.75rem; }
+.home-page .host-option__name { font-weight: 600; }
+.home-page .section__header--projects .host-option__kicker { font-size: 0.6875rem; letter-spacing: 0; line-height: 1.4; }
+.home-page .section__header--projects .host-option__name { font-size: 0.8125rem; line-height: 1.4; }
+
+/* Controls remain visibly interactive without the old offset shadows. */
+html .home-page :is(.controls-trigger, .lang-picker__trigger, .pref-btn, .host-option,
+  .section__header--projects .host-switcher, .interest-card__learn) {
+  border-color: var(--control-line);
+  border-width: 1px;
+  box-shadow: none;
+  background: transparent;
+}
+html .home-page :is(.controls-trigger, .lang-picker__trigger, .pref-btn, .host-option):hover {
+  background: var(--accent-soft);
+  box-shadow: none;
+  transform: none;
+}
+html .home-page .host-option.is-selected {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  box-shadow: none;
+}
+.home-page .section__header--projects .host-option + .host-option { border-left: 1px solid var(--control-line); }
+html .home-page .controls-trigger.is-sheet-open {
+  background: var(--accent-text);
+  color: var(--on-accent);
+}
+html .home-page :is(.controls-trigger, .lang-picker__trigger, .pref-btn, .host-option):focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+/* An inset focus ring cannot be clipped by the segmented control's wrapper. */
+.home-page .section__header--projects .host-option:focus-visible { outline-offset: -3px; }
+
+/* Project imagery and social links sit on the same paper/charcoal surface. */
+html .home-page :is(.featured-card, .link-card, .duolingo-card) {
+  background: transparent;
+  box-shadow: none;
+}
+html .home-page .featured-card__visual { border-color: var(--rule); box-shadow: none; }
+html .home-page :is(.link-card, .duolingo-card) {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 24px 0;
+}
+.home-page .link-grid { gap: 0 32px; }
+html .home-page :is(.link-card__icon, .duolingo-card__icon) {
+  border: 0;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  border-radius: 4px;
+}
+html .home-page .link-card__icon--image { background: #fff; }
+.home-page .link-card__label,
+.home-page .duolingo-card__label { font-weight: 600; }
+.home-page .link-card__sub,
+.home-page .duolingo-card__sub { font-family: var(--font); font-size: 0.875rem; }
+.home-page .duolingo-card { justify-content: space-between; }
+.home-page .duolingo-card__hint { font-size: 0.875rem; line-height: 1.6; font-weight: 400; }
+.home-page .link-grid__divider { display: none; }
+.home-page .archived-projects-divider { display: none; }
+html .home-page .archived-projects-trigger {
+  border: 0;
+  border-block: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 20px 0;
+  background: transparent;
+  box-shadow: none;
+}
+.home-page .archived-projects-trigger__title { font-size: 1.4rem; }
+html .home-page :is(.duolingo-card__frame, .qr-modal__frame) {
+  border: 1px solid var(--rule);
+  box-shadow: none;
+}
+/* Dialogs float gently; their internal borders use the same quiet rules. */
+html .home-page :is(.qr-modal__panel, .erhu-modal__panel, .archived-projects-modal__panel, .github-popover__card) {
+  border: 1px solid var(--rule);
+  box-shadow: 0 16px 64px rgb(0 0 0 / 18%);
+}
+html .home-page :is(.qr-modal__close, .erhu-modal__close, .archived-projects-modal__close) {
+  border: 1px solid var(--control-line);
+  box-shadow: none;
+}
+.home-page .footer { padding-top: 0; }
+.home-page .footer__inner { padding-top: 32px; }
+.home-page .footer__signoff { font: 400 1.5rem/1.4 var(--font-display); }
+
+@media (hover: hover) and (pointer: fine) {
+  html .home-page .link-card:hover { background: transparent; box-shadow: none; }
+  .home-page .link-card:hover .link-card__label { color: var(--accent-text); }
+  .home-page .featured-card:hover .featured-card__cta { text-decoration: underline; text-underline-offset: 4px; }
+}
+@media (max-width: 767px) {
+  .home-page .section > .container { padding-top: 24px; }
+  .home-page .section__header { margin-bottom: 24px; }
+  .home-page .about > .container { gap: 0; }
+}
+@media (max-width: 560px) {
+  .home-page .featured-stack { grid-template-columns: 1fr; gap: 32px; }
+}
+
+/* Carry the warm palette into language selection rather than system blue. */
+html .home-page .lang-picker__menu {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
+}
+html .home-page .lang-picker__option { color: var(--ink); }
+html .home-page .lang-picker__option:is(.is-selected, [aria-selected="true"]) {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+html .home-page .lang-picker__option:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: -2px;
+}
+@media (max-width: 767px) {
+  html .home-page .lang-picker__menu { box-shadow: none; }
+}
+
+/* Restore the framed treatment for the social cards and their separators. */
+html .home-page .link-card,
+html .home-page .duolingo-card {
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: 3px;
+  background: var(--bg-card);
+  padding: 24px;
+}
+.home-page .link-grid { gap: 24px; }
+.home-page .link-grid__divider { display: block; }
+html .home-page :is(.link-card__icon, .duolingo-card__icon) {
+  border: 1px solid color-mix(in srgb, var(--ink) 55%, transparent);
+  border-radius: 3px;
+}
+html .home-page .link-card__icon--image { background: #fff; }
+.home-page .duolingo-card { justify-content: flex-start; }
+html .home-page .duolingo-card__frame {
+  border: 1px solid color-mix(in srgb, var(--ink) 55%, transparent);
+}

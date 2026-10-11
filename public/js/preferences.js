@@ -246,15 +246,15 @@
           <div class="controls-section">
             <p class="controls-section__label" data-i18n="a11y.displayPrefs">Display</p>
             <div class="pref-switcher" role="group" aria-label="Display preferences" data-i18n-aria="a11y.displayPrefs">
-              <button
-                type="button"
-                class="pref-btn"
-                id="theme-toggle"
-                aria-pressed="false"
-                data-i18n-aria="a11y.themeToggle"
-                aria-label="Toggle light or dark theme"
-                title="Theme"
-              >
+              <label class="pref-btn" id="theme-toggle-wrap" title="Theme">
+                <input
+                  class="theme-toggle-input"
+                  type="checkbox"
+                  switch
+                  id="theme-toggle"
+                  data-i18n-aria="a11y.themeToggle"
+                  aria-label="Toggle light or dark theme"
+                />
                 <span class="pref-btn__icon pref-btn__icon--sun" aria-hidden="true">
                   <svg width="18" height="18" viewBox="0 0 16 16" fill="none" focusable="false">
                     <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
@@ -268,7 +268,7 @@
                 </span>
                 <span class="pref-btn__label pref-btn__label--light" data-i18n="a11y.themeLight">Light mode</span>
                 <span class="pref-btn__label pref-btn__label--dark" data-i18n="a11y.themeDark">Dark mode</span>
-              </button>
+              </label>
             </div>
           </div>
 

@@ -719,6 +719,22 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
   transform: scale(0.98);
   box-shadow: 1px 1px 0 var(--line);
 }
+#theme-toggle-wrap { position: relative; cursor: pointer; }
+.theme-toggle-input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+#theme-toggle-wrap:has(.theme-toggle-input:focus-visible) {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+
 .pref-btn__icon {
   display: flex;
   width: 22px;
@@ -732,14 +748,14 @@ html[data-theme="dark"] .lang-picker__option:focus-visible:not(.is-selected):not
 /* Icon + mobile label = destination mode (not current state) */
 .pref-btn__icon--moon { display: none; }
 .pref-btn__label--dark { display: none; }
-html[data-theme="light"] #theme-toggle .pref-btn__icon--sun { display: none; }
-html[data-theme="light"] #theme-toggle .pref-btn__icon--moon { display: flex; }
-html[data-theme="light"] #theme-toggle .pref-btn__label--light { display: none; }
-html[data-theme="light"] #theme-toggle .pref-btn__label--dark { display: inline; }
-html[data-theme="dark"] #theme-toggle .pref-btn__icon--sun { display: flex; }
-html[data-theme="dark"] #theme-toggle .pref-btn__icon--moon { display: none; }
-html[data-theme="dark"] #theme-toggle .pref-btn__label--light { display: inline; }
-html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
+html[data-theme="light"] #theme-toggle-wrap .pref-btn__icon--sun { display: none; }
+html[data-theme="light"] #theme-toggle-wrap .pref-btn__icon--moon { display: flex; }
+html[data-theme="light"] #theme-toggle-wrap .pref-btn__label--light { display: none; }
+html[data-theme="light"] #theme-toggle-wrap .pref-btn__label--dark { display: inline; }
+html[data-theme="dark"] #theme-toggle-wrap .pref-btn__icon--sun { display: flex; }
+html[data-theme="dark"] #theme-toggle-wrap .pref-btn__icon--moon { display: none; }
+html[data-theme="dark"] #theme-toggle-wrap .pref-btn__label--light { display: inline; }
+html[data-theme="dark"] #theme-toggle-wrap .pref-btn__label--dark { display: none; }
 
 /* Desktop controls */
 @media (min-width: 768px) {
@@ -831,10 +847,10 @@ html[data-theme="dark"] #theme-toggle .pref-btn__label--dark { display: none; }
   }
   /* Beat theme-specific label rules — desktop is icon-only */
   .pref-btn__label,
-  html[data-theme="light"] #theme-toggle .pref-btn__label--light,
-  html[data-theme="light"] #theme-toggle .pref-btn__label--dark,
-  html[data-theme="dark"] #theme-toggle .pref-btn__label--light,
-  html[data-theme="dark"] #theme-toggle .pref-btn__label--dark {
+  html[data-theme="light"] #theme-toggle-wrap .pref-btn__label--light,
+  html[data-theme="light"] #theme-toggle-wrap .pref-btn__label--dark,
+  html[data-theme="dark"] #theme-toggle-wrap .pref-btn__label--light,
+  html[data-theme="dark"] #theme-toggle-wrap .pref-btn__label--dark {
     display: none !important;
   }
   .pref-btn:hover {
