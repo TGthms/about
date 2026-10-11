@@ -164,17 +164,18 @@ function initControlsPanel() {
     return Array.prototype.slice
       .call(
         panel.querySelectorAll(
-          'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+          'button, a[href], input, select, textarea, [tabindex]'
         )
       )
       .filter(function (el) {
-        return !el.hidden && el.getAttribute("aria-hidden") !== "true";
+        return !el.disabled && el.tabIndex >= 0 && el.getClientRects().length > 0
+          && !el.closest("[inert], [aria-hidden='true']");
       });
   }
 
   function focusSheet() {
     var nodes = focusableInSheet();
-    var target = nodes[0] || panel;
+    var target = nodes.find(function (el) { return el.getAttribute("aria-selected") === "true"; }) || nodes[0] || panel;
     if (target === panel && !panel.hasAttribute("tabindex")) panel.setAttribute("tabindex", "-1");
     try {
       target.focus({ preventScroll: true });
@@ -230,6 +231,8 @@ function initControlsPanel() {
     var gen = controlsSheetGen;
     var wasOpen = document.body.classList.contains("controls-open");
 
+    /* Safari may not focus clicked buttons; the opener is the reliable return target. */
+    if (open) lastFocus = trigger;
     cluster.classList.toggle("is-open", open);
     trigger.setAttribute("aria-expanded", open ? "true" : "false");
     if (open) {
@@ -245,7 +248,6 @@ function initControlsPanel() {
     if (!open && wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
 
     if (open) {
-      lastFocus = document.activeElement;
       setSheetDialogMode(true);
       panel.hidden = false;
       if (backdrop) {
@@ -344,10 +346,15 @@ function initControlsPanel() {
 
     if (e.key !== "Tab") return;
     var nodes = focusableInSheet();
+    /* The visible close trigger lives outside the sheet to clear the backdrop. */
+    if (trigger.getClientRects().length) nodes.push(trigger);
     if (!nodes.length) return;
     var first = nodes[0];
     var last = nodes[nodes.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
+    if (!nodes.includes(document.activeElement)) {
+      e.preventDefault();
+      (e.shiftKey ? last : first).focus();
+    } else if (e.shiftKey && document.activeElement === first) {
       e.preventDefault();
       last.focus();
     } else if (!e.shiftKey && document.activeElement === last) {

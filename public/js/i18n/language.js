@@ -110,6 +110,11 @@ function initLanguageMenu(onSelect) {
     });
   });
 
+  /* Keyboard users can leave the dropdown without leaving it floating open. */
+  picker.addEventListener("focusout", function (e) {
+    if (isDesktopPicker() && !picker.contains(e.relatedTarget)) setMenuOpen(false);
+  });
+
   document.addEventListener("click", function (e) {
     if (!isDesktopPicker() || !isOpen()) return;
     if (picker.contains(e.target)) return;

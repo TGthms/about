@@ -14,7 +14,9 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Light / dark mode (system default, session override)
 - Projects: duskline, Kit, Travel Gallery, USA Travel Guide, and Japan Travel Guide, with Folio, Nimbus, and Kiln available in an archived-project shelf
 - Dual hosts for each project (Cloudflare main / GitHub backup). Every language uses the selected host preference
-- Compact introduction and section navigation; all home content is readable immediately
+- Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
+- Rounded project previews, a wide photography feature on desktop, and brief hover/press/dialog animations that respect reduced motion
+- Intentional native iOS tick haptics are preserved
 - GitHub link card: hover (or keyboard focus) opens a contribution calendar for TGthms (profile and calendar data load on that first interaction)
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
@@ -33,6 +35,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/preferences.js` | Centralized preferences markup |
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
+| `public/js/home-navigation.js` | Section indicator and responsive anchor offsets |
 | `public/js/about.js` | Localized about paragraphs and links |
 | `public/js/github-card.js` | GitHub contribution calendar popover |
 | `public/js/image-loader.js` | Sequential raster loading (`data-src`) and sliding “Loading...” label |
@@ -65,4 +68,4 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 ## Local checks
 
-Run `node --test tests/*.test.cjs` for image-error/timeout recovery, clipboard language-switch races, section navigation, and home translation coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
+Run `node --test tests/*.test.cjs` for image-error/timeout recovery, clipboard language-switch races, section navigation, preferences keyboard focus/return, and home translation coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
