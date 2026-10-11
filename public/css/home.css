@@ -405,3 +405,14 @@ html .home-page .link-card__icon--image { background: #fff; }
 html .home-page .duolingo-card__frame {
   border: 1px solid color-mix(in srgb, var(--ink) 55%, transparent);
 }
+/* iOS native-switch haptic overlays (see haptics.js).
+   Each interactive control gets an invisible native switch on top; the user's
+   physical tap lands on it so iOS plays its Taptic Engine tick. */
+.wx-ios-haptic-relative { position: relative; }
+.wx-ios-haptic-hit {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: auto;
+  z-index: 1;
+}
