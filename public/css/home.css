@@ -416,3 +416,8 @@ html .home-page .duolingo-card__frame {
   pointer-events: auto;
   z-index: 1;
 }
+
+html[data-theme="dark"] .home-page .link-card__icon--image {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--line) 70%, var(--accent));
+}

@@ -1,26 +1,9 @@
-/**
- * Tactile ticks for direct user activation, duskline-style.
- *
- * iOS Safari has no Vibration API. iOS does play a native Taptic Engine tick
- * when the user physically taps a native switch control, so on iOS (where
- * navigator.vibrate is unavailable) every button and link gets an invisible
- * native <input type="checkbox" switch> overlaid via shadow DOM. The user's
- * tap lands on the native control (tick plays), then the tap is forwarded to
- * the real element underneath. Android and other platforms use
- * navigator.vibrate(10) directly.
- *
- * The theme toggle is itself a native switch and already ticks on its own,
- * so it is left alone.
- */
 (function () {
   "use strict";
 
   var ua = navigator.userAgent || "";
   var platform = navigator.platform || "";
   var isiOS = /iPhone|iPad|iPod/.test(ua) || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  var versionMatch = ua.match(/(?:iPhone|iPad|iPod).*?OS (\d+)[_.](\d+)/);
-  var iosMajor = versionMatch ? Number(versionMatch[1]) : 0;
-  var iosMinor = versionMatch ? Number(versionMatch[2]) : 0;
 
   function vibrateAvailable() {
     return typeof navigator.vibrate === "function";
@@ -29,7 +12,6 @@
   // Overlay path applies on iOS where the Vibration API is missing.
   function iosOverlaySupported() {
     if (!isiOS || vibrateAvailable() || !window.MutationObserver) return false;
-    if (!("switch" in document.createElement("input"))) return false;
     var host = document.createElement("span");
     return typeof host.attachShadow === "function";
   }
@@ -72,59 +54,54 @@
       var root = host.attachShadow({ mode: "open" });
 
       var style = document.createElement("style");
-      style.textContent = "label{position:absolute;inset:0;display:block;cursor:inherit}input{display:none!important}";
-
-      var label = document.createElement("label");
-      label.setAttribute("aria-hidden", "true");
-      // Clicking the label toggles the native switch = iOS plays its tick.
-      label.htmlFor = "wx-tick-" + Math.random().toString(36).slice(2);
+      // The switch is the tap target: rendered and covering the control,
+      // fully transparent, never display:none (iOS ignores taps on
+      // non-rendered controls and won't play its tick).
+      style.textContent =
+        ".wx-tick{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:inherit}";
 
       var tick = document.createElement("input");
-      tick.id = label.htmlFor;
+      tick.className = "wx-tick";
       tick.type = "checkbox";
       tick.setAttribute("switch", "");
-      tick.hidden = true;
       tick.tabIndex = -1;
       tick.setAttribute("aria-hidden", "true");
 
       var gesture = null;
-      label.addEventListener("pointerdown", function (event) {
+      tick.addEventListener("pointerdown", function (event) {
         gesture = {
           id: event.pointerId,
           x: event.clientX, y: event.clientY,
           cancelled: event.isPrimary === false,
         };
       }, { passive: true });
-      label.addEventListener("pointermove", function (event) {
+      tick.addEventListener("pointermove", function (event) {
         if (gesture && gesture.id === event.pointerId &&
             Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 12) {
           gesture.cancelled = true;
         }
       }, { passive: true });
-      label.addEventListener("pointercancel", function () {
+      tick.addEventListener("pointercancel", function () {
         if (gesture) gesture.cancelled = true;
       }, { passive: true });
-      label.addEventListener("click", function (event) {
+      tick.addEventListener("click", function (event) {
         var cancelled = gesture && gesture.cancelled;
         gesture = null;
-        // Scrolls, programmatic clicks, or disabled controls: no tick,
-        // and don't let the label toggle the switch.
-        if (event.defaultPrevented || cancelled || !event.isTrusted || !usable(control)) {
+        // Scrolls or unusable controls: swallow the tap — no tick, no action.
+        if (cancelled || !event.isTrusted || !usable(control)) {
           event.preventDefault();
           event.stopPropagation();
+          // Undo the toggle so the switch stays in a clean state.
+          try { tick.checked = !tick.checked; } catch (_) {}
           return;
         }
-        // Keep focus behavior natural for keyboard/AT users.
+        // Valid tap: the native switch already toggled from this real user
+        // tap, so iOS played its tick. Let the click bubble to the control
+        // underneath — it owns the action (navigation, modal, etc.).
         try { control.focus({ preventScroll: true }); } catch (_) {}
-        // The native switch toggles from this real user tap: iOS plays
-        // its tick. The original click continues to the control underneath.
-      });
-      // The switch itself must never act: stop its click from propagating.
-      tick.addEventListener("click", function (event) {
-        event.stopPropagation();
       });
 
-      root.append(style, label, tick);
+      root.append(style, tick);
       control.appendChild(host);
       hosts.set(control, host);
     }
