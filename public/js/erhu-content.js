@@ -3,7 +3,6 @@
 var ERHU_WIKI = {
   en: {
     title: "About the erhu",
-    eyebrow: "A small field guide",
     close: "Close",
     imageAlt: "A traditional erhu from the Metropolitan Museum of Art",
     imageCredit: "Instrument image: Unknown author / Metropolitan Museum of Art, CC0.",
@@ -24,7 +23,6 @@ var ERHU_WIKI = {
   },
   es: {
     title: "Sobre el erhu",
-    eyebrow: "Una pequeña guía",
     close: "Cerrar",
     imageAlt: "Un erhu tradicional del Metropolitan Museum of Art",
     imageCredit: "Imagen del instrumento: autor desconocido / Metropolitan Museum of Art, CC0.",
@@ -45,7 +43,6 @@ var ERHU_WIKI = {
   },
   zh: {
     title: "关于二胡",
-    eyebrow: "一份简短的乐器小指南",
     close: "关闭",
     imageAlt: "大都会艺术博物馆收藏的一把传统二胡",
     imageCredit: "乐器图片：作者未知 / 大都会艺术博物馆，CC0。",
@@ -66,7 +63,6 @@ var ERHU_WIKI = {
   },
   ja: {
     title: "二胡について",
-    eyebrow: "小さな楽器ガイド",
     close: "閉じる",
     imageAlt: "メトロポリタン美術館所蔵の伝統的な二胡",
     imageCredit: "楽器画像：作者不明 / メトロポリタン美術館、CC0。",

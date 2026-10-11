@@ -102,10 +102,8 @@
   function render(lang) {
     var copy = ERHU_WIKI[lang] || ERHU_WIKI.en;
     var title = document.getElementById("erhu-wiki-title");
-    var eyebrow = document.getElementById("erhu-wiki-eyebrow");
     var close = modal.querySelector(".erhu-modal__close");
     if (title) title.textContent = copy.title;
-    if (eyebrow) eyebrow.textContent = copy.eyebrow;
     if (close) close.setAttribute("aria-label", copy.close);
 
     var video = ensureVideo(copy.videoTitle);

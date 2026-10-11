@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
   <title>Privacy Policy — Tim G</title>
   <meta name="description" content="How Tim G’s personal hub handles privacy, local preferences, and contact information." />
   <meta name="author" content="Tim G" />
@@ -30,7 +30,7 @@
   <meta name="theme-color" content="#f3eee4" id="meta-theme-color" />
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=20261011-popup" />
   <link rel="stylesheet" href="css/legal.css" />
   <script>
     (function () {
@@ -51,6 +51,10 @@
               : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
+        var themeColor = document.getElementById("meta-theme-color");
+        if (themeColor) themeColor.setAttribute("content", theme === "dark" ? "#13110f" : "#f3eee4");
+        var colorScheme = document.getElementById("meta-color-scheme");
+        if (colorScheme) colorScheme.setAttribute("content", theme);
         root.classList.add("js");
         setTimeout(function () {
           if (!root.classList.contains("app-ready")) root.classList.add("reveal-fallback");

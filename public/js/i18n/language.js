@@ -112,7 +112,12 @@ function initLanguageMenu(onSelect) {
 
   /* Keyboard users can leave the dropdown without leaving it floating open. */
   picker.addEventListener("focusout", function (e) {
-    if (isDesktopPicker() && !picker.contains(e.relatedTarget)) setMenuOpen(false);
+    /* Pointer clicks on Safari may blur to <body> before click toggles the
+       trigger. Let the click handler own that transition; outside clicks are
+       still closed by the document handler below. */
+    if (isDesktopPicker() && e.relatedTarget && !picker.contains(e.relatedTarget)) {
+      setMenuOpen(false);
+    }
   });
 
   document.addEventListener("click", function (e) {

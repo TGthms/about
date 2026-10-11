@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
   <title>Tim G — Personal Hub</title>
   <meta name="description" content="Tim G — high school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
   <meta name="author" content="Tim G" />
@@ -40,7 +40,7 @@
 
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
-  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css?v=20261011-popup" />
   <link rel="stylesheet" href="css/home.css?v=20261011-polish2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -90,6 +90,10 @@
               : "light";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
+        var themeColor = document.getElementById("meta-theme-color");
+        if (themeColor) themeColor.setAttribute("content", theme === "dark" ? "#13110f" : "#f3eee4");
+        var colorScheme = document.getElementById("meta-color-scheme");
+        if (colorScheme) colorScheme.setAttribute("content", theme);
 
         /* Project host preference */
         var host = "cloudflare";
@@ -973,7 +977,6 @@
     <article class="erhu-modal__panel" role="document">
       <div class="erhu-modal__top">
         <div>
-          <p class="erhu-modal__eyebrow" id="erhu-wiki-eyebrow"></p>
           <h2 class="erhu-modal__title" id="erhu-wiki-title">Erhu</h2>
         </div>
         <button type="button" class="erhu-modal__close" data-erhu-close aria-label="Close">
@@ -1017,9 +1020,9 @@
   <script src="js/i18n/theme.js?v=20261011"></script>
   <script src="js/i18n/controls.js?v=20261011-polish"></script>
   <script src="js/i18n/project-host.js?v=2"></script>
-  <script src="js/i18n/language.js?v=20261011"></script>
-  <script src="js/erhu-content.js"></script>
-  <script src="js/erhu.js"></script>
+  <script src="js/i18n/language.js?v=20261011-popup"></script>
+  <script src="js/erhu-content.js?v=20261011-popup"></script>
+  <script src="js/erhu.js?v=20261011-popup"></script>
   <script src="js/archived-projects.js"></script>
   <script src="js/about.js"></script>
   <script src="js/github-card.js"></script>
