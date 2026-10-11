@@ -137,6 +137,7 @@ const TRANSLATIONS = {
         contributions: "{count} contributions in {year}",
         day: "{count} on {date}",
         loading: "Loading contributions…",
+        unavailable: "Contributions unavailable. Visit my GitHub profile.",
       },
       social: {
         label: "Instagram",
@@ -297,6 +298,7 @@ const TRANSLATIONS = {
         contributions: "{count} contribuciones en {year}",
         day: "{count} el {date}",
         loading: "Cargando contribuciones…",
+        unavailable: "Contribuciones no disponibles. Visita mi perfil de GitHub.",
       },
       social: {
         label: "Instagram",
@@ -457,6 +459,7 @@ const TRANSLATIONS = {
         contributions: "{year} 年共 {count} 次贡献",
         day: "{date}：{count} 次",
         loading: "正在加载贡献…",
+        unavailable: "贡献数据暂不可用，请查看我的 GitHub 主页。",
       },
       social: {
         label: "微信",
@@ -617,6 +620,7 @@ const TRANSLATIONS = {
         contributions: "{year}年に{count}件のコントリビューション",
         day: "{date}：{count}件",
         loading: "読み込み中…",
+        unavailable: "貢献データを取得できません。GitHubプロフィールをご覧ください。",
       },
       social: {
         label: "Instagram",
@@ -760,7 +764,8 @@ TRANSLATIONS["zh-Hant"] = {
     "githubCard": {
       "contributions": "{year} 年共 {count} 次貢獻",
       "day": "{date}：{count} 次",
-      "loading": "正在載入貢獻…"
+      "loading": "正在載入貢獻…",
+      "unavailable": "貢獻資料暫時無法載入，請查看我的 GitHub 個人頁面。"
     },
     "japanTravelGuide": {
       "desc": "一份關於日本值得一去之地的指南 — 小型網頁專案",

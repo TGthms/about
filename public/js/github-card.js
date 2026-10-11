@@ -28,6 +28,7 @@
   var canHover = false;
   var remoteStarted = false;
   var remoteReady = false;
+  var remoteFailed = false;
   var data = {
     name: "Tim G",
     avatarUrl: PROFILE_URL + ".png?size=96",
@@ -77,6 +78,7 @@
       contributions: "{count} contributions in {year}",
       day: "{count} on {date}",
       loading: "Loading contributions…",
+      unavailable: "Contributions unavailable. Visit my GitHub profile.",
     };
     return fallback[key] || "";
   }
@@ -169,6 +171,9 @@
   function buildPopover() {
     popover = el("div", "github-popover");
     popover.setAttribute("aria-hidden", "true");
+    popover.id = "github-contributions";
+    var profileLink = wrap.querySelector("a");
+    if (profileLink) profileLink.setAttribute("aria-describedby", popover.id);
 
     card = el("div", "github-popover__card");
 
@@ -195,6 +200,7 @@
     cal.appendChild(tip);
 
     meta = el("span", "github-popover__meta");
+    meta.setAttribute("role", "status");
     meta.textContent = copy("loading");
 
     card.appendChild(head);
@@ -226,7 +232,9 @@
 
   function refreshGithubCardCopy() {
     if (!meta) return;
-    if (!remoteReady) {
+    if (remoteFailed) {
+      meta.textContent = copy("unavailable");
+    } else if (!remoteReady) {
       meta.textContent = copy("loading");
     } else {
       meta.textContent = fill(copy("contributions"), {
@@ -284,11 +292,13 @@
     if (!wrap || !popover) return;
     open = Boolean(next);
     wrap.classList.toggle("is-open", open);
+    popover.setAttribute("aria-hidden", open ? "false" : "true");
     if (open) {
       ensureRemote();
       placePopover();
     } else {
       hideTip();
+      tilting = false;
       tiltX = 0;
       tiltY = 0;
       if (!tiltRaf) startTilt();
@@ -302,6 +312,11 @@
   }
 
   function tickTilt() {
+    if (reduced) {
+      tiltRaf = 0;
+      if (card) card.style.transform = "none";
+      return;
+    }
     curX += (tiltX - curX) * 0.18;
     curY += (tiltY - curY) * 0.18;
     var pctY = (curY + 20) / 40;
@@ -392,7 +407,31 @@
     if (typeof payload.total === "number") data.total = payload.total;
     if (payload.year) data.year = payload.year;
     remoteReady = true;
+    remoteFailed = false;
     paintDays();
+  }
+
+  // Bound both the network request and response-body read, including offline stalls.
+  function fetchJson(url) {
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    return new Promise(function (resolve, reject) {
+      var timer = window.setTimeout(function () {
+        if (controller) controller.abort();
+        reject(new Error("Request timed out"));
+      }, 10000);
+      fetch(url, controller ? { signal: controller.signal } : undefined)
+        .then(function (res) {
+          if (!res.ok) throw new Error("Request failed");
+          return res.json();
+        })
+        .then(function (json) {
+          window.clearTimeout(timer);
+          resolve(json);
+        }, function (error) {
+          window.clearTimeout(timer);
+          reject(error);
+        });
+    });
   }
 
   function loadRemote() {
@@ -402,11 +441,7 @@
       return;
     }
 
-    fetch("https://api.github.com/users/" + USERNAME)
-      .then(function (res) {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
+    fetchJson("https://api.github.com/users/" + USERNAME)
       .then(function (json) {
         data.name = json.name || json.login || data.name;
         data.avatarUrl = json.avatar_url || data.avatarUrl;
@@ -416,13 +451,10 @@
         /* keep fallbacks */
       });
 
-    fetch("https://github-contributions-api.jogruber.de/v4/" + USERNAME)
-      .then(function (res) {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
+    fetchJson("https://github-contributions-api.jogruber.de/v4/" + USERNAME)
       .then(function (json) {
-        var list = Array.isArray(json.contributions) ? json.contributions : [];
+        if (!json || !Array.isArray(json.contributions)) throw new Error("Invalid contributions");
+        var list = json.contributions;
         var today = new Date();
         today.setHours(23, 59, 59, 999);
         var past = list.filter(function (item) {
@@ -451,7 +483,8 @@
         writeCache(data);
       })
       .catch(function () {
-        remoteReady = true;
+        remoteFailed = true;
+        cal.hidden = true;
         refreshGithubCardCopy();
       });
   }

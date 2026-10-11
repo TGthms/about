@@ -1895,6 +1895,7 @@ html[data-theme="dark"] .github-hover {
   color: var(--faint);
 }
 
+.github-cal[hidden] { display: none; }
 .github-cal {
   position: relative;
   display: grid;
