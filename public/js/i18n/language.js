@@ -40,6 +40,20 @@ function initLanguageMenu(onSelect) {
     menu.querySelectorAll(".lang-picker__option")
   );
 
+  function focusWithoutScroll(element) {
+    if (!element) return;
+    var x = window.scrollX || 0;
+    var y = window.scrollY || window.pageYOffset || 0;
+    try {
+      element.focus({ preventScroll: true });
+    } catch (_) {
+      element.focus();
+    }
+    if ((window.scrollX || 0) !== x || (window.scrollY || window.pageYOffset || 0) !== y) {
+      window.scrollTo(x, y);
+    }
+  }
+
   function isDesktopPicker() {
     return window.matchMedia && window.matchMedia("(min-width: 768px)").matches;
   }
@@ -64,7 +78,7 @@ function initLanguageMenu(onSelect) {
       const selected =
         menu.querySelector('.lang-picker__option[aria-selected="true"]') ||
         options[0];
-      if (selected) selected.focus();
+      if (selected) focusWithoutScroll(selected);
     }
   }
 
@@ -72,7 +86,7 @@ function initLanguageMenu(onSelect) {
     if (!lang || !SUPPORTED_LANGS.includes(lang)) return;
     if (isDesktopPicker()) {
       setMenuOpen(false);
-      trigger.focus();
+      focusWithoutScroll(trigger);
     }
     if (typeof onSelect === "function") onSelect(lang);
     else if (typeof applyLanguage === "function") applyLanguage(lang);
@@ -82,7 +96,7 @@ function initLanguageMenu(onSelect) {
     if (!options.length) return;
     const i = options.indexOf(document.activeElement);
     const next = options[(Math.max(i, 0) + delta + options.length) % options.length];
-    if (next) next.focus();
+    if (next) focusWithoutScroll(next);
   }
 
   /* Ensure mobile list is visible on load / resize */
@@ -158,7 +172,7 @@ function initLanguageMenu(onSelect) {
       e.preventDefault();
       e.stopPropagation();
       setMenuOpen(false);
-      trigger.focus();
+      focusWithoutScroll(trigger);
       return;
     }
     if (e.key === "ArrowDown") {
@@ -173,12 +187,12 @@ function initLanguageMenu(onSelect) {
     }
     if (e.key === "Home") {
       e.preventDefault();
-      if (options[0]) options[0].focus();
+      if (options[0]) focusWithoutScroll(options[0]);
       return;
     }
     if (e.key === "End") {
       e.preventDefault();
-      if (options[options.length - 1]) options[options.length - 1].focus();
+      if (options[options.length - 1]) focusWithoutScroll(options[options.length - 1]);
       return;
     }
     if (e.key === "Enter" || e.key === " ") {

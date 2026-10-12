@@ -99,6 +99,20 @@ function initControlsPanel() {
   var springRaf = 0;
   var lastFocus = null;
 
+  function focusWithoutScroll(element) {
+    if (!element) return;
+    var x = window.scrollX || 0;
+    var y = window.scrollY || window.pageYOffset || 0;
+    try {
+      element.focus({ preventScroll: true });
+    } catch (_) {
+      element.focus();
+    }
+    if ((window.scrollX || 0) !== x || (window.scrollY || window.pageYOffset || 0) !== y) {
+      window.scrollTo(x, y);
+    }
+  }
+
   function prefersSheetReduceMotion() {
     return Boolean(
       window.matchMedia &&
@@ -177,23 +191,13 @@ function initControlsPanel() {
     var nodes = focusableInSheet();
     var target = nodes.find(function (el) { return el.getAttribute("aria-selected") === "true"; }) || nodes[0] || panel;
     if (target === panel && !panel.hasAttribute("tabindex")) panel.setAttribute("tabindex", "-1");
-    try {
-      target.focus({ preventScroll: true });
-    } catch (_) {
-      target.focus();
-    }
+    focusWithoutScroll(target);
   }
 
   function restoreFocus() {
     var target = lastFocus && typeof lastFocus.focus === "function" ? lastFocus : trigger;
     if (!target || target.hidden || target.disabled) target = trigger;
-    if (target && typeof target.focus === "function") {
-      try {
-        target.focus({ preventScroll: true });
-      } catch (_) {
-        target.focus();
-      }
-    }
+    focusWithoutScroll(target);
     lastFocus = null;
   }
 
@@ -243,9 +247,14 @@ function initControlsPanel() {
     }
     document.body.classList.toggle("controls-open", open);
     if (open && !wasOpen && typeof lockPageScroll === "function") lockPageScroll();
-    if (!open && wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
     if (open && !wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, true);
-    if (!open && wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
+    if (!open && wasOpen) {
+      if (typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
+      /* Restore focus while the page is still fixed; unlock then reapplies the
+         captured scroll position after any browser focus adjustment. */
+      restoreFocus();
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
+    }
 
     if (open) {
       setSheetDialogMode(true);
@@ -292,7 +301,6 @@ function initControlsPanel() {
       panel.hidden = true;
       resetSheetInlineStyles();
       if (backdrop) backdrop.hidden = true;
-      restoreFocus();
     }, closeMs);
   }
 
@@ -304,7 +312,6 @@ function initControlsPanel() {
     trigger.setAttribute("aria-expanded", "false");
     restoreControlsTrigger(cluster, trigger);
     document.body.classList.remove("controls-open");
-    if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
     if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
     setSheetDialogMode(false);
     panel.classList.remove("is-raised", "is-dragging");
@@ -315,6 +322,7 @@ function initControlsPanel() {
       backdrop.hidden = true;
     }
     restoreFocus();
+    if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
   }
 
   syncForViewport();
@@ -353,13 +361,13 @@ function initControlsPanel() {
     var last = nodes[nodes.length - 1];
     if (!nodes.includes(document.activeElement)) {
       e.preventDefault();
-      (e.shiftKey ? last : first).focus();
+      focusWithoutScroll(e.shiftKey ? last : first);
     } else if (e.shiftKey && document.activeElement === first) {
       e.preventDefault();
-      last.focus();
+      focusWithoutScroll(last);
     } else if (!e.shiftKey && document.activeElement === last) {
       e.preventDefault();
-      first.focus();
+      focusWithoutScroll(first);
     }
   });
 
