@@ -41,7 +41,7 @@
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <link rel="stylesheet" href="css/styles.css?v=20261012-audit" />
-  <link rel="stylesheet" href="css/home.css?v=20261012-audit" />
+  <link rel="stylesheet" href="css/home.css?v=20261012-v15-seam" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
@@ -159,9 +159,9 @@
           <p class="hero__note" data-i18n="hero.note">I make websites, take photos, and play the erhu. This is where I keep a little of each.</p>
         </div>
         <aside class="hero__index" aria-label="Explore" data-i18n-aria="a11y.explore">
-          <a href="#projects"><span data-i18n="links.projects.label">Projects</span><span aria-hidden="true">→</span></a>
-          <a href="#interest-erhu"><span data-i18n="interests.erhu.title">Erhu</span><span aria-hidden="true">→</span></a>
-          <a href="#footer"><span data-i18n="hero.contact">Contact</span><span aria-hidden="true">→</span></a>
+          <a href="#projects"><span data-i18n="links.projects.label">Projects</span><span aria-hidden="true">↓</span></a>
+          <a href="#interest-erhu"><span data-i18n="interests.erhu.title">Erhu</span><span aria-hidden="true">↓</span></a>
+          <a href="#footer"><span data-i18n="hero.contact">Contact</span><span aria-hidden="true">↓</span></a>
         </aside>
       </div>
     </section>
@@ -175,7 +175,7 @@
         </header>
         <div class="about__body" data-about-content>
           <p class="about__text" data-about-copy="p1">
-            I'm a high school student in the Bay Area who loves <a class="about__link" href="#projects">building things</a>, <a class="about__link" href="#project-usa-gallery">capturing moments</a>, <a class="about__link" href="#interest-erhu">playing erhu</a>, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.
+            I'm a high school student in the Bay Area who loves building things, capturing moments, playing erhu, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.
           </p>
           <p class="about__text" data-about-copy="p2">
             Outside of school and projects, Psalm 23 keeps me grounded through busy seasons and reminds me of what matters most.
@@ -311,6 +311,27 @@
         </header>
 
         <div class="featured-stack">
+          <article class="featured-card featured-card--hub" id="project-personal-hub">
+            <button type="button" class="featured-card__hit hub-card__hit" id="site-history-open" aria-labelledby="project-title-hub" aria-haspopup="dialog" aria-controls="site-history-modal" aria-expanded="false"></button>
+            <div class="featured-card__visual featured-card__visual--photo hub-preview" aria-hidden="true">
+              <img data-src="assets/main-modern.webp" alt="" width="4032" height="3024" decoding="async" />
+              <div class="hub-preview__type">
+                <span class="hub-preview__signature">tg<span>.</span></span>
+                <span class="hub-preview__name">Tim G<span>.</span></span>
+                <span class="hub-preview__caption" data-i18n="personalHub.preview">A little of what I make.</span>
+              </div>
+            </div>
+            <div class="featured-card__content">
+              <h3 class="featured-card__title" id="project-title-hub" data-i18n="personalHub.title">Personal Hub</h3>
+              <p class="featured-card__desc" data-i18n="personalHub.desc">My corner of the web, built around projects, photography, and the details in between.</p>
+              <div class="hub-card__actions">
+                <span class="hub-card__current" data-i18n="personalHub.current">You’re here</span>
+                <span class="hub-card__learn" aria-hidden="true">
+                  <span data-i18n="personalHub.learn">About this site</span><span>↗</span>
+                </span>
+              </div>
+            </div>
+          </article>
           <!--
             Project cards use one CTA, selected from the host preference.
             URLs live in data-url-cloudflare / data-url-github; applied by the project-host module.
@@ -997,13 +1018,44 @@
     </article>
   </div>
 
+  <!-- Personal Hub: about and curated Git history -->
+  <div class="erhu-modal site-history-modal" id="site-history-modal" role="dialog" aria-modal="true" aria-labelledby="site-history-title" hidden>
+    <div class="erhu-modal__backdrop" data-site-history-close tabindex="-1"></div>
+    <article class="erhu-modal__panel site-history-panel" role="document">
+      <div class="erhu-modal__top site-history-top">
+        <h2 class="erhu-modal__title" id="site-history-title" data-i18n="personalHub.dialogTitle">About this site</h2>
+        <button type="button" class="erhu-modal__close" data-site-history-close data-i18n-aria="personalHub.close" aria-label="Close about this site">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div id="site-history-body"></div>
+    </article>
+  </div>
+
+  <!-- Psalm 23 reading card -->
+  <div class="erhu-modal psalm-modal" id="psalm-modal" role="dialog" aria-modal="true" aria-labelledby="psalm-title" hidden>
+    <div class="erhu-modal__backdrop" data-psalm-close tabindex="-1"></div>
+    <article class="erhu-modal__panel psalm-panel" role="document">
+      <div class="erhu-modal__top site-history-top">
+        <div>
+          <h2 class="erhu-modal__title" id="psalm-title" data-i18n="psalm.title">Psalm 23</h2>
+          <p class="psalm-version" data-i18n="psalm.version">New International Version · NIV (2011)</p>
+        </div>
+        <button type="button" class="erhu-modal__close" data-psalm-close data-i18n-aria="psalm.close" aria-label="Close Psalm 23">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div id="psalm-body"></div>
+    </article>
+  </div>
+
   <!-- 5. Footer -->
   <footer class="footer" id="footer" data-page-root>
     <div class="container footer__inner">
       <p class="footer__signoff" data-i18n="footer.signoff">Thanks for stopping by.</p>
       <blockquote class="footer__verse">
-        <p data-i18n="footer.verse">For God has not given us the spirit of fear; but of power, and of love, and of a sound mind.</p>
-        <cite data-i18n="footer.verseReference">— 2 Timothy 1:7</cite>
+        <p data-i18n="footer.verse">For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.</p>
+        <cite data-i18n="footer.verseReference">— 2 Timothy 1:7 (KJV)</cite>
       </blockquote>
       <p class="footer__contact">
         <span data-i18n="footer.contact">Contact:</span>
@@ -1023,19 +1075,23 @@
   </footer>
 
   <script src="js/preferences.js"></script>
-  <script src="js/i18n/data.js"></script>
+  <script src="js/i18n/data.js?v=20261012-v15"></script>
   <script src="js/i18n/core.js"></script>
   <script src="js/i18n/theme.js?v=20261012"></script>
   <script src="js/i18n/controls.js?v=20261012-motion"></script>
   <script src="js/i18n/project-host.js?v=2"></script>
-  <script src="js/i18n/language.js?v=20261012-fonts"></script>
+  <script src="js/i18n/language.js?v=20261012-reading"></script>
   <script src="js/erhu-content.js?v=20261012-buffering"></script>
   <script src="js/erhu.js?v=20261012-buffering"></script>
   <script src="js/archived-projects.js?v=20261012-focus"></script>
-  <script src="js/about.js"></script>
+  <script src="js/about.js?v=20261012-psalm"></script>
   <script src="js/github-card.js"></script>
   <script src="js/image-loader.js"></script>
   <script src="js/haptics.js"></script>
+  <script src="js/site-history-content.js?v=20261012-clean-history"></script>
+  <script src="js/site-history.js?v=20261012-clean-history"></script>
+  <script src="js/psalm-content.js?v=20261012-scripture-final"></script>
+  <script src="js/psalm.js?v=20261012-scripture-final"></script>
   <script src="js/main.js?v=20261012-focus"></script>
   <script src="js/hero-image.js?v=20261012-theme-transition"></script>
   <script src="js/home-navigation.js?v=20261012-chrome"></script>

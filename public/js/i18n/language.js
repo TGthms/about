@@ -313,7 +313,7 @@ function applyLanguage(lang) {
       var fontLink = document.createElement("link");
       fontLink.id = fontId;
       fontLink.rel = "stylesheet";
-      fontLink.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+" + suffix + ":wght@400;500;700&family=Noto+Serif+" + suffix + ":wght@600;700&display=swap";
+      fontLink.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+" + suffix + ":wght@400;500;700&family=Noto+Serif+" + suffix + ":wght@400;600;700&display=swap";
       document.head.appendChild(fontLink);
     }
   }

@@ -159,7 +159,7 @@ const TRANSLATIONS = {
     footer: {
       signoff: "Thanks for stopping by.",
       contact: "Contact:",
-      verse: "For God has not given us the spirit of fear; but of power, and of love, and of a sound mind.",
+      verse: "For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.",
       verseReference: "— 2 Timothy 1:7",
       built: "Personal Hub",
       privacy: "Privacy Policy",
