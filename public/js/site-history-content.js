@@ -472,7 +472,7 @@ var PERSONAL_HUB = {
     {
       "version": 15,
       "date": "2026-10-12",
-      "commit": null,
+      "commit": "48efc73",
       "copy": {
         "en": {
           "title": "A project of its own",

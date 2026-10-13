@@ -64,13 +64,13 @@ asset loading, translations, links, and responsive light/dark presentation.
 
 ## Verification
 
-- 20 Node regression tests pass, covering image queue failure/timeout recovery,
+- 25 Node regression tests pass, covering image queue failure/timeout recovery,
   stale clipboard callbacks, navigation/focus, preferences keyboard behavior,
   GitHub calendar failures, header hysteresis, and video loading/progress/errors.
 - All JavaScript files pass syntax checks.
 - HTML IDs, local references, anchor targets, and external-link rel attributes
   pass integrity checks; `git diff --check` passes.
-- All 81 interface translation keys are present in all five language packs.
+- All 91 interface translation keys are present in all five language packs.
 - Browser-checked English, Spanish, Simplified Chinese, Traditional Chinese,
   and Japanese switching; no empty translation labels or horizontal overflow.
 - Browser-checked 320, 390, 768, 1024, 1440, and 1920px viewport widths.
@@ -93,3 +93,47 @@ not exercised on devices. The intentional native iOS haptic code was preserved.
 Reduced-motion branches and failure cases are covered by source review and the
 relevant regression tests; no Lighthouse score or throttled-network benchmark
 is claimed. Public-link responses reflect the audit time.
+
+
+## v15 follow-up: projects and reading cards
+
+- All six project cards use equal widths, equal heights, and the same 16:10
+  preview area. Verified equal heights at 320, 390, 768, and 1440px widths.
+- Personal Hub is first. Its entire surface is a semantic popup button,
+  with “You’re here” status and an “About this site” cue, without an outbound
+  project link. Keyboard focus follows the same full-card pattern as other
+  projects.
+- Its local popup includes an introduction and 15 numbered milestones curated
+  from the repository history and this update. All 15 implementation commit
+  references were verified locally; v15 links to 48efc73. There is no explanatory
+  subtitle above the timeline. These are stable milestone labels, not a claim
+  that every label was an original Git tag.
+- About's building/photography/erhu phrases are plain text. Psalm 23 opens a
+  reading card with all six verses, classic serif type, edition/source credits,
+  and a Bible.com link to the corresponding language/edition's Psalm 23.
+- English uses NIV 2011 with the copyright notice and NIV attribution after
+  the passage. Japanese uses the licensed JCB (2016), preserving its combined
+  verses 2–3. Other sources and the reasoning for their use are documented in
+  SCRIPTURE_CREDITS.md. The English footer uses the user's exact KJV wording
+  with “hath”; Chinese Union Version spacing before 神 is retained from its source.
+- Both new popups were browser-checked in all five languages. Mobile padding
+  was corrected to prevent a small horizontal overflow in the history card.
+  Wrapped keyboard focus scrolls within long cards, and closing restores the
+  captured page position and opener.
+- All five chapter destination URLs returned HTTP 200 after redirects.
+- Hero arrows point down. The Bay Area line has balanced wrapping and a
+  localized wash for contrast. The photo transition reaches solid page color
+  before the clip edge; a 2px overlap removes a WebKit compositing hairline.
+  At a 1440×900 viewport, the desktop fade is 54px high, revealing more pelican.
+- Captured light-mode pixels across the seam match the page background
+  (RGB 250/250/250) at left, center, and right sample points. Dark-mode
+  boundary samples also match on both sides.
+- Changed scripts/styles have new cache keys, including the translation file,
+  so existing visitors receive the corrected footer wording.
+
+### Existing deployment maintenance
+
+The previous production deployment passed validation and Pages publication.
+GitHub emitted upstream-action Node.js 20 deprecation annotations while running
+those actions under Node.js 24. The pinned action versions can be refreshed as
+upstream releases become available; these annotations did not fail deployment.

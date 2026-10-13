@@ -15,7 +15,9 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Projects: duskline, Kit, Travel Gallery, USA Travel Guide, and Japan Travel Guide, with Folio, Nimbus, and Kiln available in an archived-project shelf
 - Dual hosts for each project (Cloudflare main / GitHub backup). Every language uses the selected host preference
 - Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
-- Rounded project previews, a wide photography feature on desktop, and brief hover/press/dialog animations that respect reduced motion
+- Six equally sized project previews; the whole Personal Hub card opens an introduction and curated version history
+- Brief hover/press/dialog animations that respect reduced motion
+- Psalm 23 reading card with localized editions, classic typography, and visible scripture credits
 - Intentional native iOS tick haptics are preserved
 - Full-height photographic hero with a decode-aware entrance, smooth theme scrims, and a gently contracting header
 - Erhu video preloads on proximity or intent; fast-start MP4 retains picture/audio quality and native streaming, with localized buffering percentages
@@ -39,7 +41,9 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
 | `public/js/home-navigation.js` | Section indicator and responsive anchor offsets |
-| `public/js/about.js` | Localized about paragraphs and links |
+| `public/js/about.js` | Localized about paragraphs and Psalm reader trigger |
+| `public/js/site-history.js` / `public/js/site-history-content.js` | Personal Hub introduction and curated milestone history |
+| `public/js/psalm.js` / `public/js/psalm-content.js` | Attributed, localized Psalm 23 reader |
 | `public/js/github-card.js` | GitHub contribution calendar popover |
 | `public/js/image-loader.js` | Sequential raster loading (`data-src`) and sliding “Loading...” label |
 | `public/apple-touch-icon.png` | iOS home-screen icon (180×180) |
@@ -68,9 +72,13 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 ## License
 
-- Code (`public/` HTML/CSS/JS, excluding `public/assets/`): [MIT License](LICENSE)
+- Code (`public/` HTML/CSS/JS, excluding assets and attributed Scripture text): [MIT License](LICENSE)
+- Scripture excerpts: [edition-specific sources and credits](SCRIPTURE_CREDITS.md)
+- Public Sans: SIL Open Font License in `public/assets/fonts/`
 - Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/og-image.svg`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
 
 ## Local checks
 
 Run `node --test tests/*.test.cjs` for image-error/timeout recovery, clipboard language-switch races, section navigation, preferences keyboard focus/return, and home translation coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
+
+To document a future substantial upgrade, append a milestone to `public/js/site-history-content.js`, keep previous version numbers stable, and update `currentVersion`. Add the implementation commit SHA after the commit exists. Scripture source/credit details are maintained in `SCRIPTURE_CREDITS.md`.
