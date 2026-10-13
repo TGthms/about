@@ -6,7 +6,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 
 - Plain HTML / CSS / JS 
 - GitHub Pages (`.github/workflows/static.yml` validates and deploys `public/`)
-- Personal editorial design: cream paper / warm charcoal, serif headings, open layouts, and terracotta links
+- Personal editorial design: soft white / charcoal, serif headings, open layouts, and restrained slate links
 
 ## Features
 
@@ -17,6 +17,9 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
 - Rounded project previews, a wide photography feature on desktop, and brief hover/press/dialog animations that respect reduced motion
 - Intentional native iOS tick haptics are preserved
+- Full-height photographic hero with a decode-aware entrance, smooth theme scrims, and a gently contracting header
+- Erhu video preloads on proximity or intent; fast-start MP4 retains picture/audio quality and native streaming, with localized buffering percentages
+- Public Sans is self-hosted with its OFL license; CJK display fonts load only for the selected language
 - GitHub link card: hover (or keyboard focus) opens a contribution calendar for TGthms (profile and calendar data load on that first interaction)
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
@@ -43,7 +46,9 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/sitemap.xml` | Search-engine sitemap |
 | `public/robots.txt` | Crawler allow list + sitemap pointer |
 | `public/js/archived-projects.js` | Archived project shelf dialog behavior and focus management |
-| `public/js/erhu.js` / `public/js/erhu-content.js` | Erhu wiki dialog behavior and localized content |
+| `public/js/erhu.js` / `public/js/erhu-content.js` | Erhu wiki dialog, intent preloading, buffering progress, and localized content |
+| `public/js/hero-image.js` | Decode-aware hero photo entrance |
+| `public/assets/fonts/` | Public Sans and its SIL Open Font License |
 | `public/js/legal.js` | Legal rendering |
 | `public/js/legal/` | Legal UI, privacy, and terms content split by responsibility |
 | `public/assets/` | Project previews, Duolingo QR assets, and erhu media |
