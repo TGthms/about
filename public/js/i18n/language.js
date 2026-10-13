@@ -306,6 +306,18 @@ function applyLanguage(lang) {
   document.documentElement.lang = htmlLang;
   document.documentElement.setAttribute("data-language", resolved);
 
+  if (!isLegalPage && (resolved === "zh" || resolved === "zh-Hant" || resolved === "ja")) {
+    var fontId = "language-fonts-" + resolved;
+    if (!document.getElementById(fontId)) {
+      var suffix = resolved === "ja" ? "JP" : resolved === "zh-Hant" ? "TC" : "SC";
+      var fontLink = document.createElement("link");
+      fontLink.id = fontId;
+      fontLink.rel = "stylesheet";
+      fontLink.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+" + suffix + ":wght@400;500;700&family=Noto+Serif+" + suffix + ":wght@600;700&display=swap";
+      document.head.appendChild(fontLink);
+    }
+  }
+
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
     const value = getNested(pack, key);

@@ -36,12 +36,12 @@
   <meta name="twitter:image" content="https://timgong.me/og-image.png" />
   <meta name="twitter:image:alt" content="Tim G — Personal Hub" />
 
-  <meta name="theme-color" content="#f3eee4" id="meta-theme-color" />
+  <meta name="theme-color" content="#fafafa" id="meta-theme-color" />
 
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
-  <link rel="stylesheet" href="css/styles.css?v=20261011-popup" />
-  <link rel="stylesheet" href="css/home.css?v=20261011-polish2" />
+  <link rel="stylesheet" href="css/styles.css?v=20261012-audit" />
+  <link rel="stylesheet" href="css/home.css?v=20261012-audit" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
@@ -91,7 +91,7 @@
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
         var themeColor = document.getElementById("meta-theme-color");
-        if (themeColor) themeColor.setAttribute("content", theme === "dark" ? "#13110f" : "#f3eee4");
+        if (themeColor) themeColor.setAttribute("content", theme === "dark" ? "#141719" : "#fafafa");
         var colorScheme = document.getElementById("meta-color-scheme");
         if (colorScheme) colorScheme.setAttribute("content", theme);
 
@@ -105,7 +105,10 @@
 
         root.setAttribute("data-project-links", "single");
 
-        root.classList.add("js");
+        root.classList.add("js", "hero-photo-pending");
+        setTimeout(function () {
+          root.classList.remove("hero-photo-pending");
+        }, 2600);
         setTimeout(function () {
           if (!root.classList.contains("app-ready")) {
             root.classList.add("reveal-fallback");
@@ -143,6 +146,11 @@
   <main id="main" data-page-root>
     <!-- 1. Hero -->
     <section class="hero" id="hero" aria-labelledby="hero-name">
+      <div class="hero__backdrop" aria-hidden="true">
+        <div class="hero__photo">
+          <img src="assets/main-modern.webp" alt="" width="4032" height="3024" fetchpriority="high" decoding="async" />
+        </div>
+      </div>
       <div class="container hero__inner">
         <div class="hero__intro">
           <p class="hero__eyebrow" data-i18n="hero.eyebrow">Hi, I'm</p>
@@ -1017,18 +1025,19 @@
   <script src="js/preferences.js"></script>
   <script src="js/i18n/data.js"></script>
   <script src="js/i18n/core.js"></script>
-  <script src="js/i18n/theme.js?v=20261011"></script>
-  <script src="js/i18n/controls.js?v=20261011-scrollfix"></script>
+  <script src="js/i18n/theme.js?v=20261012"></script>
+  <script src="js/i18n/controls.js?v=20261012-motion"></script>
   <script src="js/i18n/project-host.js?v=2"></script>
-  <script src="js/i18n/language.js?v=20261011-scrollfix"></script>
-  <script src="js/erhu-content.js?v=20261011-popup"></script>
-  <script src="js/erhu.js?v=20261011-popup"></script>
-  <script src="js/archived-projects.js"></script>
+  <script src="js/i18n/language.js?v=20261012-fonts"></script>
+  <script src="js/erhu-content.js?v=20261012-buffering"></script>
+  <script src="js/erhu.js?v=20261012-buffering"></script>
+  <script src="js/archived-projects.js?v=20261012-focus"></script>
   <script src="js/about.js"></script>
   <script src="js/github-card.js"></script>
   <script src="js/image-loader.js"></script>
   <script src="js/haptics.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/home-navigation.js"></script>
+  <script src="js/main.js?v=20261012-focus"></script>
+  <script src="js/hero-image.js?v=20261012-theme-transition"></script>
+  <script src="js/home-navigation.js?v=20261012-chrome"></script>
 </body>
 </html>

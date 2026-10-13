@@ -8,11 +8,18 @@
     return document.getElementById(link.getAttribute("href").slice(1));
   });
   var queued = false;
+  var navIsScrolled = null;
 
   function update() {
     queued = false;
     // Scroll locking temporarily changes section positions; retain the current marker.
     if (document.documentElement.classList.contains("page-scroll-locked")) return;
+    var scrollY = window.scrollY || window.pageYOffset || 0;
+    var nextScrolled = navIsScrolled ? scrollY > 40 : scrollY >= 72;
+    if (nextScrolled !== navIsScrolled) {
+      navIsScrolled = nextScrolled;
+      header.classList.toggle("is-scrolled", nextScrolled);
+    }
     var height = header.getBoundingClientRect().height;
     document.documentElement.style.setProperty("--top-bar-h", height + "px");
     var current = -1;

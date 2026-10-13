@@ -153,6 +153,18 @@
     });
   }
 
+  function measureHeader() {
+    if (document.documentElement.classList.contains("page-scroll-locked")) return;
+    var header = document.querySelector(".top-bar");
+    if (header) document.documentElement.style.setProperty("--top-bar-h", header.getBoundingClientRect().height + "px");
+  }
+  measureHeader();
+  window.addEventListener("resize", measureHeader);
+  if (window.ResizeObserver) {
+    var headerObserver = new ResizeObserver(measureHeader);
+    headerObserver.observe(document.querySelector(".top-bar"));
+  }
+
   document.addEventListener("click", function (event) {
     var link = event.target.closest && event.target.closest(".legal-toc__link");
     if (!link) return;

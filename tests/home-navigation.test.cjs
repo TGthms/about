@@ -13,15 +13,19 @@ function harness() {
   }));
   let height = 72, locked = false;
   const properties = {}, handlers = {}, frames = [];
+  const classes = new Set();
   const document = {
-    querySelector: () => ({ getBoundingClientRect: () => ({ height }) }),
+    querySelector: () => ({
+      getBoundingClientRect: () => ({ height }),
+      classList: { toggle: (key, on) => on ? classes.add(key) : classes.delete(key) },
+    }),
     querySelectorAll: () => links,
     getElementById: id => ({ getBoundingClientRect: () => ({ top: positions[['about', 'projects', 'connect'].indexOf(id)] }) }),
     documentElement: { classList: { contains: () => locked }, style: { setProperty: (key, value) => properties[key] = value } },
   };
-  const window = { addEventListener: (key, callback) => handlers[key] = callback, requestAnimationFrame: callback => frames.push(callback) };
+  const window = { scrollY: 0, addEventListener: (key, callback) => handlers[key] = callback, requestAnimationFrame: callback => frames.push(callback) };
   vm.runInNewContext(fs.readFileSync('public/js/home-navigation.js', 'utf8'), { document, window });
-  return { positions, links, properties, handlers, frames, setHeight: value => height = value, setLocked: value => locked = value };
+  return { positions, links, properties, handlers, frames, classes, window, setHeight: value => height = value, setLocked: value => locked = value };
 }
 
 test('section marker follows scrolling without changing links and clears above About', () => {
@@ -36,6 +40,21 @@ test('section marker follows scrolling without changing links and clears above A
   h.positions[0] = 300; h.positions[1] = 900;
   h.handlers.scroll(); h.frames.shift()();
   assert.ok(h.links.every(link => !link.attrs['aria-current']));
+});
+
+test('header hysteresis prevents flicker and ignores scroll-lock resets', () => {
+  const h = harness();
+  function scroll(y) { h.window.scrollY = y; h.handlers.scroll(); h.frames.shift()(); }
+  scroll(73);
+  assert.ok(h.classes.has('is-scrolled'));
+  scroll(60);
+  assert.ok(h.classes.has('is-scrolled'), 'stays compact within the threshold band');
+  h.setLocked(true);
+  scroll(0);
+  assert.ok(h.classes.has('is-scrolled'), 'opening a dialog must not expand the header');
+  h.setLocked(false);
+  scroll(39);
+  assert.equal(h.classes.has('is-scrolled'), false);
 });
 
 test('header offsets follow resizing and ignore transient dialog scroll positions', () => {

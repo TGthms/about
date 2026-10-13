@@ -1,11 +1,18 @@
 /* ==========================================================================
-   Legal pages — Craft Brutal chrome
+   Legal pages — shared, quiet surfaces
    ========================================================================== */
 
 .legal-page {
   min-height: 100vh;
   min-height: 100svh;
+  --line: color-mix(in srgb, var(--ink) 20%, transparent);
+  --shadow: none;
+  background-image: none;
 }
+html[data-theme="dark"] .legal-page { background-image: none; }
+.legal-page :is(.legal-back, .legal-related a, .legal-toc-block, .lang-picker__trigger, .pref-btn, .controls-trigger) { box-shadow: none; border-width: 1px; }
+.legal-page .legal-back:hover { box-shadow: none; }
+.legal-page .legal-hero__label { padding: 0; background: none; color: var(--mute); }
 
 .legal-main {
   padding-top: calc(var(--top-bar-h) + env(safe-area-inset-top, 0px) + var(--space-4));
@@ -150,7 +157,7 @@ html[data-theme="dark"] .legal-toc__link:hover {
 }
 
 html[data-theme="dark"] .legal-hero__label {
-  box-shadow: 2px 2px 0 color-mix(in srgb, var(--line) 55%, transparent);
+  box-shadow: none;
 }
 
 html[data-theme="dark"] .legal-section + .legal-section {
@@ -198,7 +205,8 @@ html[data-theme="dark"] .legal-section + .legal-section {
 }
 
 .legal-section {
-  scroll-margin-top: calc(var(--top-bar-h) + env(safe-area-inset-top, 0px) + var(--space-4));
+  /* The root scroll padding already includes the measured header. */
+  scroll-margin-top: 16px;
 }
 
 .legal-section + .legal-section {
