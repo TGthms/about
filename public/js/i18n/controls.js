@@ -444,7 +444,8 @@ function initControlsPanel() {
       var reduce = prefersSheetReduceMotion();
       var gen = controlsSheetGen;
       var pos = sheetY;
-      var vel = velocityPxMs || 0;
+      /* Integration below uses seconds; pointer samples are pixels/ms. */
+      var vel = (velocityPxMs || 0) * 1000;
       var lastT = performance.now();
 
       /* response ≈ settle feel; dampingRatio < 1 → overshoot / bounce */

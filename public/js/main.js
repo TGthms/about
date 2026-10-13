@@ -201,7 +201,7 @@
       var gen = modalGen;
       var wasOpen = isOpen;
       isOpen = true;
-      lastFocus = document.activeElement;
+      lastFocus = openBtn;
       modal.hidden = false;
       modal.classList.remove("is-shown");
       document.body.classList.add("qr-modal-open");
@@ -218,7 +218,7 @@
       var closeBtn = modal.querySelector(".qr-modal__close");
       window.setTimeout(function () {
         if (gen !== modalGen) return;
-        if (closeBtn) closeBtn.focus();
+        if (closeBtn) closeBtn.focus({ preventScroll: true });
       }, 10);
     }
 
@@ -238,7 +238,7 @@
         if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
         if (lastFocus && typeof lastFocus.focus === "function") {
           try {
-            lastFocus.focus();
+            lastFocus.focus({ preventScroll: true });
           } catch (_) {
             /* ignore */
           }

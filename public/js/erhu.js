@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  var VIDEO_SRC = "assets/erhu/always-with-me-performance.mov";
+  var VIDEO_SRC = "assets/erhu/always-with-me-performance.mp4";
   var openButton = document.getElementById("erhu-wiki-open");
   var modal = document.getElementById("erhu-wiki-modal");
   var body = document.getElementById("erhu-wiki-body");
@@ -13,6 +13,38 @@
   var videoEl = null;
   var videoStash = null;
   var preloadStarted = false;
+  var videoStatus = null;
+  var videoProgress = null;
+  var videoStatusText = null;
+  var lastStatus = "";
+  var videoLoadFailed = false;
+
+  function updateVideoStatus() {
+    if (!videoEl || !videoStatus) return;
+    var copy = ERHU_WIKI[activeLanguage()] || ERHU_WIKI.en;
+    // Native range requests keep playback streaming; this is buffered time,
+    // not an invented byte-download percentage.
+    var duration = videoEl.duration;
+    var buffered = 0;
+    if (Number.isFinite(duration) && duration > 0) {
+      for (var i = 0; i < videoEl.buffered.length; i++) {
+        buffered += videoEl.buffered.end(i) - videoEl.buffered.start(i);
+      }
+    }
+    var percent = Number.isFinite(duration) && duration > 0
+      ? Math.min(100, Math.floor(buffered / duration * 100)) : null;
+    var failed = videoLoadFailed || Boolean(videoEl.error);
+    var ready = percent === 100 || (videoEl.readyState >= 3 && (!videoEl.paused || videoEl.networkState === 1));
+    videoStatus.hidden = ready && !failed;
+    videoProgress.hidden = percent === null || failed;
+    if (percent !== null) videoProgress.value = percent;
+    var label = failed ? copy.videoError : percent === null
+      ? copy.videoLoading : copy.videoBuffering + " · " + percent + "%";
+    if (label !== lastStatus) {
+      videoStatusText.textContent = label;
+      lastStatus = label;
+    }
+  }
 
   function activeLanguage() {
     return document.documentElement.getAttribute("data-language") || "en";
@@ -45,7 +77,15 @@
       videoEl.preload = "auto";
       var sourceEl = document.createElement("source");
       sourceEl.src = VIDEO_SRC;
+      sourceEl.type = "video/mp4";
+      sourceEl.addEventListener("error", function () {
+        videoLoadFailed = true;
+        updateVideoStatus();
+      });
       videoEl.appendChild(sourceEl);
+      ["loadstart", "loadedmetadata", "progress", "canplay", "waiting", "seeking", "seeked", "playing", "error", "stalled", "suspend"].forEach(function (event) {
+        videoEl.addEventListener(event, updateVideoStatus);
+      });
     }
     if (label) videoEl.setAttribute("aria-label", label);
     return videoEl;
@@ -60,8 +100,11 @@
   function kickVideoLoad() {
     if (!videoEl) return;
     videoEl.preload = "auto";
-    if (videoEl.readyState >= 2) return;
-    if (videoEl.networkState === 2) return;
+    if (!videoLoadFailed && !videoEl.error) {
+      if (videoEl.readyState >= 1) return;
+      if (videoEl.networkState === 2) return;
+    }
+    videoLoadFailed = false;
     try {
       videoEl.load();
     } catch (_) {}
@@ -95,8 +138,19 @@
         window.setTimeout(startSilentPreload, 600);
       }
     }
-    if (document.readyState === "complete") run();
-    else window.addEventListener("load", run, { once: true });
+    // Keep intentional preloading, but give the hero and visible photos priority.
+    // Proximity or explicit interest is a better signal than page load alone.
+    openButton.addEventListener("pointerenter", startSilentPreload, { once: true });
+    openButton.addEventListener("focus", startSilentPreload, { once: true });
+    if (window.IntersectionObserver) {
+      var observer = new IntersectionObserver(function (entries) {
+        if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
+        observer.disconnect();
+        if (document.readyState === "complete") run();
+        else window.addEventListener("load", run, { once: true });
+      }, { rootMargin: "240px 0px" });
+      observer.observe(openButton);
+    }
   }
 
   function render(lang) {
@@ -148,7 +202,17 @@
     media.appendChild(text("p", "erhu-wiki__paragraph", copy.videoIntro));
     video.removeAttribute("tabindex");
     media.appendChild(video);
+    videoStatus = document.createElement("div");
+    videoStatus.className = "erhu-wiki__video-status";
+    videoStatusText = text("span", "", copy.videoLoading);
+    videoProgress = document.createElement("progress");
+    videoProgress.max = 100;
+    videoProgress.setAttribute("aria-label", copy.videoBuffering);
+    videoStatus.append(videoStatusText, videoProgress);
+    media.appendChild(videoStatus);
+    lastStatus = "";
     kickVideoLoad();
+    updateVideoStatus();
     media.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
     body.appendChild(media);
   }
@@ -161,7 +225,7 @@
 
   function open() {
     if (isOpen) return;
-    lastFocus = document.activeElement;
+    lastFocus = openButton;
     render(activeLanguage());
     modal.hidden = false;
     document.body.classList.add("erhu-modal-open");
@@ -170,7 +234,8 @@
     if (typeof lockPageScroll === "function") lockPageScroll();
     if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
-    modal.querySelector(".erhu-modal__close").focus();
+    modal.querySelector(".erhu-modal__panel").scrollTop = 0;
+    modal.querySelector(".erhu-modal__close").focus({ preventScroll: true });
   }
 
   function close() {
@@ -188,7 +253,7 @@
     isOpen = false;
     if (typeof unlockPageScroll === "function") unlockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
-    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
   }
 
   window.renderErhuWiki = render;

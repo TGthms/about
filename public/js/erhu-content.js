@@ -2,6 +2,9 @@
    rendered safely without adding a Markdown runtime to this small site. */
 var ERHU_WIKI = {
   en: {
+    videoLoading: "Loading video…",
+    videoBuffering: "Video buffered",
+    videoError: "Video unavailable. Please try reopening the player.",
     title: "About the erhu",
     close: "Close",
     imageAlt: "A traditional erhu from the Metropolitan Museum of Art",
@@ -22,6 +25,9 @@ var ERHU_WIKI = {
     ]
   },
   es: {
+    videoLoading: "Cargando vídeo…",
+    videoBuffering: "Vídeo almacenado",
+    videoError: "Vídeo no disponible. Vuelve a abrir el reproductor.",
     title: "Sobre el erhu",
     close: "Cerrar",
     imageAlt: "Un erhu tradicional del Metropolitan Museum of Art",
@@ -42,6 +48,9 @@ var ERHU_WIKI = {
     ]
   },
   zh: {
+    videoLoading: "正在加载视频…",
+    videoBuffering: "视频已缓冲",
+    videoError: "视频暂不可用，请重新打开播放器。",
     title: "关于二胡",
     close: "关闭",
     imageAlt: "大都会艺术博物馆收藏的一把传统二胡",
@@ -62,6 +71,9 @@ var ERHU_WIKI = {
     ]
   },
   ja: {
+    videoLoading: "動画を読み込み中…",
+    videoBuffering: "動画のバッファ",
+    videoError: "動画を読み込めません。プレーヤーを開き直してください。",
     title: "二胡について",
     close: "閉じる",
     imageAlt: "メトロポリタン美術館所蔵の伝統的な二胡",
@@ -84,6 +96,9 @@ var ERHU_WIKI = {
 };
 
 ERHU_WIKI["zh-Hant"] = {
+    videoLoading: "正在載入影片…",
+    videoBuffering: "影片已緩衝",
+    videoError: "影片暫時無法播放，請重新開啟播放器。",
   "close": "關閉",
   "eyebrow": "一份簡短的樂器小指南",
   "imageAlt": "大都會藝術博物館收藏的一把傳統二胡",

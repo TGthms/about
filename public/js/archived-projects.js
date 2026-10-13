@@ -20,7 +20,7 @@
 
   function open() {
     if (isOpen) return;
-    lastFocus = document.activeElement;
+    lastFocus = openButton;
     modal.hidden = false;
     document.body.classList.add("archived-projects-open");
     openButton.setAttribute("aria-expanded", "true");
@@ -29,7 +29,8 @@
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
 
     var closeButton = modal.querySelector(".archived-projects-modal__close");
-    if (closeButton) closeButton.focus();
+    modal.querySelector(".archived-projects-modal__panel").scrollTop = 0;
+    if (closeButton) closeButton.focus({ preventScroll: true });
   }
 
   function close() {
@@ -42,7 +43,7 @@
     if (typeof unlockPageScroll === "function") unlockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
 
-    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
   }
 
   openButton.addEventListener("click", open);
