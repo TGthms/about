@@ -74,8 +74,7 @@ U.S.; the site does not rely on a Japan-only public-domain claim.
 
 ## Existing English footer
 
-The footer quotes 2 Timothy 1:7 verbatim from the King James Version, including
-“hath,” and is labeled KJV. KJV is public
+The footer quotes 2 Timothy 1:7 verbatim from the King James Version, and is labeled KJV. KJV is public
 domain in the United States; rights in the Authorized Version in the United
 Kingdom are vested in the Crown and administered by Cambridge University Press.
 
