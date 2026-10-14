@@ -5,6 +5,13 @@
   var image = document.querySelector(".hero__backdrop img");
   if (!image) return;
 
+  var occasion = document.documentElement.getAttribute("data-occasion");
+  var original = image.getAttribute("data-hero-src");
+  image.addEventListener("error", function () {
+    if (image.getAttribute("src") !== original) image.src = original;
+  });
+  image.src = window.SeasonCalendar ? window.SeasonCalendar.photo(occasion) : original;
+
   var started = false;
   var entered = false;
 

@@ -18,6 +18,8 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Six equally sized project previews; the whole Personal Hub card opens an introduction and curated version history
 - Brief hover/press/dialog animations that respect reduced motion, with small animated interest doodles
 - Birthday balloons on every home-page visit on December 21 (visitor's local date), with reduced-motion support; preview with `?birthday=preview`
+- Seasonal hero greetings for Christmas, Good Friday, Easter, Palm Sunday, U.S. Thanksgiving, and New Year, in all six languages and the visitor's local date
+- December 31 countdown from 23:50 with NumberFlow digits, followed by 30 seconds of silent fireworks at midnight; motion preferences, tab visibility, and Escape dismissal are respected
 - A first-to-five Pong match against a local computer opponent, with three challenge levels, point and match celebrations, touch/mouse/keyboard controls, pause on blur, and local best-rally records
 - Email copy action with localized success/failure announcements
 - Psalm 23 reading card with localized editions, classic typography, and visible scripture credits
@@ -44,6 +46,8 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
 | `public/js/birthday.js` / `public/js/vendor/balloons.js` | Date-gated birthday celebration and locally hosted balloon effect |
+| `public/js/season-calendar.js` / `public/js/seasons.js` / `public/js/season-content.js` | Local annual calendar, seasonal hero, countdown, and localized greetings |
+| `public/css/seasons.css` / `public/assets/seasonal/` | Seasonal hero treatments and supplied holiday images |
 | `public/js/rally-engine.js` / `public/js/rally.js` | Local Pong opponent, match physics, and accessible game dialog |
 | `public/js/contact.js` | Email copying with honest, localized feedback |
 | `public/js/home-navigation.js` | Section indicator and responsive anchor offsets |
@@ -82,10 +86,16 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 - Scripture excerpts: [edition-specific sources and credits](SCRIPTURE_CREDITS.md)
 - Public Sans: SIL Open Font License in `public/assets/fonts/`
 - Balloon effect: [balloons-js](https://github.com/arturbien/balloons-js), MIT © 2024 Artur Bień; license retained in `public/js/vendor/balloons.js`
+- New Year fireworks: [fireworks-js](https://github.com/crashmax-dev/fireworks-js) 2.10.8, MIT © 2021–2023 Vitalij Ryndin; license retained in `public/js/vendor/fireworks.js`
+- Countdown digits: [NumberFlow](https://github.com/barvian/number-flow) 0.6.2, MIT © 2024 Maxwell Barvian; license retained in `public/js/vendor/number-flow.mjs`. Bundled with esbuild 0.25.12; the two `esm-env` browser checks are resolved to `true` for the browser-only entry. No build tool is required to serve the site.
 - Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/og-image.svg`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
 
 ## Local checks
 
 Run `node --test tests/*.test.cjs` and `python3 tests/html-integrity.py` for image-error/timeout recovery, clipboard language-switch races, section navigation, preferences keyboard focus/return, match physics and opponent behavior, clipboard failures, and complete Korean translation/placeholder coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
+
+Season previews use `?occasion=christmas`, `good-friday`, `easter`, `palm-sunday`, `thanksgiving`, or `new-year`. `?occasion=countdown` runs a 15-second preview into the full fireworks celebration; `?occasion=fireworks` starts it immediately. Reload to replay. Previews never change stored preferences or the system clock.
+
+Good Friday, Easter, and Palm Sunday follow the Western Gregorian calendar. All five holiday photos use individual responsive framing. Good Friday, Easter, Palm Sunday, and Thanksgiving display attributed verse text with their references. Seasonal photos and copy revert at the next local midnight, including on an already-open page. The ordinary page has one timer to the next date boundary; it fetches no seasonal text, images, or animation libraries. The countdown uses the wall clock, updates once a second while visible, and catches up after a background tab resumes. Fireworks run only during the first 30 seconds of January 1, stop when hidden, and do not replay on focus.
 
 To document a future substantial upgrade, append a milestone to `public/js/site-history-content.js`, keep previous version numbers stable, and update `currentVersion`. Add the implementation commit SHA after the commit exists. Scripture source/credit details are maintained in `SCRIPTURE_CREDITS.md`.

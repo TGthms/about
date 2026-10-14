@@ -86,6 +86,27 @@ Each reader shows its edition, source link, credits, and a link to Psalm 23 in t
 Text is stored locally as a small attributed quotation; opening the reader does
 not load a remote Bible embed, analytics script, or external API.
 
+## Seasonal hero verses
+
+The seasonal hero displays the actual verse text followed by its reference and
+edition, with a source link and a Scripture credits disclosure. Good Friday uses
+Isaiah 53:5, Easter uses John 11:25, Palm Sunday uses John 12:13, and U.S.
+Thanksgiving uses Psalm 107:1. Published verse boundaries and punctuation are
+preserved, including quotations continuing into the following verse.
+
+English uses NIV 2011, Spanish RV1909, Chinese the simplified/traditional Union
+Version editions above, Japanese JCB 2016, and Korean KLB 1985. The same publisher
+acknowledgments appear in the seasonal disclosure. Each language adds four
+verses to the existing reader/footer totals. The combined Biblica quotations
+remain below 500 verses, are not complete biblical books, and remain less than
+one quarter of each language's site text. These limited, attributed quotations
+use the publisher's General Use Guidelines and are excluded from the code and
+media licenses.
+
+Published source pages for all four verses are linked directly in
+`public/js/season-content.js`. The supplied holiday images are stored separately
+from Scripture text in `public/assets/seasonal/`.
+
 ## Korean — 현대인의 성경 (KLB), 1985
 
 The reader quotes Psalm 23:1–6, and the footer quotes 2 Timothy 1:7 from
