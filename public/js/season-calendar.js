@@ -42,18 +42,19 @@
     return result;
   }
 
-  var previews = ["christmas", "good-friday", "easter", "palm-sunday", "thanksgiving", "new-year", "countdown", "fireworks"];
-  function photo(occasion) {
+  var previews = ["christmas", "good-friday", "easter", "palm-sunday", "thanksgiving", "new-year", "countdown", "final-minute", "fireworks"];
+  function photo(occasion, phase) {
+    if (occasion === "new-year" && phase === "greeting") return "assets/seasonal/new-year.webp";
     return ["christmas", "good-friday", "easter", "thanksgiving", "palm-sunday"].indexOf(occasion) !== -1 ?
       "assets/seasonal/" + occasion + ".webp" : "assets/main-modern.webp";
   }
   function resolve(now, preview, started) {
     if (previews.indexOf(preview) === -1) return state(now);
-    if (preview === "countdown" || preview === "fireworks") {
-      var target = started + (preview === "countdown" ? 15000 : 0);
+    if (preview === "countdown" || preview === "final-minute" || preview === "fireworks") {
+      var target = started + (preview === "countdown" ? 75000 : preview === "final-minute" ? 60000 : 0);
       return { occasion: "new-year", phase: now.getTime() < target ? "countdown" : "greeting", target: target, year: new Date(started).getFullYear() + 1, next: Infinity };
     }
-    return { occasion: preview, phase: "greeting", year: now.getFullYear(), next: Infinity };
+    return { occasion: preview, phase: "greeting", target: preview === "new-year" ? new Date(now.getFullYear(), 0, 1).getTime() : undefined, year: now.getFullYear(), next: Infinity };
   }
 
   var api = { easter: easter, state: state, resolve: resolve, photo: photo };
@@ -65,10 +66,11 @@
     root.SeasonCalendar = api;
     var initial = api.current();
     if (initial.occasion) document.documentElement.setAttribute("data-occasion", initial.occasion);
+    if (initial.occasion === "new-year") document.documentElement.setAttribute("data-new-year-phase", initial.phase);
     var preload = document.createElement("link");
     preload.rel = "preload";
     preload.as = "image";
-    preload.href = photo(initial.occasion);
+    preload.href = photo(initial.occasion, initial.phase);
     preload.fetchPriority = "high";
     document.head.appendChild(preload);
   }

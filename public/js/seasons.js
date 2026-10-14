@@ -16,12 +16,21 @@
   var until = document.getElementById("season-until");
   var minutes = document.getElementById("season-minutes");
   var seconds = document.getElementById("season-seconds");
-  var close = document.getElementById("season-dismiss");
+  var stage = document.getElementById("season-stage");
+  var stageNumber = document.getElementById("season-stage-number");
+  var stageTitle = document.getElementById("season-stage-title");
+  var stageYear = document.getElementById("season-stage-year");
+  var stageClock = document.getElementById("season-stage-timer");
+  var stageStatus = document.getElementById("season-stage-status");
   var photo = hero.querySelector(".hero__backdrop img");
   var motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var scripts = {}, timer = 0, stopTimer = 0, effect = null, layer = null;
+  var scripts = {}, timer = 0, stopTimer = 0, fadeTimer = 0, effect = null, layer = null;
   var flowLoading = false, flows = false, observed = false, offscreen = false;
   var played = null, dismissed = null, last = "", current = calendar.current();
+  var witnessed = calendar.preview === "fireworks" ? current.target : null;
+  var suspended = false, stageSkipped = null, stageLocked = false, stageOpener = null;
+  var compactClosing = 0, stageCloseTimer = 0, stageLeaving = false;
+  var yearPhoto = null, yearPhotoReady = false, yearPhotoFailed = false, photoFinishTimer = 0;
 
   function load(name) {
     if (scripts[name]) return scripts[name];
@@ -56,32 +65,49 @@
     }
     var text = pack();
     clock.setAttribute("aria-label", (text ? text.timer : "Time until the new year") + ": " + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0"));
+    if (stage.open) {
+      var remaining = Math.min(60, total);
+      if (typeof stageNumber.update === "function") {
+        if (stageNumber.value !== remaining) stageNumber.update(remaining);
+      } else stageNumber.textContent = String(remaining).padStart(2, "0");
+      stage.style.setProperty("--remaining", remaining);
+      stageClock.setAttribute("aria-label", (text ? text.timer : "Time until the new year") + ": " + remaining + " " + (text ? text.seconds : "seconds"));
+      if (text && (remaining === 10 || remaining === 0)) stageStatus.textContent = remaining ? stageClock.getAttribute("aria-label") : text["new-year"][0];
+    }
+  }
+
+  function numberFlow(old, max) {
+    var flow = document.createElement("number-flow");
+    flow.id = old.id;
+    flow.format = { minimumIntegerDigits: 2, useGrouping: false };
+    flow.locales = "en-US";
+    flow.trend = -1;
+    flow.digits = { 1: { max: max } };
+    flow.transformTiming = { duration: 440, easing: "cubic-bezier(.22,1,.36,1)" };
+    flow.spinTiming = flow.transformTiming;
+    flow.opacityTiming = { duration: 180, easing: "ease-out" };
+    flow.animated = false;
+    old.replaceWith(flow);
+    flow.update(Number(old.textContent));
+    flow.animated = !motion.matches;
+    return flow;
   }
 
   function upgradeClock() {
-    if (flowLoading || flows || motion.matches) return;
+    if (motion.matches || document.hidden || suspended) return;
+    if (window.customElements && window.customElements.get("number-flow")) {
+      if (!flows && !clock.hidden) {
+        minutes = numberFlow(minutes, 9);
+        seconds = numberFlow(seconds, 5);
+        flows = true;
+      }
+      if (stage.open && typeof stageNumber.update !== "function") stageNumber = numberFlow(stageNumber, 6);
+      return;
+    }
+    if (flowLoading) return;
     flowLoading = true;
     import(new URL(sources.getAttribute("data-number-flow-src"), document.baseURI).href).then(function () {
-      if (!window.customElements || !customElements.get("number-flow") || clock.hidden) { flowLoading = false; return; }
-      ["minutes", "seconds"].forEach(function (unit) {
-        var old = unit === "minutes" ? minutes : seconds;
-        var flow = document.createElement("number-flow");
-        flow.id = old.id;
-        flow.format = { minimumIntegerDigits: 2, useGrouping: false };
-        flow.locales = "en-US";
-        flow.trend = -1;
-        flow.digits = { 1: { max: unit === "seconds" ? 5 : 9 } };
-        flow.transformTiming = { duration: 440, easing: "cubic-bezier(.22,1,.36,1)" };
-        flow.spinTiming = flow.transformTiming;
-        flow.opacityTiming = { duration: 180, easing: "ease-out" };
-        flow.animated = false;
-        old.replaceWith(flow);
-        flow.update(Number(old.textContent));
-        flow.animated = !motion.matches;
-        if (unit === "minutes") minutes = flow;
-        else seconds = flow;
-      });
-      flows = true;
+      upgradeClock();
     }).catch(function () { /* The plain-text clock remains usable. */ });
   }
 
@@ -108,28 +134,27 @@
       credits.querySelector("summary").textContent = text.credits;
       credits.querySelector("p").textContent = text.copyright;
     }
-    close.setAttribute("aria-label", text.close);
     until.textContent = text.until.replace("{year}", current.year);
+    stageTitle.textContent = current.phase === "greeting" ? text["new-year"][0] : text.countdown[0];
+    stageYear.textContent = String(current.year || "");
   }
 
   function stopFireworks() {
-    var focused = document.activeElement === close;
     window.clearTimeout(stopTimer);
+    window.clearTimeout(fadeTimer);
     stopTimer = 0;
+    fadeTimer = 0;
     if (effect) effect.stop(true);
     effect = null;
     if (layer) layer.remove();
     layer = null;
-    close.hidden = true;
-    if (focused && !document.hidden) {
-      var target = hero.querySelector(".hero__index a");
-      if (target) target.focus({ preventScroll: true });
-    }
   }
 
   function eligible(target) {
-    return !document.hidden && !motion.matches && played !== target && dismissed !== target &&
-      Date.now() >= target && Date.now() < target + 30000;
+    var state = calendar.current();
+    return !suspended && !document.hidden && !motion.matches && played !== target && dismissed !== target &&
+      state.occasion === "new-year" && state.phase === "greeting" && state.target === target &&
+      (witnessed !== target || Date.now() < target + 30000);
   }
 
   function celebrate() {
@@ -152,10 +177,114 @@
           mouse: { click: false, move: false, max: 1 }, sound: { enabled: false }
         });
         effect.start();
-        close.hidden = false;
-        stopTimer = window.setTimeout(stopFireworks, Math.max(0, target + 30000 - Date.now()));
+        var duration = witnessed === target ? Math.max(0, target + 30000 - Date.now()) : 5000;
+        fadeTimer = window.setTimeout(function () { if (layer) layer.classList.add("is-ending"); }, Math.max(0, duration - 600));
+        stopTimer = window.setTimeout(stopFireworks, duration);
       } catch (_) { stopFireworks(); }
     }).catch(function () { /* The greeting does not depend on canvas support. */ });
+  }
+
+  function closeStage(restoreFocus) {
+    window.clearTimeout(stageCloseTimer);
+    stageCloseTimer = 0;
+    stageLeaving = false;
+    stage.classList.remove("is-leaving");
+    if (stage.open) stage.close();
+    if (stageLocked && typeof unlockPageScroll === "function") unlockPageScroll();
+    stageLocked = false;
+    if (restoreFocus && stageOpener && stageOpener.isConnected) stageOpener.focus({ preventScroll: true });
+    stageOpener = null;
+  }
+
+  function minimizeStage() {
+    stageSkipped = current.target;
+    compactClosing = 0;
+    closeStage(true);
+    tick();
+  }
+
+  function openStage() {
+    if (stage.open || stageSkipped === current.target || !pack() || typeof stage.showModal !== "function") return;
+    var busy = Array.prototype.some.call(document.querySelectorAll('[aria-modal="true"], dialog[open]'), function (el) {
+      return el !== stage && !el.hidden && el.getClientRects().length;
+    });
+    if (busy) return;
+    stageOpener = document.activeElement;
+    stageStatus.textContent = "";
+    if (typeof stageNumber.update !== "function") stageNumber.textContent = "60";
+    render();
+    try {
+      stage.showModal();
+      if (typeof lockPageScroll === "function") { lockPageScroll(); stageLocked = true; }
+      compactClosing = Date.now();
+      stage.focus({ preventScroll: true });
+    } catch (_) { closeStage(false); }
+  }
+
+  function finishStage() {
+    if (!stage.open || stageLeaving) return;
+    stageLeaving = true;
+    /* Reposition behind the fading dialog before revealing the new hero. */
+    if (stageLocked && typeof unlockPageScroll === "function") unlockPageScroll();
+    stageLocked = false;
+    window.scrollTo(0, 0);
+    stage.classList.add("is-leaving");
+    stageCloseTimer = window.setTimeout(function () {
+      closeStage(false);
+      var heading = document.getElementById("hero-name");
+      heading.setAttribute("tabindex", "-1");
+      heading.focus({ preventScroll: true });
+    }, motion.matches ? 0 : 600);
+  }
+
+  function clearYearPhoto() {
+    window.clearTimeout(photoFinishTimer);
+    photoFinishTimer = 0;
+    if (yearPhoto) yearPhoto.remove();
+    yearPhoto = null;
+    yearPhotoReady = false;
+  }
+
+  function activateYearPhoto() {
+    if (suspended || document.hidden || !yearPhoto || !yearPhotoReady || photoFinishTimer || current.phase !== "greeting") return;
+    var front = yearPhoto;
+    var src = calendar.photo("new-year", "greeting");
+    front.classList.add("is-active");
+    photoFinishTimer = window.setTimeout(function () {
+      photoFinishTimer = 0;
+      if (yearPhoto !== front || calendar.current().phase !== "greeting") return;
+      photo.src = src;
+      function release() { if (yearPhoto === front) clearYearPhoto(); }
+      if (typeof photo.decode === "function") photo.decode().then(release, function () {});
+      else if (photo.complete) release();
+      else photo.addEventListener("load", release, { once: true });
+    }, motion.matches ? 0 : 1250);
+  }
+
+  function prepareYearPhoto() {
+    var src = calendar.photo("new-year", "greeting");
+    if (yearPhoto || yearPhotoFailed || photo.getAttribute("src") === src) return;
+    var image = document.createElement("img");
+    yearPhoto = image;
+    image.className = "seasonal-year-photo";
+    image.alt = "";
+    image.width = 1672;
+    image.height = 941;
+    image.decoding = "async";
+    image.fetchPriority = "high";
+    image.setAttribute("aria-hidden", "true");
+    function ready() {
+      if (yearPhoto !== image) return;
+      yearPhotoReady = true;
+      activateYearPhoto();
+    }
+    image.onload = function () {
+      if (typeof image.decode === "function") image.decode().then(ready, ready);
+      else ready();
+    };
+    image.onerror = function () { if (yearPhoto === image) { yearPhotoFailed = true; clearYearPhoto(); } };
+    photo.parentElement.appendChild(image);
+    image.src = src;
   }
 
   function observe() {
@@ -173,28 +302,42 @@
   function tick() {
     window.clearTimeout(timer);
     timer = 0;
-    if (document.hidden) return;
+    if (document.hidden || suspended) return;
     var now = Date.now();
     current = calendar.current();
     var occasion = current.occasion;
     if (occasion) {
       root.setAttribute("data-occasion", occasion);
-      if (!pack()) load("content").then(function () { observe(); render(); if (!clock.hidden) setNumbers(Math.max(0, Math.ceil((current.target - Date.now()) / 1000))); }).catch(function () {});
+      if (!pack()) load("content").then(function () { observe(); render(); tick(); }).catch(function () {});
     } else root.removeAttribute("data-occasion");
-    var src = calendar.photo(occasion);
-    if (photo.getAttribute("src") !== src) photo.src = src;
-    var zero = current.phase === "greeting" && now >= current.target && now < current.target + 1400;
-    var settling = current.phase === "greeting" && now >= current.target + 1400 && now < current.target + 2100;
-    clock.hidden = current.phase !== "countdown" && !zero && !settling;
-    clock.classList.toggle("is-finished", settling);
+    if (occasion === "new-year") root.setAttribute("data-new-year-phase", current.phase);
+    else root.removeAttribute("data-new-year-phase");
+    var remaining = Math.max(0, Math.ceil((current.target - now) / 1000)) || 0;
+    if (current.phase === "countdown") {
+      witnessed = current.target;
+      if (remaining <= 60) { prepareYearPhoto(); openStage(); }
+    } else if (stage.open) finishStage();
+    var src = calendar.photo(occasion, current.phase);
+    if (occasion === "new-year" && current.phase === "greeting" && photo.getAttribute("src") !== src) {
+      prepareYearPhoto();
+      activateYearPhoto();
+    } else if (occasion !== "new-year" || current.phase !== "countdown") {
+      if (photo.getAttribute("src") !== src) photo.src = src;
+      if (occasion !== "new-year") clearYearPhoto();
+    }
+    var zero = !compactClosing && witnessed === current.target && current.phase === "greeting" && now < current.target + 1400;
+    var settling = !compactClosing && witnessed === current.target && current.phase === "greeting" && now >= current.target + 1400 && now < current.target + 2100;
+    var folding = compactClosing && current.phase === "countdown" && now < compactClosing + 700;
+    clock.hidden = (current.phase !== "countdown" || (stage.open && !folding)) && !zero && !settling;
+    clock.classList.toggle("is-finished", Boolean(settling || folding));
     floatClock();
     var signature = [occasion, current.phase, current.year, clock.hidden].join(":");
     if (last !== signature) { last = signature; render(); }
-    if (!clock.hidden) {
-      setNumbers(Math.max(0, Math.ceil((current.target - now) / 1000)));
+    if (!clock.hidden || stage.open) {
+      setNumbers(remaining);
       upgradeClock();
     }
-    if (current.phase === "countdown" && current.target - now <= 10000 && !motion.matches) {
+    if (current.phase === "countdown" && remaining <= 60 && !motion.matches && !scripts.fireworks) {
       load("fireworks").catch(function () {});
     }
     celebrate();
@@ -203,22 +346,42 @@
     if (Number.isFinite(delay)) timer = window.setTimeout(tick, Math.max(20, delay));
   }
 
-  close.addEventListener("click", function () { dismissed = current.target; stopFireworks(); });
+  stage.addEventListener("cancel", function (event) { event.preventDefault(); minimizeStage(); });
   document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && (effect || (current.target && Date.now() < current.target + 30000))) {
+    if (stage.open && event.key === "Tab") { event.preventDefault(); stage.focus({ preventScroll: true }); return; }
+    if (stage.open && event.key === "Escape") { event.preventDefault(); minimizeStage(); return; }
+    if (event.key === "Escape" && current.phase === "greeting" && (effect || scripts.fireworks)) {
       dismissed = current.target;
       stopFireworks();
     }
   });
   document.addEventListener("visibilitychange", function () {
-    if (document.hidden) { window.clearTimeout(timer); stopFireworks(); }
+    if (document.hidden) {
+      window.clearTimeout(timer);
+      window.clearTimeout(photoFinishTimer);
+      photoFinishTimer = 0;
+      stopFireworks();
+      closeStage(false);
+    }
     else tick();
   });
-  window.addEventListener("pagehide", function () { window.clearTimeout(timer); stopFireworks(); });
-  window.addEventListener("pageshow", function (event) { if (event.persisted) tick(); });
+  window.addEventListener("pagehide", function () {
+    suspended = true;
+    window.clearTimeout(timer);
+    window.clearTimeout(photoFinishTimer);
+    photoFinishTimer = 0;
+    stopFireworks();
+    closeStage(false);
+  });
+  window.addEventListener("pageshow", function (event) {
+    suspended = false;
+    if (event.persisted) { played = null; dismissed = null; witnessed = null; }
+    tick();
+  });
   motion.addEventListener("change", function () {
     if (motion.matches) stopFireworks();
     if (flows) { minutes.animated = !motion.matches; seconds.animated = !motion.matches; }
+    if (typeof stageNumber.update === "function") stageNumber.animated = !motion.matches;
     tick();
   });
   tick();

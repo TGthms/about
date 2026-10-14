@@ -41,10 +41,10 @@
 
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
-  <script src="js/season-calendar.js?v=4f9b8dbe32ec"></script>
+  <script src="js/season-calendar.js?v=04c0cee8ce68"></script>
   <link rel="stylesheet" href="css/styles.css?v=6d2903930b6f" />
   <link rel="stylesheet" href="css/home.css?v=8eea03c1d103" />
-  <link rel="stylesheet" href="css/seasons.css?v=7c60deecd252" />
+  <link rel="stylesheet" href="css/seasons.css?v=a09daa967389" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
@@ -182,7 +182,7 @@
         </aside>
       </div>
     </section>
-    <script src="js/hero-image.js?v=500c7db8b9be"></script>
+    <script src="js/hero-image.js?v=aa47ba433389"></script>
 
     <!-- 2. About -->
     <section class="section about" id="about" aria-labelledby="about-heading">
@@ -1150,7 +1150,7 @@
   <script src="js/i18n/data.js?v=103a9ae4ab00"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=55f59360be64"></script>
-  <script src="js/i18n/controls.js?v=5fc6d444eb81"></script>
+  <script src="js/i18n/controls.js?v=9183ed691488"></script>
   <script src="js/i18n/project-host.js?v=56bd0d5cccc7"></script>
   <script src="js/i18n/language.js?v=694fde13ebd2"></script>
   <script src="js/erhu-content.js?v=e58b74972f42"></script>
@@ -1172,7 +1172,17 @@
   <script src="js/main.js?v=1abec5d10cc9"></script>
   <script src="js/home-navigation.js?v=a51be04283bb"></script>
   <script src="js/birthday.js?v=a9786fb7f864" data-balloons-src="js/vendor/balloons.js?v=786d5e95e0f9"></script>
-  <button type="button" class="seasonal-dismiss" id="season-dismiss" aria-label="Dismiss fireworks" data-page-root hidden><span aria-hidden="true">×</span></button>
-  <script src="js/seasons.js?v=2fed17774fec" data-content-src="js/season-content.js?v=030bf9d30161" data-number-flow-src="js/vendor/number-flow.mjs?v=6fe2b490b372" data-fireworks-src="js/vendor/fireworks.js?v=dae8c6b54658"></script>
+  <dialog class="season-stage" id="season-stage" aria-labelledby="season-stage-title" tabindex="-1">
+    <div class="season-stage__inner">
+      <p class="season-stage__title" id="season-stage-title"></p>
+      <div class="season-stage__clock" role="timer" aria-live="off" id="season-stage-timer">
+        <svg class="season-stage__ring" viewBox="0 0 320 320" aria-hidden="true"><circle class="season-stage__track" cx="160" cy="160" r="145" /><circle class="season-stage__progress" cx="160" cy="160" r="145" pathLength="60" /></svg>
+        <span id="season-stage-number" aria-hidden="true">60</span>
+      </div>
+      <p class="season-stage__year" id="season-stage-year" aria-hidden="true"></p>
+      <p class="visually-hidden" id="season-stage-status" role="status" aria-live="polite"></p>
+    </div>
+  </dialog>
+  <script src="js/seasons.js?v=cb9f0d1f7ae5" data-content-src="js/season-content.js?v=2d3b669512d2" data-number-flow-src="js/vendor/number-flow.mjs?v=6fe2b490b372" data-fireworks-src="js/vendor/fireworks.js?v=dae8c6b54658"></script>
 </body>
 </html>

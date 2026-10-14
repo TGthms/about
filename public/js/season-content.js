@@ -32,7 +32,6 @@ var SEASON_CONTENT = {
     ],
     "until": "Until {year}",
     "timer": "Time until the new year",
-    "close": "Dismiss fireworks",
     "credits": "Scripture credits",
     "copyright": "Scripture quotations taken from The Holy Bible, New International Version® NIV®. Copyright © 1973, 1978, 1984, 2011 by Biblica, Inc. Used by permission. All rights reserved worldwide.",
     "scripture": {
@@ -52,7 +51,8 @@ var SEASON_CONTENT = {
         "reference": "Isaiah 53:5 · NIV ↗",
         "url": "https://www.biblegateway.com/passage/?search=Isaiah%2053%3A5&version=NIV"
       }
-    }
+    },
+    "seconds": "seconds"
   },
   "es": {
     "christmas": [
@@ -85,7 +85,6 @@ var SEASON_CONTENT = {
     ],
     "until": "Hasta {year}",
     "timer": "Tiempo hasta el nuevo año",
-    "close": "Ocultar los fuegos artificiales",
     "credits": "Créditos del texto bíblico",
     "copyright": "Textos bíblicos: Reina-Valera 1909. Dominio público. Fuente: eBible.org.",
     "scripture": {
@@ -105,7 +104,8 @@ var SEASON_CONTENT = {
         "reference": "Isaías 53:5 · RV1909 ↗",
         "url": "https://ebible.org/spaRV1909/ISA53.htm#V5"
       }
-    }
+    },
+    "seconds": "segundos"
   },
   "zh": {
     "christmas": [
@@ -138,7 +138,6 @@ var SEASON_CONTENT = {
     ],
     "until": "迎接 {year} 年",
     "timer": "新年倒计时",
-    "close": "关闭烟花",
     "credits": "经文来源",
     "copyright": "经文：和合本（简体）。公有领域。来源：eBible.org。",
     "scripture": {
@@ -158,7 +157,8 @@ var SEASON_CONTENT = {
         "reference": "以赛亚书 53:5 · 和合本 ↗",
         "url": "https://ebible.org/cmn-cu89s/ISA53.htm#V5"
       }
-    }
+    },
+    "seconds": "秒"
   },
   "zh-Hant": {
     "christmas": [
@@ -191,7 +191,6 @@ var SEASON_CONTENT = {
     ],
     "until": "迎接 {year} 年",
     "timer": "新年倒數計時",
-    "close": "關閉煙火",
     "credits": "經文來源",
     "copyright": "經文：和合本（繁體）。公有領域。來源：eBible.org。",
     "scripture": {
@@ -211,7 +210,8 @@ var SEASON_CONTENT = {
         "reference": "以賽亞書 53:5 · 和合本 ↗",
         "url": "https://ebible.org/cmn-cu89t/ISA53.htm#V5"
       }
-    }
+    },
+    "seconds": "秒"
   },
   "ja": {
     "christmas": [
@@ -244,7 +244,6 @@ var SEASON_CONTENT = {
     ],
     "until": "{year}年まで",
     "timer": "新年までのカウントダウン",
-    "close": "花火を閉じる",
     "credits": "聖書の出典",
     "copyright": "Scripture quotations taken from the Japanese Living Bible (リビングバイブル). Copyright © 1978, 2011, 2016 by Biblica, Inc.® Used by permission. All rights reserved worldwide.",
     "scripture": {
@@ -264,7 +263,8 @@ var SEASON_CONTENT = {
         "reference": "イザヤ書 53:5 · JCB ↗",
         "url": "https://www.bible.com/ja/bible/83/ISA.53.5.JCB"
       }
-    }
+    },
+    "seconds": "秒"
   },
   "ko": {
     "christmas": [
@@ -297,7 +297,6 @@ var SEASON_CONTENT = {
     ],
     "until": "{year}년까지",
     "timer": "새해 카운트다운",
-    "close": "불꽃놀이 닫기",
     "credits": "성경 인용 출처",
     "copyright": "Scripture quotations taken from the Korean Living Bible (현대인의 성경). Copyright © 1985 by Biblica, Inc.® Used by permission. All rights reserved worldwide.",
     "scripture": {
@@ -317,6 +316,7 @@ var SEASON_CONTENT = {
         "reference": "이사야 53:5 · 현대인의 성경 ↗",
         "url": "https://www.bible.com/ko/bible/86/ISA.53.5.KLB"
       }
-    }
+    },
+    "seconds": "초"
   }
 };

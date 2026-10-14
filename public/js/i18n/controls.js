@@ -206,9 +206,11 @@ function initControlsPanel() {
     resetSheetInlineStyles();
     panel.classList.remove("is-raised");
     if (backdrop) backdrop.classList.remove("is-visible");
+    var wasOpen = document.body.classList.contains("controls-open");
+    /* Release the old background before the sheet moves into the header. */
+    if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
     syncSheetLayerParent();
     restoreControlsTrigger(cluster, trigger);
-    var wasOpen = document.body.classList.contains("controls-open");
 
     if (isDesktopControls()) {
       panel.hidden = false;
@@ -226,7 +228,6 @@ function initControlsPanel() {
       setSheetDialogMode(false);
     }
     if (wasOpen && typeof unlockPageScroll === "function") unlockPageScroll();
-    if (wasOpen && typeof setBackgroundInert === "function") setBackgroundInert(panel, false);
   }
 
   function setOpen(open) {

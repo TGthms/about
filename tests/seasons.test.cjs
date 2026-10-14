@@ -54,8 +54,10 @@ test('visitor timezone, rather than UTC or Los Angeles, determines midnight and 
 test('previews have a real progressing midnight transition without accepting arbitrary date overrides', () => {
   const start=new Date(2026,5,2,12).getTime();
   assert.equal(calendar.resolve(new Date(start),'countdown',start).phase,'countdown');
-  assert.equal(calendar.resolve(new Date(start+15000),'countdown',start).phase,'greeting');
-  assert.equal(calendar.resolve(new Date(start+45000),'countdown',start).target,start+15000);
+  assert.equal(calendar.resolve(new Date(start+15000),'countdown',start).phase,'countdown');
+  assert.equal(calendar.resolve(new Date(start+75000),'countdown',start).phase,'greeting');
+  assert.equal(calendar.resolve(new Date(start+105000),'countdown',start).target,start+75000);
+  assert.equal(calendar.resolve(new Date(start),'final-minute',start).target,start+60000);
   assert.equal(calendar.resolve(new Date(start),'christmas',start).occasion,'christmas');
   assert.equal(calendar.resolve(new Date(start),'<script>',start).occasion,'');
 });
@@ -76,45 +78,53 @@ test('the head preloads only the selected hero photograph, including seasonal pr
 });
 
 function harness(date, {reduced=false, hidden=false}={}) {
-  let now=date.getTime(), id=0, plays=0, stops=0;
-  const events={}, timers=new Map(), scripts=[], observers=[];
+  let now=date.getTime(), id=0, plays=0, stops=0, locks=0;
+  const events={}, timers=new Map(), scripts=[], observers=[], busy=[];
   function node() {
-    const attributes=new Map(), children={};
-    return {hidden:true, textContent:'', children, attributes, className:'',
-      classList:{toggle(){}}, style:{},
+    const attributes=new Map(), children={}, classes=new Set();
+    const result={hidden:true, open:false, isConnected:true, complete:true, textContent:'', children, attributes, className:'', appended:[],
+      classList:{toggle(k,on){if(on)classes.add(k);else classes.delete(k);},add:k=>classes.add(k),remove:k=>classes.delete(k),contains:k=>classes.has(k)}, style:{setProperty(){}},
       setAttribute:(k,v)=>attributes.set(k,String(v)),getAttribute:k=>attributes.get(k)||null,
-      removeAttribute:k=>attributes.delete(k), addEventListener:(n,f)=>events['button:'+n]=f,
-      querySelector:s=>children[s]||(children[s]=node()),remove(){this.removed=true;},focus(){},
+      removeAttribute:k=>attributes.delete(k), addEventListener(n,f){events[(this.id||'node')+':'+n]=f;},
+      querySelector:s=>children[s]||(children[s]=node()),remove(){this.removed=true;},focus(){document.activeElement=this;},
+      appendChild(n){this.appended.push(n);},showModal(){this.open=true;},close(){this.open=false;},
     };
+    Object.defineProperty(result,'src',{set(v){attributes.set('src',v);},get(){return attributes.get('src');}});
+    return result;
   }
-  const nodes=Object.fromEntries(['hero','season-label','season-reference','season-verse','season-verse-text','season-credits','season-countdown','season-until','season-minutes','season-seconds','season-dismiss'].map(id=>[id,node()]));
+  const nodes=Object.fromEntries(['hero','hero-name','season-label','season-reference','season-verse','season-verse-text','season-credits','season-countdown','season-until','season-minutes','season-seconds','season-stage','season-stage-number','season-stage-title','season-stage-year','season-stage-timer','season-stage-status'].map(id=>[id,node()]));
+  Object.entries(nodes).forEach(([id,n])=>n.id=id);
   const root=node(); root.setAttribute('data-language','en');
   const photo=nodes.hero.querySelector('.hero__backdrop img'); photo.setAttribute('data-hero-src','assets/main-modern.webp');
-  Object.defineProperty(photo,'src',{set(v){photo.setAttribute('src',v);}});
+  photo.parentElement=node();
+  const initial=calendar.state(date);photo.src=calendar.photo(initial.occasion,initial.phase);
   const motion={matches:reduced,addEventListener:(n,f)=>events['motion:'+n]=f};
   const document={documentElement:root,hidden,baseURI:'http://localhost:8000/',
-    getElementById:id=>nodes[id],createElement:()=>node(),
+    getElementById:id=>nodes[id],createElement:()=>node(),querySelectorAll:()=>busy,
     currentScript:{getAttribute:name=>'js/'+name+'.js'},
     head:{appendChild:n=>scripts.push(n)},body:{appendChild(){}},
     addEventListener:(n,f)=>events[n]=f,
   };
   const window={SeasonCalendar:{current:()=>calendar.state(new Date(now)),photo:calendar.photo},
-    matchMedia:()=>motion, innerWidth:1280,
+    matchMedia:()=>motion, innerWidth:1280,scrollTo(){},
     setTimeout:(fn,delay)=>{timers.set(++id,{fn,delay});return id;}, clearTimeout:id=>timers.delete(id),
     addEventListener:(n,f)=>events[n]=f,
     Fireworks:{Fireworks:class {start(){plays++;} stop(){stops++;}}}
   };
   const context={window,document,URL,Promise,Date:class extends Date {static now(){return now;}},
+    lockPageScroll(){locks++;},unlockPageScroll(){locks--;},
     MutationObserver:class {constructor(fn){observers.push(fn);}observe(){}},
     TRANSLATIONS:{en:{hero:{note:'Original introduction'}},ko:{hero:{note:'원래 소개'}}},
   };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync('public/js/seasons.js','utf8'),context);
-  return {nodes,window,document,motion,events,timers,scripts,photo,
+  return {nodes,window,document,motion,events,timers,scripts,photo,busy,
+    get locks(){return locks;},get yearPhoto(){return photo.parentElement.appended.at(-1);},
     get plays(){return plays;},get stops(){return stops;},
     async loadContent() {vm.runInContext(fs.readFileSync('public/js/season-content.js','utf8'),context);window.SEASON_CONTENT=context.SEASON_CONTENT;scripts.find(s=>s.src.includes('content')).onload();await Promise.resolve();},
     async loadFireworks(){scripts.find(s=>s.src.includes('fireworks')).onload();await Promise.resolve();},
-    advance(date){now=date.getTime();events.pageshow({persisted:true});},
+    advance(date){now=date.getTime();events.pageshow({persisted:false});},
+    fireTimer(delay){for(const [id,t] of timers)if(t.delay===delay){timers.delete(id);t.fn();return;}throw new Error('No timer '+delay);},
     changeLanguage(lang){root.setAttribute('data-language',lang);for(const fn of observers)fn();},
   };
 }
@@ -143,33 +153,78 @@ test('reduced-motion countdown remains accurate after background throttling and 
   h.document.hidden=false;h.advance(new Date(2026,11,31,23,59,58));
   assert.equal(h.nodes['season-minutes'].textContent,'00');assert.equal(h.nodes['season-seconds'].textContent,'02');
   h.advance(new Date(2027,0,1));
-  assert.equal(h.nodes['season-seconds'].textContent,'00');assert.equal(h.nodes['season-countdown'].hidden,false);
+  assert.equal(h.nodes['season-stage-number'].textContent,'00');assert.equal(h.nodes['season-countdown'].hidden,true);
+  h.fireTimer(0);assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);
   assert.equal(h.nodes['season-label'].textContent,'Happy New Year');
   h.advance(new Date(2027,0,1,0,0,3));assert.equal(h.nodes['season-countdown'].hidden,true);
   assert.equal(h.scripts.filter(s=>s.src.includes('fireworks')).length,0);
 });
 
 test('fireworks end at midnight plus 30 seconds, do not replay on focus, and clean up on hide',async()=>{
-  const h=harness(new Date(2027,0,1,0,0,3));await h.loadContent();await h.loadFireworks();
-  assert.equal(h.plays,1);assert.equal(h.nodes['season-dismiss'].hidden,false);
+  const h=harness(new Date(2026,11,31,23,59,59));await h.loadContent();h.advance(new Date(2027,0,1,0,0,3));await h.loadFireworks();
+  assert.equal(h.plays,1);
   assert.ok([...h.timers.values()].some(t=>t.delay===27000));
   h.document.hidden=true;h.events.visibilitychange();assert.equal(h.stops,1);
   h.document.hidden=false;h.events.visibilitychange();await Promise.resolve();assert.equal(h.plays,1);
-  assert.equal(h.nodes['season-dismiss'].hidden,true);
-  const automatic=harness(new Date(2027,0,1,0,0,3));await automatic.loadContent();await automatic.loadFireworks();
-  [...automatic.timers.values()].find(t=>t.delay===27000).fn();
-  assert.equal(automatic.stops,1);assert.equal(automatic.nodes['season-dismiss'].hidden,true);
+  const automatic=harness(new Date(2026,11,31,23,59,59));await automatic.loadContent();automatic.advance(new Date(2027,0,1,0,0,3));await automatic.loadFireworks();
+  automatic.fireTimer(27000);
+  assert.equal(automatic.stops,1);
 });
 
 test('late library loading, Escape, and reduced-motion changes cannot start unwanted fireworks',async()=>{
   for(const action of ['late','escape','motion','hidden']){
-    const h=harness(new Date(2027,0,1,0,0,3));await h.loadContent();
+    const h=harness(action==='late'?new Date(2026,11,31,23,59,59):new Date(2027,0,1,0,0,3));await h.loadContent();
     if(action==='late')h.advance(new Date(2027,0,1,0,0,31));
     if(action==='escape')h.events.keydown({key:'Escape'});
     if(action==='motion'){h.motion.matches=true;h.events['motion:change']();}
     if(action==='hidden'){h.document.hidden=true;h.events.visibilitychange();}
     await h.loadFireworks();assert.equal(h.plays,0,action);
   }
+});
+
+test('New Year arrivals get five seconds of fireworks throughout the day and on a new BFCache visit',async()=>{
+  for(const hour of [0,12,23]) {
+    const h=harness(new Date(2027,0,1,hour,15));await h.loadContent();await h.loadFireworks();
+    assert.equal(h.plays,1);h.fireTimer(5000);assert.equal(h.stops,1);
+    h.events.visibilitychange();await Promise.resolve();assert.equal(h.plays,1);
+    h.events.pagehide();h.events.pageshow({persisted:true});await Promise.resolve();assert.equal(h.plays,2);
+    assert.equal(h.photo.src,'assets/seasonal/new-year.webp');
+  }
+});
+
+test('final minute opens a focused, button-free countdown and Escape returns to the compact timer',async()=>{
+  const h=harness(new Date(2026,11,31,23,58,59),{reduced:true});await h.loadContent();
+  assert.equal(h.nodes['season-stage'].open,false);
+  h.advance(new Date(2026,11,31,23,59));
+  assert.equal(h.nodes['season-stage'].open,true);assert.equal(h.locks,1);
+  assert.equal(h.document.activeElement,h.nodes['season-stage']);
+  assert.equal(h.nodes['season-stage-number'].textContent,'60');
+  h.advance(new Date(2026,11,31,23,59,1));assert.equal(h.nodes['season-countdown'].hidden,true);
+  let prevented=false;h.events.keydown({key:'Escape',preventDefault(){prevented=true;}});
+  assert.equal(prevented,true);assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);
+  assert.equal(h.nodes['season-countdown'].hidden,false);
+  h.advance(new Date(2026,11,31,23,59,2));assert.equal(h.nodes['season-stage'].open,false);
+  const html=fs.readFileSync('public/index.html','utf8');
+  assert.ok(!html.includes('season-dismiss'));assert.ok(!html.includes('season-stage-return'));
+});
+
+test('the final minute waits for other dialogs and releases scroll and focus resources on departure',async()=>{
+  const h=harness(new Date(2026,11,31,23,59),{reduced:true});
+  h.busy.push({hidden:false,getClientRects:()=>[{}]});await h.loadContent();
+  assert.equal(h.nodes['season-stage'].open,false);
+  h.busy.length=0;h.advance(new Date(2026,11,31,23,59,1));assert.equal(h.nodes['season-stage'].open,true);
+  h.events.pagehide();assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);assert.equal(h.timers.size,0);
+});
+
+test('the New Year photograph decodes before midnight, crossfades, and releases the old image',async()=>{
+  const h=harness(new Date(2026,11,31,23,59),{reduced:true});await h.loadContent();
+  assert.equal(h.yearPhoto.src,'assets/seasonal/new-year.webp');
+  const front=h.yearPhoto;front.onload();assert.equal(front.classList.contains('is-active'),false);
+  h.advance(new Date(2027,0,1));assert.equal(front.classList.contains('is-active'),true);
+  assert.equal(h.photo.src,'assets/main-modern.webp');
+  h.fireTimer(0); // Finish the reduced-motion dialog.
+  h.fireTimer(0); // Decode-safe photo replacement.
+  assert.equal(h.photo.src,'assets/seasonal/new-year.webp');assert.equal(front.removed,true);
 });
 
 test('every language includes all six occasions and actual Scripture text with its reference',()=>{

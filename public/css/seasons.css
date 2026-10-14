@@ -31,12 +31,12 @@ html[data-occasion="thanksgiving"] .hero__backdrop img { object-position: 72% ce
 html[data-occasion="palm-sunday"] .hero__backdrop img { object-position: 78% center; }
 html[data-occasion="good-friday"] .hero__photo { filter: brightness(.88) saturate(.72); }
 html[data-theme="dark"][data-occasion="good-friday"] .hero__photo { filter: brightness(.66) saturate(.76); }
-html[data-occasion]:not([data-occasion="new-year"]) .hero__backdrop::before {
+html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::before {
   background:
     linear-gradient(to bottom, rgb(250 250 250 / 62%), transparent 28%),
     linear-gradient(90deg, rgb(250 250 250 / 95%), rgb(250 250 250 / 88%) 36%, rgb(250 250 250 / 68%) 60%, rgb(250 250 250 / 12%));
 }
-html[data-occasion]:not([data-occasion="new-year"]) .hero__backdrop::after {
+html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::after {
   background:
     linear-gradient(to bottom, rgb(20 23 25 / 55%), transparent 28%),
     linear-gradient(90deg, rgb(20 23 25 / 92%), rgb(20 23 25 / 80%) 36%, rgb(20 23 25 / 62%) 60%, rgb(20 23 25 / 10%));
@@ -73,30 +73,53 @@ html[data-occasion]:not([data-occasion="new-year"]) .hero__backdrop::after {
   box-shadow: 0 5px 24px rgb(0 0 0 / 8%);
 }
 .seasonal-countdown.is-floating .seasonal-countdown__digits { font-size: 2rem; }
-.seasonal-fireworks { position: fixed; inset: 0; z-index: 95; pointer-events: none; contain: strict; }
+.seasonal-fireworks { position: fixed; inset: 0; z-index: 95; pointer-events: none; contain: strict; transition: opacity 600ms ease; }
+.seasonal-fireworks.is-ending { opacity: 0; }
 .seasonal-fireworks canvas { display: block; }
-.seasonal-dismiss {
+.season-stage {
   position: fixed;
-  z-index: 96;
-  bottom: max(20px, env(safe-area-inset-bottom));
-  left: max(20px, env(safe-area-inset-left));
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  background: var(--bg);
-  color: var(--ink);
-  font: 1.6rem/1 var(--font);
-  box-shadow: 0 5px 24px rgb(0 0 0 / 8%);
-  cursor: pointer;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: max(16px, env(safe-area-inset-top)) 24px max(16px, env(safe-area-inset-bottom));
+  border: 0;
+  color: #f1f3f4;
+  background: radial-gradient(ellipse at 50% 35%, #233442, #10171e 75%);
+  overflow: auto;
 }
-.seasonal-countdown[hidden], .seasonal-dismiss[hidden], .seasonal-reference[hidden], .seasonal-credits[hidden], .seasonal-verse[hidden], .hero__occasion[hidden], .hero__note[hidden] { display: none; }
+.season-stage:not([open]) { display: none; }
+.season-stage[open] { display: grid; place-items: center; animation: season-stage-in 600ms cubic-bezier(.22, 1, .36, 1) both; }
+.season-stage::backdrop { background: #10171e; animation: season-backdrop-in 600ms ease both; }
+.season-stage.is-leaving { animation: season-stage-out 600ms ease both; }
+.season-stage.is-leaving::backdrop { animation: season-stage-out 600ms ease both; }
+.season-stage__inner { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; width: 100%; }
+.season-stage__title { font: 400 clamp(1rem, 2.5vw, 1.25rem)/1.5 var(--font-display); max-width: 26em; text-wrap: balance; color: #d6dce1; }
+.season-stage__clock { position: relative; display: grid; place-items: center; width: min(68vw, 48dvh, 360px); aspect-ratio: 1; font: 400 clamp(5rem, 24vmin, 12rem)/1 var(--font); font-variant-numeric: tabular-nums; letter-spacing: -.06em; }
+.season-stage__clock number-flow { --number-flow-mask-height: .12em; --number-flow-mask-width: 0em; }
+.season-stage__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: 1; }
+.season-stage__track { stroke: rgb(241 243 244 / 12%); }
+.season-stage__progress { stroke: #e1c99a; stroke-dasharray: 60; stroke-dashoffset: calc(60 - var(--remaining, 60)); transition: stroke-dashoffset 1s linear; }
+.season-stage__year { font: 400 1rem/1.5 var(--font); color: #e1c99a; letter-spacing: .2em; }
+.home-page #hero-name[tabindex="-1"]:focus { outline: none; }
+.home-page .hero__backdrop .seasonal-year-photo { opacity: 0; transform: scale(1.025); transition: opacity 1200ms ease, transform 1800ms cubic-bezier(.22, 1, .36, 1); object-position: 75% center; }
+.home-page .hero__backdrop .seasonal-year-photo.is-active { opacity: 1; transform: scale(1); }
+html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% center; }
+@keyframes season-stage-in { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+@keyframes season-stage-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes season-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+.seasonal-countdown[hidden], .seasonal-reference[hidden], .seasonal-credits[hidden], .seasonal-verse[hidden], .hero__occasion[hidden], .hero__note[hidden] { display: none; }
 @media (max-width: 1024px) {
+  html[data-new-year-phase="greeting"] .hero__backdrop img,
+  .home-page .hero__backdrop .seasonal-year-photo { object-position: 83% center; }
   html[data-occasion="easter"] .hero__backdrop img { object-position: 88% center; }
-  html[data-occasion]:not([data-occasion="new-year"]) .hero__backdrop::before {
+  html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::before {
     background: linear-gradient(90deg, rgb(250 250 250 / 92%), rgb(250 250 250 / 82%) 45%, rgb(250 250 250 / 68%));
   }
-  html[data-occasion]:not([data-occasion="new-year"]) .hero__backdrop::after {
+  html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::after {
     background: linear-gradient(90deg, rgb(20 23 25 / 88%), rgb(20 23 25 / 72%) 45%, rgb(20 23 25 / 58%));
   }
 }
@@ -108,9 +131,11 @@ html[data-occasion]:not([data-occasion="new-year"]) .hero__backdrop::after {
   html[data-occasion="palm-sunday"] .hero__backdrop img { object-position: 86% center; }
   .hero__occasion { font-size: .8rem; }
   .seasonal-verse { font-size: 1.05rem; line-height: 1.6; }
-  html[data-occasion]:not([data-occasion="new-year"]) .home-page .hero__name { font-size: clamp(4rem, 18vw, 4.75rem); margin-bottom: 16px; }
+  html[data-occasion]:not([data-new-year-phase="countdown"]) .home-page .hero__name { font-size: clamp(4rem, 18vw, 4.75rem); margin-bottom: 16px; }
   .seasonal-countdown { margin-top: 20px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .seasonal-countdown { transition: none; }
+  .season-stage[open], .season-stage.is-leaving, .season-stage::backdrop, .season-stage.is-leaving::backdrop { animation: none; }
+  .season-stage__progress, .home-page .hero__backdrop .seasonal-year-photo { transition: none; transform: none; }
 }

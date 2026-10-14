@@ -10,7 +10,7 @@
   image.addEventListener("error", function () {
     if (image.getAttribute("src") !== original) image.src = original;
   });
-  image.src = window.SeasonCalendar ? window.SeasonCalendar.photo(occasion) : original;
+  image.src = window.SeasonCalendar ? window.SeasonCalendar.photo(occasion, document.documentElement.getAttribute("data-new-year-phase")) : original;
 
   var started = false;
   var entered = false;

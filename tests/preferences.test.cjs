@@ -5,6 +5,7 @@ const vm = require('node:vm');
 
 function harness() {
   const handlers = {}, timers = [];
+  let desktop = false, headerInert = false;
   let document;
   function element() {
     const attrs = {}, classes = new Set();
@@ -36,12 +37,15 @@ function harness() {
   const ids = { 'controls-trigger': trigger, 'controls-panel': panel };
   document = { body, activeElement: body, querySelector: () => cluster, getElementById: id => ids[id], addEventListener: (key, fn) => handlers[key] = fn };
   const context = {
-    document, isDesktopControls: () => false,
-    window: { matchMedia: () => ({ matches: false, addEventListener() {} }), setTimeout: fn => timers.push(fn), cancelAnimationFrame() {} },
+    document, isDesktopControls: () => desktop,
+    setBackgroundInert(active,on) { if (on) headerInert = true; else if (active.parentElement === body) headerInert = false; },
+    window: { matchMedia: query => ({ matches: false, addEventListener(name,fn) { if(query==='(min-width: 768px)') handlers.breakpoint=fn; } }), setTimeout: fn => timers.push(fn), cancelAnimationFrame() {} },
     requestAnimationFrame: fn => fn(),
   };
   vm.runInNewContext(fs.readFileSync('public/js/i18n/controls.js', 'utf8') + '\ninitControlsPanel();', context);
-  return { document, trigger, selected, theme, host, handlers, timers, open: () => trigger.click({ stopPropagation() {} }) };
+  return { document, trigger, selected, theme, host, handlers, timers, panel, cluster,
+    get headerInert(){return headerInert;}, desktop(){desktop=true;handlers.breakpoint();},
+    open: () => trigger.click({ stopPropagation() {} }) };
 }
 
 test('mobile preferences focus visible selected language and wrap through the close button', () => {
@@ -65,4 +69,13 @@ test('Escape restores the opener even when Safari did not focus the clicked butt
   h.timers.forEach(fn => fn());
   assert.equal(h.document.activeElement, h.trigger);
   assert.equal(h.trigger.attrs['aria-expanded'], 'false');
+});
+
+test('resizing an open mobile sheet releases the header before moving preferences into it',()=>{
+  const h=harness();h.open();assert.equal(h.headerInert,true);
+  h.desktop();
+  assert.equal(h.headerInert,false);
+  assert.equal(h.panel.parentElement,h.cluster);
+  assert.equal(h.trigger.attrs['aria-expanded'],'false');
+  assert.equal(h.panel.hidden,false);
 });
