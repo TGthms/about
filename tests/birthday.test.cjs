@@ -81,3 +81,57 @@ test('library failure is contained and the explicit preview works outside Decemb
   const preview = harness({ month: 1, day: 1, search: '?birthday=preview' });
   preview.flush(); preview.load(); assert.equal(preview.plays, 1);
 });
+
+function effectHarness(width = 1280, height = 720) {
+  const frames = new Map(), timers = new Map(), animations = [];
+  let id = 0;
+  function node() {
+    return {
+      children: [], style: { setProperty() {} }, setAttribute() {},
+      appendChild(child) { this.children.push(child); child.parent = this; },
+      remove() { if (this.parent) this.parent.children = this.parent.children.filter(n => n !== this); },
+      animate() {
+        let resolve, reject;
+        const animation = {
+          cancelled: false,
+          finished: new Promise((yes, no) => { resolve = yes; reject = no; }),
+          finish() { resolve(); }, cancel() { this.cancelled = true; reject(new Error('cancelled')); },
+        };
+        animations.push(animation); return animation;
+      },
+    };
+  }
+  const root = node();
+  const window = {
+    innerWidth: width, innerHeight: height,
+    requestAnimationFrame: fn => { frames.set(++id, fn); return id; },
+    cancelAnimationFrame: id => frames.delete(id),
+    setTimeout: fn => { timers.set(++id, fn); return id; },
+    clearTimeout: id => timers.delete(id),
+  };
+  vm.runInNewContext(fs.readFileSync('public/js/vendor/balloons.js', 'utf8'), {
+    window, document: { documentElement: root, createElement: node },
+  });
+  return {
+    root, frames, timers, animations, play: window.createBirthdayBalloons,
+    frame() { for (const [id, fn] of [...frames]) { frames.delete(id); fn(); } },
+  };
+}
+
+test('balloons use one setup frame with bounded elements and release every animation on cancellation', async () => {
+  const h = effectHarness(10000, 320), effect = h.play();
+  h.frame();
+  assert.equal(h.frames.size, 0); assert.ok(h.animations.length <= 12);
+  effect.clear(); effect.clear();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.root.children.length, 0); assert.equal(h.timers.size, 0);
+  assert.ok(h.animations.every(a => a.cancelled));
+});
+
+test('finished balloons clean themselves up; leaving before the first frame creates no animations', async () => {
+  const h = effectHarness(); h.play(); h.frame(); h.animations.forEach(a => a.finish());
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(h.root.children.length, 0); assert.equal(h.timers.size, 0);
+  const pending = effectHarness(), effect = pending.play(); effect.clear(); pending.frame();
+  assert.equal(pending.animations.length, 0); assert.equal(pending.root.children.length, 0);
+});

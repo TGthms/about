@@ -59,7 +59,7 @@ const createBallonElement = ({
     backfaceVisibility: "hidden",
     opacity: "0.001",
     transform: "translate(calc(-100% + 1px), calc(-100% + 1px))",
-    contain: "style, layout, paint",
+    contain: "style layout paint",
     transformOrigin: `${width / 2}px ${width / 2}px`,
     willChange: "transform", // Improves rendering performance in Safari
   });
@@ -493,7 +493,7 @@ window.createBirthdayBalloons = function () {
   });
 
   let stopped = false;
-  let animations = [];
+  const animations = [];
   let frame = 0;
   let timer = 0;
   function clear() {
