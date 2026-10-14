@@ -84,3 +84,8 @@ test('three challenge levels preserve Medium and order the opponent response', (
   assert.equal(game.settings.speed,155);assert.equal(game.settings.delay,.16);
   assert.equal(game.setLevel('__proto__'),false);assert.equal(game.level,'medium');
 });
+
+test('non-finite pointer coordinates cannot move the paddle outside the court', () => {
+  const game = engine();game.move(320);
+  for (const value of [NaN,Infinity,-Infinity]) { game.move(value);assert.equal(game.paddle,320); }
+});

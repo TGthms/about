@@ -146,6 +146,7 @@
   serveButton.addEventListener("click", togglePlay);
   function point(event) {
     var rect = canvas.getBoundingClientRect();
+    if (!open || rect.width <= 0) return;
     game.move((event.clientX - rect.left) / rect.width * 600);
     if (game.phase !== "playing") draw();
   }

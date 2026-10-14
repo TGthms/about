@@ -162,7 +162,7 @@ Reviewed 13 October 2026.
   official actions, checks source integrity, and grants publication permissions
   only to its deployment job. Its artifact includes .nojekyll.
 
-Verification: 46 regression tests; JavaScript syntax; HTML IDs, accessibility
+Verification: 47 regression tests; JavaScript syntax; HTML IDs, accessibility
 references, local assets and resource versions; external link rel attributes;
 translation structure and placeholders; complete match simulations; clipboard
 and media failure handling; picker focus and keyboard controls; and diff checks.

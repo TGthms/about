@@ -27,7 +27,7 @@
     this.serve(); this.phase = "ready";
     return true;
   };
-  RallyEngine.prototype.move = function (x) { this.paddle = clamp(x, 64, 536); };
+  RallyEngine.prototype.move = function (x) { if (Number.isFinite(x)) this.paddle = clamp(x, 64, 536); };
   RallyEngine.prototype.serve = function () {
     this.you = 0; this.ai = 0; this.longest = 0; this.clock = 0;
     this.lastPoint = "you"; this.nextBall();
