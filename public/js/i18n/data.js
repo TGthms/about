@@ -1250,3 +1250,6 @@ const RALLY_LEVEL_COPY = {
   }
 };
 Object.keys(RALLY_LEVEL_COPY).forEach(function (lang) { Object.assign(TRANSLATIONS[lang].rally, RALLY_LEVEL_COPY[lang]); });
+
+const RALLY_RESUME_COPY = {"en": "Get ready…", "es": "Prepárate…", "zh": "准备好…", "zh-Hant": "準備好…", "ja": "準備はいい？", "ko": "준비하세요…"};
+Object.keys(RALLY_RESUME_COPY).forEach(function (lang) { TRANSLATIONS[lang].rally.resuming = RALLY_RESUME_COPY[lang]; });

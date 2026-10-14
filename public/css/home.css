@@ -1095,3 +1095,7 @@ html .home-page .interest-card.is-settled:hover .interest-card__icon { transform
   8%, 72% { opacity: .95; }
   100% { opacity: 0; transform: translate(var(--paper-drift), var(--paper-fall)) rotate(var(--paper-turn)); }
 }
+
+.rally-countdown { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 2; }
+.rally-countdown[hidden] { display: none; }
+.rally-countdown span { display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid var(--rule); border-radius: 14px; background: color-mix(in srgb, var(--bg-card) 95%, transparent); color: var(--ink); font: 400 2rem/1 var(--font-display); font-variant-numeric: tabular-nums; box-shadow: 0 4px 16px rgb(0 0 0 / 6%); }

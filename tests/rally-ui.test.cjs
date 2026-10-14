@@ -18,7 +18,8 @@ function harness(scenario){
  canvas.setPointerCapture=()=>{};canvas.hasPointerCapture=()=>true;
  modal.querySelector=selector=>selector==='.rally-panel'?panel:close;
  modal.querySelectorAll=selector=>selector==='[data-rally-close]'?[close,backdrop]:[close,canvas,left,serve,right];
- const ids={'rally-open':opener,'rally-modal':modal,'rally-court':canvas,'rally-serve':serve,'rally-left':left,'rally-right':right,'rally-score':score,'rally-opponent-score':ai,'rally-best':best,'rally-status':status};
+ const countdown=el('DIV'),countdownValue=el('SPAN');
+ const ids={'rally-countdown':countdown,'rally-countdown-value':countdownValue,'rally-open':opener,'rally-modal':modal,'rally-court':canvas,'rally-serve':serve,'rally-left':left,'rally-right':right,'rally-score':score,'rally-opponent-score':ai,'rally-best':best,'rally-status':status};
  document={activeElement:opener,hidden:false,documentElement:{getAttribute:()=> 'en'},getElementById:id=>ids[id],addEventListener:(key,fn)=>events[key]=fn};
  const context={document,localStorage:{getItem:()=>null,setItem(){}},MutationObserver:function(){this.observe=()=>{};},lockPageScroll:()=>locks++,unlockPageScroll:()=>locks--,setBackgroundInert:(_,on)=>inert.push(on),window:{getComputedStyle:()=>({getPropertyValue:()=> '#fff'}),requestAnimationFrame:fn=>{frames.set(++nextFrame,fn);return nextFrame;},cancelAnimationFrame:id=>frames.delete(id),addEventListener:(key,fn)=>windowEvents[key]=fn}};
  vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8')+fs.readFileSync('public/js/rally-engine.js','utf8'),context);
@@ -35,7 +36,7 @@ function harness(scenario){
  vm.runInNewContext(fs.readFileSync('public/js/rally.js','utf8'),context);
  let time=0;
  function step(){const entry=frames.entries().next().value;if(!entry)return;frames.delete(entry[0]);time+=1000/60;entry[1](time);}
- return {opener,modal,canvas,serve,close,left,right,panel,score,ai,best,status,events,windowEvents,document,frames,inert,step,locks:()=>locks,celebrations,challengeHooks,clears:()=>clears};
+ return {opener,modal,canvas,serve,close,left,right,panel,score,ai,best,status,events,windowEvents,document,frames,inert,step,locks:()=>locks,celebrations,challengeHooks,countdown,countdownValue,clears:()=>clears};
 }
 test('game opens without autoplay, pauses on blur, and closes with complete focus/scroll cleanup',()=>{
  const h=harness();h.opener.listeners.click();h.opener.listeners.click();
@@ -73,4 +74,14 @@ test('challenge selection pauses the match and a different level starts ready',(
  h.challengeHooks.close();assert.equal(h.serve.textContent,'Pause');assert.equal(h.frames.size,1);
  h.challengeHooks.open();h.challengeHooks.change('hard');h.challengeHooks.close();
  assert.equal(h.serve.textContent,'Serve');assert.equal(h.frames.size,0);assert.equal(h.score.textContent,'0');
+});
+
+test('resume shows 3, 2, 1 in sequence and blur cancels the visible countdown',()=>{
+ const h=harness();h.opener.listeners.click();h.serve.listeners.click();h.serve.listeners.click();h.serve.listeners.click();
+ assert.equal(h.countdownValue.textContent,'3');assert.equal(h.countdown.hidden,false);h.step();
+ for(let i=0;i<25;i++)h.step();assert.equal(h.countdownValue.textContent,'2');
+ for(let i=0;i<24;i++)h.step();assert.equal(h.countdownValue.textContent,'1');
+ for(let i=0;i<25;i++)h.step();assert.equal(h.countdown.hidden,true);
+ h.serve.listeners.click();h.serve.listeners.click();assert.equal(h.countdown.hidden,false);
+ h.windowEvents.blur();assert.equal(h.countdown.hidden,true);assert.equal(h.frames.size,0);
 });

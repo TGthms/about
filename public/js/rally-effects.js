@@ -16,7 +16,7 @@
       layer = document.createElement("div");
       layer.className = "rally-celebration";
       layer.setAttribute("aria-hidden", "true");
-      var colors = ["var(--signature-accent)", "var(--accent-text)", "#b69a62", "#769381"];
+      var colors = ["#e07a5f", "#4d93d2", "#f2bb45", "#58aa83", "#aa7bc8", "#42b3b6", "#e982a9"];
       var count = win ? 42 : 20;
       var fall = (table.clientHeight || 320) * 1.12;
       for (var i = 0; i < count; i++) {

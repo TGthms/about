@@ -150,8 +150,9 @@ Reviewed 13 October 2026.
   elements serve repeated openings; failed images can retry.
 - Pong has Easy, Medium, and Hard challenges, first-to-five scoring, a local
   opponent, keyboard/mouse/touch controls, and separate best-rally records.
-  A human point has a short paper celebration and a match win has a fuller,
-  longer celebration. Pausing, leaving the tab, and closing stop active effects.
+  A human point has a colorful paper celebration and a match win has a fuller,
+  longer celebration. The ball waits at center between points, and resuming
+  includes a 1.2-second 3–2–1 countdown. Pausing, leaving the tab, and closing stop active effects.
 - Korean follows Japanese in the picker. Homepage, metadata, loading and failure
   states, erhu, reading cards, all 16 milestones, legal pages, and game controls
   have complete Korean copy. Conditional fonts and safe word wrapping apply.
@@ -162,7 +163,7 @@ Reviewed 13 October 2026.
   official actions, checks source integrity, and grants publication permissions
   only to its deployment job. Its artifact includes .nojekyll.
 
-Verification: 47 regression tests; JavaScript syntax; HTML IDs, accessibility
+Verification: 50 regression tests; JavaScript syntax; HTML IDs, accessibility
 references, local assets and resource versions; external link rel attributes;
 translation structure and placeholders; complete match simulations; clipboard
 and media failure handling; picker focus and keyboard controls; and diff checks.

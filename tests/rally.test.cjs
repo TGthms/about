@@ -13,7 +13,8 @@ test('match waits for a serve, pauses without movement, and resets on rematch', 
   game.serve(); game.advance(0.05); assert.ok(game.ball.y > 160);
   game.pause(); const y = game.ball.y;
   game.advance(0.05); assert.equal(game.ball.y, y);
-  game.resume(); assert.equal(game.phase, 'playing');
+  game.resume(); assert.equal(game.phase, 'resuming');
+  for(let i=0;i<25;i++)game.advance(.05);assert.equal(game.phase,'playing');
   game.you = 4; game.ai = 3; game.serve();
   assert.equal(game.you, 0); assert.equal(game.ai, 0); assert.equal(game.phase, 'playing');
 });
@@ -41,7 +42,8 @@ test('opponent is speed-limited, can return a ball, and can be beaten', () => {
 test('first to five wins and between-point countdown pauses and resumes safely', () => {
   const game = engine(); game.serve(); game.point('you');
   game.pause(); const time = game.pointTime; game.advance(0.05);
-  assert.equal(game.pointTime, time); game.resume(); assert.equal(game.phase, 'point');
+  assert.equal(game.pointTime, time); game.resume();assert.equal(game.phase,'resuming');
+  for(let i=0;i<25;i++)game.advance(.05);assert.equal(game.phase,'point');
   for (let i = 0; i < 45; i++) game.advance(0.05);
   assert.equal(game.phase, 'playing'); assert.equal(game.you, 1);
   game.you = 4; game.point('you'); assert.equal(game.phase, 'ended');
@@ -88,4 +90,24 @@ test('three challenge levels preserve Medium and order the opponent response', (
 test('non-finite pointer coordinates cannot move the paddle outside the court', () => {
   const game = engine();game.move(320);
   for (const value of [NaN,Infinity,-Infinity]) { game.move(value);assert.equal(game.paddle,320); }
+});
+
+test('a scored point places the ball at center immediately and preserves paddle positions until launch', () => {
+  const game=engine();game.serve();game.move(390);game.opponent=220;
+  game.point('you');assert.equal(game.ball.x,300);assert.equal(game.ball.y,160);
+  assert.equal(game.paddle,390);assert.equal(game.opponent,220);
+  for(let i=0;i<20;i++)game.advance(.05);
+  assert.equal(game.phase,'point');assert.equal(game.ball.x,300);assert.equal(game.ball.y,160);
+  game.move(410);
+  for(let i=0;i<30;i++)game.advance(.05);
+  assert.equal(game.phase,'playing');assert.ok(game.ball.y>160);assert.equal(game.paddle,410);
+});
+
+test('resume holds the ball for a fast countdown and pause preserves its original phase', () => {
+ const game=engine();game.serve();game.advance(.05);game.pause();
+ const position={x:game.ball.x,y:game.ball.y};game.resume();
+ for(let i=0;i<20;i++)game.advance(.05);
+ assert.equal(game.phase,'resuming');assert.equal(game.ball.x,position.x);assert.equal(game.ball.y,position.y);
+ game.pause();assert.equal(game.resumePhase,'playing');game.resume();assert.equal(game.resumeTime,1.2);
+ for(let i=0;i<25;i++)game.advance(.05);assert.equal(game.phase,'playing');
 });

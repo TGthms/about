@@ -15,6 +15,32 @@
   var bestLabel = document.getElementById("rally-best");
   var opponentScore = document.getElementById("rally-opponent-score");
   var game = new window.RallyEngine();
+  var countdown = document.getElementById("rally-countdown");
+  var countdownValue = document.getElementById("rally-countdown-value");
+  var lastBeat = "", beatAnimation = null;
+  var countdownMotion = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  if (countdownMotion && countdownMotion.addEventListener) countdownMotion.addEventListener("change", function () {
+    if (countdownMotion.matches && beatAnimation) beatAnimation.cancel();
+  });
+  function activePhase() { return game.phase === "playing" || game.phase === "point" || game.phase === "resuming"; }
+  function updateCountdown() {
+    if (!countdown || !countdownValue) return;
+    countdown.hidden = game.phase !== "resuming";
+    if (countdown.hidden) {
+      lastBeat = ""; if (beatAnimation) beatAnimation.cancel(); beatAnimation = null;
+      return;
+    }
+    var beat = String(Math.max(1, Math.min(3, Math.ceil(game.resumeTime / .4))));
+    if (beat === lastBeat) return;
+    lastBeat = beat; countdownValue.textContent = beat;
+    if (beatAnimation) beatAnimation.cancel();
+    if (countdownValue.animate && !(countdownMotion && countdownMotion.matches)) {
+      beatAnimation = countdownValue.animate([
+        { opacity: .45, transform: "translateY(3px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ], { duration: 180, easing: "ease-out" });
+    }
+  }
   var best = 0, open = false, frame = 0, lastTime = null;
   var held = { left: false, right: false };
   var colors;
@@ -35,7 +61,7 @@
   }
   readBest();
   var picker = typeof window.createRallyLevelPicker === "function" ? window.createRallyLevelPicker({
-    open: function () { menuPaused = game.phase === "playing" || game.phase === "point"; if (menuPaused) pause(); },
+    open: function () { menuPaused = activePhase(); if (menuPaused) pause(); },
     close: function () { if (menuPaused && open && game.phase === "paused") togglePlay(); menuPaused = false; },
     change: function (level) {
       if (level === game.level) return;
@@ -55,12 +81,13 @@
   }
   function renderCopy() {
     var words = copy();
-    serveButton.textContent = words[game.phase === "playing" || game.phase === "point" ? "pause" : game.phase === "paused" ? "resume" : game.phase === "ended" ? "again" : "serve"];
+    serveButton.textContent = words[activePhase() ? "pause" : game.phase === "paused" ? "resume" : game.phase === "ended" ? "again" : "serve"];
     var key = game.phase === "ended" ? (game.you === 5 ? "won" : "lost") : game.phase === "point" ? (game.lastPoint === "you" ? "yourPoint" : "theirPoint") : game.phase;
-    status.textContent = words[key].replace("{you}", String(game.you)).replace("{opponent}", String(game.ai));
+    status.textContent = (words[key] || words.ready).replace("{you}", String(game.you)).replace("{opponent}", String(game.ai));
     score.textContent = String(game.you);
     opponentScore.textContent = String(game.ai);
     bestLabel.textContent = String(best);
+    updateCountdown();
   }
   function draw() {
     ctx.setTransform(2, 0, 0, 2, 0, 0);
@@ -80,18 +107,26 @@
     ctx.globalAlpha = 0.65;
     ctx.fillRect(game.opponent - game.settings.halfWidth, 25, game.settings.halfWidth * 2, 7);
     ctx.globalAlpha = 1;
-    ctx.fillStyle = colors.ball;
-    if (game.phase !== "point" && game.phase !== "ended") {
-      ctx.beginPath(); ctx.arc(game.ball.x, game.ball.y, 5, 0, Math.PI * 2); ctx.fill();
+    var waiting = game.phase === "point" || ((game.phase === "paused" || game.phase === "resuming") && game.resumePhase === "point");
+    if (waiting) {
+      ctx.strokeStyle = colors.rule; ctx.globalAlpha = .25; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(game.ball.x, game.ball.y, 12, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = colors.ball; ctx.globalAlpha = .65; ctx.lineWidth = 1.5;
+      var progress = Math.max(0, Math.min(1, 1 - game.pointTime / game.pointDuration));
+      ctx.beginPath(); ctx.arc(game.ball.x, game.ball.y, 12, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress); ctx.stroke();
+      ctx.globalAlpha = 1;
     }
+    ctx.fillStyle = colors.ball;
+    ctx.beginPath(); ctx.arc(game.ball.x, game.ball.y, 5, 0, Math.PI * 2); ctx.fill();
   }
+
   function stop() {
     if (frame) window.cancelAnimationFrame(frame);
     frame = 0; lastTime = null; clearInput();
   }
   function tick(time) {
     frame = 0;
-    if (!open || (game.phase !== "playing" && game.phase !== "point")) return;
+    if (!open || !activePhase()) return;
     var dt = lastTime === null ? 0 : Math.min((time - lastTime) / 1000, 0.05);
     lastTime = time;
     game.move(game.paddle + ((held.right ? 1 : 0) - (held.left ? 1 : 0)) * 430 * dt);
@@ -100,7 +135,7 @@
     if (game.longest > best) { best = game.longest; bestLabel.textContent = String(best); }
     if (game.you > oldYou) celebration.play(game.phase === "ended");
     if (oldPhase !== game.phase || oldYou !== game.you || oldAi !== game.ai) renderCopy();
-    draw();
+    updateCountdown(); draw();
     if (game.phase === "ended") {
       stop(); renderCopy();
       saveBest();
@@ -110,11 +145,11 @@
   }
   function pause() {
     celebration.clear();
-    if (game.phase !== "playing" && game.phase !== "point") return;
+    if (!activePhase()) return;
     game.pause(); stop(); renderCopy();
   }
   function togglePlay() {
-    if (game.phase === "playing" || game.phase === "point") { pause(); return; }
+    if (activePhase()) { pause(); return; }
     if (game.phase === "paused") game.resume();
     else { celebration.clear(); game.serve(); }
     clearInput(); renderCopy(); draw();
@@ -163,7 +198,7 @@
     var pointerMoved = false;
     button.addEventListener("pointerdown", function (event) {
       if (event.button !== 0) return;
-      held[direction] = true; pointerMoved = game.phase === "playing" || game.phase === "point";
+      held[direction] = true; pointerMoved = activePhase();
       button.setPointerCapture(event.pointerId);
     });
     button.addEventListener("pointerup", function () { held[direction] = false; });
@@ -190,7 +225,7 @@
       event.preventDefault();
       var direction = event.key === "ArrowLeft" ? "left" : "right";
       held[direction] = true;
-      if (game.phase !== "playing") { game.move(game.paddle + (direction === "left" ? -20 : 20)); draw(); }
+      if (!activePhase()) { game.move(game.paddle + (direction === "left" ? -20 : 20)); draw(); }
     }
     if (event.code === "Space" && !event.repeat) {
       // Buttons retain native Space activation; elsewhere Space serves/pauses.

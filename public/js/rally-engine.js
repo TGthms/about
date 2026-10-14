@@ -18,8 +18,8 @@
     this.paddle = 300; this.opponent = 300; this.aim = 300;
     this.ball = {x: 300, y: 160, vx: 90, vy: 205};
     this.score = 0; this.longest = 0; this.you = 0; this.ai = 0;
-    this.phase = "ready"; this.resumePhase = "playing";
-    this.clock = 0; this.reaction = 0; this.pointTime = 0; this.lastPoint = "you";
+    this.phase = "ready"; this.resumePhase = "playing"; this.resumeTime = 0;
+    this.clock = 0; this.reaction = 0; this.pointTime = 0; this.pointDuration = 1.1; this.lastPoint = "you";
   }
   RallyEngine.prototype.setLevel = function (level) {
     if (!Object.prototype.hasOwnProperty.call(LEVELS, level) || level === this.level) return false;
@@ -30,32 +30,41 @@
   RallyEngine.prototype.move = function (x) { if (Number.isFinite(x)) this.paddle = clamp(x, 64, 536); };
   RallyEngine.prototype.serve = function () {
     this.you = 0; this.ai = 0; this.longest = 0; this.clock = 0;
-    this.lastPoint = "you"; this.nextBall();
+    this.lastPoint = "you"; this.paddle = 300; this.opponent = 300;
+    this.prepareBall(); this.phase = "playing";
   };
-  RallyEngine.prototype.nextBall = function () {
-    this.score = 0; this.paddle = 300; this.opponent = 300; this.aim = 300; this.reaction = this.settings.delay;
+  RallyEngine.prototype.prepareBall = function () {
+    this.score = 0; this.aim = 300; this.reaction = this.settings.delay;
     var odd = (this.you + this.ai) % 2;
     this.ball = {x: 300, y: 160, vx: odd ? -90 : 90, vy: (this.lastPoint === "you" ? 1 : -1) * this.settings.serveSpeed};
-    this.phase = "playing";
   };
   RallyEngine.prototype.pause = function () {
-    if (this.phase !== "playing" && this.phase !== "point") return;
-    this.resumePhase = this.phase; this.phase = "paused";
+    if (this.phase !== "playing" && this.phase !== "point" && this.phase !== "resuming") return;
+    if (this.phase !== "resuming") this.resumePhase = this.phase;
+    this.phase = "paused";
   };
-  RallyEngine.prototype.resume = function () { if (this.phase === "paused") this.phase = this.resumePhase; };
+  RallyEngine.prototype.resume = function () { if (this.phase === "paused") { this.resumeTime = 1.2; this.phase = "resuming"; } };
   RallyEngine.prototype.point = function (winner) {
     this[winner === "you" ? "you" : "ai"] += 1;
-    this.lastPoint = winner; this.pointTime = winner === "you" ? 2.2 : 1.1;
+    this.lastPoint = winner;
+    this.pointDuration = winner === "you" ? 2.2 : 1.1;
+    this.pointTime = this.pointDuration;
+    this.prepareBall();
     this.phase = this.you === 5 || this.ai === 5 ? "ended" : "point";
   };
   RallyEngine.prototype.advance = function (seconds) {
-    if ((this.phase !== "playing" && this.phase !== "point") || !Number.isFinite(seconds) || seconds <= 0) return;
+    if ((this.phase !== "playing" && this.phase !== "point" && this.phase !== "resuming") || !Number.isFinite(seconds) || seconds <= 0) return;
     var remaining = Math.min(seconds, 0.05);
-    while (remaining > 0 && (this.phase === "playing" || this.phase === "point")) {
+    while (remaining > 0 && (this.phase === "playing" || this.phase === "point" || this.phase === "resuming")) {
       var dt = Math.min(remaining, 1 / 240); remaining -= dt; this.clock += dt;
+      if (this.phase === "resuming") {
+        this.resumeTime -= dt;
+        if (this.resumeTime <= 0) { this.resumeTime = 0; this.phase = this.resumePhase; }
+        continue;
+      }
       if (this.phase === "point") {
         this.pointTime -= dt;
-        if (this.pointTime <= 0) this.nextBall();
+        if (this.pointTime <= 0) { this.pointTime = 0; this.phase = "playing"; }
         continue;
       }
       var ball = this.ball, oldY = ball.y;
