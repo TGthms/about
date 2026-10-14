@@ -452,7 +452,7 @@ html[data-theme="dark"] .home-page .link-card__icon--image {
 .home-page .site-signature span { display: inline-block; transform-origin: 50% 90%; }
 .home-page .hero__index a span:first-child { transition: transform 220ms var(--ease-out); }
 .home-page .hero__index a:active span:first-child { transform: translateX(3px); }
-.home-page .hero__index a:active span:last-child { transform: translateY(6px); }
+.home-page .hero__index a:active span:last-child { transform: translateX(6px); }
 .home-page .interest-card__learn::after { transition: transform 220ms var(--ease-out); }
 .home-page .interest-card__learn:active { transform: scale(0.98); }
 .home-page .link-card.is-copied .link-card__icon { animation: hub-confirm 300ms var(--ease-out); }
@@ -473,7 +473,7 @@ html[data-theme="dark"] .home-page .link-card__icon--image {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .home-page .site-signature:focus-visible span { animation: hub-signature-bounce 420ms ease; }
-.home-page .hero__index a:focus-visible span:last-child { transform: translateY(4px); }
+.home-page .hero__index a:focus-visible span:last-child { transform: translateX(4px); }
 .home-page .site-nav a {
   position: relative;
   min-height: 44px;
@@ -529,7 +529,7 @@ html .home-page .archived-projects-trigger:active { transform: scale(0.995); box
 @media (hover: hover) and (pointer: fine) {
   .home-page .site-signature:hover span { animation: hub-signature-bounce 420ms ease; }
   .home-page .hero__index a:hover span:first-child { transform: translateX(2px); }
-  .home-page .hero__index a:hover span:last-child { transform: translateY(4px); }
+  .home-page .hero__index a:hover span:last-child { transform: translateX(4px); }
   .home-page .interest-card__learn:hover::after { transform: translateX(3px); }
   .home-page .featured-card:hover .featured-card__visual img { transform: scale(1.025); }
   .home-page .featured-card:hover .featured-card__cta svg { transform: translate(2px, -2px); }
@@ -927,7 +927,7 @@ html .home-page .hero__tagline {
 .hub-card__learn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 3px; border: 0; background: none; color: var(--accent-text); font: 500 .8125rem/1.4 var(--font); cursor: pointer; text-align: right; }
 .featured-card--hub:hover .hub-card__learn { text-decoration: underline; text-underline-offset: 4px; }
 .hub-card__learn > span:last-child { transition: transform 220ms var(--ease-out); }
-.featured-card--hub:hover .hub-card__learn > span:last-child { transform: translate(2px, -2px); }
+.featured-card--hub:hover .hub-card__learn > span:last-child { transform: translateX(3px); }
 .hub-card__learn:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; border-radius: 4px; }
 .home-page .site-history-panel { width: min(100%, 680px); --history-pad: clamp(18px, 3vw, 32px); padding: var(--history-pad); }
 .site-history-top { position: sticky; top: calc(-1 * var(--history-pad)); z-index: 2; align-items: center; margin: calc(-1 * var(--history-pad)) calc(-1 * var(--history-pad)) 20px; padding: 20px var(--history-pad) 16px; background: var(--bg-card); border-bottom: 1px solid var(--rule); }
