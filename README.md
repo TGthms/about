@@ -17,6 +17,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
 - Six equally sized project previews; the whole Personal Hub card opens an introduction and curated version history
 - Brief hover/press/dialog animations that respect reduced motion, with small animated interest doodles
+- Birthday balloons on every home-page visit on December 21 (visitor's local date), with reduced-motion support; preview with `?birthday=preview`
 - A first-to-five Pong match against a local computer opponent, with three challenge levels, point and match celebrations, touch/mouse/keyboard controls, pause on blur, and local best-rally records
 - Email copy action with localized success/failure announcements
 - Psalm 23 reading card with localized editions, classic typography, and visible scripture credits
@@ -42,6 +43,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/preferences.js` | Centralized preferences markup |
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
+| `public/js/birthday.js` / `public/js/vendor/balloons.js` | Date-gated birthday celebration and locally hosted balloon effect |
 | `public/js/rally-engine.js` / `public/js/rally.js` | Local Pong opponent, match physics, and accessible game dialog |
 | `public/js/contact.js` | Email copying with honest, localized feedback |
 | `public/js/home-navigation.js` | Section indicator and responsive anchor offsets |
@@ -79,6 +81,7 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 - Code (`public/` HTML/CSS/JS, excluding assets and attributed Scripture text): [MIT License](LICENSE)
 - Scripture excerpts: [edition-specific sources and credits](SCRIPTURE_CREDITS.md)
 - Public Sans: SIL Open Font License in `public/assets/fonts/`
+- Balloon effect: [balloons-js](https://github.com/arturbien/balloons-js), MIT © 2024 Artur Bień; license retained in `public/js/vendor/balloons.js`
 - Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/og-image.svg`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
 
 ## Local checks
