@@ -585,7 +585,7 @@ PERSONAL_HUB.milestones.forEach(function (item, index) {
 PERSONAL_HUB.milestones.push({
   "version": 16,
   "date": "2026-10-13",
-  "commit": null,
+  "commit": "0982f80",
   "copy": {
     "en": {
       "title": "A little play, another language",
