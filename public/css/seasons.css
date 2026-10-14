@@ -1,4 +1,5 @@
 /* Occasional changes stay within the hero's existing rhythm. */
+html[data-celebration-theme="dark"] #theme-toggle-wrap { opacity: .45; cursor: default; }
 .hero__occasion {
   color: var(--accent-text);
   font: 500 .85rem/1.5 var(--font);
@@ -59,6 +60,17 @@ html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::afte
   white-space: nowrap;
 }
 .seasonal-countdown__digits number-flow { --number-flow-mask-height: .12em; --number-flow-mask-width: 0em; }
+.seasonal-countdown__minute { display: none; }
+.seasonal-countdown.is-expanded { width: min(100%, 240px); max-height: 160px; padding-bottom: 16px; }
+.seasonal-countdown.is-expanded .seasonal-countdown__label { margin-bottom: 4px; }
+.seasonal-countdown.is-expanded .seasonal-countdown__digits { display: none; }
+.seasonal-countdown.is-expanded .seasonal-countdown__minute { position: relative; display: flex; align-items: baseline; gap: 12px; padding-bottom: 14px; font: 400 clamp(4rem, 10vw, 5.5rem)/1 var(--font); font-variant-numeric: tabular-nums; letter-spacing: -.06em; }
+.seasonal-countdown.is-expanded.is-finished { max-height: 0; padding-bottom: 0; }
+.seasonal-countdown__minute number-flow { --number-flow-mask-height: .12em; --number-flow-mask-width: 0em; }
+.seasonal-countdown__unit { color: var(--mute); font: .8rem/1.5 var(--font); letter-spacing: 0; }
+.seasonal-countdown__minute::before, .seasonal-countdown__minute::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; border-radius: 1px; }
+.seasonal-countdown__minute::before { width: 100%; background: var(--rule); }
+.seasonal-countdown__minute::after { width: 100%; background: var(--accent-text); transform: scaleX(calc(var(--remaining, 60) / 60)); transform-origin: left; transition: transform 1s linear; }
 .seasonal-countdown__colon { opacity: .45; padding-inline: .08em; transform: translateY(-.06em); }
 .seasonal-countdown.is-floating {
   position: fixed;
@@ -104,7 +116,6 @@ html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::afte
 .season-stage__track { stroke: rgb(241 243 244 / 12%); }
 .season-stage__progress { stroke: #e1c99a; stroke-dasharray: 60; stroke-dashoffset: calc(60 - var(--remaining, 60)); transition: stroke-dashoffset 1s linear; }
 .season-stage__year { font: 400 1rem/1.5 var(--font); color: #e1c99a; letter-spacing: .2em; }
-.home-page #hero-name[tabindex="-1"]:focus { outline: none; }
 .home-page .hero__backdrop .seasonal-year-photo { opacity: 0; transform: scale(1.025); transition: opacity 1200ms ease, transform 1800ms cubic-bezier(.22, 1, .36, 1); object-position: 75% center; }
 .home-page .hero__backdrop .seasonal-year-photo.is-active { opacity: 1; transform: scale(1); }
 html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% center; }
@@ -138,4 +149,5 @@ html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% 
   .seasonal-countdown { transition: none; }
   .season-stage[open], .season-stage.is-leaving, .season-stage::backdrop, .season-stage.is-leaving::backdrop { animation: none; }
   .season-stage__progress, .home-page .hero__backdrop .seasonal-year-photo { transition: none; transform: none; }
+  .seasonal-countdown__minute::after { transition: none; }
 }

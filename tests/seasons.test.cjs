@@ -58,6 +58,7 @@ test('previews have a real progressing midnight transition without accepting arb
   assert.equal(calendar.resolve(new Date(start+75000),'countdown',start).phase,'greeting');
   assert.equal(calendar.resolve(new Date(start+105000),'countdown',start).target,start+75000);
   assert.equal(calendar.resolve(new Date(start),'final-minute',start).target,start+60000);
+  assert.equal(calendar.resolve(new Date(start),'final-seconds',start).target,start+10000);
   assert.equal(calendar.resolve(new Date(start),'christmas',start).occasion,'christmas');
   assert.equal(calendar.resolve(new Date(start),'<script>',start).occasion,'');
 });
@@ -78,7 +79,7 @@ test('the head preloads only the selected hero photograph, including seasonal pr
 });
 
 function harness(date, {reduced=false, hidden=false}={}) {
-  let now=date.getTime(), id=0, plays=0, stops=0, locks=0;
+  let now=date.getTime(), id=0, plays=0, stops=0, locks=0, scrolls=0;
   const events={}, timers=new Map(), scripts=[], observers=[], busy=[];
   function node() {
     const attributes=new Map(), children={}, classes=new Set();
@@ -92,7 +93,7 @@ function harness(date, {reduced=false, hidden=false}={}) {
     Object.defineProperty(result,'src',{set(v){attributes.set('src',v);},get(){return attributes.get('src');}});
     return result;
   }
-  const nodes=Object.fromEntries(['hero','hero-name','season-label','season-reference','season-verse','season-verse-text','season-credits','season-countdown','season-until','season-minutes','season-seconds','season-stage','season-stage-number','season-stage-title','season-stage-year','season-stage-timer','season-stage-status'].map(id=>[id,node()]));
+  const nodes=Object.fromEntries(['hero','hero-name','theme-toggle','meta-theme-color','meta-color-scheme','season-label','season-reference','season-verse','season-verse-text','season-credits','season-countdown','season-until','season-minutes','season-seconds','season-inline-number','season-inline-unit','season-stage','season-stage-number','season-stage-title','season-stage-year','season-stage-timer','season-stage-status'].map(id=>[id,node()]));
   Object.entries(nodes).forEach(([id,n])=>n.id=id);
   const root=node(); root.setAttribute('data-language','en');
   const photo=nodes.hero.querySelector('.hero__backdrop img'); photo.setAttribute('data-hero-src','assets/main-modern.webp');
@@ -106,20 +107,25 @@ function harness(date, {reduced=false, hidden=false}={}) {
     addEventListener:(n,f)=>events[n]=f,
   };
   const window={SeasonCalendar:{current:()=>calendar.state(new Date(now)),photo:calendar.photo},
-    matchMedia:()=>motion, innerWidth:1280,scrollTo(){},
+    matchMedia:()=>motion, innerWidth:1280,scrollTo(){scrolls++;},
     setTimeout:(fn,delay)=>{timers.set(++id,{fn,delay});return id;}, clearTimeout:id=>timers.delete(id),
     addEventListener:(n,f)=>events[n]=f,
     Fireworks:{Fireworks:class {start(){plays++;} stop(){stops++;}}}
   };
+  const savedTheme=new Map([['timg-theme-session','light']]);
   const context={window,document,URL,Promise,Date:class extends Date {static now(){return now;}},
+    THEME_SESSION_KEY:'timg-theme-session',sessionStorage:{getItem:key=>savedTheme.get(key),setItem:(key,value)=>savedTheme.set(key,value),removeItem:key=>savedTheme.delete(key)},
     lockPageScroll(){locks++;},unlockPageScroll(){locks--;},
     MutationObserver:class {constructor(fn){observers.push(fn);}observe(){}},
     TRANSLATIONS:{en:{hero:{note:'Original introduction'}},ko:{hero:{note:'원래 소개'}}},
   };
   vm.createContext(context);
+  vm.runInContext(fs.readFileSync('public/js/i18n/theme.js','utf8'),context);
+  context.applyTheme('light');
   vm.runInContext(fs.readFileSync('public/js/seasons.js','utf8'),context);
-  return {nodes,window,document,motion,events,timers,scripts,photo,busy,
+  return {nodes,window,document,motion,events,timers,scripts,photo,busy,savedTheme,context,
     get locks(){return locks;},get yearPhoto(){return photo.parentElement.appended.at(-1);},
+    get scrolls(){return scrolls;},
     get plays(){return plays;},get stops(){return stops;},
     async loadContent() {vm.runInContext(fs.readFileSync('public/js/season-content.js','utf8'),context);window.SEASON_CONTENT=context.SEASON_CONTENT;scripts.find(s=>s.src.includes('content')).onload();await Promise.resolve();},
     async loadFireworks(){scripts.find(s=>s.src.includes('fireworks')).onload();await Promise.resolve();},
@@ -155,6 +161,9 @@ test('reduced-motion countdown remains accurate after background throttling and 
   h.advance(new Date(2027,0,1));
   assert.equal(h.nodes['season-stage-number'].textContent,'00');assert.equal(h.nodes['season-countdown'].hidden,true);
   h.fireTimer(0);assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);
+  assert.notEqual(h.document.activeElement,h.nodes['hero-name']);
+  assert.equal(h.nodes['hero-name'].getAttribute('tabindex'),null);
+  assert.equal(h.scrolls,0);
   assert.equal(h.nodes['season-label'].textContent,'Happy New Year');
   h.advance(new Date(2027,0,1,0,0,3));assert.equal(h.nodes['season-countdown'].hidden,true);
   assert.equal(h.scripts.filter(s=>s.src.includes('fireworks')).length,0);
@@ -192,27 +201,34 @@ test('New Year arrivals get five seconds of fireworks throughout the day and on 
   }
 });
 
-test('final minute opens a focused, button-free countdown and Escape returns to the compact timer',async()=>{
+test('standard, in-page, and immersive countdowns change exactly at 60 and 10 seconds',async()=>{
   const h=harness(new Date(2026,11,31,23,58,59),{reduced:true});await h.loadContent();
   assert.equal(h.nodes['season-stage'].open,false);
+  assert.equal(h.nodes['season-countdown'].classList.contains('is-expanded'),false);
   h.advance(new Date(2026,11,31,23,59));
+  assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);
+  assert.equal(h.nodes['season-countdown'].classList.contains('is-expanded'),true);
+  assert.equal(h.nodes['season-inline-number'].textContent,'60');
+  h.advance(new Date(2026,11,31,23,59,49));
+  assert.equal(h.nodes['season-inline-number'].textContent,'11');assert.equal(h.nodes['season-stage'].open,false);
+  h.advance(new Date(2026,11,31,23,59,50));
   assert.equal(h.nodes['season-stage'].open,true);assert.equal(h.locks,1);
   assert.equal(h.document.activeElement,h.nodes['season-stage']);
-  assert.equal(h.nodes['season-stage-number'].textContent,'60');
-  h.advance(new Date(2026,11,31,23,59,1));assert.equal(h.nodes['season-countdown'].hidden,true);
+  assert.equal(h.nodes['season-stage-number'].textContent,'10');
+  h.advance(new Date(2026,11,31,23,59,51));assert.equal(h.nodes['season-countdown'].hidden,true);
   let prevented=false;h.events.keydown({key:'Escape',preventDefault(){prevented=true;}});
   assert.equal(prevented,true);assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);
   assert.equal(h.nodes['season-countdown'].hidden,false);
-  h.advance(new Date(2026,11,31,23,59,2));assert.equal(h.nodes['season-stage'].open,false);
+  h.advance(new Date(2026,11,31,23,59,52));assert.equal(h.nodes['season-stage'].open,false);
   const html=fs.readFileSync('public/index.html','utf8');
   assert.ok(!html.includes('season-dismiss'));assert.ok(!html.includes('season-stage-return'));
 });
 
-test('the final minute waits for other dialogs and releases scroll and focus resources on departure',async()=>{
-  const h=harness(new Date(2026,11,31,23,59),{reduced:true});
+test('the final ten seconds wait for other dialogs and release scroll and focus resources on departure',async()=>{
+  const h=harness(new Date(2026,11,31,23,59,50),{reduced:true});
   h.busy.push({hidden:false,getClientRects:()=>[{}]});await h.loadContent();
   assert.equal(h.nodes['season-stage'].open,false);
-  h.busy.length=0;h.advance(new Date(2026,11,31,23,59,1));assert.equal(h.nodes['season-stage'].open,true);
+  h.busy.length=0;h.advance(new Date(2026,11,31,23,59,51));assert.equal(h.nodes['season-stage'].open,true);
   h.events.pagehide();assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.locks,0);assert.equal(h.timers.size,0);
 });
 
@@ -220,11 +236,33 @@ test('the New Year photograph decodes before midnight, crossfades, and releases 
   const h=harness(new Date(2026,11,31,23,59),{reduced:true});await h.loadContent();
   assert.equal(h.yearPhoto.src,'assets/seasonal/new-year.webp');
   const front=h.yearPhoto;front.onload();assert.equal(front.classList.contains('is-active'),false);
+  h.advance(new Date(2026,11,31,23,59,50));
   h.advance(new Date(2027,0,1));assert.equal(front.classList.contains('is-active'),true);
   assert.equal(h.photo.src,'assets/main-modern.webp');
   h.fireTimer(0); // Finish the reduced-motion dialog.
   h.fireTimer(0); // Decode-safe photo replacement.
   assert.equal(h.photo.src,'assets/seasonal/new-year.webp');assert.equal(front.removed,true);
+});
+
+test('dark mode spans the countdown and celebration without changing the visitor preference',async()=>{
+  for(const reduced of [false,true]) {
+    const h=harness(new Date(2026,11,31,23,50),{reduced});await h.loadContent();
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),'dark');
+    assert.equal(h.nodes['theme-toggle'].disabled,true);
+    h.context.toggleTheme();assert.equal(h.savedTheme.get('timg-theme-session'),'light');
+    h.advance(new Date(2026,11,31,23,59,50));h.advance(new Date(2027,0,1));
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),'dark');
+    if(!reduced)await h.loadFireworks();
+    h.fireTimer(30000);
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),'light');
+    assert.equal(h.nodes['theme-toggle'].disabled,false);
+    assert.equal(h.savedTheme.get('timg-theme-session'),'light');
+    assert.equal(h.nodes.hero.querySelector('.hero__note').textContent,'Here’s to a new year filled with kindness, peace, and countless blessings.');
+  }
+  const welcome=harness(new Date(2027,0,1,12));await welcome.loadContent();await welcome.loadFireworks();
+  assert.equal(welcome.document.documentElement.getAttribute('data-theme'),'dark');
+  welcome.fireTimer(5000);assert.equal(welcome.document.documentElement.getAttribute('data-theme'),'light');
+  assert.ok(!fs.readFileSync('public/index.html','utf8').includes('hero__tagline'));
 });
 
 test('every language includes all six occasions and actual Scripture text with its reference',()=>{

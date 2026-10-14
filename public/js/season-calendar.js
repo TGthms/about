@@ -42,7 +42,7 @@
     return result;
   }
 
-  var previews = ["christmas", "good-friday", "easter", "palm-sunday", "thanksgiving", "new-year", "countdown", "final-minute", "fireworks"];
+  var previews = ["christmas", "good-friday", "easter", "palm-sunday", "thanksgiving", "new-year", "countdown", "final-minute", "final-seconds", "fireworks"];
   function photo(occasion, phase) {
     if (occasion === "new-year" && phase === "greeting") return "assets/seasonal/new-year.webp";
     return ["christmas", "good-friday", "easter", "thanksgiving", "palm-sunday"].indexOf(occasion) !== -1 ?
@@ -50,8 +50,8 @@
   }
   function resolve(now, preview, started) {
     if (previews.indexOf(preview) === -1) return state(now);
-    if (preview === "countdown" || preview === "final-minute" || preview === "fireworks") {
-      var target = started + (preview === "countdown" ? 75000 : preview === "final-minute" ? 60000 : 0);
+    if (preview === "countdown" || preview === "final-minute" || preview === "final-seconds" || preview === "fireworks") {
+      var target = started + (preview === "countdown" ? 75000 : preview === "final-minute" ? 60000 : preview === "final-seconds" ? 10000 : 0);
       return { occasion: "new-year", phase: now.getTime() < target ? "countdown" : "greeting", target: target, year: new Date(started).getFullYear() + 1, next: Infinity };
     }
     return { occasion: preview, phase: "greeting", target: preview === "new-year" ? new Date(now.getFullYear(), 0, 1).getTime() : undefined, year: now.getFullYear(), next: Infinity };
@@ -67,6 +67,7 @@
     var initial = api.current();
     if (initial.occasion) document.documentElement.setAttribute("data-occasion", initial.occasion);
     if (initial.occasion === "new-year") document.documentElement.setAttribute("data-new-year-phase", initial.phase);
+    if (initial.occasion === "new-year") document.documentElement.setAttribute("data-celebration-theme", "dark");
     var preload = document.createElement("link");
     preload.rel = "preload";
     preload.as = "image";

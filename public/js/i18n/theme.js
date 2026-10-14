@@ -48,7 +48,8 @@ function resolveTheme() {
 }
 
 function applyTheme(theme) {
-  var resolved = theme === "dark" ? "dark" : "light";
+  var forced = document.documentElement.getAttribute("data-celebration-theme") === "dark";
+  var resolved = forced || theme === "dark" ? "dark" : "light";
   document.documentElement.setAttribute("data-theme", resolved);
   document.documentElement.style.colorScheme = resolved;
 
@@ -62,10 +63,12 @@ function applyTheme(theme) {
   var btn = document.getElementById("theme-toggle");
   if (btn) {
     btn.checked = resolved === "dark";
+    btn.disabled = forced;
   }
 }
 
 function toggleTheme() {
+  if (document.documentElement.getAttribute("data-celebration-theme") === "dark") { applyTheme(resolveTheme()); return; }
   var next = resolveTheme() === "dark" ? "light" : "dark";
   // Persist only while different from OS; else clear (auto again)
   if (next === (systemPrefersDark() ? "dark" : "light")) {

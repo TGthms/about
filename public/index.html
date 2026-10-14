@@ -41,10 +41,10 @@
 
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
-  <script src="js/season-calendar.js?v=04c0cee8ce68"></script>
-  <link rel="stylesheet" href="css/styles.css?v=6d2903930b6f" />
-  <link rel="stylesheet" href="css/home.css?v=8eea03c1d103" />
-  <link rel="stylesheet" href="css/seasons.css?v=a09daa967389" />
+  <script src="js/season-calendar.js?v=319321a25e3f"></script>
+  <link rel="stylesheet" href="css/styles.css?v=ee64b60468e2" />
+  <link rel="stylesheet" href="css/home.css?v=3bc50b31f8c7" />
+  <link rel="stylesheet" href="css/seasons.css?v=0f7f3a798c89" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
@@ -91,6 +91,7 @@
             : window.matchMedia("(prefers-color-scheme: dark)").matches
               ? "dark"
               : "light";
+        if (root.getAttribute("data-celebration-theme") === "dark") theme = "dark";
         root.setAttribute("data-theme", theme);
         root.style.colorScheme = theme;
         var themeColor = document.getElementById("meta-theme-color");
@@ -162,7 +163,6 @@
         <div class="hero__intro">
           <p class="hero__eyebrow" data-i18n="hero.eyebrow">Hi, I'm</p>
           <h1 id="hero-name" class="hero__name">Tim G<span class="hero__period" aria-hidden="true">.</span></h1>
-          <p class="hero__tagline" data-i18n="hero.tagline">High school student in the San Francisco Bay Area.</p>
           <p class="hero__occasion" id="season-label" hidden></p>
           <p class="hero__note" data-i18n="hero.note">I make websites, take photos, and play the erhu. This is where I keep a little of each.</p>
           <blockquote class="seasonal-verse" id="season-verse" hidden>
@@ -173,6 +173,10 @@
           <div class="seasonal-countdown" id="season-countdown" role="timer" aria-live="off" hidden>
             <p class="seasonal-countdown__label" id="season-until" aria-hidden="true"></p>
             <div class="seasonal-countdown__digits" id="season-digits" aria-hidden="true"><span id="season-minutes">10</span><span class="seasonal-countdown__colon">:</span><span id="season-seconds">00</span></div>
+            <div class="seasonal-countdown__minute" aria-hidden="true">
+              <span id="season-inline-number">60</span>
+              <span class="seasonal-countdown__unit" id="season-inline-unit"></span>
+            </div>
           </div>
         </div>
         <aside class="hero__index" aria-label="Explore" data-i18n-aria="a11y.explore">
@@ -1147,9 +1151,9 @@
   </footer>
 
   <script src="js/preferences.js?v=f7cf4c26d523"></script>
-  <script src="js/i18n/data.js?v=103a9ae4ab00"></script>
+  <script src="js/i18n/data.js?v=73c0f37cc29a"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
-  <script src="js/i18n/theme.js?v=55f59360be64"></script>
+  <script src="js/i18n/theme.js?v=14b0a5b73301"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
   <script src="js/i18n/project-host.js?v=56bd0d5cccc7"></script>
   <script src="js/i18n/language.js?v=694fde13ebd2"></script>
@@ -1183,6 +1187,6 @@
       <p class="visually-hidden" id="season-stage-status" role="status" aria-live="polite"></p>
     </div>
   </dialog>
-  <script src="js/seasons.js?v=cb9f0d1f7ae5" data-content-src="js/season-content.js?v=2d3b669512d2" data-number-flow-src="js/vendor/number-flow.mjs?v=6fe2b490b372" data-fireworks-src="js/vendor/fireworks.js?v=dae8c6b54658"></script>
+  <script src="js/seasons.js?v=366f2e3c737b" data-content-src="js/season-content.js?v=f9f8d703332f" data-number-flow-src="js/vendor/number-flow.mjs?v=6fe2b490b372" data-fireworks-src="js/vendor/fireworks.js?v=dae8c6b54658"></script>
 </body>
 </html>

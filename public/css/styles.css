@@ -931,15 +931,6 @@ html[data-theme="dark"] .hero__name {
     text-shadow: 0 0 0 transparent, 0 0 0 transparent;
   }
 }
-.hero__tagline {
-  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
-  color: var(--mute);
-  max-width: 22em;
-  margin-bottom: var(--space-5);
-  font-weight: 500;
-  border-left: 4px solid var(--accent);
-  padding-left: var(--space-2);
-}
 .scroll-cue {
   display: inline-flex;
   align-items: center;
@@ -2715,11 +2706,7 @@ html[data-theme="dark"] .section__label {
   box-shadow: 2px 2px 0 color-mix(in srgb, var(--line) 55%, transparent);
 }
 
-/* Tagline bar + secondary text a touch brighter for long reads */
-html[data-theme="dark"] .hero__tagline {
-  border-left-color: var(--accent-text);
-  color: var(--mute);
-}
+/* Secondary text stays readable in dark mode. */
 html[data-theme="dark"] .about__text,
 html[data-theme="dark"] .interest-card__desc,
 html[data-theme="dark"] .featured-card__desc {

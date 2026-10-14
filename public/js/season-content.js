@@ -24,7 +24,7 @@ var SEASON_CONTENT = {
     ],
     "new-year": [
       "Happy New Year",
-      "Here’s to a year of curiosity, kindness, and new beginnings."
+      "Here’s to a new year filled with kindness, peace, and countless blessings."
     ],
     "countdown": [
       "A new year is almost here",
@@ -77,7 +77,7 @@ var SEASON_CONTENT = {
     ],
     "new-year": [
       "Feliz Año Nuevo",
-      "Por un año de curiosidad, bondad y nuevos comienzos."
+      "Por un nuevo año lleno de bondad, paz e innumerables bendiciones."
     ],
     "countdown": [
       "El nuevo año está por llegar",
@@ -130,7 +130,7 @@ var SEASON_CONTENT = {
     ],
     "new-year": [
       "新年快乐",
-      "愿新的一年，有好奇、有善意，也有崭新的开始。"
+      "愿新的一年，充满善意、平安与数不尽的祝福。"
     ],
     "countdown": [
       "新的一年，即将到来",
@@ -183,7 +183,7 @@ var SEASON_CONTENT = {
     ],
     "new-year": [
       "新年快樂",
-      "願新的一年，有好奇、有善意，也有嶄新的開始。"
+      "願新的一年，充滿善意、平安與數不盡的祝福。"
     ],
     "countdown": [
       "新的一年，即將到來",
@@ -236,7 +236,7 @@ var SEASON_CONTENT = {
     ],
     "new-year": [
       "あけましておめでとうございます",
-      "好奇心と優しさ、そして新たな出会いに満ちた一年になりますように。"
+      "優しさと平安、そして数えきれない祝福に満ちた新しい一年になりますように。"
     ],
     "countdown": [
       "もうすぐ、新しい一年",
@@ -289,7 +289,7 @@ var SEASON_CONTENT = {
     ],
     "new-year": [
       "새해 복 많이 받으세요",
-      "호기심과 다정함, 새로운 시작으로 가득한 한 해가 되길 바랍니다."
+      "다정함과 평안, 셀 수 없이 많은 축복으로 가득한 새해가 되길 바랍니다."
     ],
     "countdown": [
       "곧 새로운 한 해가 시작됩니다",

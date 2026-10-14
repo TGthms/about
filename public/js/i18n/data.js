@@ -36,7 +36,6 @@ const TRANSLATIONS = {
     },
     hero: {
       eyebrow: "Hi, I’m",
-      tagline: "High school student in the San Francisco Bay Area.",
       note: "I make websites, take photos, and play the erhu. This is where I keep a little of each.",
       contact: "Contact",
       scroll: "Scroll",
@@ -197,7 +196,6 @@ const TRANSLATIONS = {
     },
     hero: {
       eyebrow: "Hola, soy",
-      tagline: "Estudiante de secundaria en el área de la bahía de San Francisco.",
       note: "Hago sitios web, tomo fotos y toco el erhu. Aquí reúno un poco de todo.",
       contact: "Contacto",
       scroll: "Bajar",
@@ -358,7 +356,6 @@ const TRANSLATIONS = {
     },
     hero: {
       eyebrow: "你好，我是",
-      tagline: "位于旧金山湾区的高中生。",
       note: "我做网站、拍照，也拉二胡。这里收集着我的一些作品和日常兴趣。",
       contact: "联系",
       scroll: "向下浏览",
@@ -519,7 +516,6 @@ const TRANSLATIONS = {
     },
     hero: {
       eyebrow: "こんにちは、",
-      tagline: "サンフランシスコ・ベイエリアの高校生です。",
       note: "ウェブサイトを作ったり、写真を撮ったり、二胡を弾いたり。ここに少しずつまとめています。",
       contact: "連絡先",
       scroll: "下へ",
@@ -690,8 +686,7 @@ TRANSLATIONS["zh-Hant"] = {
     "eyebrow": "你好，我是",
     "contact": "聯絡",
     "note": "我做網站、拍照，也拉二胡。這裡收集著我的一些作品和日常興趣。",
-    "scroll": "向下瀏覽",
-    "tagline": "位于舊金山灣區的高中生。"
+    "scroll": "向下瀏覽"
   },
   "host": {
     "backup": "備用",
@@ -1005,7 +1000,6 @@ TRANSLATIONS.ko = {
   },
   "hero": {
     "eyebrow": "안녕하세요, 저는",
-    "tagline": "샌프란시스코 베이 지역에 사는 고등학생입니다.",
     "note": "웹사이트를 만들고, 사진을 찍고, 얼후를 연주해요. 그 이야기들을 조금씩 모아 두는 곳입니다.",
     "contact": "연락하기",
     "scroll": "아래로"
