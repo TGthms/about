@@ -819,7 +819,7 @@ const HOME_DETAILS = {
   "en": {
     "rally": {
       "open": "Play a quick rally",
-      "title": "A little Pong",
+      "title": "pong",
       "close": "Close table tennis game",
       "court": "Pong table with your paddle below and the computer above",
       "instructions": "Move with ← →, your mouse, or drag on the table. Space serves or pauses.",
