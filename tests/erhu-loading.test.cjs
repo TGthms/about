@@ -45,14 +45,23 @@ function harness(connection) {
   return { opener, close, videos, nodes, document, open: () => opener.listeners.click(), status: () => nodes.findLast(x => x.className === 'erhu-wiki__video-status') };
 }
 
-test('video preloads on interest instead of competing with the initial hero', () => {
+test('erhu media waits for interest and reuses the preloaded photo and video', () => {
   const h = harness();
   assert.equal(h.videos.length, 0);
+  assert.equal(h.nodes.filter(x => x.tagName === "IMG").length, 0);
   h.opener.listeners.pointerenter();
   assert.equal(h.videos.length, 1);
   assert.equal(h.videos[0].preload, 'auto');
+  const photo = h.nodes.find(x => x.tagName === 'IMG');
+  assert.equal(photo.attrs.src, 'assets/erhu/erhu-instrument.jpg');
+  h.opener.listeners.focus();
+  assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 1);
   h.open();
   assert.equal(h.videos.length, 1, 'opening reuses the preloaded media element');
+  assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 1);
+  assert.equal(photo.alt, 'A traditional erhu from the Metropolitan Museum of Art');
+  h.close.listeners.click(); h.open();
+  assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 1);
 });
 
 test('data-saving connections skip speculative video loading but can open the player', () => {
@@ -60,6 +69,7 @@ test('data-saving connections skip speculative video loading but can open the pl
     const h = harness(connection);
     h.opener.listeners.pointerenter();
     assert.equal(h.videos.length, 0);
+    assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 0);
     h.open();
     assert.equal(h.videos.length, 1);
   }

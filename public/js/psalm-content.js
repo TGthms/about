@@ -1,5 +1,5 @@
 /* Scripture text is excluded from the repository’s MIT code license.
-   NIV and JCB © Biblica; quoted under its General Use Guidelines with attribution.
+   NIV, JCB, and KLB © Biblica; quoted under its General Use Guidelines with attribution.
    Other editions and sources are documented in SCRIPTURE_CREDITS.md.
    Keep wording verbatim; line breaks are presentation only. */
 var PSALM_23 = {
@@ -136,8 +136,34 @@ var PSALM_23 = {
   }
 };
 
+PSALM_23.ko = {
+  "title": "시편 23편",
+  "close": "시편 23편 닫기",
+  "version": "현대인의 성경 · KLB (1985)",
+  "byline": "(다윗의 시)",
+  "read": "Bible.com에서 읽기",
+  "creditsTitle": "번역본과 출처",
+  "sourceLabel": "본문 출처",
+  "permissionsLabel": "이용 허가 안내",
+  "copyright": "Scripture quotations taken from the Korean Living Bible (현대인의 성경). Copyright © 1985 by Biblica, Inc.® Used by permission of Biblica, Inc.®. All rights reserved worldwide.",
+  "footerCredit": "하단 인용: 디모데후서 1:7, 현대인의 성경(KLB). 위 저작권 안내가 함께 적용됩니다.",
+  "sourceUrl": "https://www.bible.com/ko/bible/86/PSA.23.KLB",
+  "permissionsUrl": "https://www.biblica.com/permissions/",
+  "footerReference": "— 디모데후서 1:7 (KLB)",
+  "footerVerse": "하나님은 우리에게 두려워하는 마음을 주신 것이 아니라 능력과 사랑과 절제하는 마음을 주셨습니다.",
+  "verses": [
+    "여호와는 나의 목자시니\n내가 부족함이 없으리라.",
+    "그가 나를 푸른 풀밭에 쉬게 하시고\n잔잔한 물가로 인도하시며",
+    "내 영혼을 소생시키시고\n자기 이름을 위하여\n나를 의로운 길로\n인도하시는구나.",
+    "내가 죽음의\n음산한 계곡을 걸어가도\n두려워하지 않을 것은\n주께서 나와 함께하심이라.\n주의 지팡이와\n막대기가 나를 지키시니\n내가 안심하리라.",
+    "주께서 내 원수들이 보는 가운데\n나를 위해 잔치를 베푸시고\n나를 귀한 손님으로\n맞아 주셨으니\n내 잔이 넘치는구나.",
+    "주의 선하심과 한결같은 사랑이\n평생에 나를 따를 것이니\n내가 여호와의 집에서\n영원히 살리라."
+  ],
+  "readUrl": "https://www.bible.com/ko/bible/86/PSA.23.KLB"
+};
+
 Object.keys(PSALM_23).forEach(function (lang) {
-  PSALM_23[lang].citation = PSALM_23[lang].title + ":1–6 (" + ({ en: "NIV", es: "RV1909", zh: "和合本", "zh-Hant": "和合本", ja: "JCB" }[lang]) + ")";
+  PSALM_23[lang].citation = PSALM_23[lang].title + ":1–6 (" + ({ en: "NIV", es: "RV1909", zh: "和合本", "zh-Hant": "和合本", ja: "JCB", ko: "KLB" }[lang]) + ")";
   var copy = PSALM_23[lang];
   TRANSLATIONS[lang].psalm = copy;
   TRANSLATIONS[lang].about.links.psalm = copy.title;

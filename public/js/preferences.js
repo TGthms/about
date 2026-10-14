@@ -58,7 +58,7 @@
       return Boolean(
         target &&
           target.closest &&
-          target.closest("video, audio, input, textarea, select, [contenteditable='true']")
+          target.closest("video, audio, input, textarea, select, canvas.rally-court, [contenteditable='true']")
       );
     }
 
@@ -239,6 +239,14 @@
                     <span class="lang-picker__option-label">日本語</span>
                   </button>
                 </li>
+                <li role="presentation">
+                  <button type="button" class="lang-picker__option" role="option" data-lang="ko" aria-selected="false">
+                    <span class="lang-picker__check" aria-hidden="true">
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="lang-picker__option-label">한국어</span>
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -246,7 +254,7 @@
           <div class="controls-section">
             <p class="controls-section__label" data-i18n="a11y.displayPrefs">Display</p>
             <div class="pref-switcher" role="group" aria-label="Display preferences" data-i18n-aria="a11y.displayPrefs">
-              <label class="pref-btn" id="theme-toggle-wrap" title="Theme">
+              <label class="pref-btn" id="theme-toggle-wrap" title="Theme" data-i18n-aria="a11y.themeToggle">
                 <input
                   class="theme-toggle-input"
                   type="checkbox"

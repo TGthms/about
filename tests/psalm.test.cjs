@@ -16,7 +16,7 @@ function element(tag = 'div') {
   };
 }
 
-test('all five Psalm editions have six verses, source credits, and clear footer attribution', () => {
+test('all six Psalm editions have six verses, source credits, and clear footer attribution', () => {
   const context = {};
   vm.runInNewContext(dataSource, context);
   for (const [lang, copy] of Object.entries(context.PSALM_23)) {

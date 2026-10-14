@@ -10,23 +10,25 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 
 ## Features
 
-- English, Español, 简体中文, 繁體中文, 日本語
+- English, Español, 简体中文, 繁體中文, 日本語, 한국어
 - Light / dark mode (system default, session override)
 - Projects: duskline, Kit, Travel Gallery, USA Travel Guide, and Japan Travel Guide, with Folio, Nimbus, and Kiln available in an archived-project shelf
 - Dual hosts for each project (Cloudflare main / GitHub backup). Every language uses the selected host preference
 - Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
 - Six equally sized project previews; the whole Personal Hub card opens an introduction and curated version history
-- Brief hover/press/dialog animations that respect reduced motion
+- Brief hover/press/dialog animations that respect reduced motion, with small animated interest doodles
+- A first-to-five Pong match against a local computer opponent, with three challenge levels, point and match celebrations, touch/mouse/keyboard controls, pause on blur, and local best-rally records
+- Email copy action with localized success/failure announcements
 - Psalm 23 reading card with localized editions, classic typography, and visible scripture credits
 - Intentional native iOS tick haptics are preserved
 - Full-height photographic hero with a decode-aware entrance, smooth theme scrims, and a gently contracting header
-- Erhu video preloads on proximity or intent; fast-start MP4 retains picture/audio quality and native streaming, with localized buffering percentages
-- Public Sans is self-hosted with its OFL license; CJK display fonts load only for the selected language
+- Erhu photo and video preload on proximity or intent; fast-start MP4 retains picture/audio quality and native streaming, with localized buffering percentages
+- Public Sans is self-hosted with its OFL license; CJK display fonts load only for the selected language, including Korean
 - GitHub link card: hover (or keyboard focus) opens a contribution calendar for TGthms (profile and calendar data load on that first interaction)
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Erhu interest card with a responsive, localized wiki dialog, museum image, and performance video
-- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Privacy last updated 5 September 2026; Terms last updated 26 August 2026)
+- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Privacy last updated 13 October 2026; Terms last updated 26 August 2026)
 
 ## Files
 
@@ -40,6 +42,8 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 | `public/js/preferences.js` | Centralized preferences markup |
 | `public/js/i18n/` | Focused translation, theme, controls, and project-host modules |
 | `public/js/main.js` | Home interactions |
+| `public/js/rally-engine.js` / `public/js/rally.js` | Local Pong opponent, match physics, and accessible game dialog |
+| `public/js/contact.js` | Email copying with honest, localized feedback |
 | `public/js/home-navigation.js` | Section indicator and responsive anchor offsets |
 | `public/js/about.js` | Localized about paragraphs and Psalm reader trigger |
 | `public/js/site-history.js` / `public/js/site-history-content.js` | Personal Hub introduction and curated milestone history |
@@ -79,6 +83,6 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 ## Local checks
 
-Run `node --test tests/*.test.cjs` for image-error/timeout recovery, clipboard language-switch races, section navigation, preferences keyboard focus/return, and home translation coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
+Run `node --test tests/*.test.cjs` and `python3 tests/html-integrity.py` for image-error/timeout recovery, clipboard language-switch races, section navigation, preferences keyboard focus/return, match physics and opponent behavior, clipboard failures, and complete Korean translation/placeholder coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
 
 To document a future substantial upgrade, append a milestone to `public/js/site-history-content.js`, keep previous version numbers stable, and update `currentVersion`. Add the implementation commit SHA after the commit exists. Scripture source/credit details are maintained in `SCRIPTURE_CREDITS.md`.

@@ -12,7 +12,7 @@ function content() {
 test('site milestones have stable chronological version labels and complete translations', () => {
   const data = content();
   assert.equal(data.currentVersion, data.milestones.length);
-  const languages = ['en', 'es', 'zh', 'zh-Hant', 'ja'];
+  const languages = ['en', 'es', 'zh', 'zh-Hant', 'ja', 'ko'];
   const keys = Object.keys(data.copy.en);
   for (const lang of languages) {
     for (const key of keys) assert.ok(data.copy[lang][key], `${lang}: ${key}`);
@@ -67,7 +67,7 @@ test('site dialog renders newest first, avoids duplicate locks, and traps keyboa
   assert.equal(h.panel.scrollTop, 0);
   assert.equal(h.document.activeElement, h.close);
   const timeline = h.body.children.find(x => x.className === 'site-timeline');
-  assert.equal(timeline.children[0].children[0].textContent, 'v15');
+  assert.equal(timeline.children[0].children[0].textContent, 'v16');
   assert.equal(timeline.children.at(-1).children[0].textContent, 'v1');
   h.handlers.keydown({ key: 'Tab', shiftKey: true, preventDefault() {} });
   const source = h.body.children.at(-1);

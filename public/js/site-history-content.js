@@ -2,7 +2,7 @@
    meaningful changes; they are not a list of Git tags or every commit.
    Append a new milestone for a substantial update; keep old labels stable. */
 var PERSONAL_HUB = {
-  "currentVersion": 15,
+  "currentVersion": 16,
   "copy": {
     "en": {
       "title": "Personal Hub",
@@ -498,6 +498,121 @@ var PERSONAL_HUB = {
     }
   ]
 };
+
+PERSONAL_HUB.copy.ko = {
+  "title": "나의 작은 공간",
+  "desc": "프로젝트와 사진, 그리고 그 사이의 작은 이야기들을 모아 둔 저만의 웹 공간입니다.",
+  "current": "지금 여기",
+  "learn": "이 사이트 이야기",
+  "preview": "제가 만드는 것들을 조금씩.",
+  "dialogTitle": "이 사이트 이야기",
+  "close": "사이트 이야기 닫기",
+  "intro": "이 사이트도 하나의 프로젝트예요. 제가 만드는 것, 궁금해하는 것, 소소한 일상을 담는 집처럼 가꾸고 있습니다. 작은 실험과 꼼꼼한 수정을 거치며 조금씩 자라 왔어요.",
+  "builtWith": "사용한 기술",
+  "stack": "HTML, CSS, JavaScript",
+  "since": "처음 문을 연 때",
+  "history": "지금까지의 발자취",
+  "now": "현재 버전",
+  "viewChange": "변경 내용 보기",
+  "fullHistory": "Git 전체 기록 둘러보기"
+};
+const KOREAN_MILESTONES = [
+  [
+    "첫인사",
+    "첫 개인 홈페이지를 공개했습니다."
+  ],
+  [
+    "새로운 모습",
+    "Georgia 제목 글꼴, 더 따뜻한 색감, Duolingo QR 카드를 더했습니다."
+  ],
+  [
+    "둘러볼 공간",
+    "프로젝트와 소셜 링크에 각각의 자리를 마련했습니다."
+  ],
+  [
+    "또 하나의 길",
+    "기본·대체 프로젝트 링크와 더 자연스러운 환경설정 패널을 추가했습니다."
+  ],
+  [
+    "사진도 함께",
+    "미국 여행 사진첩을 프로젝트 모음에 더했습니다."
+  ],
+  [
+    "브라우저 밖으로",
+    "macOS 프로젝트 Folio, Nimbus, Kiln을 이곳에 소개했습니다."
+  ],
+  [
+    "더 탄탄한 기초",
+    "사이트 구조를 정리하고, 환경설정과 언어 처리를 각각의 모듈로 나누었습니다."
+  ],
+  [
+    "얼후를 더 가까이",
+    "악기 소개와 오케스트라 연주 영상으로 음악 이야기를 더했습니다."
+  ],
+  [
+    "조용한 한쪽 책장",
+    "지난 프로젝트를 위한 공간을 만들고, 새로운 작품과 커뮤니티 링크도 더했습니다."
+  ],
+  [
+    "작은 디테일",
+    "GitHub 기여 달력, 더 차분한 이미지 로딩, 접근성 개선을 더했습니다."
+  ],
+  [
+    "번체 중국어 지원",
+    "영어, 스페인어, 간체 중국어, 일본어에 번체 중국어를 더했습니다."
+  ],
+  [
+    "더 간결한 공간",
+    "여백이 있는 편집형 레이아웃으로 소개, 관심사, 프로젝트에 집중했습니다."
+  ],
+  [
+    "손끝에 전해지는 느낌",
+    "iOS 햅틱과 더 부드러운 상호작용을 더하고, 메뉴와 대화상자의 스크롤 문제를 고쳤습니다."
+  ],
+  [
+    "내가 사는 곳의 풍경",
+    "베이 지역 사진, 차분한 밝은·어두운 테마, 살짝 줄어드는 헤더를 더했습니다."
+  ],
+  [
+    "사이트도 하나의 작품",
+    "이 사이트를 프로젝트 모음에 더하고, 소개와 변화의 기록을 담았습니다."
+  ]
+];
+PERSONAL_HUB.milestones.forEach(function (item, index) {
+  item.copy.ko = { title: KOREAN_MILESTONES[index][0], description: KOREAN_MILESTONES[index][1] };
+});
+
+PERSONAL_HUB.milestones.push({
+  "version": 16,
+  "date": "2026-10-13",
+  "commit": null,
+  "copy": {
+    "en": {
+      "title": "A little play, another language",
+      "description": "A Pong table for quick matches, six languages to explore in, and small details to discover."
+    },
+    "es": {
+      "title": "Un poco de juego, otro idioma",
+      "description": "Una mesa de Pong para partidas rápidas, seis idiomas para explorar y pequeños detalles por descubrir."
+    },
+    "zh": {
+      "title": "一点玩心，一种新语言",
+      "description": "一张可以随时来一局的乒乓球台，六种语言，还有等待发现的小细节。"
+    },
+    "zh-Hant": {
+      "title": "一點玩心，一種新語言",
+      "description": "一張可以隨時來一局的乒乓球台，六種語言，還有等待發現的小細節。"
+    },
+    "ja": {
+      "title": "少しの遊び心、新しい言語",
+      "description": "合間に遊べるPong、六つの言語、そして見つける楽しみのある小さなディテール。"
+    },
+    "ko": {
+      "title": "작은 재미, 새로운 언어",
+      "description": "짧게 즐기는 탁구 게임, 여섯 가지 언어, 곳곳에서 발견하는 작은 디테일."
+    }
+  }
+});
 
 Object.keys(PERSONAL_HUB.copy).forEach(function (lang) {
   TRANSLATIONS[lang].personalHub = PERSONAL_HUB.copy[lang];

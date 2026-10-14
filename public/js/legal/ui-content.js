@@ -37,3 +37,11 @@ window.LEGAL_UI["zh-Hant"] = {
   "related": "相關文件",
   "termsLink": "使用條款"
 };
+
+window.LEGAL_UI.ko = {
+  "back": "홈으로 돌아가기",
+  "privacyLink": "개인정보 처리방침",
+  "termsLink": "이용약관",
+  "onThisPage": "이 페이지의 내용",
+  "related": "관련 문서"
+};

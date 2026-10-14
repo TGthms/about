@@ -2828,3 +2828,12 @@ html[data-theme="dark"] ::selection {
   background: color-mix(in srgb, var(--accent) 35%, transparent);
   color: var(--ink);
 }
+
+/* Korean fonts load only after Korean is selected. Keep words together where
+   possible; overflow-wrap allows a safe fallback for URLs and narrow dialogs. */
+html[data-language="ko"] body {
+  --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-display: "Noto Serif KR", "Batang", serif;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}

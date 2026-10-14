@@ -94,14 +94,26 @@ test('delegated navigation handles newly rendered links, focus, and URL history'
   assert.equal(h.pushed.length,1);
 });
 
-test('all five language packs contain the new home copy and navigation labels', () => {
+test('all six language packs contain the new home copy and navigation labels', () => {
   const context = {};
   vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8') + '\nthis.packs = TRANSLATIONS;', context);
-  for (const lang of ['en','es','zh','zh-Hant','ja']) {
+  for (const lang of ['en','es','zh','zh-Hant','ja','ko']) {
     const pack = context.packs[lang];
     for (const key of ['eyebrow','tagline','note','contact']) assert.ok(pack.hero[key], `${lang}: hero.${key}`);
     assert.ok(pack.a11y.sections, lang);
     assert.ok(pack.a11y.explore, lang);
     for (const key of ['build','photo','erhu']) assert.ok(pack.about.links[key], lang);
   }
+});
+
+test('a failed image can retry on the next explicit load request', () => {
+  const h = imageHarness(), a = h.addImage();
+  let attempts = 0;
+  const setAttribute = a.img.setAttribute;
+  a.img.setAttribute = (key, value) => { if (key === 'src') attempts++; setAttribute(key, value); };
+  h.start(); a.fire('error');
+  assert.equal(a.img.getAttribute('data-queued'), undefined);
+  h.start(); assert.equal(attempts, 2);
+  a.img.complete = true; a.img.naturalWidth = 200; a.fire('load');
+  assert.equal(a.frame.classList.contains('is-img-error'), false);
 });

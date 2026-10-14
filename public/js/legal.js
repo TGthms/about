@@ -58,7 +58,7 @@
     var doc = documentFor(resolved);
     var ui = uiFor(resolved);
     var htmlLang =
-      resolved === "zh" ? "zh-Hans" : resolved === "zh-Hant" ? "zh-Hant" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
+      resolved === "zh" ? "zh-Hans" : resolved;
 
     document.documentElement.lang = htmlLang;
     document.title = doc.metaTitle;
@@ -73,6 +73,7 @@
       zh: "zh_CN",
       "zh-Hant": "zh_TW",
       ja: "ja_JP",
+      ko: "ko_KR",
     }[resolved] || "en_US");
 
     var label = document.getElementById("legal-label");

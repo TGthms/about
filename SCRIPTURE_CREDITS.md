@@ -85,3 +85,21 @@ Kingdom are vested in the Crown and administered by Cambridge University Press.
 Each reader shows its edition, source link, credits, and a link to Psalm 23 in the matching edition on Bible.com.
 Text is stored locally as a small attributed quotation; opening the reader does
 not load a remote Bible embed, analytics script, or external API.
+
+## Korean — 현대인의 성경 (KLB), 1985
+
+The reader quotes Psalm 23:1–6, and the footer quotes 2 Timothy 1:7 from
+Korean Living Bible (현대인의 성경), © 1985 Biblica. Published wording is preserved;
+line breaks are for presentation. The reader includes the publisher's copyright
+acknowledgment, a KLB citation, and source/permission links. This is a limited,
+attributed quotation, not a relicensing of the translation under MIT or the
+site's media license.
+
+- [Psalm 23 and edition credits](https://www.bible.com/ko/bible/86/PSA.23.KLB)
+- [2 Timothy 1:7](https://www.bible.com/ko/bible/86/2TI.1.7.KLB)
+- [Publisher's edition and quotation terms](https://www.biblegateway.com/versions/Korean-Living-Bible-KLB/)
+- [Biblica General Use Guidelines](https://www.biblica.com/permissions/)
+
+The Korean quotations total seven verses, do not comprise a whole biblical book,
+and are less than one quarter of the Korean site text. English, Japanese, and
+Korean quotations together remain within the publisher's 500-verse allowance.

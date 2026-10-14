@@ -563,3 +563,157 @@ window.LEGAL_DOCUMENTS.privacy["zh-Hant"] = {
   "title": "隱私政策",
   "updated": "最近更新日期：2026 年 9 月 5 日"
 };
+
+window.LEGAL_DOCUMENTS.privacy.ko = {
+  "metaTitle": "개인정보 처리방침 — Tim G",
+  "metaDesc": "Tim G의 개인 웹사이트에서 개인정보, 기기 내 환경설정, 연락처 정보를 처리하는 방식입니다.",
+  "label": "법적 안내",
+  "title": "개인정보 처리방침",
+  "updated": "최종 수정: 2026년 10월 13일",
+  "intro": "이 개인정보 처리방침은 개인 웹사이트(이하 ‘사이트’)를 방문할 때 어떤 정보가 처리되는지, 기기에 저장되는 환경설정이 어떻게 작동하는지, 질문이 있을 때 운영자에게 어떻게 연락할 수 있는지 설명합니다.",
+  "sections": [
+    {
+      "id": "overview",
+      "title": "개요",
+      "paragraphs": [
+        "이 사이트는 Tim G(이하 ‘저’ 또는 ‘운영자’)가 운영하는 정적 개인 홈페이지입니다. 운영자를 소개하고, 다른 곳에 호스팅된 프로젝트와 프로필로 연결합니다. 온라인 상점, 소셜 네트워크 또는 계정 기반 서비스가 아닙니다.",
+        "정보 수집은 의도적으로 최소화합니다. 이메일로 직접 연락하는 경우를 제외하면, 방문 경험을 개선하는 언어 선택과 유사한 설정은 사용자의 기기에 저장됩니다.",
+        "적용되는 개인정보 보호 법률상, 사이트 운영자는 이메일 서신 등 이 사이트를 통해 직접 수집하는 정보에 대한 책임을 집니다."
+      ]
+    },
+    {
+      "id": "information",
+      "title": "정보와 데이터 처리",
+      "paragraphs": [
+        "직접 보내는 정보. contact.timg@icloud.com 또는 제가 공개한 다른 주소로 이메일을 보내면, 이메일 주소, 이름, 메시지 본문 등이 포함된 내용을 받게 됩니다. 이 정보는 답변을 보내고, 합리적으로 필요한 경우 서신 기록을 보관하는 데 사용합니다.",
+        "기기에 저장되는 환경설정. 사이트는 언어 선택과 프로젝트 링크의 호스팅 선호도를 브라우저 로컬 저장소에 저장할 수 있습니다. 화면 테마는 기기의 밝은·어두운 설정을 따르며, 세션 동안 임시로 다른 테마를 선택할 수 있습니다. GitHub 카드 미리보기를 열면 공개된 기여 달력 데이터가 잠시 세션 캐시에 저장될 수 있습니다. 탁구 게임의 최고 랠리 기록도 기기에 저장됩니다. 이러한 값은 사용자의 기기에 남으며, 사이트의 일반적인 운영 과정에서 제가 운영하는 개인정보 서버로 전송되지 않습니다.",
+        "호스팅 과정에서 처리되는 기술 정보. 사이트는 GitHub Pages로 게시됩니다. Cloudflare가 사용자 지정 도메인 앞에서 CDN 역할을 할 수 있습니다. 호스팅 및 CDN 제공업체는 사이트를 제공하는 과정에서 IP 주소, 브라우저 종류, 기기 또는 운영체제 정보, 참조 URL, 요청 시각 등의 기술 정보를 처리할 수 있습니다. 이 처리는 각 업체의 시스템과 정책에 따라 이루어집니다. 일부 연결된 프로젝트는 Cloudflare를 기본 호스팅으로, GitHub Pages를 대체 호스팅으로 사용합니다.",
+        "분석 및 추적. 향후 이 방침의 개정에서 별도로 알리지 않는 한, 사이트는 광고 추적기, 행동 프로파일링 또는 제3자 분석 도구를 사용하지 않습니다.",
+        "공개 GitHub 기여 달력. GitHub 카드 미리보기에 마우스를 올리거나 키보드 초점을 맞추거나 미리보기를 열면, 브라우저가 GitHub 및 github-contributions-api.jogruber.de에 공개 프로필과 기여 데이터를 요청할 수 있습니다. 이 요청은 사용자의 기기에서 해당 서비스로 직접 전송되며 각 서비스의 정책이 적용됩니다.",
+        "사이트 내 미디어. 페이지 로딩이 끝난 뒤, 얼후 대화상자를 열 때 더 빨리 재생할 수 있도록 브라우저가 사이트에 호스팅된 연주 영상(약 18MB)을 미리 불러올 수 있습니다. 브라우저가 데이터 절약 설정이나 2G 연결을 보고하면 미리 불러오기를 건너뜁니다."
+      ]
+    },
+    {
+      "id": "use",
+      "title": "정보를 사용하는 목적",
+      "paragraphs": [
+        "사이트를 표시하고 사용자가 지정한 환경설정을 기억하기 위해 사용합니다.",
+        "연락을 받았을 때 답변하기 위해 사용합니다.",
+        "보안을 유지하고, 문제를 진단하며, 사이트를 점진적으로 개선하기 위해 사용합니다.",
+        "필요한 경우 적용되는 법률을 준수하기 위해 사용합니다."
+      ]
+    },
+    {
+      "id": "sharing",
+      "title": "정보 공유",
+      "paragraphs": [
+        "저는 사용자의 개인정보를 판매하거나, 서로 다른 서비스의 이용 활동을 연결하는 행동 기반 광고를 위해 공유하지 않습니다.",
+        "서비스 제공업체. 호스팅 및 인프라 제공업체는 사이트 제공에 필요한 기술 데이터를 처리합니다. GitHub, Instagram, 프로젝트 페이지 등 외부 링크의 서비스는 제3자가 자체 개인정보 처리방침에 따라 운영합니다.",
+        "법적 요구. 법률이나 법적 절차에서 요구하거나 권리, 안전 또는 보안을 보호하기 위해 필요한 경우 정보를 공개할 수 있습니다."
+      ]
+    },
+    {
+      "id": "cookies",
+      "title": "쿠키와 로컬 저장소",
+      "paragraphs": [
+        "이 사이트는 광고 쿠키 대신 주로 로컬 저장소를 사용해 환경설정을 기억하도록 설계되었습니다. 다만 일반적인 웹 요청 과정에서 브라우저가 호스팅 업체에 통상적인 기술 데이터를 보낼 수 있습니다.",
+        "브라우저 설정에서 사이트 데이터를 삭제하거나, 저장소를 차단하거나, 비공개 탐색을 사용할 수 있습니다. 이 경우 언어·테마 설정이나 게임 최고 기록이 초기화될 수 있습니다."
+      ]
+    },
+    {
+      "id": "retention",
+      "title": "정보 보관 기간",
+      "paragraphs": [
+        "환경설정은 사용자가 삭제하거나 사이트에서 변경할 때까지 기기에 남습니다.",
+        "사용자가 보낸 이메일은 답변과 서신 관리에 합리적으로 필요한 기간 동안만 보관합니다. 다만 법률에서 더 긴 보관 기간을 요구하면 해당 기간을 따릅니다."
+      ]
+    },
+    {
+      "id": "children",
+      "title": "아동",
+      "paragraphs": [
+        "이 사이트는 일반적인 개인 홈페이지이며, 만 13세 미만 아동 또는 사용자의 관할 법률상 이에 해당하는 연령의 아동을 대상으로 하지 않습니다. 저는 해당 연령 미만 아동의 개인정보를 알면서 수집하지 않습니다. 아동이 개인정보를 제공했다고 생각되면 연락해 주세요. 적절한 조치를 취하겠습니다."
+      ]
+    },
+    {
+      "id": "rights",
+      "title": "선택권과 권리",
+      "paragraphs": [
+        "적용되는 법률에 따라 개인정보와 관련된 특정 권리를 가질 수 있습니다. 이 사이트는 매우 제한된 정보만 수집하므로, 요청의 대상은 일반적으로 연락 서신이나 서비스 제공업체가 관리하는 정보로 한정됩니다.",
+        "요청은 contact.timg@icloud.com으로 보내 주세요. 합리적인 기간 안에 답변하겠습니다.",
+        "사이트의 언어·테마 설정을 사용하거나 브라우저 저장소를 삭제해 언제든 기기 내 환경설정을 관리할 수 있습니다."
+      ]
+    },
+    {
+      "id": "security",
+      "title": "보안",
+      "paragraphs": [
+        "저는 정적 개인 웹사이트에 적절한 합리적인 보안 조치를 취합니다. 어떤 전송·저장 방식도 완전히 안전하지는 않습니다. 민감한 정보를 이메일로 보낼 때는 주의해 주세요."
+      ]
+    },
+    {
+      "id": "links",
+      "title": "다른 사이트로 연결되는 링크",
+      "paragraphs": [
+        "사이트는 제3자 웹사이트와 서비스로 연결됩니다. 해당 서비스의 개인정보 처리 방식은 각각 별도로 정해집니다. 정보를 제공하기 전에 해당 정책을 확인해 주세요."
+      ]
+    },
+    {
+      "id": "changes",
+      "title": "방침 변경",
+      "paragraphs": [
+        "저는 사이트에 개정된 버전을 게시하는 방식으로 이 개인정보 처리방침을 수시로 변경할 수 있습니다. 상단의 ‘최종 수정’ 날짜로 변경 시점을 알립니다. 개정 후에도 사이트를 계속 이용하면 개정된 방침을 확인한 것으로 간주합니다."
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "문의",
+      "paragraphs": [
+        "개인정보 처리방침 또는 개인정보 처리 방식에 관한 문의:",
+        "이메일: contact.timg@icloud.com",
+        "사이트 운영자: Tim G — 샌프란시스코 베이 지역"
+      ]
+    }
+  ]
+};
+
+/* The new game stores a local record; describe it alongside preferences. */
+const GAME_STORAGE_DISCLOSURE = {
+  "en": [
+    "Last updated: October 13, 2026",
+    "The table-tennis game also stores your best rally locally on this device."
+  ],
+  "es": [
+    "Última actualización: 13 de octubre de 2026",
+    "El juego de tenis de mesa también guarda tu mejor rally localmente en este dispositivo."
+  ],
+  "zh": [
+    "最后更新：2026年10月13日",
+    "乒乓球游戏的最长回合记录也仅保存在本设备上。"
+  ],
+  "zh-Hant": [
+    "最後更新：2026年10月13日",
+    "乒乓球遊戲的最長回合紀錄也僅保存在本裝置上。"
+  ],
+  "ja": [
+    "最終更新：2026年10月13日",
+    "卓球ゲームの最長ラリー記録も、この端末内に保存されます。"
+  ]
+};
+Object.keys(GAME_STORAGE_DISCLOSURE).forEach(function (lang) {
+  var doc = window.LEGAL_DOCUMENTS.privacy[lang];
+  doc.updated = GAME_STORAGE_DISCLOSURE[lang][0];
+  doc.sections.find(function (section) { return section.id === "information"; }).paragraphs[1] += " " + GAME_STORAGE_DISCLOSURE[lang][1];
+});
+
+const FONT_REQUESTS = {
+  "en": "Some display fonts are served by Google Fonts. Your browser requests them directly from fonts.googleapis.com and fonts.gstatic.com; Google processes those requests under its own policies.",
+  "es": "Algunas fuentes se sirven a través de Google Fonts. Tu navegador las solicita directamente a fonts.googleapis.com y fonts.gstatic.com; Google trata esas solicitudes conforme a sus propias políticas.",
+  "zh": "部分字体由 Google Fonts 提供。浏览器会直接向 fonts.googleapis.com 和 fonts.gstatic.com 请求字体，Google 依照自己的政策处理这些请求。",
+  "zh-Hant": "部分字型由 Google Fonts 提供。瀏覽器會直接向 fonts.googleapis.com 和 fonts.gstatic.com 請求字型，Google 依照自己的政策處理這些請求。",
+  "ja": "一部のフォントはGoogle Fontsから配信されます。ブラウザーはfonts.googleapis.comとfonts.gstatic.comに直接リクエストを送り、Googleが独自のポリシーに従って処理します。",
+  "ko": "일부 글꼴은 Google Fonts에서 제공됩니다. 브라우저는 fonts.googleapis.com과 fonts.gstatic.com에 직접 요청을 보내며, Google은 자체 정책에 따라 요청을 처리합니다."
+};
+Object.keys(FONT_REQUESTS).forEach(function (lang) {
+  window.LEGAL_DOCUMENTS.privacy[lang].sections.find(function (section) { return section.id === "information"; }).paragraphs.push(FONT_REQUESTS[lang]);
+});

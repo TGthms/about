@@ -984,3 +984,114 @@ a.site-timeline__version:hover { color: var(--accent-text); text-decoration: und
   .psalm-verse { padding-left: 1.25rem; }
   .psalm-verses { font-size: 1.025rem; }
 }
+
+/* Small interest doodles keep the open rows, with one brief response to curiosity. */
+.home-page .interest-card { position: relative; }
+html .home-page .interest-card__icon {
+  display: block;
+  position: absolute;
+  top: 21px;
+  left: 0;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--mute);
+  pointer-events: none;
+}
+.home-page .interest-card__icon svg { display: block; width: 100%; height: 100%; }
+.home-page .interest-card__title { padding-left: 36px; }
+.home-page .interest-card__icon :is(svg, circle, path, ellipse) { transform-box: fill-box; transform-origin: center; }
+@keyframes interest-rally { 40% { transform: translate(-3px, 5px); } 75% { transform: translate(2px, -3px); } }
+@keyframes interest-bow { 50% { transform: translate(2px, 1.4px); } }
+@keyframes interest-world { 50% { transform: scaleX(.7); } }
+@keyframes interest-shutter { 50% { transform: scale(.8); } }
+@keyframes interest-right { 50% { transform: translateX(2px); } }
+@keyframes interest-left { 50% { transform: translateX(-2px); } }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .home-page [data-interest="bilingual"]:hover .interest-arrow--right,
+  .home-page [data-interest="tech"]:hover .interest-code--right { animation: interest-right 480ms ease both; }
+  .home-page [data-interest="bilingual"]:hover .interest-arrow--left,
+  .home-page [data-interest="tech"]:hover .interest-code--left { animation: interest-left 480ms ease both; }
+  .home-page [data-interest="tt"]:hover .interest-ball { animation: interest-rally 550ms ease both; }
+  .home-page [data-interest="erhu"]:hover .interest-bow { animation: interest-bow 600ms ease both; }
+  .home-page [data-interest="travel"]:hover .interest-meridian { animation: interest-world 600ms ease both; }
+  .home-page [data-interest="photo"]:hover .interest-aperture { animation: interest-shutter 480ms ease both; }
+  .home-page .site-nav a:hover::after { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .home-page [data-interest="tt"]:focus-within .interest-ball { animation: interest-rally 550ms ease both; }
+  .home-page [data-interest="erhu"]:focus-within .interest-bow { animation: interest-bow 600ms ease both; }
+}
+.home-page .site-nav a:focus-visible::after { transform: scaleX(1); }
+.home-page .featured-card:focus-within .featured-card__cta { text-decoration: underline; text-underline-offset: 4px; }
+.home-page .featured-card--hub:focus-within .hub-card__learn { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 767px) {
+  .home-page .interest-card__icon { top: 17px; width: 22px; height: 22px; }
+  .home-page .interest-card__title { padding-left: 30px; }
+}
+
+/* A quiet practice table: no automatic play, and controls remain usable by touch. */
+.home-page .rally-panel { width: min(100%, 660px); padding: clamp(18px, 4vw, 28px); }
+.rally-panel .erhu-modal__top { align-items: center; margin-bottom: 20px; }
+.rally-panel .erhu-modal__title { font-weight: 400; }
+.rally-scoreboard { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 12px; color: var(--mute); font-size: .8125rem; }
+.rally-scoreboard strong { margin-left: 8px; color: var(--ink); font-weight: 500; font-variant-numeric: tabular-nums; }
+.rally-court { display: block; width: 100%; height: auto; aspect-ratio: 600/320; border: 1px solid var(--rule); border-radius: 12px; touch-action: none; }
+.rally-status { min-height: 1.5em; margin: 16px 0; text-align: center; color: var(--mute); font-size: .875rem; line-height: 1.5; }
+.rally-actions { display: flex; justify-content: center; align-items: center; gap: 12px; }
+.rally-actions button { min-height: 44px; border: 1px solid var(--control-line); border-radius: 10px; color: var(--accent-text); background: var(--bg-card); font: 500 .875rem/1.4 var(--font); cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
+.rally-move { width: 48px; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.rally-serve { min-width: 128px; padding: 10px 20px; background: var(--accent-soft) !important; }
+.rally-actions button:hover { border-color: var(--accent-text); }
+.rally-actions button:active { transform: scale(.97); }
+.rally-instructions { margin: 16px auto 0; max-width: 36em; text-align: center; color: var(--mute); font-size: .75rem; line-height: 1.7; }
+.rally-court:focus-visible, .rally-actions button:focus-visible, .footer__copy-email:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .rally-actions button:active { transform: none; } }
+
+.home-page .footer__contact { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 8px; }
+.footer__copy-email { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; min-width: 115px; padding: 8px 12px; border: 1px solid var(--rule); border-radius: 10px; background: transparent; color: var(--accent-text); font: 500 .75rem/1.4 var(--font); cursor: pointer; }
+.footer__copy-email[hidden] { display: none; }
+.footer__copy-email:hover, .footer__copy-email.is-copied { background: var(--accent-soft); border-color: var(--accent-text); }
+.copy-email__mark { display: inline-block; min-width: 1em; font-size: 1rem; }
+@media (prefers-reduced-motion: no-preference) { .footer__copy-email.is-copied .copy-email__mark { animation: hub-confirm 300ms ease; } }
+
+@media (max-width: 380px) {
+  .home-page .interest-card { grid-template-columns: minmax(0, 1fr); }
+  .home-page .interest-card__desc { padding-left: 30px; }
+  .home-page .interest-card__learn { margin-left: 30px; }
+}
+
+[data-language="ko"] .home-page .hero__name { font-family: Georgia, "Times New Roman", serif; }
+[data-language="ko"] .home-page .hero__note { font-family: var(--font); line-height: 1.7; font-size: clamp(1.1rem, 2.1vw, 1.35rem); }
+[data-language="ko"] .home-page :is(.section__title, .interest-card__title, .erhu-modal__title) { letter-spacing: -.025em; line-height: 1.45; }
+[data-language="ko"] .home-page .featured-card__desc { line-height: 1.8; }
+[data-language="ko"] .psalm-panel :is(.psalm-verses, .erhu-modal__title, .psalm-byline) { font-family: var(--font-display); }
+.rally-scoreboard { gap: 12px; flex-wrap: wrap; }
+
+#rally-open[hidden] { display: none; }
+
+.home-page .interest-bow { transform-box: fill-box; transform-origin: center; }
+
+html .home-page .interest-card.is-settled:hover .interest-card__icon { transform: none; }
+
+.rally-level { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 0 0 18px; }
+.rally-level[hidden] { display: none; }
+.rally-level .controls-section__label { display: block !important; margin: 0; }
+.rally-level-picker { width: 176px; flex-shrink: 0; }
+#rally-level-trigger { display: flex !important; width: 100%; font-size: .8125rem; }
+#rally-level-menu { min-width: 0; position: absolute; inset: 100% 0 auto; margin-top: 6px; display: block !important; box-shadow: 0 8px 24px rgb(0 0 0 / 12%); }
+#rally-level-menu[hidden] { display: none !important; }
+#rally-level-menu .lang-picker__option { min-height: 44px; font-size: .8125rem; }
+.rally-table { position: relative; }
+.rally-celebration { position: absolute; inset: 0; overflow: hidden; pointer-events: none; border-radius: 12px; z-index: 1; }
+.rally-paper { position: absolute; left: var(--paper-x); top: -12px; width: var(--paper-width); height: var(--paper-height); background: var(--paper-color); border-radius: 1px; opacity: 0; animation: rally-paper-fall var(--paper-duration) cubic-bezier(.25,.35,.6,1) var(--paper-delay) forwards; }
+@keyframes rally-paper-fall {
+  0% { opacity: 0; }
+  8%, 72% { opacity: .95; }
+  100% { opacity: 0; transform: translate(var(--paper-drift), var(--paper-fall)) rotate(var(--paper-turn)); }
+}

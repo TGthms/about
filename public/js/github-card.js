@@ -63,6 +63,7 @@
     if (lang === "zh-Hant") return "zh-Hant";
     if (lang === "ja") return "ja";
     if (lang === "es") return "es";
+    if (lang === "ko") return "ko-KR";
     return "en";
   }
 

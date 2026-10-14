@@ -137,3 +137,38 @@ The previous production deployment passed validation and Pages publication.
 GitHub emitted upstream-action Node.js 20 deprecation annotations while running
 those actions under Node.js 24. The pinned action versions can be refreshed as
 upstream releases become available; these annotations did not fail deployment.
+
+## v16
+
+Reviewed 13 October 2026.
+
+- Interest illustrations use individual arrow, bow, aperture, meridian, bracket,
+  and ball motions. The erhu has a curved head, tuning pegs, strings, a small
+  resonator, and a bow. Decorative movement follows reduced-motion settings.
+- Erhu photo and video load on proximity, hover, or focus after initial page
+  loading. Data-saving connections skip speculative requests. The same media
+  elements serve repeated openings; failed images can retry.
+- Pong has Easy, Medium, and Hard challenges, first-to-five scoring, a local
+  opponent, keyboard/mouse/touch controls, and separate best-rally records.
+  A human point has a short paper celebration and a match win has a fuller,
+  longer celebration. Pausing, leaving the tab, and closing stop active effects.
+- Korean follows Japanese in the picker. Homepage, metadata, loading and failure
+  states, erhu, reading cards, all 16 milestones, legal pages, and game controls
+  have complete Korean copy. Conditional fonts and safe word wrapping apply.
+  Scripture sources and credits are in SCRIPTURE_CREDITS.md.
+- Email copying has localized success/failure announcements. Modal backgrounds
+  include the skip link, and popup buttons have explicit accessible names.
+- Resource URLs contain content fingerprints. The Pages workflow uses pinned
+  official actions, checks source integrity, and grants publication permissions
+  only to its deployment job. Its artifact includes .nojekyll.
+
+Verification: 46 regression tests; JavaScript syntax; HTML IDs, accessibility
+references, local assets and resource versions; external link rel attributes;
+translation structure and placeholders; complete match simulations; clipboard
+and media failure handling; picker focus and keyboard controls; and diff checks.
+All 18 public links returned HTTP 200, including a repeated GitHub request.
+
+Browser checks cover all six languages, both palettes, legal pages and dialogs,
+and widths 320, 390, 768, 1024, 1440, and 1920px. The six main project cards have
+equal heights at every checked width, without horizontal overflow. Native
+physical-device haptics and screen-reader software have not been exercised.

@@ -46,17 +46,17 @@
   function loaderLabel() {
     var lang = document.documentElement.getAttribute("data-language") || "en";
     var word = loadingWord();
-    if (lang === "zh" || lang === "zh-Hant" || lang === "ja") return word;
+    if (lang === "zh" || lang === "zh-Hant" || lang === "ja" || lang === "ko") return word;
     if (word.slice(-3) !== "...") return word + "...";
     return word;
   }
 
   function applyLoaderLabel(loader) {
     var lang = document.documentElement.getAttribute("data-language") || "en";
-    var errors = { en: "Image unavailable", es: "Imagen no disponible", zh: "图片暂不可用", "zh-Hant": "圖片暫不可用", ja: "画像を表示できません" };
+    var errors = { en: "Image unavailable", es: "Imagen no disponible", zh: "图片暂不可用", "zh-Hant": "圖片暫不可用", ja: "画像を表示できません", ko: "이미지를 불러올 수 없어요" };
     var failed = loader.parentElement.classList.contains("is-img-error");
     var label = failed ? errors[lang] || errors.en : loaderLabel();
-    var unit = lang === "zh" || lang === "zh-Hant" || lang === "ja" ? "em" : "ch";
+    var unit = lang === "zh" || lang === "zh-Hant" || lang === "ja" || lang === "ko" ? "em" : "ch";
     loader.setAttribute("data-label", label);
     loader.style.setProperty("--loader-shift", String(label.length) + unit);
   }
@@ -177,6 +177,7 @@
       if (settled) return;
       settled = true;
       if (hangTimer) window.clearTimeout(hangTimer);
+      img.removeAttribute("data-queued");
       markImgReady(img);
       busy = false;
       pump();

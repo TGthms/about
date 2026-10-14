@@ -2,6 +2,8 @@
 (function () {
   "use strict";
 
+  var PHOTO_SRC = "assets/erhu/erhu-instrument.jpg";
+  var photoEl = null;
   var VIDEO_SRC = "assets/erhu/always-with-me-performance.mp4";
   var openButton = document.getElementById("erhu-wiki-open");
   var modal = document.getElementById("erhu-wiki-modal");
@@ -55,6 +57,21 @@
     if (className) el.className = className;
     if (value) el.textContent = value;
     return el;
+  }
+
+  function ensurePhoto(label) {
+    if (!photoEl) {
+      photoEl = document.createElement("img");
+      photoEl.setAttribute("data-src", PHOTO_SRC);
+      photoEl.width = 2766;
+      photoEl.height = 4000;
+      photoEl.decoding = "async";
+      photoEl.addEventListener("load", function () {
+        if (typeof photoEl.decode === "function") photoEl.decode().catch(function () {});
+      });
+    }
+    if (label) photoEl.alt = label;
+    return photoEl;
   }
 
   function ensureStash() {
@@ -125,6 +142,7 @@
     if (preloadStarted) return;
     if (!canSilentPreload()) return;
     preloadStarted = true;
+    ensurePhoto().setAttribute("src", PHOTO_SRC);
     ensureVideo();
     if (!isOpen) stashVideo();
     kickVideoLoad();
@@ -168,12 +186,8 @@
     intro.className = "erhu-wiki__intro";
     var photo = document.createElement("div");
     photo.className = "erhu-wiki__photo img-load";
-    var image = document.createElement("img");
-    image.setAttribute("data-src", "assets/erhu/erhu-instrument.jpg");
-    image.alt = copy.imageAlt;
-    image.width = 2766;
-    image.height = 4000;
-    image.decoding = "async";
+    var image = ensurePhoto(copy.imageAlt);
+    if (image.parentNode) image.parentNode.removeChild(image);
     photo.appendChild(image);
     intro.appendChild(photo);
     if (typeof attachImageLoader === "function") attachImageLoader(image);

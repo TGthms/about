@@ -289,6 +289,7 @@ const LANGUAGE_ANNOUNCEMENTS = {
   zh: "语言已切换为",
   "zh-Hant": "語言已切換為",
   ja: "言語を変更しました：",
+  ko: "언어가 변경되었습니다:",
 };
 
 /**
@@ -302,14 +303,14 @@ function applyLanguage(lang) {
   const isLegalPage = document.body && document.body.classList.contains("legal-page");
 
   const htmlLang =
-    resolved === "zh" ? "zh-Hans" : resolved === "zh-Hant" ? "zh-Hant" : resolved === "ja" ? "ja" : resolved === "es" ? "es" : "en";
+    resolved === "zh" ? "zh-Hans" : resolved;
   document.documentElement.lang = htmlLang;
   document.documentElement.setAttribute("data-language", resolved);
 
-  if (!isLegalPage && (resolved === "zh" || resolved === "zh-Hant" || resolved === "ja")) {
+  if ((!isLegalPage || resolved === "ko") && (resolved === "zh" || resolved === "zh-Hant" || resolved === "ja" || resolved === "ko")) {
     var fontId = "language-fonts-" + resolved;
     if (!document.getElementById(fontId)) {
-      var suffix = resolved === "ja" ? "JP" : resolved === "zh-Hant" ? "TC" : "SC";
+      var suffix = resolved === "ko" ? "KR" : resolved === "ja" ? "JP" : resolved === "zh-Hant" ? "TC" : "SC";
       var fontLink = document.createElement("link");
       fontLink.id = fontId;
       fontLink.rel = "stylesheet";
@@ -344,7 +345,7 @@ function applyLanguage(lang) {
   applyProjectHostMode();
 
   if (pack.meta) {
-    const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", "zh-Hant": "zh_TW", ja: "ja_JP" };
+    const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", "zh-Hant": "zh_TW", ja: "ja_JP", ko: "ko_KR" };
     const ogLocale = document.querySelector('meta[property="og:locale"]');
     if (ogLocale) ogLocale.setAttribute("content", localeMap[resolved] || "en_US");
 

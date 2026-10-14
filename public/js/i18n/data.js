@@ -814,6 +814,358 @@ TRANSLATIONS["zh-Hant"] = {
   "skip": "跳到主要內容"
 };
 
+/* Small home interactions share the same five language packs. */
+const HOME_DETAILS = {
+  "en": {
+    "rally": {
+      "open": "Play a quick rally",
+      "title": "A little Pong",
+      "close": "Close table tennis game",
+      "court": "Pong table with your paddle below and the computer above",
+      "instructions": "Move with ← →, your mouse, or drag on the table. Space serves or pauses.",
+      "serve": "Serve",
+      "pause": "Pause",
+      "resume": "Resume",
+      "again": "Play again",
+      "best": "Best rally",
+      "ready": "First to 5. A little match between projects.",
+      "playing": "Try the paddle’s edges to angle your shots.",
+      "paused": "Take your time.",
+      "left": "Move paddle left",
+      "right": "Move paddle right",
+      "you": "You",
+      "opponent": "Computer",
+      "yourPoint": "Your point! {you}–{opponent}",
+      "theirPoint": "Computer’s point. {you}–{opponent}",
+      "won": "You win! {you}–{opponent}. Rematch?",
+      "lost": "Good game. {you}–{opponent}. Try again?"
+    },
+    "contact": {
+      "copy": "Copy email",
+      "copied": "Copied!",
+      "success": "Email address copied.",
+      "failed": "Couldn’t copy. Select the email address to copy it."
+    }
+  },
+  "es": {
+    "rally": {
+      "open": "Juega un rally rápido",
+      "title": "Un poco de Pong",
+      "close": "Cerrar el juego de tenis de mesa",
+      "court": "Mesa de Pong: tu pala abajo y la del ordenador arriba",
+      "instructions": "Muévete con ← →, el ratón o arrastrando sobre la mesa. Espacio sirve o pausa.",
+      "serve": "Sacar",
+      "pause": "Pausar",
+      "resume": "Continuar",
+      "again": "Jugar de nuevo",
+      "best": "Mejor rally",
+      "ready": "Gana quien llegue a 5. Una partida entre proyectos.",
+      "playing": "Usa los bordes de la pala para dirigir tus golpes.",
+      "paused": "Sin prisa.",
+      "left": "Mover la pala a la izquierda",
+      "right": "Mover la pala a la derecha",
+      "you": "Tú",
+      "opponent": "Ordenador",
+      "yourPoint": "¡Tu punto! {you}–{opponent}",
+      "theirPoint": "Punto del ordenador. {you}–{opponent}",
+      "won": "¡Ganaste! {you}–{opponent}. ¿Revancha?",
+      "lost": "Buena partida. {you}–{opponent}. ¿Otra?"
+    },
+    "contact": {
+      "copy": "Copiar correo",
+      "copied": "¡Copiado!",
+      "success": "Dirección de correo copiada.",
+      "failed": "No se pudo copiar. Selecciona la dirección para copiarla."
+    }
+  },
+  "zh": {
+    "rally": {
+      "open": "来一小局乒乓球",
+      "title": "来一局乒乓球",
+      "close": "关闭乒乓球游戏",
+      "court": "乒乓球台：你的球拍在下方，电脑在上方",
+      "instructions": "用 ← →、鼠标或在球台上拖动来移动球拍。空格键发球或暂停。",
+      "serve": "发球",
+      "pause": "暂停",
+      "resume": "继续",
+      "again": "再来一局",
+      "best": "最长回合",
+      "ready": "先得 5 分获胜。在项目之间，来一小局。",
+      "playing": "试试用球拍边缘回球，改变球的方向。",
+      "paused": "慢慢来。",
+      "left": "向左移动球拍",
+      "right": "向右移动球拍",
+      "you": "你",
+      "opponent": "电脑",
+      "yourPoint": "你得分了！{you}–{opponent}",
+      "theirPoint": "电脑得分。{you}–{opponent}",
+      "won": "你赢了！{you}–{opponent}。再来一局？",
+      "lost": "不错的一局。{you}–{opponent}。再试试？"
+    },
+    "contact": {
+      "copy": "复制邮箱",
+      "copied": "已复制！",
+      "success": "邮箱地址已复制。",
+      "failed": "无法复制，请选中邮箱地址手动复制。"
+    }
+  },
+  "zh-Hant": {
+    "rally": {
+      "open": "來一小局乒乓球",
+      "title": "來一局乒乓球",
+      "close": "關閉乒乓球遊戲",
+      "court": "乒乓球台：你的球拍在下方，電腦在上方",
+      "instructions": "用 ← →、滑鼠或在球台上拖曳來移動球拍。空白鍵發球或暫停。",
+      "serve": "發球",
+      "pause": "暫停",
+      "resume": "繼續",
+      "again": "再來一局",
+      "best": "最長回合",
+      "ready": "先得 5 分獲勝。在專案之間，來一小局。",
+      "playing": "試試用球拍邊緣回球，改變球的方向。",
+      "paused": "慢慢來。",
+      "left": "向左移動球拍",
+      "right": "向右移動球拍",
+      "you": "你",
+      "opponent": "電腦",
+      "yourPoint": "你得分了！{you}–{opponent}",
+      "theirPoint": "電腦得分。{you}–{opponent}",
+      "won": "你贏了！{you}–{opponent}。再來一局？",
+      "lost": "不錯的一局。{you}–{opponent}。再試試？"
+    },
+    "contact": {
+      "copy": "複製信箱",
+      "copied": "已複製！",
+      "success": "信箱地址已複製。",
+      "failed": "無法複製，請選取信箱地址手動複製。"
+    }
+  },
+  "ja": {
+    "rally": {
+      "open": "ちょっとラリーしよう",
+      "title": "ちょっとPong",
+      "close": "卓球ゲームを閉じる",
+      "court": "Pongの台：自分のラケットが下、コンピューターが上",
+      "instructions": "← →、マウス、または台の上をドラッグして移動。スペースキーでサーブ・一時停止。",
+      "serve": "サーブ",
+      "pause": "一時停止",
+      "resume": "再開",
+      "again": "もう一回",
+      "best": "最長ラリー",
+      "ready": "先に5点取ったら勝ち。合間にひと勝負。",
+      "playing": "ラケットの端で返して、角度を変えてみよう。",
+      "paused": "ゆっくりどうぞ。",
+      "left": "ラケットを左に動かす",
+      "right": "ラケットを右に動かす",
+      "you": "あなた",
+      "opponent": "コンピューター",
+      "yourPoint": "あなたの得点！{you}–{opponent}",
+      "theirPoint": "相手の得点。{you}–{opponent}",
+      "won": "あなたの勝ち！{you}–{opponent}。もう一戦？",
+      "lost": "いい勝負でした。{you}–{opponent}。もう一戦？"
+    },
+    "contact": {
+      "copy": "メールをコピー",
+      "copied": "コピー済み！",
+      "success": "メールアドレスをコピーしました。",
+      "failed": "コピーできませんでした。メールアドレスを選択してコピーしてください。"
+    }
+  }
+};
+Object.keys(HOME_DETAILS).forEach(function (lang) {
+  Object.assign(TRANSLATIONS[lang], HOME_DETAILS[lang]);
+});
+
+/* Korean copy uses a conversational tone for the hub and formal language for legal pages. */
+TRANSLATIONS.ko = {
+  "meta": {
+    "title": "Tim G — 나의 작은 공간",
+    "description": "샌프란시스코 베이 지역에 사는 고등학생 Tim G. 웹사이트를 만들고, 사진을 찍고, 얼후를 연주하며 여행합니다."
+  },
+  "skip": "본문으로 건너뛰기",
+  "a11y": {
+    "sections": "주요 메뉴",
+    "explore": "둘러보기",
+    "themeToggle": "밝은 테마와 어두운 테마 전환",
+    "themeLight": "밝은 테마",
+    "themeDark": "어두운 테마",
+    "scrollAbout": "소개로 이동",
+    "siteControls": "환경설정",
+    "selectLanguage": "언어",
+    "displayPrefs": "화면 설정",
+    "loading": "불러오는 중"
+  },
+  "host": {
+    "label": "프로젝트 링크",
+    "select": "프로젝트 호스팅 선택",
+    "main": "기본 링크",
+    "backup": "대체 링크",
+    "cloudflare": "Cloudflare",
+    "github": "GitHub"
+  },
+  "hero": {
+    "eyebrow": "안녕하세요, 저는",
+    "tagline": "샌프란시스코 베이 지역에 사는 고등학생입니다.",
+    "note": "웹사이트를 만들고, 사진을 찍고, 얼후를 연주해요. 그 이야기들을 조금씩 모아 두는 곳입니다.",
+    "contact": "연락하기",
+    "scroll": "아래로"
+  },
+  "about": {
+    "label": "소개",
+    "title": "저를 조금 더 소개할게요",
+    "p1": "저는 베이 지역에 사는 고등학생으로, {build}, {photo}, {erhu}, 탁구를 좋아해요. 프로젝트를 만들 때도, 새로운 경험을 할 때도, 영어를 배울 때도 새로운 것을 만들고 발견하는 일에 늘 호기심을 느낍니다.",
+    "p2": "학교생활과 프로젝트로 바쁜 날에도 시편 23편은 마음의 중심을 잡아 주고, 정말 소중한 것이 무엇인지 떠올리게 해 줍니다.",
+    "links": {
+      "build": "무언가 만드는 일",
+      "photo": "순간을 사진에 담는 일",
+      "erhu": "얼후 연주"
+    }
+  },
+  "interests": {
+    "label": "관심사",
+    "title": "좋아하는 것들",
+    "bilingual": {
+      "title": "두 언어",
+      "desc": "중국계 미국인으로, 중국어와 영어를 모두 편하게 사용해요"
+    },
+    "erhu": {
+      "title": "얼후",
+      "desc": "두 줄로 깊은 소리를 내는 중국 전통 현악기",
+      "learnMore": "얼후 알아보기 · 제 연주 듣기"
+    },
+    "photo": {
+      "title": "사진",
+      "desc": "빛과 구도, 고요한 순간을 찾아서"
+    },
+    "travel": {
+      "title": "여행",
+      "desc": "새로운 장소와 문화, 탁 트인 길을 만나는 일"
+    },
+    "tech": {
+      "title": "기술",
+      "desc": "잘 작동하고, 쓰는 즐거움이 있는 것을 만들어요"
+    },
+    "tt": {
+      "title": "탁구",
+      "desc": "빠른 랠리, 집중, 그리고 즐거운 승부"
+    }
+  },
+  "links": {
+    "projects": {
+      "label": "프로젝트",
+      "title": "제가 만든 것들"
+    },
+    "connect": {
+      "label": "다른 공간",
+      "title": "다른 곳에서도 만나요"
+    },
+    "featured": "추천",
+    "project": "프로젝트",
+    "madeByGrok": "Grok으로 제작",
+    "archived": {
+      "eyebrow": "조용한 한쪽 책장",
+      "title": "지난 프로젝트",
+      "open": "둘러보기",
+      "close": "지난 프로젝트 닫기"
+    },
+    "open": "프로젝트 열기",
+    "travelGuide": {
+      "title": "미국 여행 가이드",
+      "desc": "미국 곳곳에서 가 볼 만한 장소를 모은 작은 웹 프로젝트입니다."
+    },
+    "usaGallery": {
+      "title": "여행 사진첩",
+      "desc": "미국 여행 가이드와 함께 둘러보는 사진 모음입니다."
+    },
+    "japanTravelGuide": {
+      "title": "일본 여행 가이드",
+      "desc": "일본 곳곳에서 가 볼 만한 장소를 모은 작은 웹 프로젝트입니다."
+    },
+    "duskline": {
+      "title": "duskline",
+      "desc": "전 세계 어디서나, 날씨를 아름답고 명료하게."
+    },
+    "kit": {
+      "title": "Kit",
+      "desc": "브라우저에서 바로 쓰는 일상 도구. 개인정보 보호를 기본으로."
+    },
+    "nimbus": {
+      "title": "Nimbus",
+      "desc": "Open-Meteo 데이터를 활용한, 영화 같은 macOS 날씨 앱."
+    },
+    "folio": {
+      "title": "Folio",
+      "desc": "기기 안에서만 작동하는 macOS PDF 도구. 가입도 업로드도 필요 없어요."
+    },
+    "kiln": {
+      "title": "Kiln",
+      "desc": "파일과 단위를 변환하는 macOS 전용 앱."
+    },
+    "github": "GitHub",
+    "githubCard": {
+      "contributions": "{year}년 기여 {count}회",
+      "day": "{date}: {count}회",
+      "loading": "기여 내역을 불러오는 중…",
+      "unavailable": "기여 내역을 불러올 수 없어요. GitHub 프로필에서 확인해 주세요."
+    },
+    "social": {
+      "label": "Instagram",
+      "sub": "@timg.ins",
+      "href": "https://www.instagram.com/timg.ins/",
+      "mode": "instagram"
+    },
+    "duolingo": {
+      "label": "Duolingo",
+      "hint": "Duolingo 앱에서 코드를 스캔해 친구로 추가해 주세요",
+      "profile": "프로필 열기",
+      "enlarge": "QR 코드 크게 보기",
+      "enlargeShort": "크게 보기",
+      "modalTitle": "Duolingo QR 코드",
+      "close": "닫기",
+      "qrAlt": "Tim G의 Duolingo QR 코드, @AAPL.TimGong"
+    }
+  },
+  "footer": {
+    "signoff": "들러 주셔서 고마워요.",
+    "contact": "연락처:",
+    "verse": "하나님은 우리에게 두려워하는 마음을 주신 것이 아니라 능력과 사랑과 절제하는 마음을 주셨습니다.",
+    "verseReference": "— 디모데후서 1:7 (KLB)",
+    "built": "나의 작은 공간",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관",
+    "legalNav": "법적 안내"
+  },
+  "contact": {
+    "copy": "이메일 복사",
+    "copied": "복사했어요!",
+    "success": "이메일 주소를 복사했어요.",
+    "failed": "복사하지 못했어요. 이메일 주소를 선택해 직접 복사해 주세요."
+  },
+  "rally": {
+    "open": "짧게 한 게임 할까요?",
+    "title": "잠깐, 탁구 한 게임",
+    "close": "탁구 게임 닫기",
+    "court": "탁구 게임 코트",
+    "instructions": "← →, 마우스 또는 코트 위 드래그로 움직이세요. 스페이스 키로 시작하거나 일시 정지할 수 있어요.",
+    "serve": "시작하기",
+    "pause": "일시 정지",
+    "resume": "계속하기",
+    "again": "다시 한 게임",
+    "you": "나",
+    "opponent": "컴퓨터",
+    "best": "최고 랠리",
+    "ready": "컴퓨터와 한 게임. 먼저 5점을 얻으면 이겨요.",
+    "playing": "라켓 가장자리로 받아 방향을 바꿔 보세요.",
+    "paused": "잠깐 쉬어 가요.",
+    "yourPoint": "내 득점! {you}–{opponent}",
+    "theirPoint": "컴퓨터 득점. {you}–{opponent}",
+    "won": "이겼어요! {you}–{opponent}. 한 게임 더?",
+    "lost": "좋은 승부였어요. {you}–{opponent}. 다시 해 볼까요?",
+    "left": "라켓을 왼쪽으로 이동",
+    "right": "라켓을 오른쪽으로 이동"
+  }
+};
+
 /** Map BCP 47 / browser codes → our language keys */
 const LANG_ALIASES = {
   en: "en",
@@ -836,9 +1188,11 @@ const LANG_ALIASES = {
   "zh-hant-mo": "zh",
   ja: "ja",
   "ja-jp": "ja",
+  ko: "ko",
+  "ko-kr": "ko",
 };
 
-const SUPPORTED_LANGS = ["en", "es", "zh", "zh-Hant", "ja"];
+const SUPPORTED_LANGS = ["en", "es", "zh", "zh-Hant", "ja", "ko"];
 const STORAGE_KEY = "timg-lang";
 const THEME_LEGACY_KEY = "timg-theme";
 const THEME_SESSION_KEY = "timg-theme-session";
@@ -854,4 +1208,45 @@ const LANG_OPTIONS = [
   { code: "zh", label: "简体中文" },
   { code: "zh-Hant", label: "繁體中文" },
   { code: "ja", label: "日本語" },
+  { code: "ko", label: "한국어" },
 ];
+
+const RALLY_LEVEL_COPY = {
+  "en": {
+    "challenge": "Challenge",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "es": {
+    "challenge": "Dificultad",
+    "easy": "Fácil",
+    "medium": "Media",
+    "hard": "Difícil"
+  },
+  "zh": {
+    "challenge": "难度",
+    "easy": "简单",
+    "medium": "中等",
+    "hard": "困难"
+  },
+  "zh-Hant": {
+    "challenge": "難度",
+    "easy": "簡單",
+    "medium": "中等",
+    "hard": "困難"
+  },
+  "ja": {
+    "challenge": "難易度",
+    "easy": "やさしい",
+    "medium": "ふつう",
+    "hard": "むずかしい"
+  },
+  "ko": {
+    "challenge": "난이도",
+    "easy": "쉬움",
+    "medium": "보통",
+    "hard": "어려움"
+  }
+};
+Object.keys(RALLY_LEVEL_COPY).forEach(function (lang) { Object.assign(TRANSLATIONS[lang].rally, RALLY_LEVEL_COPY[lang]); });
