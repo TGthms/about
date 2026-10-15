@@ -155,3 +155,6 @@ ERHU_WIKI.ko = {
     }
   ]
 };
+
+var ERHU_PERFORMANCE_TITLES = { en: "My erhu performance", es: "Mi interpretación de erhu", zh: "我的二胡演奏", "zh-Hant": "我的二胡演奏", ja: "私の二胡演奏", ko: "저의 얼후 연주" };
+Object.keys(ERHU_PERFORMANCE_TITLES).forEach(function (lang) { ERHU_WIKI[lang].performanceTitle = ERHU_PERFORMANCE_TITLES[lang]; });

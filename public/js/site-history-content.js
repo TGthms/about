@@ -2,7 +2,7 @@
    meaningful changes; they are not a list of Git tags or every commit.
    Append a new milestone for a substantial update; keep old labels stable. */
 var PERSONAL_HUB = {
-  "currentVersion": 16,
+  "currentVersion": 18,
   "copy": {
     "en": {
       "title": "Personal Hub",
@@ -611,6 +611,28 @@ PERSONAL_HUB.milestones.push({
       "title": "작은 재미, 새로운 언어",
       "description": "짧게 즐기는 탁구 게임, 여섯 가지 언어, 곳곳에서 발견하는 작은 디테일."
     }
+  }
+});
+
+PERSONAL_HUB.milestones.push({
+  version: 17, date: "2026-10-14", commit: "3a7b8a9",
+  copy: {
+    en: { title: "A calendar of little celebrations", description: "Birthday balloons, seasonal photographs and Scripture, and a New Year countdown that welcomes midnight with fireworks." },
+    es: { title: "Un calendario de pequeñas celebraciones", description: "Globos de cumpleaños, fotografías y versículos de temporada, y una cuenta atrás de Año Nuevo que recibe la medianoche con fuegos artificiales." },
+    zh: { title: "日历里的小小庆祝", description: "生日气球、节日照片与经文，以及用烟花迎接午夜的新年倒计时。" },
+    "zh-Hant": { title: "日曆裡的小小慶祝", description: "生日氣球、節日照片與經文，以及用煙花迎接午夜的新年倒數。" },
+    ja: { title: "日々の小さなお祝い", description: "誕生日の風船、季節の写真と聖句、そして花火で真夜中を迎える新年のカウントダウン。" },
+    ko: { title: "달력 속 작은 축하", description: "생일 풍선과 계절을 담은 사진·성경 말씀, 그리고 불꽃놀이로 자정을 맞이하는 새해 카운트다운." }
+  }
+}, {
+  version: 18, date: "2026-10-14",
+  copy: {
+    en: { title: "Music and a match", description: "A performance to listen to, a livelier opponent to play, and a little more room for both." },
+    es: { title: "Música y una partida", description: "Una interpretación para escuchar, un rival con más vida y un poco más de espacio para disfrutar de ambos." },
+    zh: { title: "一段音乐，一场比赛", description: "听一段二胡演奏，和更有活力的对手来一局，给两者都留出舒适的空间。" },
+    "zh-Hant": { title: "一段音樂，一場比賽", description: "聽一段二胡演奏，和更有活力的對手來一局，給兩者都留出舒適的空間。" },
+    ja: { title: "音楽とひと勝負", description: "演奏に耳を傾けたり、表情豊かな相手と遊んだり。その両方を楽しめる、心地よい場所。" },
+    ko: { title: "음악과 한 판", description: "얼후 연주를 듣고, 더 생동감 있는 상대와 한 게임 즐기며, 둘 다 편안하게 만나는 공간." }
   }
 });
 

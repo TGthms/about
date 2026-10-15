@@ -1,3 +1,16 @@
+
+/* Keep dialogs modal until their short exit has finished. */
+window.closeSiteDialog = function (modal, finish) {
+  if (modal.classList.contains("is-closing")) return;
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || modal.hidden) { finish(); return; }
+  modal.classList.add("is-closing");
+  window.setTimeout(function () {
+    modal.classList.remove("is-closing");
+    finish();
+  }, 160);
+};
+
 /**
  * Centralized preferences markup.
  * Injected into every page so language, theme, and host controls stay in sync.

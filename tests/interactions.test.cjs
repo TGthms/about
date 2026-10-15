@@ -22,7 +22,7 @@ function imageHarness() {
     images.push(img);
     return {img,frame, fire: type => listeners[type]()};
   }
-  return {addImage, timers, start: context.window.initImageLoaders};
+  return {addImage, timers, start: context.window.initImageLoaders, load: context.window.loadDeferredImages};
 }
 
 test('failed image stops loading and releases the queue', () => {
@@ -49,17 +49,18 @@ test('image timeout releases the queue and late success clears failure', () => {
   assert.equal(a.frame.classList.contains('is-img-ready'), true);
 });
 
-function homeHarness() {
+function homeHarness({feedback=false,deny=false}={}) {
   const timers = [], handlers = {}, socialHandlers = {}, pushed = [];
   const sub = {textContent:'realTimGong'};
+  const status={textContent:'',classList:classes()};
   const attrs = new Map([['data-mode','wechat']]);
   const social = {classList:classes(), getAttribute:k=>attrs.get(k), querySelector:()=>sub, addEventListener:(key,cb)=>socialHandlers[key]=cb};
   let resolveCopy;
-  const document = { documentElement: {classList:classes(),getAttribute:()=> 'zh'}, getElementById: id => id === 'social-card' ? social : null, querySelectorAll:()=>[], addEventListener:(key,cb)=>handlers[key]=cb, querySelector:()=>null };
+  const document = { documentElement: {classList:classes(),getAttribute:()=> 'zh'}, getElementById: id => id === 'social-card' ? social : id === 'social-copy-status' && feedback ? status : null, querySelectorAll:()=>[], addEventListener:(key,cb)=>handlers[key]=cb, querySelector:()=>null };
   const window = { setTimeout: cb=>{timers.push(cb);return timers.length;}, clearTimeout(){}, location:{hash:''}, history:{pushState:(_a,_b,id)=>pushed.push(id)} };
-  const context = {document,window,navigator:{clipboard:{writeText:()=>new Promise(resolve=>resolveCopy=resolve)}}, requestAnimationFrame:cb=>cb()};
-  vm.runInNewContext(fs.readFileSync('public/js/main.js','utf8'),context);
-  return {timers, handlers, socialHandlers, attrs, sub, document, pushed, resolveCopy:()=>resolveCopy()};
+  const context = {document,window,navigator:{clipboard:{writeText:()=>deny ? Promise.reject(new Error("Denied")) : new Promise(resolve=>resolveCopy=resolve)}}, requestAnimationFrame:cb=>cb()};
+  vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8')+fs.readFileSync('public/js/main.js','utf8'),context);
+  return {timers, handlers, socialHandlers, attrs, sub, status, document, pushed, resolveCopy:()=>resolveCopy()};
 }
 
 test('pending clipboard result cannot overwrite a newly translated social card', async () => {
@@ -116,4 +117,30 @@ test('a failed image can retry on the next explicit load request', () => {
   h.start(); assert.equal(attempts, 2);
   a.img.complete = true; a.img.naturalWidth = 200; a.fire('load');
   assert.equal(a.frame.classList.contains('is-img-error'), false);
+});
+
+
+test('an explicit dialog image bypasses a stalled preview without unbounding parallel loads', () => {
+  const h=imageHarness(), a=h.addImage(), b=h.addImage(); h.start();
+  const c=h.addImage(), d=h.addImage();
+  h.load({getAttribute:()=> 'true',querySelectorAll:()=>[c.img,d.img]});
+  assert.equal(c.img.getAttribute('src'),'image-2.jpg');
+  assert.equal(d.img.getAttribute('src'),undefined);
+  assert.equal(b.img.getAttribute('src'),undefined);
+  c.img.complete=true;c.img.naturalWidth=200;c.fire('load');
+  assert.equal(d.img.getAttribute('src'),'image-3.jpg');
+  a.fire('error');
+  assert.equal(b.img.getAttribute('src'),undefined,'explicit requests keep priority');
+  d.fire('error');assert.equal(b.img.getAttribute('src'),'image-1.jpg');
+});
+
+test('WeChat announces success and exposes a visible failure while retaining the ID', async () => {
+  const good=homeHarness({feedback:true});good.socialHandlers.click({preventDefault(){}});
+  good.resolveCopy();await Promise.resolve();assert.equal(good.status.textContent,'已复制');
+  const bad=homeHarness({feedback:true,deny:true});bad.socialHandlers.click({preventDefault(){}});
+  await Promise.resolve();await Promise.resolve();
+  assert.ok(bad.status.textContent.includes('未能复制'));
+  assert.equal(bad.status.classList.contains('visually-hidden'),false);
+  assert.equal(bad.sub.textContent,'realTimGong');
+  bad.socialHandlers['social-card-reset']();assert.equal(bad.status.textContent,'');
 });

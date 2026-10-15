@@ -283,7 +283,8 @@
     photoFinishTimer = window.setTimeout(function () {
       photoFinishTimer = 0;
       if (yearPhoto !== front || calendar.current().phase !== "greeting") return;
-      photo.src = src;
+      if (calendar.setPhoto) calendar.setPhoto(photo, "new-year", "greeting");
+      else photo.src = src;
       function release() { if (yearPhoto === front) clearYearPhoto(); }
       if (typeof photo.decode === "function") photo.decode().then(release, function () {});
       else if (photo.complete) release();
@@ -361,7 +362,10 @@
       prepareYearPhoto();
       activateYearPhoto();
     } else if (occasion !== "new-year" || current.phase !== "countdown") {
-      if (photo.getAttribute("src") !== src) photo.src = src;
+      if (photo.getAttribute("src") !== src) {
+        if (calendar.setPhoto) calendar.setPhoto(photo, occasion, current.phase);
+        else photo.src = src;
+      }
       if (occasion !== "new-year") clearYearPhoto();
     }
     var zero = !compactClosing && witnessed === current.target && current.phase === "greeting" && now < current.target + 1400;

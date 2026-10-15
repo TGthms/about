@@ -1,4 +1,4 @@
-/* A small, deterministic Pong match; the opponent predicts rebounds but has
+/* A small, seeded Pong match; the opponent predicts rebounds but has
    reaction delay, imperfect aim, and a limited speed. No network is involved. */
 (function () {
   "use strict";
@@ -12,7 +12,9 @@
     medium: { speed: 155, boost: 25, delay: .16, error: 34, lookAhead: .2, halfWidth: 43, serveSpeed: 205, cap: 410, gain: 15 },
     hard: { speed: 235, boost: 40, delay: .09, error: 18, lookAhead: .45, halfWidth: 43, serveSpeed: 225, cap: 440, gain: 18 }
   };
-  function RallyEngine(level) {
+  function RallyEngine(level, seed) {
+    this.seed = (Number.isFinite(seed) ? seed : Math.random() * 4294967296) >>> 0 || 1;
+    this.hit = null; this.aimError = 0; this.home = 300;
     this.level = Object.prototype.hasOwnProperty.call(LEVELS, level) ? level : "medium";
     this.settings = LEVELS[this.level];
     this.paddle = 300; this.opponent = 300; this.aim = 300;
@@ -21,6 +23,11 @@
     this.phase = "ready"; this.resumePhase = "playing"; this.resumeTime = 0;
     this.clock = 0; this.reaction = 0; this.pointTime = 0; this.pointDuration = 1.1; this.lastPoint = "you";
   }
+  RallyEngine.prototype.random = function () {
+    var x = this.seed; x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+    this.seed = x >>> 0;
+    return this.seed / 4294967296;
+  };
   RallyEngine.prototype.setLevel = function (level) {
     if (!Object.prototype.hasOwnProperty.call(LEVELS, level) || level === this.level) return false;
     this.level = level; this.settings = LEVELS[level];
@@ -30,13 +37,15 @@
   RallyEngine.prototype.move = function (x) { if (Number.isFinite(x)) this.paddle = clamp(x, 64, 536); };
   RallyEngine.prototype.serve = function () {
     this.you = 0; this.ai = 0; this.longest = 0; this.clock = 0;
+    this.hit = null;
     this.lastPoint = "you"; this.paddle = 300; this.opponent = 300;
     this.prepareBall(); this.phase = "playing";
   };
   RallyEngine.prototype.prepareBall = function () {
     this.score = 0; this.aim = 300; this.reaction = this.settings.delay;
-    var odd = (this.you + this.ai) % 2;
-    this.ball = {x: 300, y: 160, vx: odd ? -90 : 90, vy: (this.lastPoint === "you" ? 1 : -1) * this.settings.serveSpeed};
+    this.aimError = 0; this.home = 300 + (this.random() - .5) * 64;
+    var lateral = (48 + this.random() * 32) * (this.random() < .5 ? -1 : 1);
+    this.ball = {x: 300, y: 160, vx: lateral, vy: (this.lastPoint === "you" ? 1 : -1) * this.settings.serveSpeed};
   };
   RallyEngine.prototype.pause = function () {
     if (this.phase !== "playing" && this.phase !== "point" && this.phase !== "resuming") return;
@@ -70,11 +79,15 @@
       var ball = this.ball, oldY = ball.y;
       this.reaction -= dt;
       if (this.reaction <= 0) {
-        this.reaction = this.settings.delay;
+        // Long rallies gradually ask more of the opponent's concentration.
+        var fatigue = Math.max(0, this.score - 12);
+        this.reaction = this.settings.delay * (.85 + this.random() * .3) + Math.min(.12, fatigue * .004);
+        var spread = this.settings.error + Math.min(65, fatigue * 2.5);
+        this.aimError = this.aimError * .4 + (this.random() - .5) * spread * 1.6;
         var arrival = ball.vy < 0 ? Math.min(this.settings.lookAhead, (37 - ball.y) / ball.vy) : 0;
         this.aim = ball.vy < 0
-          ? clamp(folded(ball.x + ball.vx * arrival) + Math.sin(this.clock * 2.3) * this.settings.error, 57, 543)
-          : 300;
+          ? clamp(folded(ball.x + ball.vx * arrival) + this.aimError, 57, 543)
+          : this.home;
       }
       var aiStep = (this.settings.speed + Math.min(this.score * 2, this.settings.boost)) * dt;
       this.opponent += clamp(this.aim - this.opponent, -aiStep, aiStep);
@@ -86,6 +99,8 @@
       if (playerHit || aiHit) {
         var paddle = playerHit ? this.paddle : this.opponent;
         var angle = clamp((ball.x - paddle) / (playerHit ? 50 : this.settings.halfWidth), -1, 1) * 1.05;
+        if (aiHit) angle = clamp(angle + (this.random() - .5) * .22, -1.05, 1.05);
+        this.hit = { x: ball.x, y: playerHit ? 286 : 34, side: playerHit ? "you" : "ai", time: this.clock };
         var speed = Math.min(this.settings.cap, 230 + this.score * this.settings.gain);
         ball.y = playerHit ? 566 - ball.y : 74 - ball.y;
         ball.vx = Math.sin(angle) * speed;

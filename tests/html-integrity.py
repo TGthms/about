@@ -36,6 +36,11 @@ class Check(HTMLParser):
                 version = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
                 if value != str(path.relative_to(root)) + '?v=' + version:
                     errors.append(f'Resource version: {value}')
+        for key in ('srcset', 'data-srcset'):
+            for candidate in a.get(key, '').split(','):
+                parts = candidate.strip().split()
+                if parts and not (root / parts[0]).is_file():
+                    errors.append(f'Missing responsive image: {parts[0]}')
         if tag == 'a' and a.get('target') == '_blank':
             if not {'noopener', 'noreferrer'}.issubset(a.get('rel', '').split()):
                 errors.append(f'External link rel: {href}')

@@ -49,18 +49,22 @@
   function close() {
     if (!isOpen) return;
     isOpen = false;
-    modal.hidden = true;
-    if (opener) opener.setAttribute("aria-expanded", "false");
-    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
-    if (typeof unlockPageScroll === "function") unlockPageScroll();
-    var target = opener && opener.isConnected ? opener : document.querySelector("[data-psalm-open]");
-    if (target) target.focus({ preventScroll: true });
+    function finish() {
+      modal.hidden = true;
+      if (opener) opener.setAttribute("aria-expanded", "false");
+      if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
+      var target = opener && opener.isConnected ? opener : document.querySelector("[data-psalm-open]");
+      if (target) target.focus({ preventScroll: true });
+    }
+    if (typeof closeSiteDialog === "function") closeSiteDialog(modal, finish);
+    else finish();
   }
   document.addEventListener("click", function (event) {
     var target = event.target.closest && event.target.closest("[data-psalm-open]");
     if (!target) return;
     event.preventDefault();
-    if (isOpen) return;
+    if (isOpen || (modal.classList && modal.classList.contains("is-closing"))) return;
     opener = target;
     render();
     isOpen = true;

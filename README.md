@@ -25,8 +25,8 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Psalm 23 reading card with localized editions, classic typography, and visible scripture credits
 - Intentional native iOS tick haptics are preserved
 - Full-height photographic hero with a decode-aware entrance, smooth theme scrims, and a gently contracting header
-- Erhu photo and video preload on proximity or intent; fast-start MP4 retains picture/audio quality and native streaming, with localized buffering percentages
-- Public Sans is self-hosted with its OFL license; CJK display fonts load only for the selected language, including Korean
+- Two erhu actions lead to the performance or instrument introduction. Erhu photo and video preload on proximity or intent; fast-start MP4 retains picture/audio quality and native streaming, with localized buffering percentages
+- Public Sans and the archived USA card’s Fraunces weight are self-hosted with its OFL license; CJK display fonts load only for the selected language, including Korean
 - GitHub link card: hover (or keyboard focus) opens a contribution calendar for TGthms (profile and calendar data load on that first interaction)
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
@@ -84,7 +84,7 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 - Code (`public/` HTML/CSS/JS, excluding assets and attributed Scripture text): [MIT License](LICENSE)
 - Scripture excerpts: [edition-specific sources and credits](SCRIPTURE_CREDITS.md)
-- Public Sans: SIL Open Font License in `public/assets/fonts/`
+- Public Sans and Fraunces: SIL Open Font Licenses in `public/assets/fonts/`
 - Balloon effect: [balloons-js](https://github.com/arturbien/balloons-js), MIT © 2024 Artur Bień; license retained in `public/js/vendor/balloons.js`
 - New Year fireworks: [fireworks-js](https://github.com/crashmax-dev/fireworks-js) 2.10.8, MIT © 2021–2023 Vitalij Ryndin; license retained in `public/js/vendor/fireworks.js`
 - Countdown digits: [NumberFlow](https://github.com/barvian/number-flow) 0.6.2, MIT © 2024 Maxwell Barvian; license retained in `public/js/vendor/number-flow.mjs`. Bundled with esbuild 0.25.12; the two `esm-env` browser checks are resolved to `true` for the browser-only entry. No build tool is required to serve the site.
@@ -99,3 +99,7 @@ Season previews use `?occasion=christmas`, `good-friday`, `easter`, `palm-sunday
 Good Friday, Easter, and Palm Sunday follow the Western Gregorian calendar. All six holiday photos use individual responsive framing. Good Friday, Easter, Palm Sunday, and Thanksgiving display attributed verse text with their references. Seasonal photos and copy revert at the next local midnight, including on an already-open page. The ordinary page has one timer to the next date boundary; it fetches no seasonal text, images, or animation libraries. The countdown uses the wall clock, updates once a second while visible, and catches up after a background tab resumes. Visitors who watch the countdown receive fireworks until midnight plus 30 seconds. New arrivals anywhere on January 1 receive five seconds, once per visit, including a restored back/forward-cache visit. Effects stop when hidden and do not replay on ordinary focus. The final ten seconds use a native modal dialog, defers to an already-open site dialog, traps focus, and releases scroll/focus resources on exit. Escape returns to the compact timer without suppressing the midnight celebration. There are no visible return or fireworks-close buttons. Finishing the countdown preserves the visitor’s scroll position and does not focus the site heading. The hero keeps its short introduction; the student/location biography lives in About. Dark mode is the temporary default throughout the countdown and celebration; visitors can override it with the theme control, and their manual choice stays active through every stage. Without a manual change, the saved preference returns afterward. The New Year image is decoded during the final minute and crossfaded at midnight; the old decoded photograph is released afterward.
 
 To document a future substantial upgrade, append a milestone to `public/js/site-history-content.js`, keep previous version numbers stable, and update `currentVersion`. Add the implementation commit SHA after the commit exists. Scripture source/credit details are maintained in `SCRIPTURE_CREDITS.md`.
+
+The full-size hero remains available alongside responsive landscape and portrait variants. The preload and displayed image use the same source set. Explicit dialog images have a reserved loading lane, so a stalled project preview cannot hold them up. Original performance masters live in `media-masters/`, outside the deployed `public/` artifact; the MP4 continues to use native streaming and the existing preload behavior.
+
+Pong uses a seeded random source for varied serves, bounded opponent reactions, and reproducible physics checks. Longer rallies gradually increase aiming uncertainty. Contact feedback respects reduced motion, and a completed match reports its longest rally. Short landscape screens place the court alongside the controls. Reading and archive headers stay visible, and dialog exits retain focus and scroll containment until finished.

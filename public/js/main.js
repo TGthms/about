@@ -53,11 +53,13 @@
   /* ---------- WeChat ID copy (Chinese social card) ---------- */
   var socialCard = document.getElementById("social-card");
   if (socialCard) {
+    var socialStatus = document.getElementById("social-copy-status");
     var copyTimer = 0;
     var copyGeneration = 0;
 
     socialCard.addEventListener("social-card-reset", function () {
       copyGeneration += 1;
+      if (socialStatus) { socialStatus.textContent = ""; socialStatus.classList.add("visually-hidden"); }
       window.clearTimeout(copyTimer);
       copyTimer = 0;
     });
@@ -76,7 +78,7 @@
       return text;
     }
 
-    function fallbackCopy(text, onSuccess) {
+    function fallbackCopy(text, onSuccess, onFailure) {
       var previousFocus = document.activeElement;
       var ta;
       try {
@@ -93,8 +95,9 @@
         var ok = document.execCommand("copy");
         document.body.removeChild(ta);
         if (ok && onSuccess) onSuccess();
+        else if (onFailure) onFailure();
       } catch (_) {
-        /* leave ID visible */
+        if (onFailure) onFailure();
       } finally {
         if (ta && ta.parentNode) ta.parentNode.removeChild(ta);
         if (previousFocus && previousFocus.isConnected) previousFocus.focus({ preventScroll: true });
@@ -106,10 +109,19 @@
       var sub = socialCard.querySelector(".link-card__sub");
       var id = weChatId();
       var generation = ++copyGeneration;
+      if (socialStatus) socialStatus.textContent = "";
+      function announce(failed) {
+        if (!socialStatus || generation !== copyGeneration || socialCard.getAttribute("data-mode") !== "wechat") return;
+        var lang = document.documentElement.getAttribute("data-language") || "en";
+        socialStatus.classList.toggle("visually-hidden", !failed);
+        socialStatus.textContent = failed ? (TRANSLATIONS[lang] || TRANSLATIONS.en).links.social.copyFailed : copiedLabel();
+      }
+      function showFailure() { announce(true); }
 
       function showCopied() {
         if (generation !== copyGeneration || socialCard.getAttribute("data-mode") !== "wechat") return;
         socialCard.classList.add("is-copied");
+        announce(false);
         if (sub) sub.textContent = copiedLabel();
         if (copyTimer) window.clearTimeout(copyTimer);
         copyTimer = window.setTimeout(function () {
@@ -122,10 +134,10 @@
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(id).then(showCopied).catch(function () {
-          fallbackCopy(id, showCopied);
+          fallbackCopy(id, showCopied, showFailure);
         });
       } else {
-        fallbackCopy(id, showCopied);
+        fallbackCopy(id, showCopied, showFailure);
       }
     }
 
@@ -196,6 +208,7 @@
     }
 
     function openModal() {
+      if (modal.classList.contains("is-closing")) return;
       if (typeof closeControlsPanel === "function") closeControlsPanel();
       modalGen += 1;
       var gen = modalGen;
@@ -228,12 +241,14 @@
       var gen = modalGen;
       isOpen = false;
       modal.classList.remove("is-shown");
+      modal.classList.add("is-closing");
       openBtn.setAttribute("aria-expanded", "false");
-      if (typeof unlockPageScroll === "function") unlockPageScroll();
-      var closeMs = prefersReducedMotion() ? 0 : 240;
+      var closeMs = prefersReducedMotion() ? 0 : 160;
       window.setTimeout(function () {
         if (gen !== modalGen) return;
         modal.hidden = true;
+        modal.classList.remove("is-closing");
+        if (typeof unlockPageScroll === "function") unlockPageScroll();
         document.body.classList.remove("qr-modal-open");
         if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
         if (lastFocus && typeof lastFocus.focus === "function") {

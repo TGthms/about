@@ -177,6 +177,8 @@
     var reduce =
       typeof systemPrefersReducedMotion === "function" && systemPrefersReducedMotion();
     target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
     if (history.replaceState) history.replaceState(null, "", href);
   });
 })();

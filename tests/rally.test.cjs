@@ -5,7 +5,7 @@ const vm = require('node:vm');
 function engine() {
   const context = { window: {} };
   vm.runInNewContext(fs.readFileSync('public/js/rally-engine.js', 'utf8'), context);
-  return new context.window.RallyEngine();
+  return new context.window.RallyEngine("medium", 12345);
 }
 test('match waits for a serve, pauses without movement, and resets on rematch', () => {
   const game = engine();
@@ -110,4 +110,28 @@ test('resume holds the ball for a fast countdown and pause preserves its origina
  assert.equal(game.phase,'resuming');assert.equal(game.ball.x,position.x);assert.equal(game.ball.y,position.y);
  game.pause();assert.equal(game.resumePhase,'playing');game.resume();assert.equal(game.resumeTime,1.2);
  for(let i=0;i<25;i++)game.advance(.05);assert.equal(game.phase,'playing');
+});
+
+test('seeded matches reproduce physics while serves vary within gentle bounds', () => {
+  const c={window:{}};vm.runInNewContext(fs.readFileSync('public/js/rally-engine.js','utf8'),c);
+  const a=new c.window.RallyEngine('hard',42),b=new c.window.RallyEngine('hard',42),shots=new Set();
+  for(let point=0;point<12;point++){
+    a.prepareBall();b.prepareBall();assert.deepEqual({...a.ball},{...b.ball});
+    assert.ok(Math.abs(a.ball.vx)>=48&&Math.abs(a.ball.vx)<80);shots.add(a.ball.vx);
+    a.phase=b.phase='playing';for(let i=0;i<300;i++){a.move(a.ball.x);b.move(b.ball.x);a.advance(1/60);b.advance(1/60);}
+    assert.deepEqual({...a.ball},{...b.ball});assert.equal(a.opponent,b.opponent);
+  }
+  assert.ok(shots.size>8);
+});
+
+test('all levels remain winnable and hard matches have bounded pacing across seeds', () => {
+ const c={window:{}};vm.runInNewContext(fs.readFileSync('public/js/rally-engine.js','utf8'),c);
+ for(const level of ['easy','medium','hard'])for(const seed of [1,5,11,19,24]){
+  const g=new c.window.RallyEngine(level,seed);g.serve();let aim=300,frame=0;
+  for(;frame<12000&&g.phase!=='ended';frame++){
+   if(frame%9===0)aim=g.ball.x;
+   g.move(g.paddle+Math.max(-6,Math.min(6,aim-g.paddle)));g.advance(1/60);
+  }
+  assert.equal(g.you,5,level+' seed '+seed);assert.ok(frame<12000);
+ }
 });

@@ -5,11 +5,12 @@
   var modal = document.getElementById("rally-modal");
   var canvas = document.getElementById("rally-court");
   if (!opener || !modal || !canvas || !window.RallyEngine) return;
-  var ctx = canvas.getContext("2d");
-  if (!ctx) { opener.hidden = true; return; }
+  var ctx = null;
+  if (typeof canvas.getContext !== "function") { opener.hidden = true; return; }
   opener.hidden = false;
   var panel = modal.querySelector(".rally-panel");
   var serveButton = document.getElementById("rally-serve");
+  var summary = document.getElementById("rally-summary");
   var status = document.getElementById("rally-status");
   var score = document.getElementById("rally-score");
   var bestLabel = document.getElementById("rally-best");
@@ -81,15 +82,21 @@
   }
   function renderCopy() {
     var words = copy();
+    serveButton.disabled = !ctx;
     serveButton.textContent = words[activePhase() ? "pause" : game.phase === "paused" ? "resume" : game.phase === "ended" ? "again" : "serve"];
     var key = game.phase === "ended" ? (game.you === 5 ? "won" : "lost") : game.phase === "point" ? (game.lastPoint === "you" ? "yourPoint" : "theirPoint") : game.phase;
-    status.textContent = (words[key] || words.ready).replace("{you}", String(game.you)).replace("{opponent}", String(game.ai));
+    status.textContent = (!ctx ? words.unavailable : words[key] || words.ready).replace("{you}", String(game.you)).replace("{opponent}", String(game.ai));
     score.textContent = String(game.you);
     opponentScore.textContent = String(game.ai);
     bestLabel.textContent = String(best);
+    if (summary) {
+      summary.hidden = game.phase !== "ended";
+      summary.textContent = game.phase === "ended" ? words.matchLongest.replace("{count}", String(game.longest)) : "";
+    }
     updateCountdown();
   }
   function draw() {
+    if (!ctx) return;
     ctx.setTransform(2, 0, 0, 2, 0, 0);
     ctx.clearRect(0, 0, 600, 320);
     ctx.fillStyle = colors.table;
@@ -103,10 +110,18 @@
     ctx.setLineDash([]);
     ctx.globalAlpha = 1;
     ctx.fillStyle = colors.ink;
-    ctx.fillRect(game.paddle - 50, 288, 100, 7);
+    var hit = game.hit, age = hit ? game.clock - hit.time : 1;
+    var pulse = age < .16 && !(countdownMotion && countdownMotion.matches) ? Math.sin(age / .16 * Math.PI) : 0;
+    ctx.fillRect(game.paddle - 50 - (hit && hit.side === "you" ? pulse * 2 : 0), 288, 100 + (hit && hit.side === "you" ? pulse * 4 : 0), 7 - (hit && hit.side === "you" ? pulse * 1.5 : 0));
     ctx.globalAlpha = 0.65;
-    ctx.fillRect(game.opponent - game.settings.halfWidth, 25, game.settings.halfWidth * 2, 7);
+    ctx.fillRect(game.opponent - game.settings.halfWidth - (hit && hit.side === "ai" ? pulse * 2 : 0), 25, game.settings.halfWidth * 2 + (hit && hit.side === "ai" ? pulse * 4 : 0), 7 - (hit && hit.side === "ai" ? pulse * 1.5 : 0));
     ctx.globalAlpha = 1;
+    if (hit && age < .2 && !(countdownMotion && countdownMotion.matches)) {
+      ctx.globalAlpha = (1 - age / .2) * .45;
+      ctx.strokeStyle = colors.ball; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(hit.x, hit.y, 4 + age * 55, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
     var waiting = game.phase === "point" || ((game.phase === "paused" || game.phase === "resuming") && game.resumePhase === "point");
     if (waiting) {
       ctx.strokeStyle = colors.rule; ctx.globalAlpha = .25; ctx.lineWidth = 1;
@@ -149,6 +164,7 @@
     game.pause(); stop(); renderCopy();
   }
   function togglePlay() {
+    if (!ctx) return;
     if (activePhase()) { pause(); return; }
     if (game.phase === "paused") game.resume();
     else { celebration.clear(); game.serve(); }
@@ -161,21 +177,26 @@
     pause(); stop(); open = false;
     saveBest();
     menuPaused = false; if (picker) picker.close();
-    modal.hidden = true;
-    opener.setAttribute("aria-expanded", "false");
-    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
-    if (typeof unlockPageScroll === "function") unlockPageScroll();
-    opener.focus({ preventScroll: true });
+    function finish() {
+      modal.hidden = true;
+      opener.setAttribute("aria-expanded", "false");
+      if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
+      opener.focus({ preventScroll: true });
+    }
+    if (typeof closeSiteDialog === "function") closeSiteDialog(modal, finish);
+    else finish();
   }
   opener.addEventListener("click", function () {
-    if (open) return;
+    if (open || (modal.classList && modal.classList.contains("is-closing"))) return;
+    if (!ctx) { try { ctx = canvas.getContext("2d"); } catch (_) { ctx = null; } }
     open = true; modal.hidden = false;
     opener.setAttribute("aria-expanded", "true");
     if (typeof lockPageScroll === "function") lockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
     panel.scrollTop = 0;
     refreshColors(); renderCopy(); draw();
-    serveButton.focus({ preventScroll: true });
+    (ctx ? serveButton : modal.querySelector(".erhu-modal__close")).focus({ preventScroll: true });
   });
   modal.querySelectorAll("[data-rally-close]").forEach(function (button) { button.addEventListener("click", close); });
   serveButton.addEventListener("click", togglePlay);

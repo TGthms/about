@@ -4,17 +4,18 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 function harness(connection) {
-  const timers = [], videos = [], nodes = [];
+  const timers = [], videos = [], nodes = [], events = {};
   let document;
   function element(tag = 'div') {
     const attrs = {}, classes = new Set(), listeners = {};
     const el = {
       tagName: tag.toUpperCase(), children: [], attrs, listeners, isConnected: true,
       hidden: false, textContent: '', style: {},
-      classList: { add: key => classes.add(key), remove: key => classes.delete(key) },
+      classList: { contains: key => classes.has(key), add: key => classes.add(key), remove: key => classes.delete(key) },
       setAttribute: (key, value) => attrs[key] = value,
       getAttribute: key => attrs[key], removeAttribute: key => delete attrs[key],
       appendChild(child) { child.parentNode = this; this.children.push(child); return child; },
+      insertBefore(child, before) { this.children = this.children.filter(x => x !== child); child.parentNode = this; this.children.splice(Math.max(0,this.children.indexOf(before)),0,child); },
       append(...children) { children.forEach(child => this.appendChild(child)); },
       removeChild(child) { child.parentNode = null; this.children = this.children.filter(x => x !== child); },
       replaceChildren() { this.children = []; },
@@ -32,17 +33,19 @@ function harness(connection) {
     nodes.push(el);
     return el;
   }
+  const performance = element('button');
   const opener = element('button'), modal = element(), close = element('button'), panel = element(), body = element();
   modal.querySelector = selector => selector === '.erhu-modal__close' ? close : panel;
-  modal.querySelectorAll = () => [close];
-  const ids = { 'erhu-wiki-open': opener, 'erhu-wiki-modal': modal, 'erhu-wiki-body': body, 'erhu-wiki-title': element('h2') };
+  function descendants(el) { return el.children.flatMap(child => [child,...descendants(child)]); }
+  modal.querySelectorAll = selector => selector === "[data-erhu-close]" ? [close] : [close,...descendants(body).filter(x => ["BUTTON","A","VIDEO"].includes(x.tagName))];
+  const ids = { 'erhu-performance-open': performance, 'erhu-wiki-open': opener, 'erhu-wiki-modal': modal, 'erhu-wiki-body': body, 'erhu-wiki-title': element('h2') };
   document = { activeElement: null, readyState: 'complete', body: element(),
     documentElement: { getAttribute: () => 'en' },
-    createElement: element, getElementById: id => ids[id], addEventListener() {},
+    createElement: element, getElementById: id => ids[id], addEventListener(k,fn) { events[k]=fn; },
   };
   const context = { document, navigator: { connection }, window: { setTimeout: fn => timers.push(fn), addEventListener() {} } };
   vm.runInNewContext(fs.readFileSync('public/js/erhu-content.js', 'utf8') + fs.readFileSync('public/js/erhu.js', 'utf8'), context);
-  return { opener, close, videos, nodes, document, open: () => opener.listeners.click(), status: () => nodes.findLast(x => x.className === 'erhu-wiki__video-status') };
+  return { opener, performance, body, events, close, videos, nodes, document, open: () => opener.listeners.click(), status: () => nodes.findLast(x => x.className === 'erhu-wiki__video-status') };
 }
 
 test('erhu media waits for interest and reuses the preloaded photo and video', () => {
@@ -105,4 +108,15 @@ test('every language has loading, buffering, and failure copy', () => {
   for (const pack of Object.values(context.ERHU_WIKI)) {
     for (const key of ['videoLoading', 'videoBuffering', 'videoError']) assert.ok(pack[key]);
   }
+});
+
+
+test('performance entry leads with the reused player and leaves native video Tab navigation intact', () => {
+ const h=harness();h.performance.listeners.click({currentTarget:h.performance});
+ assert.equal(h.body.children[0].className,'erhu-wiki__media');assert.equal(h.videos[0].paused,true);
+ let prevented=false;h.videos[0].focus();h.events.keydown({key:'Tab',preventDefault(){prevented=true;}});
+ assert.equal(prevented,false,'Tab on video must reach native playback controls');
+ const done=h.nodes.findLast(x=>x.className==='erhu-wiki__done');done.focus();
+ h.events.keydown({key:'Tab',preventDefault(){prevented=true;}});assert.equal(prevented,true);assert.equal(h.document.activeElement,h.close);
+ h.close.listeners.click();assert.equal(h.document.activeElement,h.performance);
 });

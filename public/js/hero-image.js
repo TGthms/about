@@ -8,9 +8,16 @@
   var occasion = document.documentElement.getAttribute("data-occasion");
   var original = image.getAttribute("data-hero-src");
   image.addEventListener("error", function () {
-    if (image.getAttribute("src") !== original) image.src = original;
+    image.removeAttribute("srcset"); image.removeAttribute("sizes");
+    if (image.getAttribute("src") !== original || !image.complete) image.src = original;
   });
-  image.src = window.SeasonCalendar ? window.SeasonCalendar.photo(occasion, document.documentElement.getAttribute("data-new-year-phase")) : original;
+  function setPhoto() {
+    var calendar = window.SeasonCalendar;
+    if (calendar && calendar.setPhoto) calendar.setPhoto(image, document.documentElement.getAttribute("data-occasion"), document.documentElement.getAttribute("data-new-year-phase"));
+    else image.src = original;
+  }
+  setPhoto();
+  if (window.matchMedia) window.matchMedia("(max-width: 600px) and (max-aspect-ratio: 3/5)").addEventListener("change", setPhoto);
 
   var started = false;
   var entered = false;

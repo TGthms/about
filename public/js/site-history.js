@@ -76,7 +76,7 @@
     return Array.from(modal.querySelectorAll('button:not([disabled]), a[href]'));
   }
   function open() {
-    if (isOpen) return;
+    if (isOpen || (modal.classList && modal.classList.contains("is-closing"))) return;
     render(language());
     isOpen = true;
     modal.hidden = false;
@@ -89,11 +89,15 @@
   function close() {
     if (!isOpen) return;
     isOpen = false;
-    modal.hidden = true;
-    opener.setAttribute("aria-expanded", "false");
-    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
-    if (typeof unlockPageScroll === "function") unlockPageScroll();
-    opener.focus({ preventScroll: true });
+    function finish() {
+      modal.hidden = true;
+      opener.setAttribute("aria-expanded", "false");
+      if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
+      opener.focus({ preventScroll: true });
+    }
+    if (typeof closeSiteDialog === "function") closeSiteDialog(modal, finish);
+    else finish();
   }
   opener.addEventListener("click", open);
   modal.querySelectorAll("[data-site-history-close]").forEach(function (element) {

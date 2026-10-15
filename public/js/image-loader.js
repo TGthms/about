@@ -21,7 +21,8 @@
   var ROOT_MARGIN = "160px 0px";
 
   var queue = [];
-  var busy = false;
+  var busy = 0;
+  var urgent = new WeakSet();
   var gateOpen = false;
   var io = null;
 
@@ -149,7 +150,9 @@
   }
 
   function pump() {
-    if (busy) return;
+    var priority = queue.findIndex(function (img) { return urgent.has(img); });
+    if (busy >= 2 || (busy && priority < 0)) return;
+    if (priority > 0) queue.unshift(queue.splice(priority, 1)[0]);
     var img = null;
     while (queue.length && !img) {
       var next = queue.shift();
@@ -167,7 +170,7 @@
     }
     if (!img) return;
 
-    busy = true;
+    busy += 1;
     var url = wantedSrc(img);
     var frame = frameOf(img);
     var settled = false;
@@ -179,7 +182,7 @@
       if (hangTimer) window.clearTimeout(hangTimer);
       img.removeAttribute("data-queued");
       markImgReady(img);
-      busy = false;
+      busy -= 1;
       pump();
     }
 
@@ -211,6 +214,11 @@
     hangTimer = window.setTimeout(fail, 12000);
     img.addEventListener("load", afterBytes, { once: true });
     img.addEventListener("error", fail, { once: true });
+    var srcset = img.getAttribute("data-srcset");
+    if (srcset) {
+      img.setAttribute("sizes", img.getAttribute("data-sizes") || "100vw");
+      img.setAttribute("srcset", srcset);
+    }
     img.setAttribute("src", url);
     img.setAttribute("decoding", "async");
 
@@ -300,7 +308,12 @@
       attachImageLoader(scope);
       return;
     }
-    imgs.forEach(attachImageLoader);
+    var explicit = scope !== document && scope.getAttribute && scope.getAttribute("aria-modal") === "true";
+    imgs.forEach(function (img) {
+      if (explicit) urgent.add(img);
+      attachImageLoader(img);
+    });
+    if (explicit) pump();
   }
 
   function openGate() {

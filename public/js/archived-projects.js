@@ -19,12 +19,13 @@
   }
 
   function open() {
-    if (isOpen) return;
+    if (isOpen || (modal.classList && modal.classList.contains("is-closing"))) return;
     lastFocus = openButton;
     modal.hidden = false;
     document.body.classList.add("archived-projects-open");
     openButton.setAttribute("aria-expanded", "true");
     isOpen = true;
+    if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
     if (typeof lockPageScroll === "function") lockPageScroll();
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
 
@@ -36,14 +37,18 @@
   function close() {
     if (!isOpen) return;
 
-    modal.hidden = true;
-    document.body.classList.remove("archived-projects-open");
-    openButton.setAttribute("aria-expanded", "false");
-    isOpen = false;
-    if (typeof unlockPageScroll === "function") unlockPageScroll();
-    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
+    function finish() {
+      modal.hidden = true;
+      document.body.classList.remove("archived-projects-open");
+      openButton.setAttribute("aria-expanded", "false");
+      isOpen = false;
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
+      if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
 
-    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
+      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
+    }
+    if (typeof closeSiteDialog === "function") closeSiteDialog(modal, finish);
+    else finish();
   }
 
   openButton.addEventListener("click", open);

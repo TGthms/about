@@ -1170,16 +1170,16 @@ const LANG_ALIASES = {
   "zh-chs": "zh",
   "zh-sg": "zh",
   "zh-hans-cn": "zh",
-  // Browser Chinese locale hints default to Simplified; Traditional is a saved manual choice.
-  "zh-hant": "zh",
-  "zh-cht": "zh",
-  "zh-tw": "zh",
-  "zh-hk": "zh",
-  "zh-mo": "zh",
-  "zh-hant-sg": "zh",
-  "zh-hant-tw": "zh",
-  "zh-hant-hk": "zh",
-  "zh-hant-mo": "zh",
+  // Match script/region hints on a first visit; saved choices take precedence.
+  "zh-hant": "zh-Hant",
+  "zh-cht": "zh-Hant",
+  "zh-tw": "zh-Hant",
+  "zh-hk": "zh-Hant",
+  "zh-mo": "zh-Hant",
+  "zh-hant-sg": "zh-Hant",
+  "zh-hant-tw": "zh-Hant",
+  "zh-hant-hk": "zh-Hant",
+  "zh-hant-mo": "zh-Hant",
   ja: "ja",
   "ja-jp": "ja",
   ko: "ko",
@@ -1247,3 +1247,52 @@ Object.keys(RALLY_LEVEL_COPY).forEach(function (lang) { Object.assign(TRANSLATIO
 
 const RALLY_RESUME_COPY = {"en": "Get ready…", "es": "Prepárate…", "zh": "准备好…", "zh-Hant": "準備好…", "ja": "準備はいい？", "ko": "준비하세요…"};
 Object.keys(RALLY_RESUME_COPY).forEach(function (lang) { TRANSLATIONS[lang].rally.resuming = RALLY_RESUME_COPY[lang]; });
+
+const DETAIL_COPY = {
+  "en": [
+    "Watch my performance",
+    "About the erhu",
+    "Couldn’t copy. You can select the WeChat ID above.",
+    "Longest rally this match: {count}"
+  ],
+  "es": [
+    "Ver mi interpretación",
+    "Sobre el erhu",
+    "No se pudo copiar. Puedes seleccionar el ID de WeChat de arriba.",
+    "Rally más largo de la partida: {count}"
+  ],
+  "zh": [
+    "观看我的演奏",
+    "了解二胡",
+    "未能复制。你可以手动选择上方的微信号。",
+    "本局最长回合：{count}"
+  ],
+  "zh-Hant": [
+    "觀看我的演奏",
+    "了解二胡",
+    "未能複製。你可以手動選取上方的微信號。",
+    "本局最長回合：{count}"
+  ],
+  "ja": [
+    "私の演奏を見る",
+    "二胡について",
+    "コピーできませんでした。上のWeChat IDを選択してコピーできます。",
+    "この試合の最長ラリー：{count}"
+  ],
+  "ko": [
+    "제 연주 보기",
+    "얼후 알아보기",
+    "복사하지 못했어요. 위의 WeChat ID를 직접 선택해 주세요.",
+    "이번 경기 최장 랠리: {count}"
+  ]
+};
+Object.keys(DETAIL_COPY).forEach(function (lang) {
+  var words = DETAIL_COPY[lang], pack = TRANSLATIONS[lang];
+  pack.interests.erhu.watch = words[0];
+  pack.interests.erhu.learnMore = words[1];
+  pack.links.social.copyFailed = words[2];
+  pack.rally.matchLongest = words[3];
+});
+
+const RALLY_UNAVAILABLE_COPY = { en: "The table couldn’t load. Close and reopen it to try again.", es: "No se pudo cargar la mesa. Cierra y vuelve a abrir para intentarlo de nuevo.", zh: "球台暂时无法加载。请关闭后重新打开再试。", "zh-Hant": "球檯暫時無法載入。請關閉後重新開啟再試。", ja: "ゲームを読み込めませんでした。一度閉じて、もう一度開いてください。", ko: "게임을 불러오지 못했어요. 닫았다가 다시 열어 주세요." };
+Object.keys(RALLY_UNAVAILABLE_COPY).forEach(function (lang) { TRANSLATIONS[lang].rally.unavailable = RALLY_UNAVAILABLE_COPY[lang]; });

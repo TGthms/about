@@ -41,13 +41,10 @@
 
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
-  <script src="js/season-calendar.js?v=319321a25e3f"></script>
+  <script src="js/season-calendar.js?v=ef934e6180dd"></script>
   <link rel="stylesheet" href="css/styles.css?v=ee64b60468e2" />
-  <link rel="stylesheet" href="css/home.css?v=84645847ed78" />
+  <link rel="stylesheet" href="css/home.css?v=1f6f8954713c" />
   <link rel="stylesheet" href="css/seasons.css?v=8b0d4a08d23f" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
 
   <script type="application/ld+json">
   {
@@ -128,7 +125,7 @@
       .reveal { opacity: 1 !important; transform: none !important; }
       .hero__char { opacity: 1 !important; animation: none !important; }
       .top-bar { position: static; }
-      #site-history-open, #erhu-wiki-open, #archived-projects-open,
+      #site-history-open, #erhu-wiki-open, #erhu-performance-open, #archived-projects-open,
       #duolingo-qr-open, .hub-card__learn, .duolingo-card__frame,
       .duolingo-card__hint { display: none !important; }
     </style>
@@ -186,7 +183,7 @@
         </aside>
       </div>
     </section>
-    <script src="js/hero-image.js?v=aa47ba433389"></script>
+    <script src="js/hero-image.js?v=c02b68a95097"></script>
 
     <!-- 2. About -->
     <section class="section about" id="about" aria-labelledby="about-heading">
@@ -244,7 +241,10 @@
             </div>
             <h3 class="interest-card__title" data-i18n="interests.erhu.title">Erhu</h3>
             <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
-            <button type="button" class="interest-card__learn" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false" data-i18n="interests.erhu.learnMore">Explore the erhu · see my performance</button>
+            <div class="erhu-actions">
+              <button type="button" class="interest-card__learn erhu-actions__watch" id="erhu-performance-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M5 3.5v9l7-4.5z"/></svg><span data-i18n="interests.erhu.watch">Watch my performance</span></button>
+              <button type="button" class="erhu-actions__about" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false" data-i18n="interests.erhu.learnMore">About the erhu</button>
+            </div>
           </li>
           <li class="interest-card" style="--stagger: 2" data-interest="photo">
             <div class="interest-card__icon" aria-hidden="true">
@@ -309,8 +309,8 @@
           </div>
 
           <!-- Main / Backup line — desktop section header. Mobile uses settings sheet. -->
-          <div class="project-host project-host--section" data-host-pref data-host-placement="section">
-            <p class="project-host__label" id="project-host-label-section" data-i18n="host.label">Project links</p>
+          <details class="project-host project-host--section" data-host-pref data-host-placement="section">
+            <summary class="project-host__disclosure" id="project-host-label-section" data-i18n="host.label">Project links</summary>
             <div
               class="host-switcher"
               role="radiogroup"
@@ -338,14 +338,14 @@
                 <span class="host-option__name" data-i18n="host.github">GitHub</span>
               </button>
             </div>
-          </div>
+          </details>
         </header>
 
         <div class="featured-stack">
           <article class="featured-card featured-card--hub" id="project-personal-hub">
             <button type="button" class="featured-card__hit hub-card__hit" id="site-history-open" aria-labelledby="project-title-hub site-history-action" aria-haspopup="dialog" aria-controls="site-history-modal" aria-expanded="false"><span class="visually-hidden" id="site-history-action" data-i18n="personalHub.learn">About this site</span></button>
             <div class="featured-card__visual featured-card__visual--photo hub-preview" aria-hidden="true">
-              <img data-src="assets/main-modern.webp" alt="" width="4032" height="3024" decoding="async" />
+              <img data-src="assets/main-modern.webp" data-srcset="assets/main-1280.webp 1280w, assets/main-1920.webp 1920w, assets/main-modern.webp 4032w" data-sizes="(max-width: 560px) calc(100vw - 32px), 560px" alt="" width="4032" height="3024" decoding="async" />
               <div class="hub-preview__type">
                 <span class="hub-preview__signature">tg<span>.</span></span>
                 <span class="hub-preview__name">Tim G<span>.</span></span>
@@ -889,6 +889,7 @@
                 </svg>
               </span>
             </a>
+            <p class="social-copy-status visually-hidden" id="social-copy-status" role="status" aria-live="polite" aria-atomic="true"></p>
           </li>
           <!-- Duolingo friend QR — full code visible; click QR for large view -->
           <li class="link-grid__full" style="--stagger: 2">
@@ -1116,6 +1117,7 @@
         <div class="rally-countdown" id="rally-countdown" aria-hidden="true" hidden><span id="rally-countdown-value"></span></div>
       </div>
       <p class="rally-status" id="rally-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <p class="rally-summary" id="rally-summary" hidden></p>
       <div class="rally-actions">
         <button type="button" class="rally-move" id="rally-left" aria-label="Move paddle left" data-i18n-aria="rally.left">←</button>
         <button type="button" class="rally-serve" id="rally-serve">Serve</button>
@@ -1152,30 +1154,30 @@
     </div>
   </footer>
 
-  <script src="js/preferences.js?v=f7cf4c26d523"></script>
-  <script src="js/i18n/data.js?v=73c0f37cc29a"></script>
+  <script src="js/preferences.js?v=09d19b102d00"></script>
+  <script src="js/i18n/data.js?v=8247b689d9a1"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=b811d6e95dc6"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
-  <script src="js/i18n/project-host.js?v=56bd0d5cccc7"></script>
+  <script src="js/i18n/project-host.js?v=7be4447d84f5"></script>
   <script src="js/i18n/language.js?v=694fde13ebd2"></script>
-  <script src="js/erhu-content.js?v=e58b74972f42"></script>
-  <script src="js/erhu.js?v=5a70493a21fc"></script>
-  <script src="js/archived-projects.js?v=2c0482d30367"></script>
+  <script src="js/erhu-content.js?v=d92524d02846"></script>
+  <script src="js/erhu.js?v=71f9d1e7e35e"></script>
+  <script src="js/archived-projects.js?v=022191bb54af"></script>
   <script src="js/about.js?v=cfcf08b1d2b9"></script>
   <script src="js/github-card.js?v=13496943216a"></script>
-  <script src="js/image-loader.js?v=b0509dd056eb"></script>
+  <script src="js/image-loader.js?v=92cc66e093bb"></script>
   <script src="js/haptics.js?v=c706e90cf817"></script>
-  <script src="js/site-history-content.js?v=68c8d5e21fec"></script>
-  <script src="js/site-history.js?v=8bbfe147c128"></script>
+  <script src="js/site-history-content.js?v=cd71cbeea954"></script>
+  <script src="js/site-history.js?v=264df6581318"></script>
   <script src="js/psalm-content.js?v=d0c1edf83dd2"></script>
-  <script src="js/psalm.js?v=4d32e6e12c0b"></script>
+  <script src="js/psalm.js?v=2a14a47b10a7"></script>
   <script src="js/contact.js?v=9d43bce92279"></script>
-  <script src="js/rally-engine.js?v=7d4388d2d544"></script>
+  <script src="js/rally-engine.js?v=2080f13d66a7"></script>
   <script src="js/rally-picker.js?v=541dba0bc94b"></script>
   <script src="js/rally-effects.js?v=8231671d32d5"></script>
-  <script src="js/rally.js?v=0efb8a5e4c9c"></script>
-  <script src="js/main.js?v=1abec5d10cc9"></script>
+  <script src="js/rally.js?v=e56af93c614d"></script>
+  <script src="js/main.js?v=7df433fc60a5"></script>
   <script src="js/home-navigation.js?v=a51be04283bb"></script>
   <script src="js/birthday.js?v=a9786fb7f864" data-balloons-src="js/vendor/balloons.js?v=786d5e95e0f9"></script>
   <dialog class="season-stage" id="season-stage" aria-labelledby="season-stage-title" tabindex="-1">
@@ -1189,6 +1191,6 @@
       <p class="visually-hidden" id="season-stage-status" role="status" aria-live="polite"></p>
     </div>
   </dialog>
-  <script src="js/seasons.js?v=366f2e3c737b" data-content-src="js/season-content.js?v=f9f8d703332f" data-number-flow-src="js/vendor/number-flow.mjs?v=6fe2b490b372" data-fireworks-src="js/vendor/fireworks.js?v=dae8c6b54658"></script>
+  <script src="js/seasons.js?v=62bf335a21a8" data-content-src="js/season-content.js?v=f9f8d703332f" data-number-flow-src="js/vendor/number-flow.mjs?v=6fe2b490b372" data-fireworks-src="js/vendor/fireworks.js?v=dae8c6b54658"></script>
 </body>
 </html>

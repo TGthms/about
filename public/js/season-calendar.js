@@ -48,6 +48,25 @@
     return ["christmas", "good-friday", "easter", "thanksgiving", "palm-sunday"].indexOf(occasion) !== -1 ?
       "assets/seasonal/" + occasion + ".webp" : "assets/main-modern.webp";
   }
+
+  function imageSet(occasion, phase) {
+    if (photo(occasion, phase) !== "assets/main-modern.webp") return null;
+    var portrait = root.matchMedia && root.matchMedia("(max-width: 600px) and (max-aspect-ratio: 3/5)").matches;
+    return portrait ? {
+      srcset: "assets/main-portrait-640.webp 640w, assets/main-portrait-960.webp 960w, assets/main-portrait-1440.webp 1440w",
+      sizes: "max(100vw, 56.25svh)"
+    } : {
+      srcset: "assets/main-1280.webp 1280w, assets/main-1920.webp 1920w, assets/main-modern.webp 4032w",
+      sizes: "max(100vw, 133.34svh)"
+    };
+  }
+  function setPhoto(image, occasion, phase) {
+    var set = imageSet(occasion, phase);
+    if (set) { image.sizes = set.sizes; image.srcset = set.srcset; }
+    else { image.removeAttribute("srcset"); image.removeAttribute("sizes"); }
+    image.src = photo(occasion, phase);
+  }
+
   function resolve(now, preview, started) {
     if (previews.indexOf(preview) === -1) return state(now);
     if (preview === "countdown" || preview === "final-minute" || preview === "final-seconds" || preview === "fireworks") {
@@ -57,7 +76,7 @@
     return { occasion: preview, phase: "greeting", target: preview === "new-year" ? new Date(now.getFullYear(), 0, 1).getTime() : undefined, year: now.getFullYear(), next: Infinity };
   }
 
-  var api = { easter: easter, state: state, resolve: resolve, photo: photo };
+  var api = { easter: easter, state: state, resolve: resolve, photo: photo, imageSet: imageSet, setPhoto: setPhoto };
   if (typeof module === "object" && module.exports) module.exports = api;
   else {
     api.preview = new URLSearchParams(root.location.search).get("occasion");
@@ -72,6 +91,8 @@
     preload.rel = "preload";
     preload.as = "image";
     preload.href = photo(initial.occasion, initial.phase);
+    var set = imageSet(initial.occasion, initial.phase);
+    if (set) { preload.imageSrcset = set.srcset; preload.imageSizes = set.sizes; }
     preload.fetchPriority = "high";
     document.head.appendChild(preload);
   }

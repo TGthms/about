@@ -1,12 +1,12 @@
 # Content License: Attribution-NonCommercial-NoDerivatives 4.0 International
 
 **Scope:** this license applies to the photographs, video, and other media
-in this repository — specifically `public/assets/`, `public/og-image.png`,
+in this repository — specifically `public/assets/`, `media-masters/`, `public/og-image.png`,
 `public/og-image.svg` (original artwork), and `public/favicon.svg`. It does
 **not** apply to the source code (HTML, CSS, JavaScript), which is licensed
 separately under the MIT License — see LICENSE.
 
-Third-party materials retain their own terms. Public Sans in
+Third-party materials retain their own terms. Public Sans and Fraunces in
 `public/assets/fonts/` uses the accompanying SIL Open Font License; the erhu
 instrument photograph is credited as CC0. Scripture excerpts are excluded from
 both site licenses; see [SCRIPTURE_CREDITS.md](SCRIPTURE_CREDITS.md) and the

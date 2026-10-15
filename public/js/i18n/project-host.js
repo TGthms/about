@@ -78,6 +78,8 @@ function syncHostSwitcher(host) {
   document.querySelectorAll(".host-option[data-host]").forEach(function (btn) {
     var on = btn.getAttribute("data-host") === preferred;
     btn.classList.toggle("is-selected", on);
+    var kicker = btn.querySelector(".host-option__kicker"), name = btn.querySelector(".host-option__name");
+    if (kicker && name) btn.setAttribute("aria-label", kicker.textContent.trim() + " " + name.textContent.trim());
     btn.setAttribute("aria-checked", on ? "true" : "false");
     if (!isHostPlacementActive(btn)) {
       btn.setAttribute("tabindex", "-1");
@@ -147,12 +149,24 @@ function initProjectHost() {
     return;
   }
 
+  var disclosure = document.querySelector("details.project-host--section");
+  if (disclosure) {
+    document.addEventListener("click", function (event) { if (!disclosure.contains(event.target)) disclosure.open = false; });
+    disclosure.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && disclosure.open) {
+        event.preventDefault(); disclosure.open = false;
+        disclosure.querySelector("summary").focus({ preventScroll: true });
+      }
+    });
+  }
   switchers.forEach(function (switcher) {
     switcher.addEventListener("click", function (e) {
       var btn = e.target.closest(".host-option[data-host]");
       if (!btn || !switcher.contains(btn)) return;
       e.preventDefault();
       setProjectHost(btn.getAttribute("data-host"));
+      var disclosure = switcher.closest("details");
+      if (disclosure) { disclosure.open = false; disclosure.querySelector("summary").focus({ preventScroll: true }); }
     });
 
     switcher.addEventListener("keydown", function (e) {
@@ -176,6 +190,7 @@ function initProjectHost() {
       } else if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         setProjectHost(options[idx].getAttribute("data-host"));
+        if (disclosure) { disclosure.open = false; disclosure.querySelector("summary").focus({ preventScroll: true }); }
         return;
       } else {
         return;
