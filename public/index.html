@@ -43,7 +43,7 @@
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <script src="js/season-calendar.js?v=ef934e6180dd"></script>
   <link rel="stylesheet" href="css/styles.css?v=ee64b60468e2" />
-  <link rel="stylesheet" href="css/home.css?v=1f6f8954713c" />
+  <link rel="stylesheet" href="css/home.css?v=7e90afe16ad5" />
   <link rel="stylesheet" href="css/seasons.css?v=8b0d4a08d23f" />
 
   <script type="application/ld+json">
@@ -242,7 +242,7 @@
             <h3 class="interest-card__title" data-i18n="interests.erhu.title">Erhu</h3>
             <p class="interest-card__desc" data-i18n="interests.erhu.desc">Traditional Chinese two-string instrument</p>
             <div class="erhu-actions">
-              <button type="button" class="interest-card__learn erhu-actions__watch" id="erhu-performance-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M5 3.5v9l7-4.5z"/></svg><span data-i18n="interests.erhu.watch">Watch my performance</span></button>
+              <button type="button" class="interest-card__learn erhu-actions__watch" id="erhu-performance-open" aria-haspopup="dialog" aria-controls="erhu-performance-modal" aria-expanded="false"><svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M5 3.5v9l7-4.5z"/></svg><span data-i18n="interests.erhu.watch">Watch my performance</span></button>
               <button type="button" class="erhu-actions__about" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false" data-i18n="interests.erhu.learnMore">About the erhu</button>
             </div>
           </li>
@@ -580,7 +580,7 @@
             hidden
           >
             <div class="archived-projects-modal__backdrop" data-archived-close tabindex="-1"></div>
-            <section class="archived-projects-modal__panel" role="document">
+            <section class="archived-projects-modal__panel dialog-panel" role="document">
               <div class="archived-projects-modal__top">
                 <div>
                   <p class="archived-projects-modal__eyebrow" data-i18n="links.archived.eyebrow">A quieter shelf</p>
@@ -592,7 +592,7 @@
                   </svg>
                 </button>
               </div>
-              <div class="archived-projects-modal__grid">
+              <div class="archived-projects-modal__grid dialog-scroll" tabindex="0" role="region" aria-labelledby="archived-projects-title">
 
           <article class="featured-card" data-project="usa"
             data-url-cloudflare="https://travelusa.pages.dev/"
@@ -979,7 +979,7 @@
     hidden
   >
     <div class="qr-modal__backdrop" data-qr-close tabindex="-1"></div>
-    <div class="qr-modal__panel" role="document">
+    <div class="qr-modal__panel dialog-panel" role="document">
       <div class="qr-modal__top">
         <h2 class="qr-modal__title" id="duolingo-qr-modal-title" data-i18n="links.duolingo.modalTitle">Duolingo QR</h2>
         <button
@@ -994,6 +994,7 @@
           </svg>
         </button>
       </div>
+      <div class="dialog-scroll qr-dialog-scroll" tabindex="0" role="region" aria-labelledby="duolingo-qr-modal-title">
       <p class="qr-modal__hint" data-i18n="links.duolingo.hint">Scan the code in the Duolingo app to add me</p>
       <div class="qr-modal__frame">
         <img
@@ -1024,6 +1025,7 @@
           <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
+      </div>
     </div>
   </div>
 
@@ -1037,7 +1039,7 @@
     hidden
   >
     <div class="erhu-modal__backdrop" data-erhu-close tabindex="-1"></div>
-    <article class="erhu-modal__panel" role="document">
+    <article class="erhu-modal__panel dialog-panel erhu-instrument-panel" role="document">
       <div class="erhu-modal__top">
         <div>
           <h2 class="erhu-modal__title" id="erhu-wiki-title">Erhu</h2>
@@ -1048,28 +1050,41 @@
           </svg>
         </button>
       </div>
-      <div class="erhu-modal__body" id="erhu-wiki-body"></div>
+      <div class="dialog-scroll" id="erhu-wiki-body" tabindex="0" role="region" aria-labelledby="erhu-wiki-title"></div>
+    </article>
+  </div>
+
+  <div class="erhu-modal" id="erhu-performance-modal" role="dialog" aria-modal="true" aria-labelledby="erhu-performance-title" hidden>
+    <div class="erhu-modal__backdrop" data-erhu-close tabindex="-1"></div>
+    <article class="erhu-modal__panel dialog-panel erhu-performance-panel" role="document">
+      <div class="erhu-modal__top">
+        <h2 class="erhu-modal__title" id="erhu-performance-title">My erhu performance</h2>
+        <button type="button" class="erhu-modal__close" data-erhu-close aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="dialog-scroll" id="erhu-performance-body" tabindex="0" role="region" aria-labelledby="erhu-performance-title"></div>
     </article>
   </div>
 
   <!-- Personal Hub: about and curated Git history -->
   <div class="erhu-modal site-history-modal" id="site-history-modal" role="dialog" aria-modal="true" aria-labelledby="site-history-title" hidden>
     <div class="erhu-modal__backdrop" data-site-history-close tabindex="-1"></div>
-    <article class="erhu-modal__panel site-history-panel" role="document">
+    <article class="erhu-modal__panel dialog-panel site-history-panel" role="document">
       <div class="erhu-modal__top site-history-top">
         <h2 class="erhu-modal__title" id="site-history-title" data-i18n="personalHub.dialogTitle">About this site</h2>
         <button type="button" class="erhu-modal__close" data-site-history-close data-i18n-aria="personalHub.close" aria-label="Close about this site">
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <div id="site-history-body"></div>
+      <div class="dialog-scroll" id="site-history-body" tabindex="0" role="region" aria-labelledby="site-history-title"></div>
     </article>
   </div>
 
   <!-- Psalm 23 reading card -->
   <div class="erhu-modal psalm-modal" id="psalm-modal" role="dialog" aria-modal="true" aria-labelledby="psalm-title" hidden>
     <div class="erhu-modal__backdrop" data-psalm-close tabindex="-1"></div>
-    <article class="erhu-modal__panel psalm-panel" role="document">
+    <article class="erhu-modal__panel dialog-panel psalm-panel" role="document">
       <div class="erhu-modal__top site-history-top">
         <div>
           <h2 class="erhu-modal__title" id="psalm-title" data-i18n="psalm.title">Psalm 23</h2>
@@ -1079,7 +1094,7 @@
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <div id="psalm-body"></div>
+      <div class="dialog-scroll" id="psalm-body" tabindex="0" role="region" aria-labelledby="psalm-title"></div>
     </article>
   </div>
 
@@ -1154,7 +1169,7 @@
     </div>
   </footer>
 
-  <script src="js/preferences.js?v=09d19b102d00"></script>
+  <script src="js/preferences.js?v=f04b004a0c18"></script>
   <script src="js/i18n/data.js?v=8247b689d9a1"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=b811d6e95dc6"></script>
@@ -1162,22 +1177,22 @@
   <script src="js/i18n/project-host.js?v=7be4447d84f5"></script>
   <script src="js/i18n/language.js?v=694fde13ebd2"></script>
   <script src="js/erhu-content.js?v=d92524d02846"></script>
-  <script src="js/erhu.js?v=71f9d1e7e35e"></script>
-  <script src="js/archived-projects.js?v=022191bb54af"></script>
+  <script src="js/erhu.js?v=8ed0ffa2dcb1"></script>
+  <script src="js/archived-projects.js?v=a0ce08a6ce8f"></script>
   <script src="js/about.js?v=cfcf08b1d2b9"></script>
   <script src="js/github-card.js?v=13496943216a"></script>
   <script src="js/image-loader.js?v=92cc66e093bb"></script>
   <script src="js/haptics.js?v=c706e90cf817"></script>
-  <script src="js/site-history-content.js?v=574718f872b8"></script>
-  <script src="js/site-history.js?v=264df6581318"></script>
+  <script src="js/site-history-content.js?v=ff99252c9465"></script>
+  <script src="js/site-history.js?v=bcca24d9a5f4"></script>
   <script src="js/psalm-content.js?v=d0c1edf83dd2"></script>
-  <script src="js/psalm.js?v=2a14a47b10a7"></script>
+  <script src="js/psalm.js?v=f73643cec70a"></script>
   <script src="js/contact.js?v=9d43bce92279"></script>
   <script src="js/rally-engine.js?v=2080f13d66a7"></script>
   <script src="js/rally-picker.js?v=541dba0bc94b"></script>
   <script src="js/rally-effects.js?v=8231671d32d5"></script>
   <script src="js/rally.js?v=e56af93c614d"></script>
-  <script src="js/main.js?v=7df433fc60a5"></script>
+  <script src="js/main.js?v=1ee09ffeb61e"></script>
   <script src="js/home-navigation.js?v=a51be04283bb"></script>
   <script src="js/birthday.js?v=a9786fb7f864" data-balloons-src="js/vendor/balloons.js?v=786d5e95e0f9"></script>
   <dialog class="season-stage" id="season-stage" aria-labelledby="season-stage-title" tabindex="-1">

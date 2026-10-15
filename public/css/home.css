@@ -900,7 +900,7 @@ html[data-theme="dark"] .home-page .hero__backdrop::after { opacity: 1; }
 .featured-card--hub:hover .hub-card__learn > span:last-child { transform: translateX(3px); }
 .hub-card__learn:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; border-radius: 4px; }
 .home-page .site-history-panel { width: min(100%, 680px); --history-pad: clamp(18px, 3vw, 32px); padding: var(--history-pad); }
-.site-history-top { position: sticky; top: calc(-1 * var(--history-pad)); z-index: 2; align-items: center; margin: calc(-1 * var(--history-pad)) calc(-1 * var(--history-pad)) 20px; padding: 20px var(--history-pad) 16px; background: var(--bg-card); border-bottom: 1px solid var(--rule); }
+
 .site-history-intro { font-size: .9375rem; line-height: 1.8; color: var(--mute); }
 .site-history-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-block: 22px; margin-bottom: 24px; border-bottom: 1px solid var(--rule); font-size: .8125rem; }
 .site-history-facts dt { color: var(--mute); margin-bottom: 4px; }
@@ -1077,20 +1077,67 @@ html .home-page .interest-card.is-settled:hover .interest-card__icon { transform
 .erhu-actions__watch svg { flex: none; }
 .erhu-actions__about { min-height: 44px; color: var(--mute); font-size: .8125rem; text-align: left; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--rule); }
 .erhu-actions__about:hover { color: var(--accent-text); text-decoration-color: currentColor; }
-#erhu-wiki-modal[data-erhu-view="performance"] .erhu-wiki__intro { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--rule); }
-.erhu-wiki__done { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 24px; padding: 10px 20px; border: 1px solid var(--control-line); border-radius: 10px; color: var(--accent-text); }
-.erhu-wiki__done:hover { background: var(--accent-soft); }
+
+
 .social-copy-status:not(.visually-hidden) { margin-top: 8px; color: var(--mute); font-size: .8125rem; }
 @media (max-width: 767px) { .erhu-actions { grid-column: 1 / -1; } }
 
-/* Reading and archive headers remain reachable throughout their content. */
-#erhu-wiki-modal .erhu-modal__panel, .archived-projects-modal__panel { --dialog-pad: clamp(18px, 3vw, 32px); padding: var(--dialog-pad); }
-#erhu-wiki-modal .erhu-modal__top, .archived-projects-modal__top {
-  position: sticky; top: calc(-1 * var(--dialog-pad)); z-index: 5;
-  align-items: center; margin: calc(-1 * var(--dialog-pad)) calc(-1 * var(--dialog-pad)) 20px;
-  padding: 16px var(--dialog-pad); background: var(--bg-card); border-bottom: 1px solid var(--rule);
+/* Header and content occupy separate regions, including at fractional zoom. */
+html .home-page .dialog-panel {
+  display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden;
+  background: color-mix(in srgb, var(--bg-card) 96%, transparent);
 }
-@media (max-width: 680px) { .archived-projects-modal__panel { --dialog-pad: 16px; } }
+.dialog-panel > :is(.erhu-modal__top, .archived-projects-modal__top, .qr-modal__top) {
+  position: relative; flex: none; top: auto; z-index: 3; align-items: center;
+  margin: 0; padding: 20px clamp(20px, 3vw, 32px); border: 0; border-bottom: 1px solid var(--rule);
+  background: var(--bg-card);
+}
+@supports ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .dialog-panel > :is(.erhu-modal__top, .archived-projects-modal__top, .qr-modal__top) {
+    background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+}
+.dialog-scroll {
+  flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; padding: clamp(20px, 3vw, 32px);
+  scroll-padding-block: 20px;
+}
+.dialog-scroll:focus-visible { outline: 2px solid var(--accent-text); outline-offset: -3px; box-shadow: none; border-radius: 0; }
+.qr-dialog-scroll { display: flex; flex-direction: column; gap: 16px; }
+.qr-dialog-scroll > * { flex: none; }
+.dialog-panel .erhu-modal__title { font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1.25; font-weight: 500; }
+.archived-projects-modal__grid.dialog-scroll { align-content: start; margin: 0; }
+.erhu-instrument-panel { width: min(100%, 960px); }
+.erhu-instrument-layout { display: grid; grid-template-columns: minmax(190px, .65fr) minmax(0, 1.35fr); gap: clamp(24px, 4vw, 44px); align-items: start; }
+.erhu-instrument-layout .erhu-wiki__intro { grid-row: auto; position: sticky; top: 0; min-width: 0; }
+.erhu-instrument-layout .erhu-wiki__photo { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: #e1e1df; }
+.erhu-instrument-layout .erhu-wiki__photo img { max-height: 420px; object-position: center; background: #e1e1df; }
+.erhu-instrument-copy .erhu-wiki__section { margin: 0 0 28px; }
+.erhu-instrument-copy .erhu-wiki__section:last-child { margin-bottom: 0; }
+.home-page .erhu-wiki__heading { font-size: 1.15rem; font-weight: 500; line-height: 1.4; margin-bottom: 12px; }
+.home-page .erhu-wiki__paragraph { font-family: var(--font); font-size: .9375rem; line-height: 1.8; margin-bottom: 14px; }
+.erhu-performance-panel { width: min(100%, 900px); }
+.erhu-performance__intro { color: var(--mute); font-size: .9375rem; line-height: 1.65; margin-bottom: 18px; max-width: 60em; }
+.erhu-performance-panel .dialog-scroll { padding: 24px; }
+.erhu-performance-panel .erhu-dialog-actions { margin-top: 20px; padding-top: 14px; }
+.erhu-performance-panel .erhu-wiki__video { width: 100%; aspect-ratio: 16 / 9; max-height: none; object-fit: contain; border: 1px solid var(--rule); border-radius: 10px; }
+@media (min-width: 681px) and (min-height: 600px) {
+  .erhu-performance-panel { width: min(100%, 900px, calc(81.78svh + 50px)); }
+}
+.erhu-performance-panel .erhu-wiki__media-note { margin-top: 14px; font-size: .6875rem; line-height: 1.6; }
+.erhu-dialog-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.erhu-dialog-action { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; color: var(--accent-text); font-size: .875rem; line-height: 1.5; }
+.erhu-dialog-action[data-erhu-close] { border: 1px solid var(--control-line); border-radius: 10px; padding: 10px 20px; }
+.erhu-dialog-action:hover { background: var(--accent-soft); }
+@media (max-width: 680px) {
+  .dialog-panel > :is(.erhu-modal__top, .archived-projects-modal__top, .qr-modal__top) { padding: 16px 20px; }
+  .dialog-scroll { padding: 20px; }
+  .erhu-instrument-layout { grid-template-columns: 1fr; gap: 24px; }
+  .erhu-instrument-layout .erhu-wiki__intro { position: static; width: min(100%, 280px); justify-self: center; }
+  .erhu-instrument-layout .erhu-wiki__photo img { max-height: 320px; }
+  .erhu-dialog-actions { margin-top: 22px; }
+}
 .home-page :is(.erhu-modal, .archived-projects-modal).is-closing { animation: hub-dialog-fade 160ms ease-in both; pointer-events: none; }
 .home-page :is(.erhu-modal, .archived-projects-modal).is-closing > :is(.erhu-modal__panel, .archived-projects-modal__panel) { animation: hub-dialog-exit 160ms ease-in both; }
 @keyframes hub-dialog-fade { to { opacity: 0; } }
@@ -1128,3 +1175,8 @@ html .home-page .project-host--section > .host-switcher { position: absolute; z-
 }
 
 .qr-modal.is-closing, .qr-modal.is-closing .qr-modal__panel { transition-duration: 160ms; }
+
+@media (max-height: 560px) and (min-width: 600px) {
+  .erhu-performance__intro { display: none; }
+  .erhu-performance-panel .erhu-wiki__video { width: min(100%, calc((86svh - 160px) * 1.7778)); margin-inline: auto; }
+}

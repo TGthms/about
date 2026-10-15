@@ -30,7 +30,7 @@
     if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
 
     var closeButton = modal.querySelector(".archived-projects-modal__close");
-    modal.querySelector(".archived-projects-modal__panel").scrollTop = 0;
+    modal.querySelector(".dialog-scroll").scrollTop = 0;
     if (closeButton) closeButton.focus({ preventScroll: true });
   }
 

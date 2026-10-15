@@ -32,13 +32,6 @@
     initLanguageMenu(function (lang) {
       if (!lang || lang === currentLang) return;
       if (typeof applyLanguage === "function") currentLang = applyLanguage(lang);
-      var erhuModal = document.getElementById("erhu-wiki-modal");
-      if (erhuModal && !erhuModal.hidden && typeof renderErhuWiki === "function") {
-        renderErhuWiki(currentLang);
-        if (typeof loadDeferredImages === "function") loadDeferredImages(erhuModal);
-        var erhuClose = erhuModal.querySelector(".erhu-modal__close");
-        if (erhuClose) erhuClose.focus();
-      }
       if (typeof renderAbout === "function") renderAbout();
       if (typeof refreshGithubCardCopy === "function") refreshGithubCardCopy();
       if (typeof refreshImageLoaderCopy === "function") refreshImageLoaderCopy();
@@ -216,6 +209,7 @@
       isOpen = true;
       lastFocus = openBtn;
       modal.hidden = false;
+      modal.querySelector(".dialog-scroll").scrollTop = 0;
       modal.classList.remove("is-shown");
       document.body.classList.add("qr-modal-open");
       openBtn.setAttribute("aria-expanded", "true");

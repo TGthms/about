@@ -4,7 +4,7 @@
   var modal = document.getElementById("psalm-modal");
   var body = document.getElementById("psalm-body");
   if (!modal || !body || typeof PSALM_23 === "undefined") return;
-  var panel = modal.querySelector(".psalm-panel");
+  var panel = body;
   var closeButton = modal.querySelector("button[data-psalm-close]");
   var isOpen = false;
   var opener = null;
@@ -45,7 +45,7 @@
     credits.appendChild(sources);
     body.appendChild(credits);
   }
-  function focusable() { return Array.from(modal.querySelectorAll('button:not([disabled]), a[href]')); }
+  function focusable() { return Array.from(modal.querySelectorAll('button:not([disabled]), a[href], [tabindex="0"]')); }
   function close() {
     if (!isOpen) return;
     isOpen = false;

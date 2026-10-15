@@ -61,7 +61,7 @@ window.closeSiteDialog = function (modal, finish) {
     var touchY = 0;
     var listening = false;
     var SCROLLABLE =
-      ".archived-projects-modal__panel, .erhu-modal__panel, .qr-modal__panel, .controls-panel__surface";
+      ".dialog-scroll, .archived-projects-modal__panel:not(.dialog-panel), .erhu-modal__panel:not(.dialog-panel), .qr-modal__panel, .controls-panel__surface";
 
     function scrollPanel(target) {
       return target && target.closest ? target.closest(SCROLLABLE) : null;

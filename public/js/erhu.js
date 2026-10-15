@@ -7,13 +7,12 @@
   var VIDEO_SRC = "assets/erhu/always-with-me-performance.mp4";
   var openButton = document.getElementById("erhu-wiki-open");
   var performanceButton = document.getElementById("erhu-performance-open");
-  var modal = document.getElementById("erhu-wiki-modal");
-  var body = document.getElementById("erhu-wiki-body");
-  if (!openButton || !modal || !body || typeof ERHU_WIKI === "undefined") return;
-
+  var wikiModal = document.getElementById("erhu-wiki-modal");
+  var performanceModal = document.getElementById("erhu-performance-modal");
+  if (!openButton || !performanceButton || !wikiModal || !performanceModal || typeof ERHU_WIKI === "undefined") return;
+  var activeModal = null;
   var lastFocus = null;
-  var isOpen = false;
-  var watchMode = false;
+  var closing = false;
   var videoEl = null;
   var videoStash = null;
   var preloadStarted = false;
@@ -146,7 +145,7 @@
     preloadStarted = true;
     ensurePhoto().setAttribute("src", PHOTO_SRC);
     ensureVideo();
-    if (!isOpen) stashVideo();
+    if (activeModal !== performanceModal) stashVideo();
     kickVideoLoad();
   }
 
@@ -175,143 +174,145 @@
     }
   }
 
-  function render(lang) {
-    var copy = ERHU_WIKI[lang] || ERHU_WIKI.en;
-    modal.setAttribute("data-erhu-view", watchMode ? "performance" : "instrument");
-    var title = document.getElementById("erhu-wiki-title");
-    var close = modal.querySelector(".erhu-modal__close");
-    if (title) title.textContent = watchMode ? copy.performanceTitle : copy.title;
-    if (close) close.setAttribute("aria-label", copy.close);
+  function action(label, attributes) {
+    var button = text("button", "erhu-dialog-action", label);
+    button.type = "button";
+    Object.keys(attributes).forEach(function (key) { button.setAttribute(key, attributes[key]); });
+    return button;
+  }
 
-    var video = ensureVideo(copy.videoTitle);
-    if (video.parentNode) video.parentNode.removeChild(video);
+  function render(lang) {
+    if (!activeModal) return;
+    var copy = ERHU_WIKI[lang] || ERHU_WIKI.en;
+    var performance = activeModal === performanceModal;
+    var body = document.getElementById(performance ? "erhu-performance-body" : "erhu-wiki-body");
+    var scrollY = body.scrollTop;
+    var title = document.getElementById(performance ? "erhu-performance-title" : "erhu-wiki-title");
+    title.textContent = performance ? copy.performanceTitle : copy.title;
+    activeModal.querySelector(".erhu-modal__close").setAttribute("aria-label", copy.close);
     body.replaceChildren();
 
-    var intro = document.createElement("div");
-    intro.className = "erhu-wiki__intro";
-    var photo = document.createElement("div");
-    photo.className = "erhu-wiki__photo img-load";
-    var image = ensurePhoto(copy.imageAlt);
-    if (image.parentNode) image.parentNode.removeChild(image);
-    photo.appendChild(image);
-    intro.appendChild(photo);
-    if (typeof attachImageLoader === "function") attachImageLoader(image);
-    var credit = text("p", "erhu-wiki__credit", copy.imageCredit + " ");
-    var source = document.createElement("a");
-    source.href = "https://commons.wikimedia.org/w/index.php?curid=192017131";
-    source.target = "_blank";
-    source.rel = "noopener noreferrer";
-    source.textContent = copy.imageSource;
-    credit.appendChild(source);
-    intro.appendChild(credit);
-    body.appendChild(intro);
-
-    copy.sections.forEach(function (section) {
-      var sectionEl = text("section", "erhu-wiki__section");
-      sectionEl.appendChild(text("h3", "erhu-wiki__heading", section.title));
-      section.paragraphs.forEach(function (paragraph) {
-        sectionEl.appendChild(text("p", "erhu-wiki__paragraph", paragraph));
+    if (performance) {
+      body.appendChild(text("p", "erhu-performance__intro", copy.videoIntro));
+      var video = ensureVideo(copy.videoTitle);
+      video.removeAttribute("tabindex");
+      body.appendChild(video);
+      videoStatus = text("div", "erhu-wiki__video-status");
+      videoStatusText = text("span", "", copy.videoLoading);
+      videoProgress = document.createElement("progress");
+      videoProgress.max = 100;
+      videoProgress.setAttribute("aria-label", copy.videoBuffering);
+      videoStatus.append(videoStatusText, videoProgress);
+      body.appendChild(videoStatus);
+      lastStatus = "";
+      kickVideoLoad(); updateVideoStatus();
+      body.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
+    } else {
+      var layout = text("div", "erhu-instrument-layout");
+      var figure = document.createElement("figure");
+      figure.className = "erhu-wiki__intro";
+      var photo = text("div", "erhu-wiki__photo img-load");
+      var image = ensurePhoto(copy.imageAlt);
+      photo.appendChild(image);
+      figure.appendChild(photo);
+      if (typeof attachImageLoader === "function") attachImageLoader(image);
+      var credit = text("figcaption", "erhu-wiki__credit", copy.imageCredit + " ");
+      var source = text("a", "", copy.imageSource);
+      source.href = "https://commons.wikimedia.org/w/index.php?curid=192017131";
+      source.target = "_blank"; source.rel = "noopener noreferrer";
+      credit.appendChild(source); figure.appendChild(credit);
+      var prose = text("div", "erhu-instrument-copy");
+      copy.sections.forEach(function (section) {
+        var sectionEl = text("section", "erhu-wiki__section");
+        sectionEl.appendChild(text("h3", "erhu-wiki__heading", section.title));
+        section.paragraphs.forEach(function (paragraph) {
+          sectionEl.appendChild(text("p", "erhu-wiki__paragraph", paragraph));
+        });
+        prose.appendChild(sectionEl);
       });
-      body.appendChild(sectionEl);
-    });
-
-    var media = document.createElement("section");
-    media.className = "erhu-wiki__media";
-    media.appendChild(text("h3", "erhu-wiki__heading", copy.videoTitle));
-    media.appendChild(text("p", "erhu-wiki__paragraph", copy.videoIntro));
-    video.removeAttribute("tabindex");
-    media.appendChild(video);
-    videoStatus = document.createElement("div");
-    videoStatus.className = "erhu-wiki__video-status";
-    videoStatusText = text("span", "", copy.videoLoading);
-    videoProgress = document.createElement("progress");
-    videoProgress.max = 100;
-    videoProgress.setAttribute("aria-label", copy.videoBuffering);
-    videoStatus.append(videoStatusText, videoProgress);
-    media.appendChild(videoStatus);
-    lastStatus = "";
-    kickVideoLoad();
-    updateVideoStatus();
-    media.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
-    body.appendChild(media);
-    var done = text("button", "erhu-wiki__done", copy.close);
-    done.type = "button";
-    done.addEventListener("click", close);
-    body.appendChild(done);
-    if (watchMode) body.insertBefore(media, body.firstChild);
+      layout.append(figure, prose); body.appendChild(layout);
+    }
+    var words = (TRANSLATIONS[lang] || TRANSLATIONS.en).interests.erhu;
+    var actions = text("div", "erhu-dialog-actions");
+    actions.appendChild(action(performance ? words.learnMore + " →" : words.watch + " →", {
+      "data-erhu-view": performance ? "instrument" : "performance",
+      "aria-controls": performance ? "erhu-wiki-modal" : "erhu-performance-modal",
+      "aria-haspopup": "dialog"
+    }));
+    actions.appendChild(action(copy.close, { "data-erhu-close": "" }));
+    body.appendChild(actions);
+    body.scrollTop = scrollY;
   }
 
-  function focusable() {
-    return Array.prototype.slice.call(
-      modal.querySelectorAll('button:not([disabled]), a[href], video[controls]')
-    );
-  }
-
-  function open(event) {
-    if (isOpen || (modal.classList && modal.classList.contains("is-closing"))) return;
-    lastFocus = event && event.currentTarget || openButton;
-    watchMode = Boolean(performanceButton && lastFocus === performanceButton);
+  function show(performance, opener) {
+    var next = performance ? performanceModal : wikiModal;
+    if (closing || activeModal === next) return;
+    var transferring = Boolean(activeModal);
+    if (activeModal) {
+      if (activeModal === performanceModal && videoEl) { videoEl.pause(); stashVideo(); }
+      activeModal.hidden = true;
+    } else lastFocus = opener;
+    activeModal = next;
     render(activeLanguage());
-    modal.hidden = false;
+    next.hidden = false;
     document.body.classList.add("erhu-modal-open");
-    lastFocus.setAttribute("aria-expanded", "true");
-    isOpen = true;
-    if (typeof lockPageScroll === "function") lockPageScroll();
-    if (typeof loadDeferredImages === "function") loadDeferredImages(modal);
-    if (typeof setBackgroundInert === "function") setBackgroundInert(modal, true);
-    var panel = modal.querySelector(".erhu-modal__panel");
-    panel.scrollTop = 0;
-
-    modal.querySelector(".erhu-modal__close").focus({ preventScroll: true });
+    if (lastFocus) lastFocus.setAttribute("aria-expanded", "true");
+    if (!transferring && typeof lockPageScroll === "function") lockPageScroll();
+    if (typeof setBackgroundInert === "function") setBackgroundInert(next, true);
+    if (typeof loadDeferredImages === "function") loadDeferredImages(next);
+    document.getElementById(performance ? "erhu-performance-body" : "erhu-wiki-body").scrollTop = 0;
+    next.querySelector(".erhu-modal__close").focus({ preventScroll: true });
   }
 
   function close() {
-    if (!isOpen) return;
-    if (videoEl) videoEl.pause();
+    if (!activeModal || closing) return;
+    closing = true;
+    var modal = activeModal;
+    if (modal === performanceModal && videoEl) videoEl.pause();
     function finish() {
-      if (videoEl) {
+      if (modal === performanceModal && videoEl) {
         try { videoEl.currentTime = 0; } catch (_) {}
         stashVideo();
       }
-      modal.hidden = true;
+      modal.hidden = true; activeModal = null; closing = false;
       document.body.classList.remove("erhu-modal-open");
       if (lastFocus) lastFocus.setAttribute("aria-expanded", "false");
-      isOpen = false;
-      if (typeof unlockPageScroll === "function") unlockPageScroll();
       if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
-      if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus({ preventScroll: true });
+      if (typeof unlockPageScroll === "function") unlockPageScroll();
+      if (lastFocus && lastFocus.isConnected) lastFocus.focus({ preventScroll: true });
     }
     if (typeof closeSiteDialog === "function") closeSiteDialog(modal, finish);
     else finish();
   }
 
   window.renderErhuWiki = render;
-  openButton.setAttribute("aria-expanded", "false");
-  openButton.addEventListener("click", open);
-  if (performanceButton) performanceButton.addEventListener("click", open);
-  scheduleSilentPreload();
-  modal.querySelectorAll("[data-erhu-close]").forEach(function (el) {
-    el.addEventListener("click", close);
+  openButton.addEventListener("click", function () { show(false, openButton); });
+  performanceButton.addEventListener("click", function () { show(true, performanceButton); });
+  [wikiModal, performanceModal].forEach(function (modal) {
+    modal.addEventListener("click", function (event) {
+      var target = event.target.closest && event.target.closest("[data-erhu-close], [data-erhu-view]");
+      if (!target || !modal.contains(target)) return;
+      if (target.hasAttribute("data-erhu-close")) close();
+      else show(target.getAttribute("data-erhu-view") === "performance");
+    });
   });
+  scheduleSilentPreload();
   document.addEventListener("keydown", function (event) {
-    if (!isOpen) return;
+    if (!activeModal || closing) return;
     if (event.key === "Escape") {
       if (document.fullscreenElement || (videoEl && videoEl.webkitDisplayingFullscreen)) return;
-      event.preventDefault();
-      close();
-      return;
+      event.preventDefault(); close(); return;
     }
     if (event.key !== "Tab") return;
-    var nodes = focusable();
-    if (!nodes.length) return;
-    var first = nodes[0];
-    var last = nodes[nodes.length - 1];
+    var nodes = Array.from(activeModal.querySelectorAll('button:not([disabled]), a[href], video[controls], [tabindex="0"]'));
+    var first = nodes[0], last = nodes[nodes.length - 1];
     if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
+      event.preventDefault(); last.focus();
     } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
+      event.preventDefault(); first.focus();
     }
   });
+  if (window.MutationObserver) new MutationObserver(function () {
+    if (activeModal && !closing) render(activeLanguage());
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-language"] });
 })();

@@ -5,7 +5,7 @@
   var modal = document.getElementById("site-history-modal");
   var body = document.getElementById("site-history-body");
   if (!opener || !modal || !body || typeof PERSONAL_HUB === "undefined") return;
-  var panel = modal.querySelector(".site-history-panel");
+  var panel = body;
   var closeButton = modal.querySelector("button[data-site-history-close]");
   var isOpen = false;
 
@@ -73,7 +73,7 @@
   }
 
   function focusable() {
-    return Array.from(modal.querySelectorAll('button:not([disabled]), a[href]'));
+    return Array.from(modal.querySelectorAll('button:not([disabled]), a[href], [tabindex="0"]'));
   }
   function open() {
     if (isOpen || (modal.classList && modal.classList.contains("is-closing"))) return;
