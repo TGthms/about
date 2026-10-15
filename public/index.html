@@ -43,8 +43,8 @@
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <script src="js/season-calendar.js?v=319321a25e3f"></script>
   <link rel="stylesheet" href="css/styles.css?v=ee64b60468e2" />
-  <link rel="stylesheet" href="css/home.css?v=3bc50b31f8c7" />
-  <link rel="stylesheet" href="css/seasons.css?v=0f7f3a798c89" />
+  <link rel="stylesheet" href="css/home.css?v=84645847ed78" />
+  <link rel="stylesheet" href="css/seasons.css?v=8b0d4a08d23f" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&display=swap" />
@@ -550,6 +550,50 @@
             </div>
           </article>
 
+
+
+          <div class="archived-projects-divider" aria-hidden="true"></div>
+          <button
+            type="button"
+            class="archived-projects-trigger"
+            id="archived-projects-open"
+            aria-haspopup="dialog"
+            aria-controls="archived-projects-modal"
+            aria-expanded="false"
+          >
+            <span class="archived-projects-trigger__copy">
+              <span class="archived-projects-trigger__eyebrow" data-i18n="links.archived.eyebrow">A quieter shelf</span>
+              <span class="archived-projects-trigger__title" data-i18n="links.archived.title">Archived Projects</span>
+              <span class="archived-projects-trigger__hint" data-i18n="links.archived.open">Click to view</span>
+            </span>
+            <svg class="archived-projects-trigger__arrow" width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div
+            class="archived-projects-modal"
+            id="archived-projects-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="archived-projects-title"
+            hidden
+          >
+            <div class="archived-projects-modal__backdrop" data-archived-close tabindex="-1"></div>
+            <section class="archived-projects-modal__panel" role="document">
+              <div class="archived-projects-modal__top">
+                <div>
+                  <p class="archived-projects-modal__eyebrow" data-i18n="links.archived.eyebrow">A quieter shelf</p>
+                  <h2 class="archived-projects-modal__title" id="archived-projects-title" data-i18n="links.archived.title">Archived Projects</h2>
+                </div>
+                <button type="button" class="archived-projects-modal__close" data-archived-close data-i18n-aria="links.archived.close" aria-label="Close archived projects">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="archived-projects-modal__grid">
+
           <article class="featured-card" data-project="usa"
             data-url-cloudflare="https://travelusa.pages.dev/"
             data-url-github="https://tgthms.github.io/usa-travel-guide/">
@@ -671,48 +715,6 @@
               <img data-src="assets/projects/japan-og.jpg" alt="" width="1200" height="675" decoding="async" />
             </div>
           </article>
-
-          <div class="archived-projects-divider" aria-hidden="true"></div>
-          <button
-            type="button"
-            class="archived-projects-trigger"
-            id="archived-projects-open"
-            aria-haspopup="dialog"
-            aria-controls="archived-projects-modal"
-            aria-expanded="false"
-          >
-            <span class="archived-projects-trigger__copy">
-              <span class="archived-projects-trigger__eyebrow" data-i18n="links.archived.eyebrow">A quieter shelf</span>
-              <span class="archived-projects-trigger__title" data-i18n="links.archived.title">Archived Projects</span>
-              <span class="archived-projects-trigger__hint" data-i18n="links.archived.open">Click to view</span>
-            </span>
-            <svg class="archived-projects-trigger__arrow" width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-
-          <div
-            class="archived-projects-modal"
-            id="archived-projects-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="archived-projects-title"
-            hidden
-          >
-            <div class="archived-projects-modal__backdrop" data-archived-close tabindex="-1"></div>
-            <section class="archived-projects-modal__panel" role="document">
-              <div class="archived-projects-modal__top">
-                <div>
-                  <p class="archived-projects-modal__eyebrow" data-i18n="links.archived.eyebrow">A quieter shelf</p>
-                  <h2 class="archived-projects-modal__title" id="archived-projects-title" data-i18n="links.archived.title">Archived Projects</h2>
-                </div>
-                <button type="button" class="archived-projects-modal__close" data-archived-close data-i18n-aria="links.archived.close" aria-label="Close archived projects">
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-                  </svg>
-                </button>
-              </div>
-              <div class="archived-projects-modal__grid">
 
           <article class="featured-card featured-card--folio" data-project="folio" data-project-kind="repo">
             <a
@@ -1153,7 +1155,7 @@
   <script src="js/preferences.js?v=f7cf4c26d523"></script>
   <script src="js/i18n/data.js?v=73c0f37cc29a"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
-  <script src="js/i18n/theme.js?v=14b0a5b73301"></script>
+  <script src="js/i18n/theme.js?v=b811d6e95dc6"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
   <script src="js/i18n/project-host.js?v=56bd0d5cccc7"></script>
   <script src="js/i18n/language.js?v=694fde13ebd2"></script>

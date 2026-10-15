@@ -83,9 +83,10 @@ function harness(date, {reduced=false, hidden=false}={}) {
   const events={}, timers=new Map(), scripts=[], observers=[], busy=[];
   function node() {
     const attributes=new Map(), children={}, classes=new Set();
-    const result={hidden:true, open:false, isConnected:true, complete:true, textContent:'', children, attributes, className:'', appended:[],
+    const result={hidden:true, open:false, disabled:false, isConnected:true, complete:true, textContent:'', children, attributes, className:'', appended:[],
       classList:{toggle(k,on){if(on)classes.add(k);else classes.delete(k);},add:k=>classes.add(k),remove:k=>classes.delete(k),contains:k=>classes.has(k)}, style:{setProperty(){}},
       setAttribute:(k,v)=>attributes.set(k,String(v)),getAttribute:k=>attributes.get(k)||null,
+      hasAttribute:k=>attributes.has(k),
       removeAttribute:k=>attributes.delete(k), addEventListener(n,f){events[(this.id||'node')+':'+n]=f;},
       querySelector:s=>children[s]||(children[s]=node()),remove(){this.removed=true;},focus(){document.activeElement=this;},
       appendChild(n){this.appended.push(n);},showModal(){this.open=true;},close(){this.open=false;},
@@ -248,8 +249,7 @@ test('dark mode spans the countdown and celebration without changing the visitor
   for(const reduced of [false,true]) {
     const h=harness(new Date(2026,11,31,23,50),{reduced});await h.loadContent();
     assert.equal(h.document.documentElement.getAttribute('data-theme'),'dark');
-    assert.equal(h.nodes['theme-toggle'].disabled,true);
-    h.context.toggleTheme();assert.equal(h.savedTheme.get('timg-theme-session'),'light');
+    assert.equal(h.nodes['theme-toggle'].disabled,false);
     h.advance(new Date(2026,11,31,23,59,50));h.advance(new Date(2027,0,1));
     assert.equal(h.document.documentElement.getAttribute('data-theme'),'dark');
     if(!reduced)await h.loadFireworks();
@@ -263,6 +263,25 @@ test('dark mode spans the countdown and celebration without changing the visitor
   assert.equal(welcome.document.documentElement.getAttribute('data-theme'),'dark');
   welcome.fireTimer(5000);assert.equal(welcome.document.documentElement.getAttribute('data-theme'),'light');
   assert.ok(!fs.readFileSync('public/index.html','utf8').includes('hero__tagline'));
+});
+
+test('a theme click overrides the celebration default through phase changes, focus, and cleanup',async()=>{
+  for(const clicks of [1,2]) {
+    const h=harness(new Date(2026,11,31,23,50));await h.loadContent();
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),'dark');
+    for(let i=0;i<clicks;i++)h.context.toggleTheme();
+    const chosen=clicks===1?'light':'dark';
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),chosen);
+    h.document.hidden=true;h.events.visibilitychange();h.document.hidden=false;h.events.visibilitychange();
+    h.advance(new Date(2026,11,31,23,59));
+    h.advance(new Date(2026,11,31,23,59,50));
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),chosen);
+    h.advance(new Date(2027,0,1));await h.loadFireworks();
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),chosen);
+    h.fireTimer(30000);
+    assert.equal(h.document.documentElement.getAttribute('data-theme'),chosen);
+    assert.equal(h.nodes['theme-toggle'].disabled,false);
+  }
 });
 
 test('every language includes all six occasions and actual Scripture text with its reference',()=>{

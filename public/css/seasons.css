@@ -1,5 +1,4 @@
 /* Occasional changes stay within the hero's existing rhythm. */
-html[data-celebration-theme="dark"] #theme-toggle-wrap { opacity: .45; cursor: default; }
 .hero__occasion {
   color: var(--accent-text);
   font: 500 .85rem/1.5 var(--font);
@@ -116,6 +115,11 @@ html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::afte
 .season-stage__track { stroke: rgb(241 243 244 / 12%); }
 .season-stage__progress { stroke: #e1c99a; stroke-dasharray: 60; stroke-dashoffset: calc(60 - var(--remaining, 60)); transition: stroke-dashoffset 1s linear; }
 .season-stage__year { font: 400 1rem/1.5 var(--font); color: #e1c99a; letter-spacing: .2em; }
+html[data-theme="light"] .season-stage { color: var(--ink); background: radial-gradient(ellipse at 50% 35%, #fff, #edf1f4 75%); }
+html[data-theme="light"] .season-stage::backdrop { background: var(--bg); }
+html[data-theme="light"] .season-stage__title { color: var(--mute); }
+html[data-theme="light"] .season-stage__year, html[data-theme="light"] .season-stage__progress { color: var(--accent-text); stroke: var(--accent-text); }
+html[data-theme="light"] .season-stage__track { stroke: var(--rule); }
 .home-page .hero__backdrop .seasonal-year-photo { opacity: 0; transform: scale(1.025); transition: opacity 1200ms ease, transform 1800ms cubic-bezier(.22, 1, .36, 1); object-position: 75% center; }
 .home-page .hero__backdrop .seasonal-year-photo.is-active { opacity: 1; transform: scale(1); }
 html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% center; }
