@@ -625,7 +625,7 @@ PERSONAL_HUB.milestones.push({
     ko: { title: "달력 속 작은 축하", description: "생일 풍선과 계절을 담은 사진·성경 말씀, 그리고 불꽃놀이로 자정을 맞이하는 새해 카운트다운." }
   }
 }, {
-  version: 18, date: "2026-10-14",
+  version: 18, date: "2026-10-14", commit: "3f709b5",
   copy: {
     en: { title: "Music and a match", description: "A performance to listen to, a livelier opponent to play, and a little more room for both." },
     es: { title: "Música y una partida", description: "Una interpretación para escuchar, un rival con más vida y un poco más de espacio para disfrutar de ambos." },
