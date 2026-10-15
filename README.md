@@ -31,7 +31,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Raster photos load one-by-one after the page is ready, so the browser tab spinner is not held open by below-fold images
 - GitHub, Instagram (WeChat ID when language is Chinese), Duolingo QR with enlarge modal
 - Erhu interest card with a responsive, localized wiki dialog, museum image, and performance video
-- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Privacy last updated 13 October 2026; Terms last updated 26 August 2026)
+- Privacy Policy & Terms of Use with localized content rendered by JavaScript (Privacy last updated 14 October 2026; Terms last updated 26 August 2026)
 
 ## Files
 
@@ -103,3 +103,5 @@ To document a future substantial upgrade, append a milestone to `public/js/site-
 The full-size hero remains available alongside responsive landscape and portrait variants. The preload and displayed image use the same source set. Explicit dialog images have a reserved loading lane, so a stalled project preview cannot hold them up. Original performance masters live in `media-masters/`, outside the deployed `public/` artifact; the MP4 continues to use native streaming and the existing preload behavior.
 
 Pong uses a seeded random source for varied serves, bounded opponent reactions, and reproducible physics checks. Longer rallies gradually increase aiming uncertainty. Contact feedback respects reduced motion, and a completed match reports its longest rally. Short landscape screens place the court alongside the controls. Reading and archive headers stay visible, and dialog exits retain focus and scroll containment until finished.
+
+The custom-domain host injects Cloudflare’s Web Analytics / RUM beacon. The privacy policy discloses its performance and usage reporting, with a link to Cloudflare’s documentation, in all six languages.

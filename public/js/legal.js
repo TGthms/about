@@ -35,7 +35,7 @@
   }
 
   function appendLegalText(paragraph, text) {
-    var tokens = /(contact\.timg@icloud\.com|https:\/\/creativecommons\.org\/licenses\/by-nc-nd\/4\.0\/)/g;
+    var tokens = /(contact\.timg@icloud\.com|https:\/\/(?:creativecommons\.org\/licenses\/by-nc-nd\/4\.0\/|developers\.cloudflare\.com\/speed\/observatory\/rum-beacon\/))/g;
     var lastIndex = 0;
     var match;
     while ((match = tokens.exec(text))) {

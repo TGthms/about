@@ -235,6 +235,7 @@ html[data-theme="dark"] .legal-section + .legal-section {
 }
 
 .legal-section__p a {
+  overflow-wrap: anywhere;
   color: var(--accent-text);
   text-decoration: underline;
   text-underline-offset: 3px;

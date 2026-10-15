@@ -1,4 +1,4 @@
-/** Localized privacy content. Keep the English sections aligned with privacy.html's fallback. */
+/** Localized privacy content. Keep English aligned with privacy.html’s fallback. */
 window.LEGAL_DOCUMENTS = window.LEGAL_DOCUMENTS || {};
 window.LEGAL_DOCUMENTS.privacy = {
   "en": {
@@ -6,7 +6,7 @@ window.LEGAL_DOCUMENTS.privacy = {
     "metaDesc": "How Tim G’s personal hub handles privacy, local preferences, and contact information.",
     "label": "Legal",
     "title": "Privacy Policy",
-    "updated": "Last updated: September 5, 2026",
+    "updated": "Last updated: October 14, 2026",
     "intro": "This Privacy Policy explains what information is handled when you visit this personal hub website (the “Site”), how on-device preferences work, and how to contact the Site operator with questions.",
     "sections": [
       {
@@ -23,11 +23,12 @@ window.LEGAL_DOCUMENTS.privacy = {
         "title": "Information and Data Practices",
         "paragraphs": [
           "Information you choose to send. If you email contact.timg@icloud.com (or another address I publish), I receive the contents of that message, which may include your email address, name, and message body. That information is used to respond and, where reasonably necessary, to retain a record of the correspondence.",
-          "Preferences stored on your device. The Site may save your language choice and project-link host preference in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. After you open the GitHub card preview, a short-lived session cache of public calendar data may be stored on your device. These values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site.",
+          "Preferences stored on your device. The Site may save your language choice and project-link host preference in browser local storage. Appearance follows your device’s light or dark setting, with an optional temporary session override. After you open the GitHub card preview, a short-lived session cache of public calendar data may be stored on your device. These values remain on your device and are not transmitted to a personal-data server operated by me in the ordinary course of operating the Site. The table-tennis game also stores your best rally locally on this device.",
           "Technical data processed by hosting. This Site is published with GitHub Pages. Cloudflare may sit in front of the custom domain as a CDN. Hosting and CDN providers may process technical information such as IP addresses, browser type, device or operating-system information, referring URL, and request timestamps as part of delivering the Site. That processing is performed by those providers under their own systems and policies. Some linked project sites use Cloudflare as the main host and GitHub Pages as a backup.",
-          "Analytics and tracking. This Site does not use advertising trackers, behavioral profiling, or third-party analytics tools unless disclosed in a future update of this Policy.",
+          "Analytics and performance. The live Site uses Cloudflare Web Analytics / real user monitoring (RUM) to understand visits and page performance. A browser beacon sends page-load timings, Core Web Vitals, page URLs, and referrers to Cloudflare. Cloudflare documents that this beacon does not use cookies or browser storage and does not track visitors across sites. The Site does not use advertising trackers or behavioral profiling. Details: https://developers.cloudflare.com/speed/observatory/rum-beacon/",
           "Public GitHub calendar. Hovering, focusing, or opening the GitHub card preview may cause your browser to request public profile and contribution data from GitHub and from github-contributions-api.jogruber.de. Those requests are made from your device to those services under their own policies.",
-          "First-party media. After the page has finished loading, the browser may prefetch a performance video hosted on this Site (about 18 MB) so it can play sooner if you open the erhu dialog. Prefetch is skipped when the browser reports a data-saver setting or a 2G connection."
+          "First-party media. After the page has finished loading, the browser may prefetch a performance video hosted on this Site (about 18 MB) so it can play sooner if you open the erhu dialog. Prefetch is skipped when the browser reports a data-saver setting or a 2G connection.",
+          "Some display fonts are served by Google Fonts. Your browser requests them directly from fonts.googleapis.com and fonts.gstatic.com; Google processes those requests under its own policies."
         ]
       },
       {
@@ -118,7 +119,7 @@ window.LEGAL_DOCUMENTS.privacy = {
     "metaDesc": "Tratamiento de la información, preferencias locales y datos de contacto en el sitio personal de Tim G.",
     "label": "Legal",
     "title": "Política de privacidad",
-    "updated": "Última actualización: 5 de septiembre de 2026",
+    "updated": "Última actualización: 14 de octubre de 2026",
     "intro": "La presente Política de privacidad explica qué información se trata cuando usted visita este sitio personal (el «Sitio»), cómo funcionan las preferencias en su dispositivo y cómo puede ponerse en contacto con el operador del Sitio.",
     "sections": [
       {
@@ -135,11 +136,12 @@ window.LEGAL_DOCUMENTS.privacy = {
         "title": "Información objeto de tratamiento",
         "paragraphs": [
           "Información que usted decide enviar. Si escribe a contact.timg@icloud.com (u otra dirección que publique), recibo el contenido del mensaje, que puede incluir su dirección de correo electrónico, nombre y cuerpo del mensaje. Dicha información se utiliza para responder y, cuando resulte razonablemente necesario, para conservar un registro de la correspondencia.",
-          "Preferencias almacenadas en su dispositivo. El Sitio puede guardar su elección de idioma y la preferencia de host de los enlaces de proyectos en el almacenamiento local del navegador. La apariencia sigue la configuración clara u oscura del dispositivo, con una posible anulación temporal de sesión. Tras abrir la vista previa de la tarjeta de GitHub, puede guardarse en la sesión una caché breve de datos públicos del calendario. Esos valores permanecen en su dispositivo y no se transmiten a un servidor de datos personales operado por mí en el curso ordinario del funcionamiento del Sitio.",
+          "Preferencias almacenadas en su dispositivo. El Sitio puede guardar su elección de idioma y la preferencia de host de los enlaces de proyectos en el almacenamiento local del navegador. La apariencia sigue la configuración clara u oscura del dispositivo, con una posible anulación temporal de sesión. Tras abrir la vista previa de la tarjeta de GitHub, puede guardarse en la sesión una caché breve de datos públicos del calendario. Esos valores permanecen en su dispositivo y no se transmiten a un servidor de datos personales operado por mí en el curso ordinario del funcionamiento del Sitio. El juego de tenis de mesa también guarda tu mejor rally localmente en este dispositivo.",
           "Datos técnicos tratados por el alojamiento. Este Sitio se publica con GitHub Pages. Cloudflare puede situarse delante del dominio personalizado como red de distribución. Los proveedores de alojamiento y CDN pueden tratar información técnica, como direcciones IP, tipo de navegador, información del dispositivo o del sistema operativo, URL de referencia y marcas de tiempo, como parte de la prestación del Sitio. Dicho tratamiento lo realizan esos proveedores conforme a sus propios sistemas y políticas. Algunos sitios de proyectos enlazados usan Cloudflare como línea principal y GitHub Pages como respaldo.",
-          "Analítica y rastreo. Este Sitio no utiliza rastreadores publicitarios, perfilado de comportamiento ni herramientas de analítica de terceros, salvo que se declare en una actualización futura de esta Política.",
+          "Analítica y rendimiento. El Sitio publicado utiliza Cloudflare Web Analytics y monitorización de usuarios reales (RUM) para conocer las visitas y el rendimiento de las páginas. Una baliza del navegador envía a Cloudflare tiempos de carga, métricas Core Web Vitals, URL de las páginas y páginas de referencia. Según la documentación de Cloudflare, esta baliza no utiliza cookies ni almacenamiento del navegador, ni sigue a los visitantes entre sitios. El Sitio no utiliza rastreadores publicitarios ni perfiles de comportamiento. Más información: https://developers.cloudflare.com/speed/observatory/rum-beacon/",
           "Calendario público de GitHub. Al pasar el cursor, enfocar o abrir la vista previa de la tarjeta de GitHub, su navegador puede solicitar datos públicos de perfil y contribuciones a GitHub y a github-contributions-api.jogruber.de. Esas solicitudes se realizan desde su dispositivo hacia esos servicios, con arreglo a sus propias políticas.",
-          "Medios propios. Cuando la página ha terminado de cargar, el navegador puede precargar un vídeo de interpretación alojado en este Sitio (unos 18 MB) para que se reproduzca antes si abre el diálogo del erhu. La precarga se omite si el navegador indica ahorro de datos o una conexión 2G."
+          "Medios propios. Cuando la página ha terminado de cargar, el navegador puede precargar un vídeo de interpretación alojado en este Sitio (unos 18 MB) para que se reproduzca antes si abre el diálogo del erhu. La precarga se omite si el navegador indica ahorro de datos o una conexión 2G.",
+          "Algunas fuentes se sirven a través de Google Fonts. Tu navegador las solicita directamente a fonts.googleapis.com y fonts.gstatic.com; Google trata esas solicitudes conforme a sus propias políticas."
         ]
       },
       {
@@ -230,7 +232,7 @@ window.LEGAL_DOCUMENTS.privacy = {
     "metaDesc": "Tim G 个人主页对个人信息、本地偏好及联系方式的处理说明。",
     "label": "法律信息",
     "title": "隐私政策",
-    "updated": "最近更新日期：2026 年 9 月 5 日",
+    "updated": "最后更新：2026年10月14日",
     "intro": "本隐私政策说明您访问本个人主页网站（以下简称“本网站”）时会处理哪些信息、设备端偏好如何运作，以及如何就本政策联系网站运营者。",
     "sections": [
       {
@@ -247,11 +249,12 @@ window.LEGAL_DOCUMENTS.privacy = {
         "title": "信息处理方式",
         "paragraphs": [
           "您主动发送的信息。如您向 contact.timg@icloud.com（或本人公布的其他地址）发送电子邮件，本人将收到该邮件所载内容，其中可能包括您的电子邮箱地址、姓名及正文。该等信息仅用于回复，并在合理必要时保留通信记录。",
-          "保存在您设备上的偏好。本网站可能通过浏览器本地存储保存您的语言选择及项目链接主机偏好。界面外观遵循设备的浅色或深色设置，并允许在会话期间临时覆盖。打开 GitHub 卡片预览后，公开日历数据可能以短期会话缓存形式保存在您的设备上。上述偏好设置保留在您的设备上；在本网站正常运营过程中，不会传输至由本人运营的个人数据服务器。",
+          "保存在您设备上的偏好。本网站可能通过浏览器本地存储保存您的语言选择及项目链接主机偏好。界面外观遵循设备的浅色或深色设置，并允许在会话期间临时覆盖。打开 GitHub 卡片预览后，公开日历数据可能以短期会话缓存形式保存在您的设备上。上述偏好设置保留在您的设备上；在本网站正常运营过程中，不会传输至由本人运营的个人数据服务器。 乒乓球游戏的最长回合记录也仅保存在本设备上。",
           "由托管服务处理的技术数据。本网站通过 GitHub Pages 发布。Cloudflare 可能作为 CDN 位于自定义域名之前。托管与 CDN 提供商在提供本网站服务过程中，可能处理 IP 地址、浏览器类型、设备或操作系统信息、来源网址及时间戳等技术信息。相关处理由上述提供商依其自身系统与政策实施。部分外链项目站点以 Cloudflare 为主线路、以 GitHub Pages 为备用。",
-          "分析与追踪。除非日后在本政策中明确披露，本网站不使用广告追踪器、行为画像或第三方分析工具。",
+          "分析与性能。已发布的网站使用 Cloudflare Web Analytics／真实用户监测（RUM）来了解访问情况和页面性能。浏览器信标会向 Cloudflare 发送页面加载时间、Core Web Vitals 指标、页面网址和来源网址。Cloudflare 的文档说明，此信标不使用 Cookie 或浏览器存储，也不跨网站追踪访客。本网站不使用广告追踪器或行为画像。详情：https://developers.cloudflare.com/speed/observatory/rum-beacon/",
           "公开的 GitHub 贡献日历。将指针悬停、聚焦或打开 GitHub 卡片预览时，您的浏览器可能会向 GitHub 及 github-contributions-api.jogruber.de 请求公开的个人资料与贡献数据。这些请求由您的设备直接发往上述服务，并适用其各自的隐私政策。",
-          "本站媒体。页面加载完成后，浏览器可能会预取本网站托管的二胡演奏视频（约 18 MB），以便在您打开二胡说明对话框时更快播放。若浏览器报告节省流量或 2G 连接，则不会预取。"
+          "本站媒体。页面加载完成后，浏览器可能会预取本网站托管的二胡演奏视频（约 18 MB），以便在您打开二胡说明对话框时更快播放。若浏览器报告节省流量或 2G 连接，则不会预取。",
+          "部分字体由 Google Fonts 提供。浏览器会直接向 fonts.googleapis.com 和 fonts.gstatic.com 请求字体，Google 依照自己的政策处理这些请求。"
         ]
       },
       {
@@ -342,7 +345,7 @@ window.LEGAL_DOCUMENTS.privacy = {
     "metaDesc": "Tim G の個人向けサイトにおける情報の取扱い、端末上の設定、およびお問い合わせ方法について。",
     "label": "法的情報",
     "title": "プライバシーポリシー",
-    "updated": "最終更新日：2026年9月5日",
+    "updated": "最終更新：2026年10月14日",
     "intro": "本プライバシーポリシーは、本個人向けハブウェブサイト（以下「本サイト」）への訪問に際し、情報がどのように収集、利用、開示および保存されるか、端末上の設定がどのように機能するか、ならびに本サイト運営者へのお問い合わせ方法を定めるものです。",
     "sections": [
       {
@@ -359,11 +362,12 @@ window.LEGAL_DOCUMENTS.privacy = {
         "title": "取り扱う情報",
         "paragraphs": [
           "お客様が自ら送信する情報。contact.timg@icloud.com（または私が公表する他のアドレス）宛てに電子メールを送信された場合、私は当該メッセージの内容（電子メールアドレス、氏名、本文等を含み得ます）を受領します。当該情報は返信のため、および合理的に必要な範囲で通信記録を保持するために利用します。",
-          "端末に保存される設定。本サイトは、ブラウザのローカルストレージに言語選択およびプロジェクトリンクのホスト設定を保存することがあります。表示は端末のライト／ダーク設定に従い、セッション中の一時的な上書きが可能です。GitHub カードのプレビューを開いた後、公開カレンダーデータが短期間のセッションキャッシュとして端末に残ることがあります。これらの設定値はお客様の端末に留まり、本サイトの通常の運用において、私が運営する個人データ用サーバーへは送信されません。",
+          "端末に保存される設定。本サイトは、ブラウザのローカルストレージに言語選択およびプロジェクトリンクのホスト設定を保存することがあります。表示は端末のライト／ダーク設定に従い、セッション中の一時的な上書きが可能です。GitHub カードのプレビューを開いた後、公開カレンダーデータが短期間のセッションキャッシュとして端末に残ることがあります。これらの設定値はお客様の端末に留まり、本サイトの通常の運用において、私が運営する個人データ用サーバーへは送信されません。 卓球ゲームの最長ラリー記録も、この端末内に保存されます。",
           "ホスティングにより処理される技術データ。本サイトは GitHub Pages で公開されます。カスタムドメインの手前に CDN として Cloudflare が置かれることがあります。ホスティングおよび CDN 提供者は、本サイトの提供に伴い、IPアドレス、ブラウザの種類、デバイスまたは OS の情報、参照元 URL、リクエストのタイムスタンプ等の技術情報を処理することがあります。当該処理は各提供者のシステムおよび方針に従って行われます。リンク先の一部プロジェクトは、Cloudflare を本線、GitHub Pages をバックアップとして用います。",
-          "分析およびトラッキング。今後本ポリシーで明示しない限り、本サイトは広告用トラッカー、行動プロファイリング、または第三者の分析ツールを使用しません。",
+          "アクセス解析とパフォーマンス。公開サイトでは Cloudflare Web Analytics／リアルユーザーモニタリング（RUM）を使い、訪問状況とページの性能を把握しています。ブラウザーのビーコンは、読み込み時間、Core Web Vitals、ページURL、参照元URLをCloudflareに送信します。Cloudflareの文書によると、このビーコンはCookieやブラウザーのストレージを使わず、サイトをまたいで訪問者を追跡しません。本サイトは広告用トラッカーや行動プロファイリングを使用しません。詳細：https://developers.cloudflare.com/speed/observatory/rum-beacon/",
           "公開の GitHub コントリビューションカレンダー。GitHub カードにポインターを合わせる、フォーカスする、またはプレビューを開くと、ブラウザが GitHub および github-contributions-api.jogruber.de に対して、公開プロフィールと貢献データをリクエストする場合があります。これらのリクエストはお使いの端末から各サービスへ直接送られ、各サービスの方針が適用されます。",
-          "本サイト上のメディア。ページの読み込み完了後、ブラウザは二胡ダイアログを開いたときに再生しやすくするため、本サイトでホストする演奏動画（約 18 MB）を先読みすることがあります。ブラウザがデータセーバーまたは 2G 接続を報告している場合、先読みは行いません。"
+          "本サイト上のメディア。ページの読み込み完了後、ブラウザは二胡ダイアログを開いたときに再生しやすくするため、本サイトでホストする演奏動画（約 18 MB）を先読みすることがあります。ブラウザがデータセーバーまたは 2G 接続を報告している場合、先読みは行いません。",
+          "一部のフォントはGoogle Fontsから配信されます。ブラウザーはfonts.googleapis.comとfonts.gstatic.comに直接リクエストを送り、Googleが独自のポリシーに従って処理します。"
         ]
       },
       {
@@ -448,272 +452,231 @@ window.LEGAL_DOCUMENTS.privacy = {
         ]
       }
     ]
+  },
+  "zh-Hant": {
+    "intro": "本隱私政策說明您瀏覽本個人主頁網站（以下簡稱“本網站”）時會處理哪些資訊、裝置端偏好如何運作，以及如何就本政策聯絡網站營運者。",
+    "label": "法律資訊",
+    "metaDesc": "Tim G 個人主頁對個人資訊、本地偏好及聯絡方式的處理說明。",
+    "metaTitle": "隱私政策 — Tim G",
+    "sections": [
+      {
+        "id": "overview",
+        "paragraphs": [
+          "本網站為由 Tim G（以下簡稱“本人”或“營運者”）營運的個人靜態展示頁面，用於介紹營運者本人，並連結至第三方服務上託管的專案與主頁。本網站不是網店、社交網路，亦非基於使用者帳戶的服務。",
+          "本網站有意限制資訊收集範圍。語言偏好及類似、用於改善瀏覽體驗的設定保存在您的裝置上，除非您選擇通過電子郵件與本人聯絡。",
+          "就適用的隱私法律而言，本網站營運者對通過本網站直接收集的資訊（如電子郵件通信）負責。"
+        ],
+        "title": "概述"
+      },
+      {
+        "id": "information",
+        "paragraphs": [
+          "您主動發送的資訊。如您向 contact.timg@icloud.com（或本人公佈的其他地址）發送電子郵件，本人將收到該郵件所載內容，其中可能包括您的電子郵箱地址、姓名及正文。該等資訊僅用於回復，並在合理必要時保留通信記錄。",
+          "保存在您裝置上的偏好。本網站可能通過瀏覽器本機儲存保存您的語言選擇及專案連結主機偏好。介面外觀遵循裝置的淺色或深色設定，並允許在會話期間臨時覆蓋。開啟 GitHub 卡片預覽後，公開日曆資料可能以短期會話快取形式保存在您的裝置上。上述偏好設定保留在您的裝置上；在本網站正常營運過程中，不會傳輸至由本人營運的個人資料伺服器。 乒乓球遊戲的最長回合紀錄也僅保存在本裝置上。",
+          "由託管服務處理的技術資料。本網站通過 GitHub Pages 發布。Cloudflare 可能作為 CDN 位於自訂網域名稱之前。託管與 CDN 提供者在提供本網站服務過程中，可能處理 IP 地址、瀏覽器類型、裝置或作業系統資訊、來源網址及時間戳等技術資訊。相關處理由上述提供者依其自身系統與政策實施。部分外部連結專案站點以 Cloudflare 為主線路、以 GitHub Pages 為備用。",
+          "分析與效能。已發布的網站使用 Cloudflare Web Analytics／真實使用者監測（RUM）來瞭解造訪情況和網頁效能。瀏覽器信標會向 Cloudflare 傳送網頁載入時間、Core Web Vitals 指標、網頁網址和來源網址。Cloudflare 的文件說明，此信標不使用 Cookie 或瀏覽器儲存空間，也不跨網站追蹤訪客。本網站不使用廣告追蹤器或行為剖析。詳情：https://developers.cloudflare.com/speed/observatory/rum-beacon/",
+          "公開的 GitHub 貢獻日曆。將指針懸停、聚焦或開啟 GitHub 卡片預覽時，您的瀏覽器可能會向 GitHub 及 github-contributions-api.jogruber.de 請求公開的個人資料與貢獻資料。這些請求由您的裝置直接發往上述服務，並適用其各自的隱私政策。",
+          "本站媒體。頁面載入完成後，瀏覽器可能會預先載入本網站託管的二胡演奏影片（約 18 MB），以便在您開啟二胡說明對話框時更快播放。若瀏覽器報告節省流量或 2G 連線，則不會預先載入。",
+          "部分字型由 Google Fonts 提供。瀏覽器會直接向 fonts.googleapis.com 和 fonts.gstatic.com 請求字型，Google 依照自己的政策處理這些請求。"
+        ],
+        "title": "資訊處理方式"
+      },
+      {
+        "id": "use",
+        "paragraphs": [
+          "用於展示本網站，並記住您設定的偏好。",
+          "用於在您聯絡本人時作出回復。",
+          "用於維護安全、排查故障，並持續改進本網站。",
+          "用於在法律要求時遵守適用法律。"
+        ],
+        "title": "資訊的使用目的"
+      },
+      {
+        "id": "sharing",
+        "paragraphs": [
+          "本人不出售您的個人資訊。",
+          "服務提供者。託管與基礎設施提供者為提供本網站，在必要範圍內處理技術資料。外部連結（例如指向 GitHub、Instagram 或專案頁面的連結）由第三方依其各自隱私政策營運。",
+          "法律要求。在法律或司法程序要求，或為保護權利、安全或公共安全所必要時，本人可能披露相關資訊。"
+        ],
+        "title": "資訊的共享"
+      },
+      {
+        "id": "cookies",
+        "paragraphs": [
+          "本網站主要以本機儲存保存偏好設定，而非依賴廣告類 Cookie。作為正常網路請求的一部分，您的瀏覽器仍可能向託管方發送常規技術資料。",
+          "您可在瀏覽器設定中清除網站資料、阻止儲存，或使用隱私瀏覽模式。此等操作可能導致語言或外觀偏好被重置。"
+        ],
+        "title": "Cookie 與本機儲存"
+      },
+      {
+        "id": "retention",
+        "paragraphs": [
+          "偏好設定將保留在您的裝置上，直至您清除或在本網站上更改。",
+          "您發送的電子郵件僅在為實現回復與管理通信所合理必要的期間內保存，法律另有更長期限要求的除外。"
+        ],
+        "title": "保存期限"
+      },
+      {
+        "id": "children",
+        "paragraphs": [
+          "本網站為一般性個人頁面，並非以未滿 13 歲的未成年人（或您所在司法轄區法律規定的相應年齡）為對象。本人不會在知情的情況下收集該年齡以下未成年人的個人資訊。如您認為未成年人提供了個人資訊，請與本人聯絡，本人將採取適當措施。"
+        ],
+        "title": "未成年人"
+      },
+      {
+        "id": "rights",
+        "paragraphs": [
+          "根據適用法律，您可能就您的個人資訊享有若干權利。由於本網站收集的資訊非常有限，相關請求通常僅限於聯絡通信內容，或由服務提供者掌握的資訊。",
+          "如需提出請求，請發送電子郵件至 contact.timg@icloud.com。本人將在合理時間內予以回復。",
+          "您可隨時通過本網站的語言與主題控件管理本地偏好，或清除瀏覽器儲存。"
+        ],
+        "title": "您的選擇與權利"
+      },
+      {
+        "id": "security",
+        "paragraphs": [
+          "本人採取與個人靜態網站性質相稱的合理措施。任何傳輸或儲存方式均無法保證絕對安全。通過電子郵件發送敏感資訊時，請謹慎行事。"
+        ],
+        "title": "安全措施"
+      },
+      {
+        "id": "links",
+        "paragraphs": [
+          "本網站包含指向第三方網站與服務的連結。其隱私做法由該等第三方自行負責。在向其提供資訊前，請查閱其隱私政策。"
+        ],
+        "title": "第三方連結"
+      },
+      {
+        "id": "changes",
+        "paragraphs": [
+          "本人可能不時通過在本網站發布更新版本來修訂本隱私政策。發布修訂時，文首“最近更新日期”將相應變更。更新後繼續使用本網站，即表示您知悉修訂後的政策。"
+        ],
+        "title": "本政策的變更"
+      },
+      {
+        "id": "contact",
+        "paragraphs": [
+          "如對本隱私政策或隱私相關做法有任何疑問：",
+          "電子郵箱：contact.timg@icloud.com",
+          "網站營運者：Tim G — 美國舊金山灣區"
+        ],
+        "title": "聯絡方式"
+      }
+    ],
+    "title": "隱私政策",
+    "updated": "最後更新：2026年10月14日"
+  },
+  "ko": {
+    "metaTitle": "개인정보 처리방침 — Tim G",
+    "metaDesc": "Tim G의 개인 웹사이트에서 개인정보, 기기 내 환경설정, 연락처 정보를 처리하는 방식입니다.",
+    "label": "법적 안내",
+    "title": "개인정보 처리방침",
+    "updated": "최종 수정: 2026년 10월 14일",
+    "intro": "이 개인정보 처리방침은 개인 웹사이트(이하 ‘사이트’)를 방문할 때 어떤 정보가 처리되는지, 기기에 저장되는 환경설정이 어떻게 작동하는지, 질문이 있을 때 운영자에게 어떻게 연락할 수 있는지 설명합니다.",
+    "sections": [
+      {
+        "id": "overview",
+        "title": "개요",
+        "paragraphs": [
+          "이 사이트는 Tim G(이하 ‘저’ 또는 ‘운영자’)가 운영하는 정적 개인 홈페이지입니다. 운영자를 소개하고, 다른 곳에 호스팅된 프로젝트와 프로필로 연결합니다. 온라인 상점, 소셜 네트워크 또는 계정 기반 서비스가 아닙니다.",
+          "정보 수집은 의도적으로 최소화합니다. 이메일로 직접 연락하는 경우를 제외하면, 방문 경험을 개선하는 언어 선택과 유사한 설정은 사용자의 기기에 저장됩니다.",
+          "적용되는 개인정보 보호 법률상, 사이트 운영자는 이메일 서신 등 이 사이트를 통해 직접 수집하는 정보에 대한 책임을 집니다."
+        ]
+      },
+      {
+        "id": "information",
+        "title": "정보와 데이터 처리",
+        "paragraphs": [
+          "직접 보내는 정보. contact.timg@icloud.com 또는 제가 공개한 다른 주소로 이메일을 보내면, 이메일 주소, 이름, 메시지 본문 등이 포함된 내용을 받게 됩니다. 이 정보는 답변을 보내고, 합리적으로 필요한 경우 서신 기록을 보관하는 데 사용합니다.",
+          "기기에 저장되는 환경설정. 사이트는 언어 선택과 프로젝트 링크의 호스팅 선호도를 브라우저 로컬 저장소에 저장할 수 있습니다. 화면 테마는 기기의 밝은·어두운 설정을 따르며, 세션 동안 임시로 다른 테마를 선택할 수 있습니다. GitHub 카드 미리보기를 열면 공개된 기여 달력 데이터가 잠시 세션 캐시에 저장될 수 있습니다. 탁구 게임의 최고 랠리 기록도 기기에 저장됩니다. 이러한 값은 사용자의 기기에 남으며, 사이트의 일반적인 운영 과정에서 제가 운영하는 개인정보 서버로 전송되지 않습니다.",
+          "호스팅 과정에서 처리되는 기술 정보. 사이트는 GitHub Pages로 게시됩니다. Cloudflare가 사용자 지정 도메인 앞에서 CDN 역할을 할 수 있습니다. 호스팅 및 CDN 제공업체는 사이트를 제공하는 과정에서 IP 주소, 브라우저 종류, 기기 또는 운영체제 정보, 참조 URL, 요청 시각 등의 기술 정보를 처리할 수 있습니다. 이 처리는 각 업체의 시스템과 정책에 따라 이루어집니다. 일부 연결된 프로젝트는 Cloudflare를 기본 호스팅으로, GitHub Pages를 대체 호스팅으로 사용합니다.",
+          "분석 및 성능. 공개된 사이트는 Cloudflare Web Analytics와 실제 사용자 모니터링(RUM)을 사용하여 방문 현황과 페이지 성능을 파악합니다. 브라우저 비콘은 페이지 로딩 시간, Core Web Vitals 지표, 페이지 URL과 유입 경로 URL을 Cloudflare에 전송합니다. Cloudflare 문서에 따르면 이 비콘은 쿠키나 브라우저 저장소를 사용하지 않으며, 여러 사이트에 걸쳐 방문자를 추적하지 않습니다. 사이트는 광고 추적기나 행동 프로파일링을 사용하지 않습니다. 자세한 내용: https://developers.cloudflare.com/speed/observatory/rum-beacon/",
+          "공개 GitHub 기여 달력. GitHub 카드 미리보기에 마우스를 올리거나 키보드 초점을 맞추거나 미리보기를 열면, 브라우저가 GitHub 및 github-contributions-api.jogruber.de에 공개 프로필과 기여 데이터를 요청할 수 있습니다. 이 요청은 사용자의 기기에서 해당 서비스로 직접 전송되며 각 서비스의 정책이 적용됩니다.",
+          "사이트 내 미디어. 페이지 로딩이 끝난 뒤, 얼후 대화상자를 열 때 더 빨리 재생할 수 있도록 브라우저가 사이트에 호스팅된 연주 영상(약 18MB)을 미리 불러올 수 있습니다. 브라우저가 데이터 절약 설정이나 2G 연결을 보고하면 미리 불러오기를 건너뜁니다.",
+          "일부 글꼴은 Google Fonts에서 제공됩니다. 브라우저는 fonts.googleapis.com과 fonts.gstatic.com에 직접 요청을 보내며, Google은 자체 정책에 따라 요청을 처리합니다."
+        ]
+      },
+      {
+        "id": "use",
+        "title": "정보를 사용하는 목적",
+        "paragraphs": [
+          "사이트를 표시하고 사용자가 지정한 환경설정을 기억하기 위해 사용합니다.",
+          "연락을 받았을 때 답변하기 위해 사용합니다.",
+          "보안을 유지하고, 문제를 진단하며, 사이트를 점진적으로 개선하기 위해 사용합니다.",
+          "필요한 경우 적용되는 법률을 준수하기 위해 사용합니다."
+        ]
+      },
+      {
+        "id": "sharing",
+        "title": "정보 공유",
+        "paragraphs": [
+          "저는 사용자의 개인정보를 판매하거나, 서로 다른 서비스의 이용 활동을 연결하는 행동 기반 광고를 위해 공유하지 않습니다.",
+          "서비스 제공업체. 호스팅 및 인프라 제공업체는 사이트 제공에 필요한 기술 데이터를 처리합니다. GitHub, Instagram, 프로젝트 페이지 등 외부 링크의 서비스는 제3자가 자체 개인정보 처리방침에 따라 운영합니다.",
+          "법적 요구. 법률이나 법적 절차에서 요구하거나 권리, 안전 또는 보안을 보호하기 위해 필요한 경우 정보를 공개할 수 있습니다."
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "쿠키와 로컬 저장소",
+        "paragraphs": [
+          "이 사이트는 광고 쿠키 대신 주로 로컬 저장소를 사용해 환경설정을 기억하도록 설계되었습니다. 다만 일반적인 웹 요청 과정에서 브라우저가 호스팅 업체에 통상적인 기술 데이터를 보낼 수 있습니다.",
+          "브라우저 설정에서 사이트 데이터를 삭제하거나, 저장소를 차단하거나, 비공개 탐색을 사용할 수 있습니다. 이 경우 언어·테마 설정이나 게임 최고 기록이 초기화될 수 있습니다."
+        ]
+      },
+      {
+        "id": "retention",
+        "title": "정보 보관 기간",
+        "paragraphs": [
+          "환경설정은 사용자가 삭제하거나 사이트에서 변경할 때까지 기기에 남습니다.",
+          "사용자가 보낸 이메일은 답변과 서신 관리에 합리적으로 필요한 기간 동안만 보관합니다. 다만 법률에서 더 긴 보관 기간을 요구하면 해당 기간을 따릅니다."
+        ]
+      },
+      {
+        "id": "children",
+        "title": "아동",
+        "paragraphs": [
+          "이 사이트는 일반적인 개인 홈페이지이며, 만 13세 미만 아동 또는 사용자의 관할 법률상 이에 해당하는 연령의 아동을 대상으로 하지 않습니다. 저는 해당 연령 미만 아동의 개인정보를 알면서 수집하지 않습니다. 아동이 개인정보를 제공했다고 생각되면 연락해 주세요. 적절한 조치를 취하겠습니다."
+        ]
+      },
+      {
+        "id": "rights",
+        "title": "선택권과 권리",
+        "paragraphs": [
+          "적용되는 법률에 따라 개인정보와 관련된 특정 권리를 가질 수 있습니다. 이 사이트는 매우 제한된 정보만 수집하므로, 요청의 대상은 일반적으로 연락 서신이나 서비스 제공업체가 관리하는 정보로 한정됩니다.",
+          "요청은 contact.timg@icloud.com으로 보내 주세요. 합리적인 기간 안에 답변하겠습니다.",
+          "사이트의 언어·테마 설정을 사용하거나 브라우저 저장소를 삭제해 언제든 기기 내 환경설정을 관리할 수 있습니다."
+        ]
+      },
+      {
+        "id": "security",
+        "title": "보안",
+        "paragraphs": [
+          "저는 정적 개인 웹사이트에 적절한 합리적인 보안 조치를 취합니다. 어떤 전송·저장 방식도 완전히 안전하지는 않습니다. 민감한 정보를 이메일로 보낼 때는 주의해 주세요."
+        ]
+      },
+      {
+        "id": "links",
+        "title": "다른 사이트로 연결되는 링크",
+        "paragraphs": [
+          "사이트는 제3자 웹사이트와 서비스로 연결됩니다. 해당 서비스의 개인정보 처리 방식은 각각 별도로 정해집니다. 정보를 제공하기 전에 해당 정책을 확인해 주세요."
+        ]
+      },
+      {
+        "id": "changes",
+        "title": "방침 변경",
+        "paragraphs": [
+          "저는 사이트에 개정된 버전을 게시하는 방식으로 이 개인정보 처리방침을 수시로 변경할 수 있습니다. 상단의 ‘최종 수정’ 날짜로 변경 시점을 알립니다. 개정 후에도 사이트를 계속 이용하면 개정된 방침을 확인한 것으로 간주합니다."
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "문의",
+        "paragraphs": [
+          "개인정보 처리방침 또는 개인정보 처리 방식에 관한 문의:",
+          "이메일: contact.timg@icloud.com",
+          "사이트 운영자: Tim G — 샌프란시스코 베이 지역"
+        ]
+      }
+    ]
   }
 };
-
-window.LEGAL_DOCUMENTS.privacy["zh-Hant"] = {
-  "intro": "本隱私政策說明您瀏覽本個人主頁網站（以下簡稱“本網站”）時會處理哪些資訊、裝置端偏好如何運作，以及如何就本政策聯絡網站營運者。",
-  "label": "法律資訊",
-  "metaDesc": "Tim G 個人主頁對個人資訊、本地偏好及聯絡方式的處理說明。",
-  "metaTitle": "隱私政策 — Tim G",
-  "sections": [
-    {
-      "id": "overview",
-      "paragraphs": [
-        "本網站為由 Tim G（以下簡稱“本人”或“營運者”）營運的個人靜態展示頁面，用於介紹營運者本人，並連結至第三方服務上託管的專案與主頁。本網站不是網店、社交網路，亦非基於使用者帳戶的服務。",
-        "本網站有意限制資訊收集範圍。語言偏好及類似、用於改善瀏覽體驗的設定保存在您的裝置上，除非您選擇通過電子郵件與本人聯絡。",
-        "就適用的隱私法律而言，本網站營運者對通過本網站直接收集的資訊（如電子郵件通信）負責。"
-      ],
-      "title": "概述"
-    },
-    {
-      "id": "information",
-      "paragraphs": [
-        "您主動發送的資訊。如您向 contact.timg@icloud.com（或本人公佈的其他地址）發送電子郵件，本人將收到該郵件所載內容，其中可能包括您的電子郵箱地址、姓名及正文。該等資訊僅用於回復，並在合理必要時保留通信記錄。",
-        "保存在您裝置上的偏好。本網站可能通過瀏覽器本機儲存保存您的語言選擇及專案連結主機偏好。介面外觀遵循裝置的淺色或深色設定，並允許在會話期間臨時覆蓋。開啟 GitHub 卡片預覽後，公開日曆資料可能以短期會話快取形式保存在您的裝置上。上述偏好設定保留在您的裝置上；在本網站正常營運過程中，不會傳輸至由本人營運的個人資料伺服器。",
-        "由託管服務處理的技術資料。本網站通過 GitHub Pages 發布。Cloudflare 可能作為 CDN 位於自訂網域名稱之前。託管與 CDN 提供者在提供本網站服務過程中，可能處理 IP 地址、瀏覽器類型、裝置或作業系統資訊、來源網址及時間戳等技術資訊。相關處理由上述提供者依其自身系統與政策實施。部分外部連結專案站點以 Cloudflare 為主線路、以 GitHub Pages 為備用。",
-        "分析與追蹤。除非日後在本政策中明確披露，本網站不使用廣告追蹤器、行為畫像或第三方分析工具。",
-        "公開的 GitHub 貢獻日曆。將指針懸停、聚焦或開啟 GitHub 卡片預覽時，您的瀏覽器可能會向 GitHub 及 github-contributions-api.jogruber.de 請求公開的個人資料與貢獻資料。這些請求由您的裝置直接發往上述服務，並適用其各自的隱私政策。",
-        "本站媒體。頁面載入完成後，瀏覽器可能會預先載入本網站託管的二胡演奏影片（約 18 MB），以便在您開啟二胡說明對話框時更快播放。若瀏覽器報告節省流量或 2G 連線，則不會預先載入。"
-      ],
-      "title": "資訊處理方式"
-    },
-    {
-      "id": "use",
-      "paragraphs": [
-        "用於展示本網站，並記住您設定的偏好。",
-        "用於在您聯絡本人時作出回復。",
-        "用於維護安全、排查故障，並持續改進本網站。",
-        "用於在法律要求時遵守適用法律。"
-      ],
-      "title": "資訊的使用目的"
-    },
-    {
-      "id": "sharing",
-      "paragraphs": [
-        "本人不出售您的個人資訊。",
-        "服務提供者。託管與基礎設施提供者為提供本網站，在必要範圍內處理技術資料。外部連結（例如指向 GitHub、Instagram 或專案頁面的連結）由第三方依其各自隱私政策營運。",
-        "法律要求。在法律或司法程序要求，或為保護權利、安全或公共安全所必要時，本人可能披露相關資訊。"
-      ],
-      "title": "資訊的共享"
-    },
-    {
-      "id": "cookies",
-      "paragraphs": [
-        "本網站主要以本機儲存保存偏好設定，而非依賴廣告類 Cookie。作為正常網路請求的一部分，您的瀏覽器仍可能向託管方發送常規技術資料。",
-        "您可在瀏覽器設定中清除網站資料、阻止儲存，或使用隱私瀏覽模式。此等操作可能導致語言或外觀偏好被重置。"
-      ],
-      "title": "Cookie 與本機儲存"
-    },
-    {
-      "id": "retention",
-      "paragraphs": [
-        "偏好設定將保留在您的裝置上，直至您清除或在本網站上更改。",
-        "您發送的電子郵件僅在為實現回復與管理通信所合理必要的期間內保存，法律另有更長期限要求的除外。"
-      ],
-      "title": "保存期限"
-    },
-    {
-      "id": "children",
-      "paragraphs": [
-        "本網站為一般性個人頁面，並非以未滿 13 歲的未成年人（或您所在司法轄區法律規定的相應年齡）為對象。本人不會在知情的情況下收集該年齡以下未成年人的個人資訊。如您認為未成年人提供了個人資訊，請與本人聯絡，本人將採取適當措施。"
-      ],
-      "title": "未成年人"
-    },
-    {
-      "id": "rights",
-      "paragraphs": [
-        "根據適用法律，您可能就您的個人資訊享有若干權利。由於本網站收集的資訊非常有限，相關請求通常僅限於聯絡通信內容，或由服務提供者掌握的資訊。",
-        "如需提出請求，請發送電子郵件至 contact.timg@icloud.com。本人將在合理時間內予以回復。",
-        "您可隨時通過本網站的語言與主題控件管理本地偏好，或清除瀏覽器儲存。"
-      ],
-      "title": "您的選擇與權利"
-    },
-    {
-      "id": "security",
-      "paragraphs": [
-        "本人採取與個人靜態網站性質相稱的合理措施。任何傳輸或儲存方式均無法保證絕對安全。通過電子郵件發送敏感資訊時，請謹慎行事。"
-      ],
-      "title": "安全措施"
-    },
-    {
-      "id": "links",
-      "paragraphs": [
-        "本網站包含指向第三方網站與服務的連結。其隱私做法由該等第三方自行負責。在向其提供資訊前，請查閱其隱私政策。"
-      ],
-      "title": "第三方連結"
-    },
-    {
-      "id": "changes",
-      "paragraphs": [
-        "本人可能不時通過在本網站發布更新版本來修訂本隱私政策。發布修訂時，文首“最近更新日期”將相應變更。更新後繼續使用本網站，即表示您知悉修訂後的政策。"
-      ],
-      "title": "本政策的變更"
-    },
-    {
-      "id": "contact",
-      "paragraphs": [
-        "如對本隱私政策或隱私相關做法有任何疑問：",
-        "電子郵箱：contact.timg@icloud.com",
-        "網站營運者：Tim G — 美國舊金山灣區"
-      ],
-      "title": "聯絡方式"
-    }
-  ],
-  "title": "隱私政策",
-  "updated": "最近更新日期：2026 年 9 月 5 日"
-};
-
-window.LEGAL_DOCUMENTS.privacy.ko = {
-  "metaTitle": "개인정보 처리방침 — Tim G",
-  "metaDesc": "Tim G의 개인 웹사이트에서 개인정보, 기기 내 환경설정, 연락처 정보를 처리하는 방식입니다.",
-  "label": "법적 안내",
-  "title": "개인정보 처리방침",
-  "updated": "최종 수정: 2026년 10월 13일",
-  "intro": "이 개인정보 처리방침은 개인 웹사이트(이하 ‘사이트’)를 방문할 때 어떤 정보가 처리되는지, 기기에 저장되는 환경설정이 어떻게 작동하는지, 질문이 있을 때 운영자에게 어떻게 연락할 수 있는지 설명합니다.",
-  "sections": [
-    {
-      "id": "overview",
-      "title": "개요",
-      "paragraphs": [
-        "이 사이트는 Tim G(이하 ‘저’ 또는 ‘운영자’)가 운영하는 정적 개인 홈페이지입니다. 운영자를 소개하고, 다른 곳에 호스팅된 프로젝트와 프로필로 연결합니다. 온라인 상점, 소셜 네트워크 또는 계정 기반 서비스가 아닙니다.",
-        "정보 수집은 의도적으로 최소화합니다. 이메일로 직접 연락하는 경우를 제외하면, 방문 경험을 개선하는 언어 선택과 유사한 설정은 사용자의 기기에 저장됩니다.",
-        "적용되는 개인정보 보호 법률상, 사이트 운영자는 이메일 서신 등 이 사이트를 통해 직접 수집하는 정보에 대한 책임을 집니다."
-      ]
-    },
-    {
-      "id": "information",
-      "title": "정보와 데이터 처리",
-      "paragraphs": [
-        "직접 보내는 정보. contact.timg@icloud.com 또는 제가 공개한 다른 주소로 이메일을 보내면, 이메일 주소, 이름, 메시지 본문 등이 포함된 내용을 받게 됩니다. 이 정보는 답변을 보내고, 합리적으로 필요한 경우 서신 기록을 보관하는 데 사용합니다.",
-        "기기에 저장되는 환경설정. 사이트는 언어 선택과 프로젝트 링크의 호스팅 선호도를 브라우저 로컬 저장소에 저장할 수 있습니다. 화면 테마는 기기의 밝은·어두운 설정을 따르며, 세션 동안 임시로 다른 테마를 선택할 수 있습니다. GitHub 카드 미리보기를 열면 공개된 기여 달력 데이터가 잠시 세션 캐시에 저장될 수 있습니다. 탁구 게임의 최고 랠리 기록도 기기에 저장됩니다. 이러한 값은 사용자의 기기에 남으며, 사이트의 일반적인 운영 과정에서 제가 운영하는 개인정보 서버로 전송되지 않습니다.",
-        "호스팅 과정에서 처리되는 기술 정보. 사이트는 GitHub Pages로 게시됩니다. Cloudflare가 사용자 지정 도메인 앞에서 CDN 역할을 할 수 있습니다. 호스팅 및 CDN 제공업체는 사이트를 제공하는 과정에서 IP 주소, 브라우저 종류, 기기 또는 운영체제 정보, 참조 URL, 요청 시각 등의 기술 정보를 처리할 수 있습니다. 이 처리는 각 업체의 시스템과 정책에 따라 이루어집니다. 일부 연결된 프로젝트는 Cloudflare를 기본 호스팅으로, GitHub Pages를 대체 호스팅으로 사용합니다.",
-        "분석 및 추적. 향후 이 방침의 개정에서 별도로 알리지 않는 한, 사이트는 광고 추적기, 행동 프로파일링 또는 제3자 분석 도구를 사용하지 않습니다.",
-        "공개 GitHub 기여 달력. GitHub 카드 미리보기에 마우스를 올리거나 키보드 초점을 맞추거나 미리보기를 열면, 브라우저가 GitHub 및 github-contributions-api.jogruber.de에 공개 프로필과 기여 데이터를 요청할 수 있습니다. 이 요청은 사용자의 기기에서 해당 서비스로 직접 전송되며 각 서비스의 정책이 적용됩니다.",
-        "사이트 내 미디어. 페이지 로딩이 끝난 뒤, 얼후 대화상자를 열 때 더 빨리 재생할 수 있도록 브라우저가 사이트에 호스팅된 연주 영상(약 18MB)을 미리 불러올 수 있습니다. 브라우저가 데이터 절약 설정이나 2G 연결을 보고하면 미리 불러오기를 건너뜁니다."
-      ]
-    },
-    {
-      "id": "use",
-      "title": "정보를 사용하는 목적",
-      "paragraphs": [
-        "사이트를 표시하고 사용자가 지정한 환경설정을 기억하기 위해 사용합니다.",
-        "연락을 받았을 때 답변하기 위해 사용합니다.",
-        "보안을 유지하고, 문제를 진단하며, 사이트를 점진적으로 개선하기 위해 사용합니다.",
-        "필요한 경우 적용되는 법률을 준수하기 위해 사용합니다."
-      ]
-    },
-    {
-      "id": "sharing",
-      "title": "정보 공유",
-      "paragraphs": [
-        "저는 사용자의 개인정보를 판매하거나, 서로 다른 서비스의 이용 활동을 연결하는 행동 기반 광고를 위해 공유하지 않습니다.",
-        "서비스 제공업체. 호스팅 및 인프라 제공업체는 사이트 제공에 필요한 기술 데이터를 처리합니다. GitHub, Instagram, 프로젝트 페이지 등 외부 링크의 서비스는 제3자가 자체 개인정보 처리방침에 따라 운영합니다.",
-        "법적 요구. 법률이나 법적 절차에서 요구하거나 권리, 안전 또는 보안을 보호하기 위해 필요한 경우 정보를 공개할 수 있습니다."
-      ]
-    },
-    {
-      "id": "cookies",
-      "title": "쿠키와 로컬 저장소",
-      "paragraphs": [
-        "이 사이트는 광고 쿠키 대신 주로 로컬 저장소를 사용해 환경설정을 기억하도록 설계되었습니다. 다만 일반적인 웹 요청 과정에서 브라우저가 호스팅 업체에 통상적인 기술 데이터를 보낼 수 있습니다.",
-        "브라우저 설정에서 사이트 데이터를 삭제하거나, 저장소를 차단하거나, 비공개 탐색을 사용할 수 있습니다. 이 경우 언어·테마 설정이나 게임 최고 기록이 초기화될 수 있습니다."
-      ]
-    },
-    {
-      "id": "retention",
-      "title": "정보 보관 기간",
-      "paragraphs": [
-        "환경설정은 사용자가 삭제하거나 사이트에서 변경할 때까지 기기에 남습니다.",
-        "사용자가 보낸 이메일은 답변과 서신 관리에 합리적으로 필요한 기간 동안만 보관합니다. 다만 법률에서 더 긴 보관 기간을 요구하면 해당 기간을 따릅니다."
-      ]
-    },
-    {
-      "id": "children",
-      "title": "아동",
-      "paragraphs": [
-        "이 사이트는 일반적인 개인 홈페이지이며, 만 13세 미만 아동 또는 사용자의 관할 법률상 이에 해당하는 연령의 아동을 대상으로 하지 않습니다. 저는 해당 연령 미만 아동의 개인정보를 알면서 수집하지 않습니다. 아동이 개인정보를 제공했다고 생각되면 연락해 주세요. 적절한 조치를 취하겠습니다."
-      ]
-    },
-    {
-      "id": "rights",
-      "title": "선택권과 권리",
-      "paragraphs": [
-        "적용되는 법률에 따라 개인정보와 관련된 특정 권리를 가질 수 있습니다. 이 사이트는 매우 제한된 정보만 수집하므로, 요청의 대상은 일반적으로 연락 서신이나 서비스 제공업체가 관리하는 정보로 한정됩니다.",
-        "요청은 contact.timg@icloud.com으로 보내 주세요. 합리적인 기간 안에 답변하겠습니다.",
-        "사이트의 언어·테마 설정을 사용하거나 브라우저 저장소를 삭제해 언제든 기기 내 환경설정을 관리할 수 있습니다."
-      ]
-    },
-    {
-      "id": "security",
-      "title": "보안",
-      "paragraphs": [
-        "저는 정적 개인 웹사이트에 적절한 합리적인 보안 조치를 취합니다. 어떤 전송·저장 방식도 완전히 안전하지는 않습니다. 민감한 정보를 이메일로 보낼 때는 주의해 주세요."
-      ]
-    },
-    {
-      "id": "links",
-      "title": "다른 사이트로 연결되는 링크",
-      "paragraphs": [
-        "사이트는 제3자 웹사이트와 서비스로 연결됩니다. 해당 서비스의 개인정보 처리 방식은 각각 별도로 정해집니다. 정보를 제공하기 전에 해당 정책을 확인해 주세요."
-      ]
-    },
-    {
-      "id": "changes",
-      "title": "방침 변경",
-      "paragraphs": [
-        "저는 사이트에 개정된 버전을 게시하는 방식으로 이 개인정보 처리방침을 수시로 변경할 수 있습니다. 상단의 ‘최종 수정’ 날짜로 변경 시점을 알립니다. 개정 후에도 사이트를 계속 이용하면 개정된 방침을 확인한 것으로 간주합니다."
-      ]
-    },
-    {
-      "id": "contact",
-      "title": "문의",
-      "paragraphs": [
-        "개인정보 처리방침 또는 개인정보 처리 방식에 관한 문의:",
-        "이메일: contact.timg@icloud.com",
-        "사이트 운영자: Tim G — 샌프란시스코 베이 지역"
-      ]
-    }
-  ]
-};
-
-/* The new game stores a local record; describe it alongside preferences. */
-const GAME_STORAGE_DISCLOSURE = {
-  "en": [
-    "Last updated: October 13, 2026",
-    "The table-tennis game also stores your best rally locally on this device."
-  ],
-  "es": [
-    "Última actualización: 13 de octubre de 2026",
-    "El juego de tenis de mesa también guarda tu mejor rally localmente en este dispositivo."
-  ],
-  "zh": [
-    "最后更新：2026年10月13日",
-    "乒乓球游戏的最长回合记录也仅保存在本设备上。"
-  ],
-  "zh-Hant": [
-    "最後更新：2026年10月13日",
-    "乒乓球遊戲的最長回合紀錄也僅保存在本裝置上。"
-  ],
-  "ja": [
-    "最終更新：2026年10月13日",
-    "卓球ゲームの最長ラリー記録も、この端末内に保存されます。"
-  ]
-};
-Object.keys(GAME_STORAGE_DISCLOSURE).forEach(function (lang) {
-  var doc = window.LEGAL_DOCUMENTS.privacy[lang];
-  doc.updated = GAME_STORAGE_DISCLOSURE[lang][0];
-  doc.sections.find(function (section) { return section.id === "information"; }).paragraphs[1] += " " + GAME_STORAGE_DISCLOSURE[lang][1];
-});
-
-const FONT_REQUESTS = {
-  "en": "Some display fonts are served by Google Fonts. Your browser requests them directly from fonts.googleapis.com and fonts.gstatic.com; Google processes those requests under its own policies.",
-  "es": "Algunas fuentes se sirven a través de Google Fonts. Tu navegador las solicita directamente a fonts.googleapis.com y fonts.gstatic.com; Google trata esas solicitudes conforme a sus propias políticas.",
-  "zh": "部分字体由 Google Fonts 提供。浏览器会直接向 fonts.googleapis.com 和 fonts.gstatic.com 请求字体，Google 依照自己的政策处理这些请求。",
-  "zh-Hant": "部分字型由 Google Fonts 提供。瀏覽器會直接向 fonts.googleapis.com 和 fonts.gstatic.com 請求字型，Google 依照自己的政策處理這些請求。",
-  "ja": "一部のフォントはGoogle Fontsから配信されます。ブラウザーはfonts.googleapis.comとfonts.gstatic.comに直接リクエストを送り、Googleが独自のポリシーに従って処理します。",
-  "ko": "일부 글꼴은 Google Fonts에서 제공됩니다. 브라우저는 fonts.googleapis.com과 fonts.gstatic.com에 직접 요청을 보내며, Google은 자체 정책에 따라 요청을 처리합니다."
-};
-Object.keys(FONT_REQUESTS).forEach(function (lang) {
-  window.LEGAL_DOCUMENTS.privacy[lang].sections.find(function (section) { return section.id === "information"; }).paragraphs.push(FONT_REQUESTS[lang]);
-});
