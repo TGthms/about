@@ -5,6 +5,7 @@ import re
 
 root = Path('public')
 errors = []
+VOID_TAGS = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
 
 class Check(HTMLParser):
     def __init__(self):
@@ -12,9 +13,16 @@ class Check(HTMLParser):
         self.ids = set()
         self.labels = []
         self.anchors = []
+        self.stack = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
+        # A page-level modal must not inherit a card/grid stacking context.
+        if a.get('role') == 'dialog' or tag == 'dialog':
+            if not self.stack or self.stack[-1] != 'body':
+                errors.append(f'Dialog must be a direct body child: {a.get("id", tag)}')
+        if tag not in VOID_TAGS:
+            self.stack.append(tag)
         element_id = a.get('id')
         if element_id:
             if element_id in self.ids:
@@ -44,6 +52,16 @@ class Check(HTMLParser):
         if tag == 'a' and a.get('target') == '_blank':
             if not {'noopener', 'noreferrer'}.issubset(a.get('rel', '').split()):
                 errors.append(f'External link rel: {href}')
+
+    def handle_endtag(self, tag):
+        if tag in self.stack:
+            index = len(self.stack) - 1 - self.stack[::-1].index(tag)
+            self.stack = self.stack[:index]
+
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        if tag not in VOID_TAGS:
+            self.handle_endtag(tag)
 
 preferences = Path('public/js/preferences.js').read_text()
 markup = preferences.split('root.innerHTML = `', 1)[1].split('`;', 1)[0]

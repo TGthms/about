@@ -1106,7 +1106,8 @@ html .home-page .dialog-panel {
 .qr-dialog-scroll { display: flex; flex-direction: column; gap: 16px; }
 .qr-dialog-scroll > * { flex: none; }
 .dialog-panel .erhu-modal__title { font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1.25; font-weight: 500; }
-.archived-projects-modal__grid.dialog-scroll { align-content: start; margin: 0; }
+.archived-projects-modal__grid.dialog-scroll { align-content: start; align-items: start; grid-auto-rows: max-content; margin: 0; }
+.home-page .archived-projects-modal__grid .featured-card__visual { flex: none; }
 .erhu-instrument-panel { width: min(100%, 960px); }
 .erhu-instrument-layout { display: grid; grid-template-columns: minmax(190px, .65fr) minmax(0, 1.35fr); gap: clamp(24px, 4vw, 44px); align-items: start; }
 .erhu-instrument-layout .erhu-wiki__intro { grid-row: auto; position: sticky; top: 0; min-width: 0; }
