@@ -1151,6 +1151,11 @@ html .home-page .dialog-panel {
 .project-host--section[open] > summary { color: var(--accent-text); }
 html .home-page .project-host--section > .host-switcher { position: absolute; z-index: 10; right: 0; top: 100%; min-width: 232px; background: var(--bg-card); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); }
 .home-page .project-host--section:not([open]) > .host-switcher { display: none; }
+@media (min-width: 768px) {
+  /* Native details supplies its own content wrapper; keep its anchor a block. */
+  .home-page details.project-host--section { display: block !important; }
+}
+.home-page .project-host--section .host-option:focus-visible { outline-offset: -3px; }
 
 .rally-summary { margin: -4px 0 16px; color: var(--ink); text-align: center; font-size: .8125rem; font-variant-numeric: tabular-nums; }
 .rally-summary[hidden] { display: none; }

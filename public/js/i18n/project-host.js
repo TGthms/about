@@ -7,22 +7,27 @@
 /* Every language uses one CTA selected by the saved host preference.          */
 /* -------------------------------------------------------------------------- */
 
+var activeProjectHost = null;
+
 function isValidProjectHost(value) {
   return value === HOST_CLOUDFLARE || value === HOST_GITHUB;
 }
 
 function getStoredProjectHost() {
+  if (isValidProjectHost(activeProjectHost)) return activeProjectHost;
   try {
     var v = localStorage.getItem(PROJECT_HOST_KEY);
-    if (isValidProjectHost(v)) return v;
+    if (isValidProjectHost(v)) return (activeProjectHost = v);
   } catch (_) {
     /* private mode */
   }
-  return DEFAULT_PROJECT_HOST;
+  return (activeProjectHost = DEFAULT_PROJECT_HOST);
 }
 
 function setStoredProjectHost(value) {
   if (!isValidProjectHost(value)) return;
+  /* Keep the choice for this visit even when browser storage is unavailable. */
+  activeProjectHost = value;
   try {
     localStorage.setItem(PROJECT_HOST_KEY, value);
   } catch (_) {
@@ -150,23 +155,44 @@ function initProjectHost() {
   }
 
   var disclosure = document.querySelector("details.project-host--section");
+  function closeDisclosure(restoreFocus) {
+    if (!disclosure || !disclosure.open) return;
+    disclosure.open = false;
+    if (restoreFocus) disclosure.querySelector("summary").focus({ preventScroll: true });
+  }
   if (disclosure) {
-    document.addEventListener("click", function (event) { if (!disclosure.contains(event.target)) disclosure.open = false; });
+    document.addEventListener("click", function (event) {
+      if (!disclosure.contains(event.target)) closeDisclosure(false);
+    });
+    disclosure.addEventListener("focusout", function (event) {
+      /* Safari may blur the summary without focusing a clicked button. */
+      if (event.relatedTarget && !disclosure.contains(event.relatedTarget)) closeDisclosure(false);
+    });
     disclosure.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && disclosure.open) {
-        event.preventDefault(); disclosure.open = false;
-        disclosure.querySelector("summary").focus({ preventScroll: true });
+        event.preventDefault();
+        event.stopPropagation();
+        closeDisclosure(true);
       }
     });
+    var viewport = window.matchMedia("(min-width: 768px)");
+    function onViewportChange() { closeDisclosure(false); }
+    if (viewport.addEventListener) viewport.addEventListener("change", onViewportChange);
+    else if (viewport.addListener) viewport.addListener(onViewportChange);
   }
+  window.addEventListener("storage", function (event) {
+    if (event.key !== PROJECT_HOST_KEY && event.key !== null) return;
+    activeProjectHost = isValidProjectHost(event.newValue) ? event.newValue : DEFAULT_PROJECT_HOST;
+    syncHostSwitcher(activeProjectHost);
+    applyProjectUrls(activeProjectHost);
+  });
   switchers.forEach(function (switcher) {
     switcher.addEventListener("click", function (e) {
       var btn = e.target.closest(".host-option[data-host]");
       if (!btn || !switcher.contains(btn)) return;
       e.preventDefault();
       setProjectHost(btn.getAttribute("data-host"));
-      var disclosure = switcher.closest("details");
-      if (disclosure) { disclosure.open = false; disclosure.querySelector("summary").focus({ preventScroll: true }); }
+      if (switcher.closest("details")) closeDisclosure(true);
     });
 
     switcher.addEventListener("keydown", function (e) {
@@ -190,7 +216,7 @@ function initProjectHost() {
       } else if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         setProjectHost(options[idx].getAttribute("data-host"));
-        if (disclosure) { disclosure.open = false; disclosure.querySelector("summary").focus({ preventScroll: true }); }
+        if (switcher.closest("details")) closeDisclosure(true);
         return;
       } else {
         return;
