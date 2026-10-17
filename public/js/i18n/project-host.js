@@ -154,22 +154,44 @@ function initProjectHost() {
     return;
   }
 
-  var disclosure = document.querySelector("details.project-host--section");
+  var disclosure = document.querySelector(".project-host--section");
+  var trigger = disclosure && disclosure.querySelector(".lang-picker__trigger");
+  var menu = disclosure && disclosure.querySelector(".host-switcher");
+  function openDisclosure() {
+    if (!menu || !isDesktopControls()) return;
+    menu.hidden = false;
+    trigger.setAttribute("aria-expanded", "true");
+    disclosure.classList.toggle("is-open", true);
+    var selected = menu.querySelector('[aria-checked="true"]');
+    if (selected) selected.focus({ preventScroll: true });
+  }
   function closeDisclosure(restoreFocus) {
-    if (!disclosure || !disclosure.open) return;
-    disclosure.open = false;
-    if (restoreFocus) disclosure.querySelector("summary").focus({ preventScroll: true });
+    if (!menu || menu.hidden) return;
+    menu.hidden = true;
+    trigger.setAttribute("aria-expanded", "false");
+    disclosure.classList.toggle("is-open", false);
+    if (restoreFocus) trigger.focus({ preventScroll: true });
   }
   if (disclosure) {
+    trigger.addEventListener("click", function () {
+      if (menu.hidden) openDisclosure();
+      else closeDisclosure(true);
+    });
+    trigger.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        openDisclosure();
+      }
+    });
     document.addEventListener("click", function (event) {
       if (!disclosure.contains(event.target)) closeDisclosure(false);
     });
     disclosure.addEventListener("focusout", function (event) {
-      /* Safari may blur the summary without focusing a clicked button. */
+      /* Safari may blur the trigger without focusing a clicked button. */
       if (event.relatedTarget && !disclosure.contains(event.relatedTarget)) closeDisclosure(false);
     });
     disclosure.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && disclosure.open) {
+      if (event.key === "Escape" && !menu.hidden) {
         event.preventDefault();
         event.stopPropagation();
         closeDisclosure(true);
@@ -192,7 +214,7 @@ function initProjectHost() {
       if (!btn || !switcher.contains(btn)) return;
       e.preventDefault();
       setProjectHost(btn.getAttribute("data-host"));
-      if (switcher.closest("details")) closeDisclosure(true);
+      if (switcher === menu) closeDisclosure(true);
     });
 
     switcher.addEventListener("keydown", function (e) {
@@ -216,7 +238,7 @@ function initProjectHost() {
       } else if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
         setProjectHost(options[idx].getAttribute("data-host"));
-        if (switcher.closest("details")) closeDisclosure(true);
+        if (switcher === menu) closeDisclosure(true);
         return;
       } else {
         return;

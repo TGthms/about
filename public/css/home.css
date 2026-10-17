@@ -288,7 +288,7 @@ html .home-page :is(.featured-card__cta, .duolingo-card__profile, .qr-modal__pro
 
 /* Controls remain visibly interactive without the old offset shadows. */
 html .home-page :is(.controls-trigger, .lang-picker__trigger, .pref-btn, .host-option,
-  .section__header--projects .host-switcher, .interest-card__learn) {
+  .interest-card__learn) {
   border-color: var(--control-line);
   border-width: 1px;
   box-shadow: none;
@@ -304,7 +304,6 @@ html .home-page .host-option.is-selected {
   color: var(--accent-text);
   box-shadow: none;
 }
-.home-page .section__header--projects .host-option + .host-option { border-left: 1px solid var(--control-line); }
 html .home-page .controls-trigger.is-sheet-open {
   background: var(--accent-text);
   color: var(--on-accent);
@@ -1143,18 +1142,20 @@ html .home-page .dialog-panel {
 @keyframes hub-dialog-fade { to { opacity: 0; } }
 @keyframes hub-dialog-exit { to { transform: translateY(6px) scale(.99); } }
 
-/* Project routing stays available as a compact disclosure. */
-.home-page details.project-host--section { position: relative; flex: none; }
-.project-host__disclosure { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--mute); cursor: pointer; font: 500 .8125rem/1.5 var(--font); list-style: none; }
-.project-host__disclosure::-webkit-details-marker { display: none; }
-.project-host__disclosure::after { content: ""; width: 6px; height: 6px; border-right: 1px solid currentColor; border-bottom: 1px solid currentColor; transform: rotate(45deg) translateY(-2px); }
-.project-host--section[open] > summary { color: var(--accent-text); }
-html .home-page .project-host--section > .host-switcher { position: absolute; z-index: 10; right: 0; top: 100%; min-width: 232px; background: var(--bg-card); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); }
-.home-page .project-host--section:not([open]) > .host-switcher { display: none; }
-@media (min-width: 768px) {
-  /* Native details supplies its own content wrapper; keep its anchor a block. */
-  .home-page details.project-host--section { display: block !important; }
+/* The routing picker shares the language menu, above the project card layer. */
+.home-page .section__header--projects { position: relative; z-index: 1; }
+.home-page .featured-stack { position: relative; z-index: 0; }
+.home-page .project-host--section { position: relative; flex: none; }
+.home-page .project-host--section > .lang-picker__trigger { width: auto; font-size: .8125rem; }
+html .home-page .project-host--section > .host-switcher {
+  display: flex; flex-direction: column; gap: 2px; width: 232px;
 }
+html .home-page .project-host--section .host-option {
+  flex-direction: row; align-items: center; gap: 8px; min-height: 48px;
+  padding: 8px 10px; border: 0; border-radius: 6px; box-shadow: none;
+}
+.project-host__text { display: flex; flex-direction: column; gap: 1px; }
+.home-page .project-host--section .host-option__kicker { color: inherit; opacity: .75; }
 .home-page .project-host--section .host-option:focus-visible { outline-offset: -3px; }
 
 .rally-summary { margin: -4px 0 16px; color: var(--ink); text-align: center; font-size: .8125rem; font-variant-numeric: tabular-nums; }

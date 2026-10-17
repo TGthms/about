@@ -17,8 +17,7 @@ function harness({ desktop = true, blocked = false } = {}) {
       focus() { document.activeElement = this; },
     };
   }
-  const disclosure = element(), summary = element(), sheet = element();
-  disclosure.open = false;
+  const disclosure = element(), trigger = element(), sheet = element();
   disclosure.attrs['data-host-placement'] = 'section';
   sheet.attrs['data-host-placement'] = 'sheet';
   const roots = [disclosure, sheet];
@@ -32,12 +31,14 @@ function harness({ desktop = true, blocked = false } = {}) {
       return button;
     });
     switcher.querySelectorAll = () => switcher.options;
+    switcher.querySelector = () => switcher.options.find(button => button.attrs['aria-checked'] === 'true');
     switcher.contains = target => switcher.options.includes(target);
     switcher.closest = () => root === disclosure ? disclosure : null;
     return switcher;
   });
-  disclosure.contains = target => [summary, disclosure, switchers[0], ...switchers[0].options].includes(target);
-  disclosure.querySelector = () => summary;
+  disclosure.contains = target => [trigger, disclosure, switchers[0], ...switchers[0].options].includes(target);
+  switchers[0].hidden = true;
+  disclosure.querySelector = selector => selector === '.lang-picker__trigger' ? trigger : switchers[0];
   const link = element(), card = element();
   card.attrs['data-url-cloudflare'] = 'https://main.example/';
   card.attrs['data-url-github'] = 'https://backup.example/';
@@ -45,7 +46,7 @@ function harness({ desktop = true, blocked = false } = {}) {
   card.querySelectorAll = () => [];
   const root = element();
   document = {
-    activeElement: summary, documentElement: root,
+    activeElement: trigger, documentElement: root,
     querySelector: () => disclosure,
     querySelectorAll(selector) {
       if (selector === '.host-switcher') return switchers;
@@ -82,16 +83,16 @@ function harness({ desktop = true, blocked = false } = {}) {
     const button = switchers[index].options[host];
     switchers[index].handlers.click({ target: button, preventDefault() {} });
   }
-  return { context, document, root, link, disclosure, summary, switchers, documentEvents, windowEvents, key, click,
+  return { context, document, root, link, disclosure, trigger, switchers, documentEvents, windowEvents, key, click,
     resize(value) { desktop = value; viewportChange(); context.syncHostSwitcher(context.getStoredProjectHost()); } };
 }
 
 test('mobile keyboard selection never closes or focuses the desktop disclosure', () => {
   const h = harness({ desktop: false });
-  h.disclosure.open = true;
+  h.trigger.handlers.click();
   h.key(1, 1, 'Enter');
   assert.equal(h.document.activeElement, h.switchers[1].options[1]);
-  assert.equal(h.disclosure.open, true);
+  assert.equal(h.switchers[0].hidden, true);
   assert.equal(h.link.attrs.href, 'https://backup.example/');
   assert.equal(h.switchers[1].options[1].attrs.tabindex, '0');
   assert.equal(h.switchers[0].options[1].attrs.tabindex, '-1');
@@ -99,40 +100,40 @@ test('mobile keyboard selection never closes or focuses the desktop disclosure',
 
 test('desktop arrows select without closing; choosing returns focus to its trigger', () => {
   const h = harness();
-  h.disclosure.open = true;
+  h.trigger.handlers.click();
   h.key(0, 0, 'ArrowRight');
-  assert.equal(h.disclosure.open, true);
+  assert.equal(h.switchers[0].hidden, false);
   assert.equal(h.document.activeElement, h.switchers[0].options[1]);
   assert.equal(h.link.attrs.href, 'https://backup.example/');
   h.key(0, 1, 'Enter');
-  assert.equal(h.disclosure.open, false);
-  assert.equal(h.document.activeElement, h.summary);
-  h.disclosure.open = true;
+  assert.equal(h.switchers[0].hidden, true);
+  assert.equal(h.document.activeElement, h.trigger);
+  h.trigger.handlers.click();
   h.click(0, 0);
-  assert.equal(h.disclosure.open, false);
-  assert.equal(h.document.activeElement, h.summary);
+  assert.equal(h.switchers[0].hidden, true);
+  assert.equal(h.document.activeElement, h.trigger);
   assert.equal(h.link.attrs.href, 'https://main.example/');
 });
 
 test('focus departure, outside click, Escape and viewport changes dismiss correctly', () => {
   const h = harness();
-  h.disclosure.open = true;
+  h.trigger.handlers.click();
   h.disclosure.handlers.focusout({ relatedTarget: h.switchers[0].options[0] });
-  assert.equal(h.disclosure.open, true);
+  assert.equal(h.switchers[0].hidden, false);
   h.disclosure.handlers.focusout({ relatedTarget: null });
-  assert.equal(h.disclosure.open, true, 'Safari pointer blur must not swallow option clicks');
+  assert.equal(h.switchers[0].hidden, false, 'Safari pointer blur must not swallow option clicks');
   h.disclosure.handlers.focusout({ relatedTarget: {} });
-  assert.equal(h.disclosure.open, false);
-  h.disclosure.open = true;
+  assert.equal(h.switchers[0].hidden, true);
+  h.trigger.handlers.click();
   h.documentEvents.click({ target: {} });
-  assert.equal(h.disclosure.open, false);
-  h.disclosure.open = true;
+  assert.equal(h.switchers[0].hidden, true);
+  h.trigger.handlers.click();
   h.disclosure.handlers.keydown({ key: 'Escape', preventDefault() {}, stopPropagation() {} });
-  assert.equal(h.disclosure.open, false);
-  assert.equal(h.document.activeElement, h.summary);
-  h.disclosure.open = true;
+  assert.equal(h.switchers[0].hidden, true);
+  assert.equal(h.document.activeElement, h.trigger);
+  h.trigger.handlers.click();
   h.resize(false);
-  assert.equal(h.disclosure.open, false);
+  assert.equal(h.switchers[0].hidden, true);
 });
 
 test('blocked storage does not reset the choice during language or viewport sync', () => {
@@ -154,4 +155,18 @@ test('another tab updates URLs and both controls together, including cleared sto
   assert.equal(h.context.getStoredProjectHost(), 'github');
   h.windowEvents.storage({ key: null, newValue: null });
   assert.equal(h.link.attrs.href, 'https://main.example/');
+});
+
+test('desktop trigger exposes its popup and focuses the selected option like the language picker', () => {
+  const h = harness();
+  h.trigger.handlers.click();
+  assert.equal(h.switchers[0].hidden, false);
+  assert.equal(h.trigger.attrs['aria-expanded'], 'true');
+  assert.equal(h.document.activeElement, h.switchers[0].options[0]);
+  h.trigger.handlers.click();
+  assert.equal(h.switchers[0].hidden, true);
+  assert.equal(h.trigger.attrs['aria-expanded'], 'false');
+  assert.equal(h.document.activeElement, h.trigger);
+  h.trigger.handlers.keydown({key: 'ArrowDown', preventDefault() {}});
+  assert.equal(h.switchers[0].hidden, false);
 });

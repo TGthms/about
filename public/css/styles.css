@@ -1001,55 +1001,7 @@ html[data-theme="dark"] .hero__name {
     text-align: right;
     width: 100%;
   }
-  /* Compact segmented control next to the heading */
-  .section__header--projects .host-switcher {
-    display: inline-grid;
-    grid-template-columns: auto auto;
-    gap: 0;
-    width: auto;
-    border: var(--border-w) solid var(--line);
-    border-radius: var(--radius-sm);
-    box-shadow: 2px 2px 0 var(--line);
-    overflow: hidden;
-    background: var(--bg-card);
-  }
-  .section__header--projects .host-option {
-    min-height: 44px;
-    min-width: 6.25rem;
-    padding: 6px 14px;
-    border: none;
-    border-radius: 0;
-    box-shadow: none !important;
-    align-items: center;
-    justify-content: center;
-    gap: 1px;
-  }
-  .section__header--projects .host-option + .host-option {
-    border-left: var(--border-w) solid var(--line);
-  }
-  .section__header--projects .host-option:active {
-    transform: none;
-    box-shadow: none !important;
-  }
-  .section__header--projects .host-option.is-selected {
-    background: var(--accent-soft);
-    box-shadow: none !important;
-  }
-  .section__header--projects .host-option:not(.is-selected):hover {
-    background: color-mix(in srgb, var(--ink) 4%, var(--bg-card));
-  }
-  .section__header--projects .host-option__kicker {
-    font-size: 0.55rem;
-    letter-spacing: 0.08em;
-    line-height: 1.1;
-  }
-  .section__header--projects .host-option__name {
-    font-size: 0.78rem;
-    line-height: 1.15;
-  }
-  html[data-theme="dark"] .section__header--projects .host-switcher {
-    box-shadow: var(--shadow);
-  }
+
 }
 
 .section__label {

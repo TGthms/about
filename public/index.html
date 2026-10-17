@@ -42,8 +42,8 @@
   <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <script src="js/season-calendar.js?v=ef934e6180dd"></script>
-  <link rel="stylesheet" href="css/styles.css?v=ee64b60468e2" />
-  <link rel="stylesheet" href="css/home.css?v=81a4a48e432b" />
+  <link rel="stylesheet" href="css/styles.css?v=604393d26cf9" />
+  <link rel="stylesheet" href="css/home.css?v=8127f3cb9a43" />
   <link rel="stylesheet" href="css/seasons.css?v=8b0d4a08d23f" />
 
   <script type="application/ld+json">
@@ -309,36 +309,22 @@
           </div>
 
           <!-- Main / Backup line — desktop section header. Mobile uses settings sheet. -->
-          <details class="project-host project-host--section" data-host-pref data-host-placement="section">
-            <summary class="project-host__disclosure" id="project-host-label-section" data-i18n="host.label">Project links</summary>
-            <div
-              class="host-switcher"
-              role="radiogroup"
-              id="host-switcher-section"
-              aria-labelledby="project-host-label-section"
-            >
-              <button
-                type="button"
-                class="host-option is-selected"
-                role="radio"
-                aria-checked="true"
-                data-host="cloudflare"
-              >
-                <span class="host-option__kicker" data-i18n="host.main">Main line</span>
-                <span class="host-option__name" data-i18n="host.cloudflare">Cloudflare</span>
+          <div class="project-host project-host--section lang-picker" data-host-pref data-host-placement="section">
+            <button type="button" class="lang-picker__trigger" id="project-host-label-section" aria-expanded="false" aria-controls="host-switcher-section">
+              <span class="lang-picker__value" data-i18n="host.label">Project links</span>
+              <svg class="lang-picker__chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 5.5L7 9.5 11 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="host-switcher lang-picker__menu" role="radiogroup" id="host-switcher-section" aria-labelledby="project-host-label-section" hidden>
+              <button type="button" class="host-option lang-picker__option is-selected" role="radio" aria-checked="true" data-host="cloudflare">
+                <span class="lang-picker__check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="project-host__text"><span class="host-option__kicker" data-i18n="host.main">Main line</span><span class="host-option__name" data-i18n="host.cloudflare">Cloudflare</span></span>
               </button>
-              <button
-                type="button"
-                class="host-option"
-                role="radio"
-                aria-checked="false"
-                data-host="github"
-              >
-                <span class="host-option__kicker" data-i18n="host.backup">Backup line</span>
-                <span class="host-option__name" data-i18n="host.github">GitHub</span>
+              <button type="button" class="host-option lang-picker__option" role="radio" aria-checked="false" data-host="github">
+                <span class="lang-picker__check" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.2L5 8.7 9.5 3.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="project-host__text"><span class="host-option__kicker" data-i18n="host.backup">Backup line</span><span class="host-option__name" data-i18n="host.github">GitHub</span></span>
               </button>
             </div>
-          </details>
+          </div>
         </header>
 
         <div class="featured-stack">
@@ -1174,7 +1160,7 @@
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=b811d6e95dc6"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
-  <script src="js/i18n/project-host.js?v=4a9d7492be4d"></script>
+  <script src="js/i18n/project-host.js?v=20e19a7aa28f"></script>
   <script src="js/i18n/language.js?v=694fde13ebd2"></script>
   <script src="js/erhu-content.js?v=d92524d02846"></script>
   <script src="js/erhu.js?v=8ed0ffa2dcb1"></script>
