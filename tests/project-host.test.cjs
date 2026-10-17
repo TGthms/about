@@ -170,3 +170,22 @@ test('desktop trigger exposes its popup and focuses the selected option like the
   h.trigger.handlers.keydown({key: 'ArrowDown', preventDefault() {}});
   assert.equal(h.switchers[0].hidden, false);
 });
+
+test('clicking the open selector cannot blur-close and then reopen its popup', () => {
+  const h = harness();
+  h.trigger.handlers.click();
+  let prevented = false;
+  h.trigger.handlers.mousedown({ button: 0, preventDefault() { prevented = true; } });
+  // Safari can otherwise move focus to the page before dispatching click.
+  if (!prevented) h.disclosure.handlers.focusout({ relatedTarget: {} });
+  h.trigger.handlers.click();
+  assert.equal(prevented, true);
+  assert.equal(h.switchers[0].hidden, true);
+  assert.equal(h.trigger.attrs['aria-expanded'], 'false');
+  assert.equal(h.document.activeElement, h.trigger);
+  prevented = false;
+  h.trigger.handlers.mousedown({ button: 0, preventDefault() { prevented = true; } });
+  assert.equal(prevented, false, 'closed trigger retains normal pointer focus');
+  h.trigger.handlers.click();
+  assert.equal(h.switchers[0].hidden, false);
+});

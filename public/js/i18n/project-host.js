@@ -173,6 +173,10 @@ function initProjectHost() {
     if (restoreFocus) trigger.focus({ preventScroll: true });
   }
   if (disclosure) {
+    trigger.addEventListener("mousedown", function (event) {
+      /* Let click close the open popup before Safari transfers focus away. */
+      if (event.button === 0 && !menu.hidden) event.preventDefault();
+    });
     trigger.addEventListener("click", function () {
       if (menu.hidden) openDisclosure();
       else closeDisclosure(true);
