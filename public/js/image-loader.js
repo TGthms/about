@@ -19,6 +19,8 @@
       })
       .join(", ");
   var ROOT_MARGIN = "160px 0px";
+  var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
+  if (lightweight) ROOT_MARGIN = "0px";
 
   var queue = [];
   var busy = 0;
@@ -151,7 +153,7 @@
 
   function pump() {
     var priority = queue.findIndex(function (img) { return urgent.has(img); });
-    if (busy >= 2 || (busy && priority < 0)) return;
+    if (busy >= (lightweight ? 1 : 2) || (busy && priority < 0)) return;
     if (priority > 0) queue.unshift(queue.splice(priority, 1)[0]);
     var img = null;
     while (queue.length && !img) {
@@ -215,6 +217,7 @@
     img.addEventListener("load", afterBytes, { once: true });
     img.addEventListener("error", fail, { once: true });
     var srcset = img.getAttribute("data-srcset");
+    if (lightweight) srcset = null;
     if (srcset) {
       img.setAttribute("sizes", img.getAttribute("data-sizes") || "100vw");
       img.setAttribute("srcset", srcset);
@@ -247,7 +250,8 @@
     }
     if (rect.width === 0 && rect.height === 0) return false;
     var vh = window.innerHeight || 0;
-    return rect.bottom >= -160 && rect.top <= vh + 160;
+    var margin = lightweight ? 0 : 160;
+    return rect.bottom >= -margin && rect.top <= vh + margin;
   }
 
   function observeOrQueue(img) {
@@ -260,11 +264,11 @@
       if (io) io.observe(img);
       return;
     }
-    if (!io || inPrefetchRange(img)) {
+    if ((!io && !lightweight) || inPrefetchRange(img)) {
       enqueue(img);
       return;
     }
-    io.observe(img);
+    if (io) io.observe(img);
   }
 
   function ensureObserver() {
@@ -286,6 +290,11 @@
   function attachImageLoader(img) {
     if (!img) return;
     armSrc(img);
+    if (lightweight) {
+      img.setAttribute("data-src", window.SiteRuntime.image(wantedSrc(img)));
+      img.removeAttribute("srcset");
+      img.removeAttribute("sizes");
+    }
     var frame = frameOf(img);
     if (usesLabel(frame)) {
       frame.classList.add("img-load");
@@ -326,6 +335,17 @@
   function initImageLoaders(root) {
     ensureObserver();
     loadDeferredImages(root || document);
+    if (lightweight && !window.IntersectionObserver && !initImageLoaders.scanning) {
+      initImageLoaders.scanning = true;
+      var queued = false;
+      function scan() {
+        if (queued) return;
+        queued = true;
+        window.requestAnimationFrame(function () { queued = false; loadDeferredImages(document); });
+      }
+      window.addEventListener("scroll", scan, { passive: true, capture: true });
+      window.addEventListener("resize", scan);
+    }
 
     if (document.readyState === "complete") {
       openGate();

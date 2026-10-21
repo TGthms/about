@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness(connection, deferred=false) {
+function harness(connection, deferred=false, lightweight=false) {
   const videos=[],nodes=[],events={},inert=[],finishes=[],observers=[];let document,locks=0,language="en";
   function descendants(el) { return el.children.flatMap(child=>[child,...descendants(child)]); }
   function element(tag='div') {
@@ -29,7 +29,7 @@ function harness(connection, deferred=false) {
   modal.querySelector=()=>close;wiki.querySelector=()=>wikiClose;
   const ids={'erhu-wiki-open':opener,'erhu-performance-open':performance,'erhu-wiki-modal':wiki,'erhu-performance-modal':modal,'erhu-wiki-body':wikiBody,'erhu-performance-body':body,'erhu-wiki-title':element('h2'),'erhu-performance-title':element('h2')};
   document={activeElement:null,readyState:'complete',body:element(),documentElement:{getAttribute:()=>language},createElement:element,getElementById:id=>ids[id],addEventListener(k,fn){events[k]=fn;}};
-  const context={document,navigator:{connection},window:{setTimeout:fn=>fn(),addEventListener(){}},lockPageScroll(){locks++;},unlockPageScroll(){locks--;},setBackgroundInert(m,on){inert.push([m,on]);}};
+  const context={document,navigator:{connection},window:{SiteRuntime:{lightweight,image:src=>lightweight?src.replace("assets/erhu/erhu-instrument.jpg","assets/compact/erhu/erhu-instrument.webp"):src},setTimeout:fn=>fn(),addEventListener(){}},lockPageScroll(){locks++;},unlockPageScroll(){locks--;},setBackgroundInert(m,on){inert.push([m,on]);}};
   context.MutationObserver=function(fn){observers.push(fn);this.observe=()=>{};};
   context.window.MutationObserver=context.MutationObserver;
   if(deferred)context.closeSiteDialog=(_modal,fn)=>finishes.push(fn);
@@ -131,4 +131,25 @@ test('translating an active performance reuses its player and preserves the moda
  const h=harness();h.open();const video=h.videos[0];video.currentTime=45;
  h.translate('ko');assert.equal(h.title.textContent,'저의 얼후 연주');assert.equal(h.videos.length,1);assert.equal(h.body.children.includes(video),true);
  assert.equal(video.currentTime,45);assert.equal(h.locks(),1);assert.equal(h.wiki.hidden,true);
+});
+
+
+test('constrained browsers never speculate on erhu media and release the player on close and handoff', () => {
+  const h=harness(undefined,false,true);
+  assert.equal(h.opener.listeners.pointerenter,undefined);
+  assert.equal(h.videos.length,0);
+  h.opener.listeners.click();
+  const photo=h.nodes.find(n=>n.tagName==='IMG');
+  assert.equal(photo.attrs['data-src'],'assets/compact/erhu/erhu-instrument.webp');
+  assert.equal(h.videos.length,0);
+  h.open();
+  const video=h.videos[0];
+  assert.equal(video.preload,'none');assert.equal(video.loadCount,0);
+  assert.equal(h.status().hidden,true,'idle player does not claim it is buffering');
+  h.opener.listeners.click();
+  assert.equal(video.children.length,0);assert.equal(video.parentNode,null);
+  assert.equal(video.loadCount,1,'clearing sources releases the decoder and network buffer');
+  h.open();assert.equal(h.videos.length,2);
+  h.closePerformance();assert.equal(h.videos[1].parentNode,null);
+  assert.equal(h.locks(),0);
 });

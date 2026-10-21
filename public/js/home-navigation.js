@@ -4,6 +4,10 @@
   var header = document.querySelector(".top-bar");
   var links = Array.from(document.querySelectorAll(".site-nav a[href^='#']"));
   if (!header || !links.length) return;
+  if (window.SiteRuntime && window.SiteRuntime.lightweight) {
+    document.documentElement.style.setProperty("--top-bar-h", "0px");
+    return;
+  }
   var sections = links.map(function (link) {
     return document.getElementById(link.getAttribute("href").slice(1));
   });

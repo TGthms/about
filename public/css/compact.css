@@ -1,0 +1,72 @@
+/* A deliberately small rendering surface for watches and very narrow browsers.
+   Loaded last on home and legal pages; regular layouts keep their own styles. */
+html[data-lightweight] { --gutter: 12px; scroll-behavior: auto !important; scroll-padding-top: 8px; }
+html[data-lightweight] *, html[data-lightweight] *::before, html[data-lightweight] *::after {
+  animation: none !important; transition: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  filter: none !important; will-change: auto !important; box-shadow: none !important;
+  font-family: -apple-system, system-ui, sans-serif !important;
+}
+html[data-lightweight] body { --gutter: 12px; --section-pad: 32px; overflow-wrap: anywhere; }
+html[data-lightweight] .reveal, html[data-lightweight] .hero__char { opacity: 1 !important; transform: none !important; }
+html[data-lightweight] .top-bar { position: relative; padding: 8px 12px; background: var(--bg); }
+html[data-lightweight] .top-bar__inner { flex-wrap: wrap; gap: 0 8px; padding: 0; }
+html[data-lightweight] .site-signature { font-size: 1.6rem; }
+html[data-lightweight] .site-nav { order: 3; width: 100%; justify-content: space-between; gap: 4px; font-size: .75rem; white-space: normal; }
+html[data-lightweight] .site-nav a { min-height: 40px; display: flex; align-items: center; }
+html[data-lightweight] .home-page .hero { min-height: 0; padding: 0; }
+html[data-lightweight] .home-page .hero__inner { min-height: 0; padding: 28px 12px 36px; gap: 20px; }
+html[data-lightweight] .home-page .hero__name { font-size: 2.7rem; margin-bottom: 12px; }
+html[data-lightweight] .home-page .hero__note { font-size: 1rem; }
+html[data-lightweight] .home-page .hero__index { max-width: none; }
+html[data-lightweight] .home-page .hero__index a { font-size: 1rem; }
+html[data-lightweight] .hero__backdrop { -webkit-mask-image: none; mask-image: none; }
+html[data-lightweight] .hero__photo::after, html[data-lightweight] .hero::after { display: none; }
+html[data-lightweight] .hero__backdrop img { opacity: 1 !important; transform: none !important; }
+html[data-lightweight] .home-page .hero__backdrop::before { background: rgb(250 250 250 / 78%); }
+html[data-lightweight][data-theme="dark"] .home-page .hero__backdrop::after { background: rgb(20 23 25 / 72%); }
+html[data-lightweight] .hero__name, html[data-lightweight] .hero__note { color: var(--ink); }
+html[data-lightweight] .home-page .section__title { font-size: 1.55rem; }
+html[data-lightweight] .section__header { flex-wrap: wrap; gap: 12px; }
+html[data-lightweight] .home-page .interest-card { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+html[data-lightweight] .interest-card__icon { width: 30px; height: 30px; }
+html[data-lightweight] .home-page .interest-card__learn, html[data-lightweight] .erhu-actions { grid-column: 1; }
+html[data-lightweight] .erhu-actions { display: flex; flex-direction: column; align-items: stretch; }
+html[data-lightweight] .home-page .featured-card__title { font-size: 1.3rem; }
+html[data-lightweight] .home-page .featured-stack, html[data-lightweight] .link-grid { grid-template-columns: minmax(0, 1fr); }
+html[data-lightweight] .home-page .link-card { padding: 12px; gap: 10px; }
+html[data-lightweight] .link-card__icon { width: 36px; height: 36px; flex-basis: 36px; }
+html[data-lightweight] .footer__contact { flex-wrap: wrap; }
+html[data-lightweight] .footer__email { font-size: .8rem; }
+html[data-lightweight] :is(.erhu-modal, .archived-projects-modal, .qr-modal) { padding: 4px; }
+html[data-lightweight] .home-page :is(.dialog-panel, .rally-panel) { width: 100%; max-height: calc(100vh - 8px); max-height: calc(100svh - 8px); border-radius: 12px; background: var(--bg-card); }
+html[data-lightweight] .dialog-panel > :is(.erhu-modal__top, .archived-projects-modal__top, .qr-modal__top) { padding: 10px; gap: 8px; background: var(--bg-card); }
+html[data-lightweight] .dialog-panel :is(.erhu-modal__title, .archived-projects-modal__title, .qr-modal__title) { font-size: 1.1rem; }
+html[data-lightweight] .dialog-scroll { padding: 12px; scroll-padding: 12px; }
+html[data-lightweight] .archived-projects-modal__grid { grid-template-columns: minmax(0, 1fr); }
+html[data-lightweight] .erhu-instrument-layout { grid-template-columns: minmax(0, 1fr); }
+html[data-lightweight] .dialog-panel :is(.erhu-modal__close, .archived-projects-modal__close, .qr-modal__close) { width: 40px; height: 40px; flex: 0 0 40px; }
+html[data-lightweight] .controls-panel { border-radius: 12px 12px 0 0; }
+html[data-lightweight] .controls-panel__surface { max-height: calc(100vh - 52px); max-height: calc(100svh - 52px); padding-inline: 12px; }
+html[data-lightweight] .controls-panel::after { display: none; }
+html[data-lightweight] .controls-trigger.is-sheet-open { top: 4px; right: 8px; }
+html[data-lightweight] .site-timeline__item { grid-template-columns: minmax(0, 1fr); }
+html[data-lightweight] .site-timeline__content { padding-left: 0; border-left: 0; }
+html[data-lightweight] .site-history-facts { grid-template-columns: minmax(0, 1fr); }
+html[data-lightweight] .rally-panel { padding: 10px; gap: 8px; }
+html[data-lightweight] .rally-actions { gap: 4px; }
+html[data-lightweight] .rally-serve { min-width: 0; padding: 8px; }
+html[data-lightweight] .rally-move { width: 40px; min-width: 40px; }
+html[data-lightweight] .rally-instructions { font-size: .75rem; }
+html[data-lightweight] .legal-main { padding-top: 24px; }
+html[data-lightweight] .legal-hero__title { font-size: 1.7rem; }
+html[data-lightweight] .legal-section__p { font-size: .95rem; }
+html[data-lightweight] .seasonal-countdown.is-floating { position: static; }
+html[data-lightweight] .seasonal-countdown.is-expanded { max-width: 100%; }
+html[data-lightweight] .seasonal-verse { font-size: 1rem; }
+html[data-lightweight] .rally-level { flex-direction: column; align-items: stretch; gap: 4px; margin-bottom: 8px; }
+html[data-lightweight] .rally-level-picker { width: 100%; }
+html[data-lightweight] .rally-scoreboard { gap: 4px; font-size: .65rem; margin-bottom: 8px; }
+html[data-lightweight] .rally-scoreboard strong { margin-left: 3px; }
+html[data-lightweight] .rally-panel .erhu-modal__top { position: sticky; top: -10px; z-index: 3; margin: -10px -10px 8px; padding: 10px; background: var(--bg-card); }
+html[data-lightweight] .rally-status { font-size: .75rem; margin-block: 8px; }

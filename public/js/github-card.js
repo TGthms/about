@@ -491,6 +491,7 @@
   }
 
   function initGithubCard() {
+    if (window.SiteRuntime && window.SiteRuntime.lightweight) return;
     wrap = document.querySelector("[data-github-card]");
     if (!wrap) return;
 

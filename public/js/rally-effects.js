@@ -12,7 +12,7 @@
     }
     function play(win) {
       clear();
-      if (!table || (motion && motion.matches)) return;
+      if (!table || (window.SiteRuntime && window.SiteRuntime.lightweight) || (motion && motion.matches)) return;
       layer = document.createElement("div");
       layer.className = "rally-celebration";
       layer.setAttribute("aria-hidden", "true");

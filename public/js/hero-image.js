@@ -7,6 +7,7 @@
 
   var occasion = document.documentElement.getAttribute("data-occasion");
   var original = image.getAttribute("data-hero-src");
+  if (window.SiteRuntime) original = window.SiteRuntime.image(original);
   image.addEventListener("error", function () {
     image.removeAttribute("srcset"); image.removeAttribute("sizes");
     if (image.getAttribute("src") !== original || !image.complete) image.src = original;

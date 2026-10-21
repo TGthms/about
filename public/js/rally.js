@@ -1,6 +1,8 @@
 /* A Pong-style practice break. Nothing moves until the visitor serves. */
 (function () {
   "use strict";
+  var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
+  var renderScale = lightweight ? .5 : 2;
   var opener = document.getElementById("rally-open");
   var modal = document.getElementById("rally-modal");
   var canvas = document.getElementById("rally-court");
@@ -35,7 +37,7 @@
     if (beat === lastBeat) return;
     lastBeat = beat; countdownValue.textContent = beat;
     if (beatAnimation) beatAnimation.cancel();
-    if (countdownValue.animate && !(countdownMotion && countdownMotion.matches)) {
+    if (!lightweight && countdownValue.animate && !(countdownMotion && countdownMotion.matches)) {
       beatAnimation = countdownValue.animate([
         { opacity: .45, transform: "translateY(3px)" },
         { opacity: 1, transform: "translateY(0)" }
@@ -97,7 +99,7 @@
   }
   function draw() {
     if (!ctx) return;
-    ctx.setTransform(2, 0, 0, 2, 0, 0);
+    ctx.setTransform(renderScale, 0, 0, renderScale, 0, 0);
     ctx.clearRect(0, 0, 600, 320);
     ctx.fillStyle = colors.table;
     ctx.fillRect(0, 0, 600, 320);
@@ -111,12 +113,12 @@
     ctx.globalAlpha = 1;
     ctx.fillStyle = colors.ink;
     var hit = game.hit, age = hit ? game.clock - hit.time : 1;
-    var pulse = age < .16 && !(countdownMotion && countdownMotion.matches) ? Math.sin(age / .16 * Math.PI) : 0;
+    var pulse = !lightweight && age < .16 && !(countdownMotion && countdownMotion.matches) ? Math.sin(age / .16 * Math.PI) : 0;
     ctx.fillRect(game.paddle - 50 - (hit && hit.side === "you" ? pulse * 2 : 0), 288, 100 + (hit && hit.side === "you" ? pulse * 4 : 0), 7 - (hit && hit.side === "you" ? pulse * 1.5 : 0));
     ctx.globalAlpha = 0.65;
     ctx.fillRect(game.opponent - game.settings.halfWidth - (hit && hit.side === "ai" ? pulse * 2 : 0), 25, game.settings.halfWidth * 2 + (hit && hit.side === "ai" ? pulse * 4 : 0), 7 - (hit && hit.side === "ai" ? pulse * 1.5 : 0));
     ctx.globalAlpha = 1;
-    if (hit && age < .2 && !(countdownMotion && countdownMotion.matches)) {
+    if (!lightweight && hit && age < .2 && !(countdownMotion && countdownMotion.matches)) {
       ctx.globalAlpha = (1 - age / .2) * .45;
       ctx.strokeStyle = colors.ball; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(hit.x, hit.y, 4 + age * 55, 0, Math.PI * 2); ctx.stroke();
@@ -142,6 +144,10 @@
   function tick(time) {
     frame = 0;
     if (!open || !activePhase()) return;
+    if (lightweight && lastTime !== null && time - lastTime < 32) {
+      frame = window.requestAnimationFrame(tick);
+      return;
+    }
     var dt = lastTime === null ? 0 : Math.min((time - lastTime) / 1000, 0.05);
     lastTime = time;
     game.move(game.paddle + ((held.right ? 1 : 0) - (held.left ? 1 : 0)) * 430 * dt);
@@ -179,6 +185,7 @@
     menuPaused = false; if (picker) picker.close();
     function finish() {
       modal.hidden = true;
+      if (lightweight) { canvas.width = 1; canvas.height = 1; ctx = null; }
       opener.setAttribute("aria-expanded", "false");
       if (typeof setBackgroundInert === "function") setBackgroundInert(modal, false);
       if (typeof unlockPageScroll === "function") unlockPageScroll();
@@ -189,7 +196,11 @@
   }
   opener.addEventListener("click", function () {
     if (open || (modal.classList && modal.classList.contains("is-closing"))) return;
-    if (!ctx) { try { ctx = canvas.getContext("2d"); } catch (_) { ctx = null; } }
+    if (!ctx) {
+      canvas.width = 600 * renderScale;
+      canvas.height = 320 * renderScale;
+      try { ctx = canvas.getContext("2d"); } catch (_) { ctx = null; }
+    }
     open = true; modal.hidden = false;
     opener.setAttribute("aria-expanded", "true");
     if (typeof lockPageScroll === "function") lockPageScroll();

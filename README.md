@@ -107,3 +107,26 @@ Pong uses a seeded random source for varied serves, bounded opponent reactions, 
 The custom-domain host injects Cloudflare’s Web Analytics / RUM beacon. The privacy policy discloses its performance and usage reporting, with a link to Cloudflare’s documentation, in all six languages.
 
 The curated timeline ends at v16; its summary includes seasonal celebrations. The instrument dialog pairs a museum photograph with a single prose column on desktop and stacks them on phones. The performance dialog contains the player, its attribution, and a link to the instrument. Both bottom Close controls share the same delegated close handling as their header controls.
+
+### Constrained browsers
+
+`js/runtime.js` selects a lightweight rendering path before any image preload
+when the browser identifies as a Watch, its shorter physical screen edge is at
+most 320 CSS pixels, or its initial viewport is at most 320 CSS pixels. The choice
+stays fixed for the visit to avoid reloading media during rotation or resizing.
+
+This path uses system fonts, static opaque surfaces, serial viewport-only image
+loading, and photos bounded to 480 pixels per edge under `assets/compact/`.
+It skips haptic shadow overlays, the contribution popover, and decorative
+balloons/fireworks/number animation. Holiday greetings and the plain countdown
+remain. Erhu video waits for Play, has a direct media link, and releases its
+buffer on closing or changing dialogs. Pong retains its controls and physics,
+uses a 300×160 backing canvas at up to 30 fps, and releases that canvas on close.
+Regular phone and desktop visits retain the full rendering and preload behavior.
+
+When replacing a source photo, regenerate its matching compact WebP using EXIF
+orientation, a maximum 480×480 bounding box, and WebP quality 82. Compact photos
+must never be added to normal image source sets: this path selects them before
+requests begin. `?lite=1` explicitly selects this path if a browser reports an
+unexpected screen size or user agent. Test a fresh navigation after setting a small viewport; resizing
+an already-open desktop page intentionally keeps its original runtime policy.

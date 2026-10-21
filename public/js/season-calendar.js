@@ -44,12 +44,14 @@
 
   var previews = ["christmas", "good-friday", "easter", "palm-sunday", "thanksgiving", "new-year", "countdown", "final-minute", "final-seconds", "fireworks"];
   function photo(occasion, phase) {
-    if (occasion === "new-year" && phase === "greeting") return "assets/seasonal/new-year.webp";
-    return ["christmas", "good-friday", "easter", "thanksgiving", "palm-sunday"].indexOf(occasion) !== -1 ?
+    var src = occasion === "new-year" && phase === "greeting" ? "assets/seasonal/new-year.webp" :
+      ["christmas", "good-friday", "easter", "thanksgiving", "palm-sunday"].indexOf(occasion) !== -1 ?
       "assets/seasonal/" + occasion + ".webp" : "assets/main-modern.webp";
+    return root.SiteRuntime ? root.SiteRuntime.image(src) : src;
   }
 
   function imageSet(occasion, phase) {
+    if (root.SiteRuntime && root.SiteRuntime.lightweight) return null;
     if (photo(occasion, phase) !== "assets/main-modern.webp") return null;
     var portrait = root.matchMedia && root.matchMedia("(max-width: 600px) and (max-aspect-ratio: 3/5)").matches;
     return portrait ? {

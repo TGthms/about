@@ -8,11 +8,12 @@ function classes() {
   return { add: (...items) => items.forEach(x => values.add(x)), remove: (...items) => items.forEach(x => values.delete(x)), contains: x => values.has(x), toggle: (x, on) => on ? values.add(x) : values.delete(x) };
 }
 
-function imageHarness() {
+function imageHarness(lightweight=false) {
+  const events={};
   const timers = [];
   const images = [];
   const document = { readyState: 'complete', documentElement: { getAttribute: () => 'en' }, querySelectorAll: () => images, createElement: () => ({ setAttribute() {}, style: { setProperty() {} } }) };
-  const context = { document, Node: { DOCUMENT_POSITION_FOLLOWING: 4, DOCUMENT_POSITION_PRECEDING: 2 }, window: { innerHeight: 900, getComputedStyle: () => ({display:'block',visibility:'visible'}), setTimeout: cb => { timers.push(cb); return timers.length; }, clearTimeout() {} } };
+  const context = { document, Node: { DOCUMENT_POSITION_FOLLOWING: 4, DOCUMENT_POSITION_PRECEDING: 2 }, window: { SiteRuntime:{lightweight,image:src=>src.startsWith("compact/")?src:"compact/"+src},addEventListener:(key,fn,options)=>events[key]={fn,options},requestAnimationFrame:fn=>fn(), innerHeight: 900, getComputedStyle: () => ({display:'block',visibility:'visible'}), setTimeout: cb => { timers.push(cb); return timers.length; }, clearTimeout() {} } };
   vm.runInNewContext(fs.readFileSync('public/js/image-loader.js', 'utf8'), context);
   function addImage() {
     const attrs = new Map([['data-src', `image-${images.length}.jpg`]]);
@@ -22,7 +23,7 @@ function imageHarness() {
     images.push(img);
     return {img,frame, fire: type => listeners[type]()};
   }
-  return {addImage, timers, start: context.window.initImageLoaders, load: context.window.loadDeferredImages};
+  return {events,addImage, timers, start: context.window.initImageLoaders, load: context.window.loadDeferredImages};
 }
 
 test('failed image stops loading and releases the queue', () => {
@@ -143,4 +144,24 @@ test('WeChat announces success and exposes a visible failure while retaining the
   assert.equal(bad.status.classList.contains('visually-hidden'),false);
   assert.equal(bad.sub.textContent,'realTimGong');
   bad.socialHandlers['social-card-reset']();assert.equal(bad.status.textContent,'');
+});
+
+
+test('constrained image loading stays serial and visible-only without IntersectionObserver',()=>{
+ const h=imageHarness(true), a=h.addImage(), b=h.addImage();
+ b.img.setAttribute('data-srcset','large.jpg 2000w');
+ b.img.getBoundingClientRect=()=>({top:1200,bottom:1400,width:200,height:200});
+ h.start();
+ assert.equal(a.img.getAttribute('src'),'compact/image-0.jpg');
+ assert.equal(b.img.getAttribute('src'),undefined,'offscreen photos do not fetch');
+ a.img.complete=true;a.img.naturalWidth=200;a.fire('load');
+ assert.equal(b.img.getAttribute('src'),undefined);
+ assert.equal(h.events.scroll.options.capture,true,'dialog scrolling also reaches the fallback');
+ b.img.getBoundingClientRect=()=>({top:100,bottom:300,width:200,height:200});
+ h.events.scroll.fn();assert.equal(b.img.getAttribute('src'),'compact/image-1.jpg');
+ assert.equal(b.img.getAttribute('srcset'),undefined);
+ const c=h.addImage();h.load({getAttribute:()=> 'true',querySelectorAll:()=>[c.img]});
+ assert.equal(c.img.getAttribute('src'),undefined,'explicit images still respect the single-request budget');
+ b.img.complete=true;b.img.naturalWidth=200;b.fire('load');
+ assert.equal(c.img.getAttribute('src'),'compact/image-2.jpg');
 });

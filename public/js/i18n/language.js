@@ -307,7 +307,7 @@ function applyLanguage(lang) {
   document.documentElement.lang = htmlLang;
   document.documentElement.setAttribute("data-language", resolved);
 
-  if ((!isLegalPage || resolved === "ko") && (resolved === "zh" || resolved === "zh-Hant" || resolved === "ja" || resolved === "ko")) {
+  if (!(window.SiteRuntime && window.SiteRuntime.lightweight) && (!isLegalPage || resolved === "ko") && (resolved === "zh" || resolved === "zh-Hant" || resolved === "ja" || resolved === "ko")) {
     var fontId = "language-fonts-" + resolved;
     if (!document.getElementById(fontId)) {
       var suffix = resolved === "ko" ? "KR" : resolved === "ja" ? "JP" : resolved === "zh-Hant" ? "TC" : "SC";

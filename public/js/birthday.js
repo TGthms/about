@@ -1,6 +1,7 @@
 /* A birthday surprise on December 21, in the visitor's local time. */
 (function () {
   "use strict";
+  if (window.SiteRuntime && window.SiteRuntime.lightweight) return;
 
   var source = document.currentScript.getAttribute("data-balloons-src");
   var motion = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;

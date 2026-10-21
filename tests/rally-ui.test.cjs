@@ -2,7 +2,7 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
-function harness(scenario, failContext=false){
+function harness(scenario, failContext=false, lightweight=false){
  const events={},windowEvents={},frames=new Map(),inert=[];
  let nextFrame=0, locks=0, document, challengeHooks, clears=0, contextCalls=0;
  const celebrations=[];
@@ -21,7 +21,7 @@ function harness(scenario, failContext=false){
  const countdown=el('DIV'),countdownValue=el('SPAN'),summary=el('P');
  const ids={'rally-summary':summary,'rally-countdown':countdown,'rally-countdown-value':countdownValue,'rally-open':opener,'rally-modal':modal,'rally-court':canvas,'rally-serve':serve,'rally-left':left,'rally-right':right,'rally-score':score,'rally-opponent-score':ai,'rally-best':best,'rally-status':status};
  document={activeElement:opener,hidden:false,documentElement:{getAttribute:()=> 'en'},getElementById:id=>ids[id],addEventListener:(key,fn)=>events[key]=fn};
- const context={document,localStorage:{getItem:()=>null,setItem(){}},MutationObserver:function(){this.observe=()=>{};},lockPageScroll:()=>locks++,unlockPageScroll:()=>locks--,setBackgroundInert:(_,on)=>inert.push(on),window:{getComputedStyle:()=>({getPropertyValue:()=> '#fff'}),requestAnimationFrame:fn=>{frames.set(++nextFrame,fn);return nextFrame;},cancelAnimationFrame:id=>frames.delete(id),addEventListener:(key,fn)=>windowEvents[key]=fn}};
+ const context={document,localStorage:{getItem:()=>null,setItem(){}},MutationObserver:function(){this.observe=()=>{};},lockPageScroll:()=>locks++,unlockPageScroll:()=>locks--,setBackgroundInert:(_,on)=>inert.push(on),window:{SiteRuntime:{lightweight},getComputedStyle:()=>({getPropertyValue:()=> '#fff'}),requestAnimationFrame:fn=>{frames.set(++nextFrame,fn);return nextFrame;},cancelAnimationFrame:id=>frames.delete(id),addEventListener:(key,fn)=>windowEvents[key]=fn}};
  vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8')+fs.readFileSync('public/js/rally-engine.js','utf8'),context);
  const SeededEngine=context.window.RallyEngine;
  context.window.RallyEngine=function(){return new SeededEngine("medium",12345);};
@@ -96,4 +96,19 @@ test('the canvas waits for intent and a failed allocation can retry on reopen',(
  h.canvas.focus();h.events.keydown({code:'Space',preventDefault(){}});assert.equal(h.frames.size,0);
  h.close.listeners.click();h.opener.listeners.click();assert.equal(h.contextCalls(),2);assert.equal(h.serve.disabled,false);
  h.serve.listeners.click();assert.equal(h.frames.size,1);
+});
+
+
+test('constrained Pong uses a small backing canvas, releases it on close, and can resume',()=>{
+ const h=harness(null,false,true);
+ assert.equal(h.contextCalls(),0);
+ h.opener.listeners.click();
+ assert.equal(h.canvas.width,300);assert.equal(h.canvas.height,160);
+ h.serve.listeners.click();for(let i=0;i<30;i++)h.step();
+ assert.equal(h.serve.textContent,'Pause');
+ h.close.listeners.click();
+ assert.equal(h.canvas.width,1);assert.equal(h.canvas.height,1);assert.equal(h.frames.size,0);
+ h.opener.listeners.click();
+ assert.equal(h.canvas.width,300);assert.equal(h.contextCalls(),2);
+ assert.equal(h.serve.textContent,'Resume');
 });

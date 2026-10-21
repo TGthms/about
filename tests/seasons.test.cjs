@@ -78,7 +78,7 @@ test('the head preloads only the selected hero photograph, including seasonal pr
   }
 });
 
-function harness(date, {reduced=false, hidden=false}={}) {
+function harness(date, {reduced=false, hidden=false, lightweight=false}={}) {
   let now=date.getTime(), id=0, plays=0, stops=0, locks=0, scrolls=0;
   const events={}, timers=new Map(), scripts=[], observers=[], busy=[];
   function node() {
@@ -107,7 +107,7 @@ function harness(date, {reduced=false, hidden=false}={}) {
     head:{appendChild:n=>scripts.push(n)},body:{appendChild(){}},
     addEventListener:(n,f)=>events[n]=f,
   };
-  const window={SeasonCalendar:{current:()=>calendar.state(new Date(now)),photo:calendar.photo},
+  const window={SiteRuntime:{lightweight},SeasonCalendar:{current:()=>calendar.state(new Date(now)),photo:calendar.photo,setPhoto:(image,occasion,phase)=>image.src=calendar.photo(occasion,phase)},
     matchMedia:()=>motion, innerWidth:1280,scrollTo(){scrolls++;},
     setTimeout:(fn,delay)=>{timers.set(++id,{fn,delay});return id;}, clearTimeout:id=>timers.delete(id),
     addEventListener:(n,f)=>events[n]=f,
@@ -308,4 +308,18 @@ test('Scripture occasions show the verse itself, cite the matching edition, and 
     assert.ok(h.nodes['season-reference'].textContent.includes(reference));
     assert.equal(h.photo.getAttribute('src'),'assets/seasonal/'+occasion+'.webp');
   }
+});
+
+
+test('constrained New Year keeps the clock and greeting without immersive stage, duplicate photos, or fireworks',async()=>{
+ const h=harness(new Date(2026,11,31,23,59,20),{lightweight:true});await h.loadContent();
+ assert.equal(h.nodes['season-seconds'].textContent,'40');
+ assert.equal(h.nodes['season-stage'].open,false);assert.equal(h.yearPhoto,undefined);
+ h.advance(new Date(2026,11,31,23,59,5+50));
+ assert.equal(h.nodes['season-seconds'].textContent,'05');assert.equal(h.nodes['season-stage'].open,false);
+ h.advance(new Date(2027,0,1));
+ assert.equal(h.nodes['season-label'].textContent,'Happy New Year');
+ assert.equal(h.photo.src,'assets/seasonal/new-year.webp');
+ assert.equal(h.scripts.some(s=>s.src.includes('fireworks')),false);assert.equal(h.plays,0);
+ assert.equal(h.locks,0);assert.equal(h.yearPhoto,undefined);
 });

@@ -14,6 +14,7 @@ function systemPrefersDark() {
 
 function systemPrefersReducedMotion() {
   return Boolean(
+    (window.SiteRuntime && window.SiteRuntime.lightweight) ||
     window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );

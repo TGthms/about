@@ -2,7 +2,8 @@
 /* Keep dialogs modal until their short exit has finished. */
 window.closeSiteDialog = function (modal, finish) {
   if (modal.classList.contains("is-closing")) return;
-  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduced = (window.SiteRuntime && window.SiteRuntime.lightweight) ||
+    (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   if (reduced || modal.hidden) { finish(); return; }
   modal.classList.add("is-closing");
   window.setTimeout(function () {

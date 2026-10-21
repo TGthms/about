@@ -9,6 +9,7 @@
  */
 (function () {
   "use strict";
+  if (window.SiteRuntime && window.SiteRuntime.lightweight) return;
 
   var ua = navigator.userAgent || "";
   var platform = navigator.platform || "";

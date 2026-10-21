@@ -3,6 +3,8 @@
   "use strict";
 
   var PHOTO_SRC = "assets/erhu/erhu-instrument.jpg";
+  var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
+  if (window.SiteRuntime) PHOTO_SRC = window.SiteRuntime.image(PHOTO_SRC);
   var photoEl = null;
   var VIDEO_SRC = "assets/erhu/always-with-me-performance.mp4";
   var openButton = document.getElementById("erhu-wiki-open");
@@ -38,7 +40,8 @@
       ? Math.min(100, Math.floor(buffered / duration * 100)) : null;
     var failed = videoLoadFailed || Boolean(videoEl.error);
     var ready = percent === 100 || (videoEl.readyState >= 3 && (!videoEl.paused || videoEl.networkState === 1));
-    videoStatus.hidden = ready && !failed;
+    var idle = lightweight && videoEl.paused && videoEl.readyState === 0 && videoEl.networkState !== 2;
+    videoStatus.hidden = (ready || idle) && !failed;
     videoProgress.hidden = percent === null || failed;
     if (percent !== null) videoProgress.value = percent;
     var label = failed ? copy.videoError : percent === null
@@ -86,17 +89,19 @@
 
   function ensureVideo(label) {
     if (!videoEl) {
+      videoLoadFailed = false;
       videoEl = document.createElement("video");
       videoEl.className = "erhu-wiki__video";
       videoEl.controls = true;
       videoEl.playsInline = true;
       videoEl.setAttribute("playsinline", "");
       videoEl.setAttribute("webkit-playsinline", "");
-      videoEl.preload = "auto";
+      videoEl.preload = lightweight ? "none" : "auto";
       var sourceEl = document.createElement("source");
       sourceEl.src = VIDEO_SRC;
       sourceEl.type = "video/mp4";
       sourceEl.addEventListener("error", function () {
+        if (sourceEl.parentNode !== videoEl) return;
         videoLoadFailed = true;
         updateVideoStatus();
       });
@@ -111,12 +116,21 @@
 
   function stashVideo() {
     if (!videoEl) return;
+    if (lightweight) {
+      videoEl.replaceChildren();
+      videoEl.removeAttribute("src");
+      try { videoEl.load(); } catch (_) {}
+      if (videoEl.parentNode) videoEl.parentNode.removeChild(videoEl);
+      videoEl = null;
+      videoStatus = null;
+      return;
+    }
     videoEl.tabIndex = -1;
     ensureStash().appendChild(videoEl);
   }
 
   function kickVideoLoad() {
-    if (!videoEl) return;
+    if (!videoEl || lightweight) return;
     videoEl.preload = "auto";
     if (!videoLoadFailed && !videoEl.error) {
       if (videoEl.readyState >= 1) return;
@@ -129,6 +143,7 @@
   }
 
   function canSilentPreload() {
+    if (lightweight) return false;
     var conn =
       navigator.connection ||
       navigator.mozConnection ||
@@ -150,6 +165,7 @@
   }
 
   function scheduleSilentPreload() {
+    if (lightweight) return;
     function run() {
       if (typeof requestIdleCallback === "function") {
         requestIdleCallback(startSilentPreload, { timeout: 2000 });
@@ -206,6 +222,11 @@
       body.appendChild(videoStatus);
       lastStatus = "";
       kickVideoLoad(); updateVideoStatus();
+      if (lightweight) {
+        var videoLink = text("a", "erhu-dialog-action", copy.videoTitle + " ↗");
+        videoLink.href = VIDEO_SRC;
+        body.appendChild(videoLink);
+      }
       body.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
     } else {
       var layout = text("div", "erhu-instrument-layout");

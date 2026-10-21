@@ -2,6 +2,7 @@
 (function () {
   "use strict";
   var calendar = window.SeasonCalendar;
+  var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
   var hero = document.getElementById("hero");
   if (!calendar || !hero) return;
   var sources = document.currentScript;
@@ -103,7 +104,7 @@
   }
 
   function upgradeClock() {
-    if (motion.matches || document.hidden || suspended) return;
+    if (lightweight || motion.matches || document.hidden || suspended) return;
     if (window.customElements && window.customElements.get("number-flow")) {
       if (!flows && !clock.hidden) {
         minutes = numberFlow(minutes, 9);
@@ -182,7 +183,7 @@
 
   function eligible(target) {
     var state = calendar.current();
-    return !suspended && !document.hidden && !motion.matches && played !== target && dismissed !== target &&
+    return !lightweight && !suspended && !document.hidden && !motion.matches && played !== target && dismissed !== target &&
       state.occasion === "new-year" && state.phase === "greeting" && state.target === target &&
       (witnessed !== target || Date.now() < target + 30000);
   }
@@ -238,7 +239,7 @@
   }
 
   function openStage() {
-    if (stage.open || stageSkipped === current.target || !pack() || typeof stage.showModal !== "function") return;
+    if (lightweight || stage.open || stageSkipped === current.target || !pack() || typeof stage.showModal !== "function") return;
     var busy = Array.prototype.some.call(document.querySelectorAll('[aria-modal="true"], dialog[open]'), function (el) {
       return el !== stage && !el.hidden && el.getClientRects().length;
     });
@@ -293,6 +294,10 @@
   }
 
   function prepareYearPhoto() {
+    if (lightweight) {
+      if (current.phase === "greeting") calendar.setPhoto(photo, "new-year", "greeting");
+      return;
+    }
     var src = calendar.photo("new-year", "greeting");
     if (yearPhoto || yearPhotoFailed || photo.getAttribute("src") === src) return;
     var image = document.createElement("img");
@@ -381,7 +386,7 @@
       setNumbers(remaining);
       upgradeClock();
     }
-    if (current.phase === "countdown" && remaining <= 60 && !motion.matches && !scripts.fireworks) {
+    if (!lightweight && current.phase === "countdown" && remaining <= 60 && !motion.matches && !scripts.fireworks) {
       load("fireworks").catch(function () {});
     }
     celebrate();
