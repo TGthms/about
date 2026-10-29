@@ -29,30 +29,30 @@ function harness({lite=false,reduced=false,saveData=false,firstLoaded=true}={}) 
   return {advance(ms){clock+=ms;},frame,image,label,button,card,root,requests,timers,events,windowEvents,urls,nodes,document,tick,visible(v){observer?.([{isIntersecting:v}]);},mutate(){mutate?.();},motion(v){motion.matches=v;motionChanged?.();},timersOf(ms){return [...timers.values()].filter(t=>t.ms===ms).length;}};
 }
 test('gallery loads only its visible next photo, updates location and destination, and releases its old layer',()=>{
- const h=harness();assert.equal(h.requests.length,0);assert.equal(h.timersOf(3000),0);
- h.visible(true);h.tick(3000);assert.equal(h.requests.length,1);assert.ok(h.requests[0].src.endsWith('disneyland.webp'));
+ const h=harness();assert.equal(h.requests.length,0);assert.equal(h.timersOf(4000),0);
+ h.visible(true);h.tick(4000);assert.equal(h.requests.length,1);assert.ok(h.requests[0].src.endsWith('disneyland.webp'));
  h.requests[0].onload();h.tick(160);assert.equal(h.label.textContent,'Anaheim, CA');assert.equal(h.urls.at(-1),'disneyland.jpeg');
  h.tick(1100);const layers=h.frame.children;assert.equal(layers.length,2);assert.equal(layers.filter(l=>l.style.backgroundImage).length,1);
- assert.equal(h.timersOf(3000),1);assert.equal(h.image.removed,true);
+ assert.equal(h.timersOf(4000),1);assert.equal(h.image.removed,true);
 });
 test('offscreen, hidden tabs, dialogs, and pause cancel requests and do not rotate until resumed',()=>{
- const h=harness();h.visible(true);h.tick(3000);const pending=h.requests[0];h.visible(false);
+ const h=harness();h.visible(true);h.tick(4000);const pending=h.requests[0];h.visible(false);
  assert.equal(pending.onload,null);assert.equal(h.timers.size,0);
  h.visible(true);h.button.events.click();assert.equal(h.button.attrs['aria-label'],'Resume photo slideshow');assert.equal(h.timers.size,0);
- h.button.events.focusin?.();h.card.events.focusin({target:h.button});h.button.events.click();assert.equal(h.timersOf(3000),1,'keyboard resume works while the pause control stays focused');
+ h.button.events.focusin?.();h.card.events.focusin({target:h.button});h.button.events.click();assert.equal(h.timersOf(4000),1,'keyboard resume works while the pause control stays focused');
  h.document.hidden=true;h.events.visibilitychange();assert.equal(h.timers.size,0);
- h.document.hidden=false;h.events.visibilitychange();assert.equal(h.timersOf(3000),1);
+ h.document.hidden=false;h.events.visibilitychange();assert.equal(h.timersOf(4000),1);
  h.root.classList.add('page-scroll-locked');h.mutate();assert.equal(h.timers.size,0);
- h.root.classList.remove('page-scroll-locked');h.mutate();assert.equal(h.timersOf(3000),1);
- h.windowEvents.pagehide();assert.equal(h.timers.size,0);h.windowEvents.pageshow();assert.equal(h.timersOf(3000),1);
+ h.root.classList.remove('page-scroll-locked');h.mutate();assert.equal(h.timersOf(4000),1);
+ h.windowEvents.pagehide();assert.equal(h.timers.size,0);h.windowEvents.pageshow();assert.equal(h.timersOf(4000),1);
 });
 test('Watch, data-saving, and reduced-motion views keep a still photo with no extra image or scheduler',()=>{
  for(const opts of [{lite:true},{reduced:true},{saveData:true}]){const h=harness(opts);h.visible(true);assert.equal(h.requests.length,0);assert.equal(h.frame.children.length,0);assert.equal(h.timers.size,0);assert.equal(h.button.hidden,true);assert.equal(h.image.removed,undefined);}
- const h=harness({reduced:true});h.visible(true);h.motion(false);assert.equal(h.frame.children.length,2);assert.equal(h.timersOf(3000),1);h.motion(true);assert.equal(h.timers.size,0);
+ const h=harness({reduced:true});h.visible(true);h.motion(false);assert.equal(h.frame.children.length,2);assert.equal(h.timersOf(4000),1);h.motion(true);assert.equal(h.timers.size,0);
 });
 test('failed or timed-out next photos leave the current photograph, label, and destination intact',()=>{
- const h=harness();h.visible(true);h.tick(3000);h.requests[0].onerror();assert.equal(h.label.textContent,'Monterey County, CA');assert.equal(h.urls.at(-1),'bixby_bridge.jpeg');assert.equal(h.timersOf(3000),1);
- h.tick(3000);h.tick(12000);assert.equal(h.label.textContent,'Monterey County, CA');assert.equal(h.timersOf(3000),1);
+ const h=harness();h.visible(true);h.tick(4000);h.requests[0].onerror();assert.equal(h.label.textContent,'Monterey County, CA');assert.equal(h.urls.at(-1),'bixby_bridge.jpeg');assert.equal(h.timersOf(4000),1);
+ h.tick(4000);h.tick(12000);assert.equal(h.label.textContent,'Monterey County, CA');assert.equal(h.timersOf(4000),1);
 });
 test('gallery catalog has local bounded assets for every reference photo, and all six languages cover personal additions',()=>{
  const c={window:{}};vm.runInNewContext(fs.readFileSync('public/js/gallery-photos.js','utf8'),c);assert.equal(c.window.GALLERY_PHOTOS.length,122);
@@ -65,16 +65,16 @@ test('gallery catalog has local bounded assets for every reference photo, and al
 
 test('a slow first photograph never starts a second request before its own image is ready',()=>{
  const h=harness({firstLoaded:false});h.visible(true);assert.equal(h.timers.size,0);assert.equal(h.requests.length,0);
- h.frame.classList.add('is-img-loading');h.image.complete=true;h.image.naturalWidth=1200;h.image.events.load();assert.equal(h.timersOf(3000),1);
+ h.frame.classList.add('is-img-loading');h.image.complete=true;h.image.naturalWidth=1200;h.image.events.load();assert.equal(h.timersOf(4000),1);
  assert.equal(h.frame.classList.contains('is-img-loading'),false,'the shared loading label clears even when its original image is detached');
  assert.equal(h.frame.classList.contains('is-img-ready'),true);
 });
 
 test('the interval indicator freezes on pause and resumes with the same remaining time',()=>{
  const h=harness();h.visible(true);
- assert.equal(h.frame.style['--gallery-interval'],'3000ms');assert.equal(h.frame.classList.contains('is-gallery-running'),true);
+ assert.equal(h.frame.style['--gallery-interval'],'4000ms');assert.equal(h.frame.classList.contains('is-gallery-running'),true);
  h.advance(1000);h.button.events.click();assert.equal(h.timers.size,0);assert.equal(h.frame.classList.contains('is-gallery-timing'),true);assert.equal(h.frame.classList.contains('is-gallery-running'),false);
- h.advance(10000);h.button.events.click();assert.equal(h.timersOf(2000),1);assert.equal(h.frame.classList.contains('is-gallery-running'),true);
- h.tick(2000);assert.equal(h.requests.length,1);assert.equal(h.frame.classList.contains('is-gallery-running'),false,'the complete indicator holds while the next image loads');
- h.requests[0].onload();assert.equal(h.timersOf(3000),1,'a new photograph receives its own full interval');
+ h.advance(10000);h.button.events.click();assert.equal(h.timersOf(3000),1);assert.equal(h.frame.classList.contains('is-gallery-running'),true);
+ h.tick(3000);assert.equal(h.requests.length,1);assert.equal(h.frame.classList.contains('is-gallery-running'),false,'the complete indicator holds while the next image loads');
+ h.requests[0].onload();assert.equal(h.timersOf(4000),1,'a new photograph receives its own full interval');
 });

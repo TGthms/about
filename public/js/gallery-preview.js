@@ -1,4 +1,4 @@
-/* One visible photograph, with a three-second shuffle cadence. */
+/* One visible photograph, with a four-second shuffle cadence. */
 (function () {
   "use strict";
   var frame = document.getElementById("gallery-preview");
@@ -23,7 +23,7 @@
   var timer = 0, captionTimer = 0, exitTimer = 0, requestTimer = 0, pending = null;
   var generation = 0;
   var observer = null;
-  var interval = 3000, remaining = interval, startedAt = 0;
+  var interval = 4000, remaining = interval, startedAt = 0;
 
   function now() { return window.performance ? window.performance.now() : Date.now(); }
   function resetInterval() {
