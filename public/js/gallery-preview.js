@@ -1,4 +1,4 @@
-/* One visible photograph, with the travel guide's six-second shuffle cadence. */
+/* One visible photograph, with a four-second shuffle cadence. */
 (function () {
   "use strict";
   var frame = document.getElementById("gallery-preview");
@@ -66,7 +66,7 @@
   }
   function schedule() {
     if (!allowed() || !layers || timer || pending) return;
-    timer = window.setTimeout(function () { timer = 0; next(); }, 6000);
+    timer = window.setTimeout(function () { timer = 0; next(); }, 4000);
   }
   function sync() {
     copy();

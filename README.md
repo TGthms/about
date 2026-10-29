@@ -110,7 +110,7 @@ The curated timeline ends at v16; its summary includes seasonal celebrations. Th
 
 The Photography interest links directly to the travel gallery using the selected
 main or backup host. Its project preview shares the travel guide's 122-photo
-catalog, with one photo visible, a six-second cadence, a soft crossfade and zoom,
+catalog, with one photo visible, a four-second cadence, a soft crossfade and zoom,
 and a Public Sans location label. Selecting the project opens the currently
 displayed photo. Local WebPs are bounded to 1200 pixels per edge and requested
 one at a time, only while the preview is visible. Rotation pauses on hover,
