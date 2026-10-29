@@ -329,7 +329,7 @@ def shell(public, **values):
     template = (ROOT / 'templates/notes-shell.html').read_text()
     for key, value in values.items(): template = template.replace('{{' + key + '}}', str(value))
     if re.search(r'{{\w+}}', template): raise ValueError('Incomplete page template.')
-    return resource_versions(template, public)
+    return '\n'.join(line.rstrip() for line in resource_versions(template, public).splitlines()) + '\n'
 
 def page(public, content, prefix='', kind='index', post=None, image='', image_alt='', alternates=''):
     headline = title(post) + ' — Tim G' if post else 'Notes — Tim G'
