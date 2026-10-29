@@ -2,7 +2,7 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-function harness({lite=false,reduced=false,saveData=false,firstLoaded=true}={}) {
+function harness({lite=false,reduced=false,saveData=false,firstLoaded=true,finePointer=false}={}) {
   const timers=new Map(),requests=[],events={},windowEvents={},nodes=[];let id=0,clock=0,observer,mutate,motionChanged;
   function element(){const classes=new Set();const e={attrs:{},style:{setProperty(k,v){this[k]=v;}},children:[],events:{},hidden:false,textContent:'',offsetWidth:400,
     classList:{add(...keys){keys.forEach(k=>classes.add(k));},remove(...keys){keys.forEach(k=>classes.delete(k));},contains:k=>classes.has(k),toggle(k,on){on?classes.add(k):classes.delete(k);}},
@@ -18,7 +18,7 @@ function harness({lite=false,reduced=false,saveData=false,firstLoaded=true}={}) 
   const document={hidden:false,documentElement:root,getElementById:()=>frame,createElement:()=>element(),addEventListener(k,f){events[k]=f;}};
   const motion={matches:reduced,addEventListener(k,f){motionChanged=f;}};
   const window={performance:{now:()=>clock},SiteRuntime:{lightweight:lite},GALLERY_PHOTOS:catalog,setTimeout(fn,ms){const i=++id;timers.set(i,{fn,ms,at:clock+ms});return i;},clearTimeout(i){timers.delete(i);},addEventListener(k,f){windowEvents[k]=f;},
-    matchMedia:q=>q.includes('reduced-motion')?motion:{matches:false}};
+    matchMedia:q=>q.includes('reduced-motion')?motion:{matches:finePointer}};
   window.IntersectionObserver=function(fn){observer=fn;this.observe=()=>{};};window.MutationObserver=function(fn){mutate=fn;this.observe=()=>{};};
   function Image(){const i=element();requests.push(i);return i;}
   const urls=[];
@@ -77,4 +77,19 @@ test('the interval indicator freezes on pause and resumes with the same remainin
  h.advance(10000);h.button.events.click();assert.equal(h.timersOf(3000),1);assert.equal(h.frame.classList.contains('is-gallery-running'),true);
  h.tick(3000);assert.equal(h.requests.length,1);assert.equal(h.frame.classList.contains('is-gallery-running'),false,'the complete indicator holds while the next image loads');
  h.requests[0].onload();assert.equal(h.timersOf(4000),1,'a new photograph receives its own full interval');
+});
+
+test('fine-pointer hover does not pause or restart the running gallery interval',()=>{
+ const h=harness({finePointer:true});h.visible(true);h.advance(1000);
+ h.card.events.pointerenter?.();
+ assert.equal(h.frame.classList.contains('is-gallery-running'),true);
+ assert.equal(h.timersOf(4000),1);
+ h.tick(4000);assert.equal(h.requests.length,1);
+ assert.equal(h.card.events.pointerenter,undefined);
+});
+
+test('jumping to the gallery container keeps the slideshow running; keyboard links still pause',()=>{
+ const h=harness();h.visible(true);h.card.events.focusin({target:h.card});
+ assert.equal(h.frame.classList.contains('is-gallery-running'),true);
+ h.card.events.focusin({target:{}});assert.equal(h.frame.classList.contains('is-gallery-running'),false);
 });

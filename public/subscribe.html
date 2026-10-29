@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="js/runtime.js?v=45f7c2ef98dd"></script>
+  <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
+  <meta name="theme-color" content="#fafafa" id="meta-theme-color" />
+  <title>Follow updates — Tim G</title>
+  <meta name="description" content="New notes, in your own feed reader." />
+  <meta name="author" content="Tim G" />
+  <link rel="canonical" href="https://timgong.me/subscribe.html" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://timgong.me/subscribe.html" />
+  <meta property="og:title" content="Follow updates — Tim G" />
+  <meta property="og:description" content="New notes, in your own feed reader." />
+  <meta property="og:image" content="https://timgong.me/og-image.png" />
+  <meta property="og:image:alt" content="Follow updates — Tim G" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Follow updates — Tim G" />
+  <meta name="twitter:description" content="New notes, in your own feed reader." />
+  <meta name="twitter:image" content="https://timgong.me/og-image.png" />
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="alternate" type="application/rss+xml" title="Tim G — Notes" href="feed.xml" />
+  <link rel="stylesheet" href="css/styles.css?v=55f6eb7fb62b" />
+  <link rel="stylesheet" href="css/notes.css?v=87ebda9b9ed3" />
+  <link rel="stylesheet" href="css/compact.css?v=13aee3eb3a19" />
+  <script>
+    (function () {
+      try {
+        var theme = sessionStorage.getItem("timg-theme-session");
+        if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fafafa";
+      } catch (_) {}
+    })();
+  </script>
+
+</head>
+<body class="notes-page" data-notes-kind="follow">
+  <a class="skip-link" href="#main" data-page-root data-i18n="skip">Skip to content</a>
+  <header class="top-bar" data-page-root>
+    <div class="top-bar__inner">
+      <a class="site-signature" href="index.html" aria-label="Tim G — home">tg<span aria-hidden="true">.</span></a>
+      <nav class="site-nav" aria-label="Sections" data-i18n-aria="a11y.sections">
+        <a href="index.html" data-i18n="notes.home">Home</a>
+        <a href="notes.html" aria-current="page" data-i18n="notes.title">Notes</a>
+      </nav>
+      <div data-preferences-root></div>
+    </div>
+  </header>
+  <main id="main" class="notes-main" data-page-root><article class="notes-follow"><a class="notes-back" href="notes.html"><span data-i18n="notes.all">All notes</span> →</a><header class="notes-hero"><div><h1 data-i18n="notes.followTitle">Follow updates</h1><p class="notes-hero__intro" data-i18n="notes.followIntro">New notes, in your own feed reader.</p></div></header><p data-i18n="notes.followExplain">RSS brings new posts from the sites you follow into one app. No account on this site, email address, or notifications needed.</p><ol class="notes-follow__steps"><li data-i18n="notes.followStep1">Open your preferred feed reader.</li><li data-i18n="notes.followStep2">Choose its option to follow a website or add a feed.</li><li data-i18n="notes.followStep3">Paste the address below. New notes will appear there.</li></ol><label class="notes-follow__label" for="feed-address" data-i18n="notes.feedAddress">Feed address</label><div class="notes-follow__copy"><input id="feed-address" type="url" readonly value="https://timgong.me/feed.xml" /><button type="button" id="feed-copy" hidden data-i18n="notes.copyFeed">Copy feed link</button></div><p id="feed-status" class="notes-follow__status" role="status" aria-live="polite"></p><a class="notes-feed-link" href="feed.xml"><svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg><span data-i18n="notes.openFeed">Open RSS feed</span> ↗</a></article></main>
+  <footer class="footer notes-footer" data-page-root>
+    <div class="container footer__inner">
+      <p class="notes-footer__signature">Tim G<span aria-hidden="true">.</span></p>
+      <nav class="footer__legal" aria-label="Legal" data-i18n-aria="footer.legalNav">
+        <a href="privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
+        <span aria-hidden="true">·</span>
+        <a href="terms.html" data-i18n="footer.terms">Terms of Use</a>
+      </nav>
+      <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
+      <p class="footer__copy">&copy; <span id="year">2026</span> Tim G</p>
+    </div>
+  </footer>
+  <script src="js/preferences.js?v=dc8aac2d324d"></script>
+  <script src="js/i18n/data.js?v=2d0274c2d7d3"></script>
+  <script src="js/i18n/core.js?v=9c901657f9db"></script>
+  <script src="js/i18n/theme.js?v=3ee595887b78"></script>
+  <script src="js/i18n/controls.js?v=9183ed691488"></script>
+  <script src="js/i18n/project-host.js?v=35b56e6bdb1d"></script>
+  <script src="js/i18n/language.js?v=957cf239f2ea"></script>
+  <script src="js/notes.js?v=b43158f13af5"></script>
+</body>
+</html>

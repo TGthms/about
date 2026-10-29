@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 ORIGIN = 'https://timgong.me'
 ROOT = Path(__file__).resolve().parents[2]
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
+FONTS = {'default', 'sans', 'serif', 'mono'}
 LOCALES = {'en': 'en_US', 'es': 'es_ES', 'zh': 'zh_CN', 'zh-Hant': 'zh_TW', 'ja': 'ja_JP', 'ko': 'ko_KR'}
 RSS_ICON = '<svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg>'
 
@@ -88,6 +89,8 @@ class Media:
         return path
 
     def image(self, value, alt='', prefix='../', loading='lazy'):
+        if not str(alt).strip() and self.preview:
+            alt = 'Image description pending'
         if not str(alt).strip():
             raise ValueError('Add a short image description (alternative text) before publishing.')
         from PIL import Image, ImageOps, ImageCms
@@ -274,13 +277,16 @@ def read_posts(private, preview_path=None):
         date(value.get('date'))
         value['slug'], value['language'] = slug, language(value.get('language'))
         if value.get('highlight_until'): date(value['highlight_until'])
+        if value.get('font', 'default') not in FONTS: raise ValueError('Choose one of the available reading fonts.')
         versions = [value]
         seen = {value['language']}
         for translation in value.get('translations') or []:
-            if translation.get('published') is not True: continue
+            if translation.get('published') is not True and not preview_path: continue
+            if preview_path and not (translation.get('body') or translation.get('blocks')): continue
             code = language(translation.get('language'))
             if code in seen: raise ValueError('Each translation must have a different language.')
             seen.add(code)
+            if translation.get('font', value.get('font', 'default')) not in FONTS: raise ValueError('Choose one of the available reading fonts.')
             versions.append({**value, 'title': '', 'summary': '', 'body': '', 'blocks': [], **translation, 'language': code, 'translations': [], 'slug': slug, 'date': value['date']})
         value['_versions'] = versions
         posts.append(value)
@@ -297,7 +303,7 @@ def render_post(version, original, media, prefix='../'):
     versions = version_links(original, prefix).replace(f'data-note-version="{esc(version["language"])}"', f'aria-current="page" data-note-version="{esc(version["language"])}"')
     language_picker = ('<span data-note-language-label data-i18n="notes.readIn">Read in</span>' + versions) if len(original['_versions']) > 1 else f'<span data-note-language-label data-note-original="{esc(original["language"])}">Written in {esc(LANGS.get(original["language"], original["language"]))}</span>'
     heading = f'<h1>{esc(version["title"])}</h1>' if str(version.get('title') or '').strip() else '<h1 class="visually-hidden">' + esc(title(version)) + '</h1>'
-    return (f'<article class="notes-post" lang="{esc(version["language"])}">'
+    return (f'<article class="notes-post" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}">'
             f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>'
             f'<header class="note-header"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>{heading}' +
             (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + '</header>' +
@@ -308,19 +314,23 @@ def render_post(version, original, media, prefix='../'):
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></footer></article>')
 
+def variant_data(post, prefix):
+    variants = [{'language': v['language'], 'title': title(v), 'summary': summary(v), 'href': prefix + post_filename(v, post)} for v in post['_versions']]
+    return 'data-note-versions="' + esc(json.dumps(variants, ensure_ascii=False, separators=(',', ':'))) + '"'
+
 def card(post, media, prefix):
     photo, alt = first_photo(post)
     image = ''
     if photo:
         markup, _ = media.image(photo, alt, prefix)
         image = markup.replace('<img ', '<img class="note-card__image" ', 1)
-    heading = f'<h2 class="note-card__title">{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
+    heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
     text = summary(post)
     return (f'<li class="note-card" lang="{esc(post["language"])}"><time class="note-card__date" datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>'
-            f'<a class="note-card__link" href="{prefix}{post_filename(post, post)}">{heading}' +
-            (f'<p class="note-card__excerpt">{esc(text)}</p>' if text else '') + image +
+            f'<a class="note-card__link" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}">{heading}' +
+            (f'<p class="note-card__excerpt" data-note-summary>{esc(text)}</p>' if text else '') + image +
             '<span class="note-card__meta"><span class="note-card__more"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span>' +
-            f'<span>{esc(LANGS.get(post["language"], post["language"]))}</span></span></a></li>')
+            f'<span data-note-language-name>{esc(LANGS.get(post["language"], post["language"]))}</span></span></a></li>')
 
 def resource_versions(markup, public):
     def replace(match):
@@ -337,9 +347,9 @@ def shell(public, **values):
     return '\n'.join(line.rstrip() for line in resource_versions(template, public).splitlines()) + '\n'
 
 def page(public, content, prefix='', kind='index', post=None, image='', image_alt='', alternates=''):
-    headline = title(post) + ' — Tim G' if post else 'Notes — Tim G'
-    desc = summary(post) if post else 'Small updates, photographs, and things along the way.'
-    canonical = ORIGIN + '/' + (post['_filename'] if post else ('notes.html' if not prefix else 'notes/page-1.html'))
+    headline = title(post) + ' — Tim G' if post else ('Follow updates — Tim G' if kind == 'follow' else 'Notes — Tim G')
+    desc = summary(post) if post else ('New notes, in your own feed reader.' if kind == 'follow' else 'Small updates, photographs, and things along the way.')
+    canonical = ORIGIN + '/' + (post['_filename'] if post else ('subscribe.html' if kind == 'follow' else ('notes.html' if not prefix else 'notes/page-1.html')))
     structured = ''
     if post:
         data = {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': title(post), 'datePublished': post['date'], 'inLanguage': post['language'], 'author': {'@type': 'Person', 'name': 'Tim G', 'url': ORIGIN + '/'}, 'url': canonical, 'description': desc}
@@ -347,22 +357,51 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         structured = '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace('<', '\\u003c') + '</script>'
     return shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
 
-def entrance(posts):
+def entrance(posts, media):
     intro = ('<section class="notes-entrance" id="notes" aria-labelledby="notes-entrance-title"><div class="container">'
              '<a class="notes-entrance__main" href="notes.html"><span class="notes-entrance__heading"><span id="notes-entrance-title" data-i18n="notes.title">Notes</span>' + RSS_ICON + '</span>'
              '<span class="notes-entrance__intro" data-i18n="notes.intro">Small updates, photographs, and things along the way.</span>'
              '<span class="notes-entrance__action"><span data-i18n="notes.explore">Explore notes</span> <span aria-hidden="true">→</span></span></a>')
     def latest(post, attr, label):
-        return f'<a class="notes-entrance__latest" {attr} href="{post_filename(post, post)}"><span data-i18n="notes.{label}">{"A little update" if label == "featured" else "Latest note"}</span><span lang="{esc(post["language"])}">{esc(title(post))}</span><time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time></a>'
+        photo, alt = first_photo(post)
+        image = ''
+        if photo:
+            markup, _ = media.image(photo, alt, prefix='')
+            image = '<span class="notes-spotlight__image">' + markup + '</span>'
+        return (f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {attr} {variant_data(post, "")} href="{post_filename(post, post)}">' + image +
+                '<span class="notes-spotlight__copy">' +
+                f'<span class="notes-spotlight__eyebrow" data-i18n="notes.{label}">{"A little update" if label == "featured" else "Latest note"}</span>' +
+                f'<span class="notes-spotlight__title" lang="{esc(post["language"])}" data-note-title>{esc(title(post))}</span>' +
+                f'<span class="notes-spotlight__summary" lang="{esc(post["language"])}" data-note-summary>{esc(summary(post))}</span>' +
+                f'<time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' +
+                '<span class="notes-spotlight__action"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span></span></a>')
     if posts:
         today = dt.datetime.now(dt.timezone.utc).date()
         highlights = [p for p in posts if p.get('highlight') is True and (not p.get('highlight_until') or date(p['highlight_until']) >= today)]
         if highlights:
             chosen = highlights[0]
             intro += latest(chosen, f'data-note-highlight-until="{esc(chosen.get("highlight_until"))}"', 'featured')
-            intro += latest(posts[0], 'data-notes-latest hidden', 'latest')
+            # A featured latest post needs no duplicate fallback, even after expiry.
+            if chosen['slug'] != posts[0]['slug']:
+                intro += latest(posts[0], 'data-notes-latest hidden', 'latest')
         else: intro += latest(posts[0], 'data-notes-latest', 'latest')
     return intro + '</div></section>'
+
+
+def follow_page(public):
+    content = ('<article class="notes-follow"><a class="notes-back" href="notes.html"><span data-i18n="notes.all">All notes</span> →</a>'
+        '<header class="notes-hero"><div><h1 data-i18n="notes.followTitle">Follow updates</h1>'
+        '<p class="notes-hero__intro" data-i18n="notes.followIntro">New notes, in your own feed reader.</p></div></header>'
+        '<p data-i18n="notes.followExplain">RSS brings new posts from the sites you follow into one app. No account on this site, email address, or notifications needed.</p>'
+        '<ol class="notes-follow__steps"><li data-i18n="notes.followStep1">Open your preferred feed reader.</li>'
+        '<li data-i18n="notes.followStep2">Choose its option to follow a website or add a feed.</li>'
+        '<li data-i18n="notes.followStep3">Paste the address below. New notes will appear there.</li></ol>'
+        '<label class="notes-follow__label" for="feed-address" data-i18n="notes.feedAddress">Feed address</label>'
+        f'<div class="notes-follow__copy"><input id="feed-address" type="url" readonly value="{ORIGIN}/feed.xml" />'
+        '<button type="button" id="feed-copy" hidden data-i18n="notes.copyFeed">Copy feed link</button></div>'
+        '<p id="feed-status" class="notes-follow__status" role="status" aria-live="polite"></p>'
+        '<a class="notes-feed-link" href="feed.xml">' + RSS_ICON + '<span data-i18n="notes.openFeed">Open RSS feed</span> ↗</a></article>')
+    return page(public, content, kind='follow')
 
 def build(private, public, preview_path=None, preview_output=None):
     private, public = private.resolve(), public.resolve()
@@ -407,7 +446,7 @@ def build(private, public, preview_path=None, preview_output=None):
         for index in range(page_count):
             prefix = '' if index == 0 else '../'
             filename = 'notes.html' if index == 0 else f'notes/page-{index + 1}.html'
-            hero = '<header class="notes-hero"><div><h1 data-i18n="notes.title">Notes</h1><p class="notes-hero__intro" data-i18n="notes.intro">Small updates, photographs, and things along the way.</p></div>' + f'<a class="notes-feed-link" href="{prefix}feed.xml">{RSS_ICON}<span data-i18n="notes.rss">Follow via RSS</span></a></header>'
+            hero = '<header class="notes-hero"><div><h1 data-i18n="notes.title">Notes</h1><p class="notes-hero__intro" data-i18n="notes.intro">Small updates, photographs, and things along the way.</p></div>' + f'<a class="notes-feed-link" href="{prefix}subscribe.html">{RSS_ICON}<span data-i18n="notes.followTitle">Follow updates</span></a></header>'
             entries = ''.join(card(p, media, prefix) for p in posts[index * 20:(index + 1) * 20])
             if not entries: entries = '<div class="notes-empty"><span class="notes-empty__mark">' + RSS_ICON + '</span><h2 data-i18n="notes.emptyTitle">Nothing here just yet.</h2><p data-i18n="notes.emptyText">A place for photographs, stories, and little updates.</p></div>'
             else: entries = '<ol class="notes-list" role="list">' + entries + '</ol>'
@@ -430,21 +469,24 @@ def build(private, public, preview_path=None, preview_output=None):
             for key, value in [('title', title(post)), ('link', url), ('description', summary(post)), ('pubDate', dt.datetime.combine(date(post['date']), dt.time(12), dt.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT'))]: ET.SubElement(item, key).text = value
             ET.SubElement(item, 'guid', {'isPermaLink': 'true'}).text = url
         ET.ElementTree(rss).write(stage / 'feed.xml', encoding='utf-8', xml_declaration=True)
+        home_entrance = entrance(posts, media)
+        (stage / 'subscribe.html').write_text(follow_page(public))
+        urls.append((ORIGIN + '/subscribe.html', ''))
         # All content has passed validation before touching the deployment tree.
         for name in ('notes', 'assets/notes'):
             dest = public / name
             if dest.exists(): shutil.rmtree(dest)
             if (stage / name).exists(): shutil.copytree(stage / name, dest)
-        for name in ('notes.html', 'feed.xml'): shutil.copyfile(stage / name, public / name)
+        for name in ('notes.html', 'subscribe.html', 'feed.xml'): shutil.copyfile(stage / name, public / name)
         home = public / 'index.html'; markup = home_markup
-        markup, count = re.subn(r'<!-- notes-entrance:start -->.*?<!-- notes-entrance:end -->', lambda _: '<!-- notes-entrance:start -->\n' + entrance(posts) + '\n    <!-- notes-entrance:end -->', markup, flags=re.S)
+        markup, count = re.subn(r'<!-- notes-entrance:start -->.*?<!-- notes-entrance:end -->', lambda _: '<!-- notes-entrance:start -->\n' + home_entrance + '\n    <!-- notes-entrance:end -->', markup, flags=re.S)
         if count != 1: raise ValueError('The homepage Notes entrance marker is missing.')
         home.write_text(markup)
         namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9'; ET.register_namespace('', namespace)
         root = sitemap.getroot()
         for entry in list(root):
             location = entry.find('{' + namespace + '}loc')
-            if location is not None and (location.text == ORIGIN + '/notes.html' or location.text.startswith(ORIGIN + '/notes/')): root.remove(entry)
+            if location is not None and (location.text in (ORIGIN + '/notes.html', ORIGIN + '/subscribe.html') or location.text.startswith(ORIGIN + '/notes/')): root.remove(entry)
         for url, updated in urls:
             entry = ET.SubElement(root, '{' + namespace + '}url'); ET.SubElement(entry, '{' + namespace + '}loc').text = url
             if updated: ET.SubElement(entry, '{' + namespace + '}lastmod').text = updated

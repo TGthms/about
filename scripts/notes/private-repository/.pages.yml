@@ -93,11 +93,14 @@ content:
         order: desc
     actions:
       - name: preview-note
-        label: Preview privately
+        label: Build private preview
         scope: entry
         workflow: preview.yml
         ref: current
-        confirm: false
+        confirm:
+          title: Build a private preview
+          message: Save your changes first. When the run finishes, open its GitHub run and use the download link in the Summary. Unzip note-preview and open the HTML file. It will not open automatically.
+          button: Build preview
     fields:
       - name: title
         label: Title (optional)
@@ -120,6 +123,17 @@ content:
             - {name: ja, label: 日本語}
             - {name: ko, label: 한국어}
             - {name: es, label: Español}
+      - name: font
+        label: Reading font
+        type: select
+        default: default
+        description: Applies to this post’s text. Local fonts keep reading fast; the exact face depends on the reader’s device and language.
+        options:
+          values:
+            - {name: default, label: Site default}
+            - {name: sans, label: Sans serif — clean}
+            - {name: serif, label: Serif — literary}
+            - {name: mono, label: Monospace — notebook}
       - name: body
         label: Text
         component: text
@@ -138,6 +152,7 @@ content:
       - name: cover_alt
         label: Cover image description
         type: string
+        description: Required when you choose a cover. Describe the picture for people who cannot see it.
       - name: highlight
         label: Feature beneath About
         type: boolean
@@ -158,10 +173,17 @@ content:
             summary: "{language} — {title}"
         fields:
           - name: language
-            label: Language code
-            type: string
+            label: Language
+            type: select
             required: true
-            description: en, es, zh, zh-Hant, ja, ko, or another valid language code.
+            options:
+              values:
+                - {name: en, label: English}
+                - {name: zh, label: 简体中文}
+                - {name: zh-Hant, label: 繁體中文}
+                - {name: ja, label: 日本語}
+                - {name: ko, label: 한국어}
+                - {name: es, label: Español}
           - name: title
             label: Title (optional)
             type: string

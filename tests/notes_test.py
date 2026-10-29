@@ -166,4 +166,50 @@ class NotesTests(unittest.TestCase):
         self.assertIn('js/a-new-file.js. A CSS value is url(example).', markup)
         self.assertIn('src="../js/notes.js?v=', markup)
 
+    def test_featured_latest_is_one_card_and_other_highlights_have_hidden_fallback(self):
+        photo = self.image(size=(100, 60))
+        self.post(cover=photo, cover_alt='A cover', highlight=True, translations=[{'language':'ja', 'title':'お知らせ', 'body':'<p>こんにちは。</p>', 'published':True}, {'language':'ko', 'body':'PRIVATE_KOREAN', 'published':False}])
+        self.build()
+        home = (self.public / 'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
+        self.assertEqual(home.count('class="notes-spotlight '), 1)
+        self.assertIn('notes-spotlight__image', home)
+        self.assertIn('data-note-versions=', home)
+        self.assertIn('お知らせ', home)
+        self.assertNotIn('PRIVATE_KOREAN', home)
+        self.post('newer', date='2026-10-29')
+        self.build()
+        home = (self.public / 'index.html').read_text()
+        self.assertIn('data-notes-latest hidden', home)
+        self.assertIn('.notes-spotlight[hidden] { display: none;', (self.public / 'css/home.css').read_text())
+
+    def test_fonts_are_bounded_and_reach_translations_and_preview(self):
+        draft = self.post(font='serif', translations=[{'language':'es', 'published':True, 'body':'<p>Hola.</p>'}])
+        self.build()
+        self.assertIn('data-note-font="serif"', (self.public / 'notes/example.es.html').read_text())
+        dest = self.root / 'preview'
+        notes.build(self.private, self.public, draft, dest)
+        self.assertIn('data-note-font="serif"', (dest / 'example.html').read_text())
+        self.post(font='bad" onclick="alert(1)')
+        with self.assertRaises(ValueError): self.build()
+
+    def test_previews_allow_missing_descriptions_but_publishing_still_requires_them(self):
+        photo = self.image(size=(100, 60))
+        draft = self.post(cover=photo, cover_alt='', blocks=[{'type':'photo', 'image':photo, 'alt':''}], translations=[{'language':'ko', 'published':False, 'body':'<p>비공개 번역</p>'}])
+        dest = self.root / 'preview'
+        notes.build(self.private, self.public, draft, dest)
+        self.assertTrue((dest / 'example.ko.html').exists())
+        self.assertIn('Image description pending', (dest / 'example.html').read_text())
+        with self.assertRaises(ValueError): self.build()
+        self.assertNotIn('비공개 번역', self.sinks())
+
+    def test_follow_link_opens_plain_html_with_copyable_rss_address(self):
+        self.post(); self.build()
+        archive = (self.public / 'notes.html').read_text()
+        follow = (self.public / 'subscribe.html').read_text()
+        self.assertIn('href="subscribe.html"', archive)
+        self.assertIn('id="feed-address"', follow)
+        self.assertIn('value="https://timgong.me/feed.xml"', follow)
+        self.assertIn('href="feed.xml"', follow)
+        self.assertIn('https://timgong.me/subscribe.html', (self.public / 'sitemap.xml').read_text())
+
 if __name__ == '__main__': unittest.main()

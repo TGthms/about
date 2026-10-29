@@ -19,7 +19,7 @@
     image.setAttribute("data-src", current.src);
     label.textContent = current.location;
   }
-  var layers = null, active = 0, visible = false, focused = false, hovered = false, paused = false;
+  var layers = null, active = 0, visible = false, focused = false, paused = false;
   var timer = 0, captionTimer = 0, exitTimer = 0, requestTimer = 0, pending = null;
   var generation = 0;
   var observer = null;
@@ -49,7 +49,7 @@
   }
   function allowed() {
     return !constrained && !(motion && motion.matches) && visible && !document.hidden &&
-      !document.documentElement.classList.contains("page-scroll-locked") && !paused && !focused && !hovered;
+      !document.documentElement.classList.contains("page-scroll-locked") && !paused && !focused;
   }
   function settle() {
     window.clearTimeout(captionTimer); window.clearTimeout(exitTimer);
@@ -158,14 +158,10 @@
   image.addEventListener("load", prepare);
   prepare();
   toggle.addEventListener("click", function () { paused = !paused; sync(); });
-  card.addEventListener("focusin", function (event) { focused = event.target !== toggle; sync(); });
+  card.addEventListener("focusin", function (event) { focused = event.target !== toggle && event.target !== card; sync(); });
   card.addEventListener("focusout", function (event) {
     if (!event.relatedTarget || !card.contains(event.relatedTarget)) { focused = false; sync(); }
   });
-  if (window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-    card.addEventListener("pointerenter", function () { hovered = true; sync(); });
-    card.addEventListener("pointerleave", function () { hovered = false; sync(); });
-  }
   document.addEventListener("visibilitychange", sync);
   window.addEventListener("pagehide", stop);
   window.addEventListener("pageshow", sync);

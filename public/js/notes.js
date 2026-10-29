@@ -35,6 +35,27 @@
       document.querySelectorAll('meta[property="og:title"], meta[name="twitter:title"]').forEach(function (meta) { meta.setAttribute("content", pageTitle); });
       document.querySelectorAll('meta[name="description"], meta[property="og:description"], meta[name="twitter:description"]').forEach(function (meta) { meta.setAttribute("content", pack.notes.intro); });
     }
+    if (isPage && document.body.getAttribute("data-notes-kind") === "follow") {
+      document.title = pack.notes.followTitle + " — Tim G";
+      document.querySelectorAll('meta[property="og:title"], meta[name="twitter:title"]').forEach(function (meta) { meta.setAttribute("content", document.title); });
+      document.querySelectorAll('meta[name="description"], meta[property="og:description"], meta[name="twitter:description"]').forEach(function (meta) { meta.setAttribute("content", pack.notes.followIntro); });
+    }
+    document.querySelectorAll("[data-note-versions]").forEach(function (link) {
+      try {
+        var variants = JSON.parse(link.getAttribute("data-note-versions"));
+        var chosen = variants.filter(function (version) { return version.language === lang; })[0] || variants[0];
+        if (!chosen) return;
+        link.setAttribute("href", chosen.href);
+        link.querySelectorAll("[data-note-title], [data-note-summary]").forEach(function (element) {
+          element.textContent = element.hasAttribute("data-note-title") ? chosen.title : chosen.summary;
+          element.lang = chosen.language;
+        });
+        var label = link.querySelector("[data-note-language-name]");
+        if (label) {
+          try { label.textContent = new Intl.DisplayNames([lang], { type: "language" }).of(chosen.language); } catch (_) { label.textContent = chosen.language; }
+        }
+      } catch (_) { /* The static original remains a usable fallback. */ }
+    });
     document.querySelectorAll("[data-note-date]").forEach(function (element) {
       var value = element.getAttribute("datetime");
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return;
@@ -51,9 +72,13 @@
     if (expiry) {
       var until = expiry.getAttribute("data-note-highlight-until");
       var expired = until && new Date(until + "T23:59:59").getTime() < Date.now();
-      expiry.hidden = Boolean(expired);
       var latest = document.querySelector("[data-notes-latest]");
+      expiry.hidden = Boolean(expired && latest);
       if (latest) latest.hidden = !expired;
+      else if (expired) {
+        var eyebrow = expiry.querySelector(".notes-spotlight__eyebrow");
+        if (eyebrow) eyebrow.textContent = pack.notes.latest;
+      }
     }
   }
 
@@ -86,6 +111,19 @@
   window.addEventListener("pageshow", function () { refresh(); preparePosters(); });
   window.addEventListener("pagehide", function () { if (posterObserver) posterObserver.disconnect(); });
   document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); preparePosters(); });
+
+  var feedCopy = document.getElementById("feed-copy");
+  if (feedCopy) {
+    feedCopy.hidden = false;
+    feedCopy.addEventListener("click", function () {
+      var address = document.getElementById("feed-address");
+      var status = document.getElementById("feed-status");
+      var words = (TRANSLATIONS[root.getAttribute("data-language")] || TRANSLATIONS.en).notes;
+      function failed() { address.focus(); address.select(); status.textContent = words.feedManual; }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(address.value).then(function () { status.textContent = words.feedCopied; }, failed);
+      else failed();
+    });
+  }
 
   var share = document.getElementById("note-share");
   if (!share) return;

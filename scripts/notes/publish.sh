@@ -14,7 +14,7 @@ for attempt in 1 2 3; do
   python tests/html-integrity.py
   python tests/notes_test.py
   git diff --check
-  git add public/index.html public/notes.html public/notes public/assets/notes public/feed.xml public/sitemap.xml
+  git add public/index.html public/notes.html public/subscribe.html public/notes public/assets/notes public/feed.xml public/sitemap.xml
   if git diff --cached --quiet; then
     git push --dry-run origin HEAD:main
     exit 0

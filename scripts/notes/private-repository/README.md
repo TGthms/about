@@ -6,7 +6,7 @@ Open [Pages CMS](https://app.pagescms.org), sign in with GitHub, and select **TG
 
 1. Choose **Notes → New**. Titles are optional. Write in the Text editor; add photographs, video, or more text using More content.
 2. Leave **Published** off while writing. Save whenever you want; the draft and its uploads stay private.
-3. Choose **Preview privately** after saving. Open the resulting private GitHub Actions run and download the **note-preview** artifact. Open the HTML file in any browser; no local server or software installation is needed. Resize the browser to check the layout. Do not share that file while its contents are confidential.
+3. Choose **Build private preview** after saving. Open the resulting private GitHub Actions run. Its Summary contains a **Download note-preview** link. Download and unzip the ZIP; previews do not open automatically. Open the HTML file in any browser; no local server or software installation is needed. Resize the browser to check the layout. Do not share that file while its contents are confidential.
 4. Turn **Published** on and save when ready. Publishing usually takes a short build and deployment. The website and RSS feed update automatically.
 5. To remove a post from the live site, turn Published off and save. Copies that were previously public may remain in public Git history, browser caches, and feed readers.
 
@@ -19,6 +19,10 @@ MP4 and WebM video uploads support clips up to 20 MB. For larger videos, use a d
 ## Languages
 
 Choose your original language. Add other language versions only when you want them. Each translation has its own **Publish this translation** switch; unfinished translations remain private even when the original is published. Readers can choose the available languages on the post.
+
+## Reading font
+
+Choose **Site default**, **Sans serif**, **Serif**, or **Monospace** for each post. The choice also applies to its translations and private preview. These use fonts already on the reader’s device, with appropriate language fallbacks.
 
 ## Homepage feature
 

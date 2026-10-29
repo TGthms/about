@@ -1364,3 +1364,88 @@ Object.keys(NOTES_A11Y_COPY).forEach(function (lang) {
   var words = NOTES_A11Y_COPY[lang];
   Object.assign(TRANSLATIONS[lang].notes, { readIn: words[0], languages: words[1], postLink: words[2], pages: words[3] });
 });
+
+const NOTES_FOLLOW_COPY = {
+  "en": [
+    "Follow updates",
+    "New notes, in your own feed reader.",
+    "RSS brings new posts from the sites you follow into one app. No account on this site, email address, or notifications needed.",
+    "Open your preferred feed reader.",
+    "Choose its option to follow a website or add a feed.",
+    "Paste the address below. New notes will appear there.",
+    "Feed address",
+    "Copy feed link",
+    "Open RSS feed",
+    "Feed link copied.",
+    "Select and copy the feed address above."
+  ],
+  "es": [
+    "Seguir las novedades",
+    "Las nuevas notas, en tu lector de feeds.",
+    "RSS reúne las publicaciones nuevas de los sitios que sigues en una sola aplicación. No necesitas una cuenta en este sitio, correo electrónico ni notificaciones.",
+    "Abre tu lector de feeds preferido.",
+    "Busca la opción para seguir un sitio web o añadir un feed.",
+    "Pega la dirección de abajo. Las nuevas notas aparecerán allí.",
+    "Dirección del feed",
+    "Copiar enlace del feed",
+    "Abrir feed RSS",
+    "Enlace del feed copiado.",
+    "Selecciona y copia la dirección del feed de arriba."
+  ],
+  "zh": [
+    "订阅更新",
+    "在你喜欢的阅读器中查看新随记。",
+    "RSS 可以将你关注的网站的新文章汇集到一个应用中。无需在本站注册、提供邮箱或开启通知。",
+    "打开你喜欢的 RSS 阅读器。",
+    "找到关注网站或添加订阅源的选项。",
+    "粘贴下方地址，新随记就会出现在阅读器中。",
+    "订阅源地址",
+    "复制订阅链接",
+    "打开 RSS 订阅源",
+    "订阅链接已复制。",
+    "请选择并复制上方的订阅源地址。"
+  ],
+  "zh-Hant": [
+    "訂閱更新",
+    "在你喜歡的閱讀器中查看新隨記。",
+    "RSS 可以將你關注的網站的新文章彙整到一個應用程式中。無需在本站註冊、提供電子郵件或開啟通知。",
+    "開啟你喜歡的 RSS 閱讀器。",
+    "找到追蹤網站或新增訂閱來源的選項。",
+    "貼上下方網址，新隨記就會出現在閱讀器中。",
+    "訂閱來源網址",
+    "複製訂閱連結",
+    "開啟 RSS 訂閱來源",
+    "訂閱連結已複製。",
+    "請選取並複製上方的訂閱來源網址。"
+  ],
+  "ja": [
+    "更新を購読",
+    "新しいノートを、お使いのフィードリーダーで。",
+    "RSSを使うと、フォローしているサイトの新しい記事を一つのアプリで読めます。このサイトでの登録やメールアドレス、通知の設定は不要です。",
+    "お好きなフィードリーダーを開きます。",
+    "サイトのフォローやフィードの追加を選びます。",
+    "下のアドレスを貼り付けると、新しいノートが届きます。",
+    "フィードのアドレス",
+    "フィードのリンクをコピー",
+    "RSSフィードを開く",
+    "フィードのリンクをコピーしました。",
+    "上のフィードのアドレスを選択してコピーしてください。"
+  ],
+  "ko": [
+    "새 소식 구독",
+    "새 노트를 즐겨 쓰는 피드 리더에서 만나보세요.",
+    "RSS는 구독하는 웹사이트의 새 글을 한 앱에 모아줍니다. 이 사이트에 가입하거나 이메일을 입력하거나 알림을 켤 필요가 없어요.",
+    "즐겨 쓰는 피드 리더를 여세요.",
+    "웹사이트 구독 또는 피드 추가 메뉴를 선택하세요.",
+    "아래 주소를 붙여 넣으면 새 노트가 리더에 표시됩니다.",
+    "피드 주소",
+    "피드 링크 복사",
+    "RSS 피드 열기",
+    "피드 링크를 복사했어요.",
+    "위의 피드 주소를 선택해서 복사해 주세요."
+  ]
+};
+Object.keys(NOTES_FOLLOW_COPY).forEach(function (lang) {
+  ["followTitle", "followIntro", "followExplain", "followStep1", "followStep2", "followStep3", "feedAddress", "copyFeed", "openFeed", "feedCopied", "feedManual"]
+    .forEach(function (key, index) { TRANSLATIONS[lang].notes[key] = NOTES_FOLLOW_COPY[lang][index]; });
+});

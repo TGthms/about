@@ -47,11 +47,33 @@ jobs:
           notes.build(private, Path('public').resolve(), path, Path('../preview').resolve())
           PY
       - name: Save private preview
+        id: artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: note-preview
           path: preview/*.html
           retention-days: 3
       - name: Explain the preview
+        env:
+          PREVIEW_DOWNLOAD: ${{ steps.artifact.outputs.artifact-url }}
         run: |
-          echo 'Download **note-preview** below and open the HTML file in your browser. It contains the page and its media, so you can resize it to check phone and desktop layouts. This artifact is only accessible through this private repository.' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo '## Your private preview is ready'
+            echo
+            echo "[Download note-preview]($PREVIEW_DOWNLOAD)"
+            echo
+            echo '1. Download the ZIP using the link above (sign in to GitHub if asked).'
+            echo '2. Unzip it and open an HTML file in your browser. Each available language has its own file.'
+            echo '3. Resize the browser to check the layout. No local server is needed.'
+            echo
+            echo 'This is the last saved version. The preview does not open automatically. Missing image descriptions are allowed in previews, but must be completed before publishing.'
+            echo
+            echo 'The download is private, expires after three days, and does not publish your draft. Keep downloaded files private too.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Explain a failed preview
+        if: failure()
+        run: |
+          {
+            echo '## The preview could not be built'
+            echo 'Open the failed step above for the exact reason. Save your note, check uploaded file paths and content blocks, then build the preview again. Your saved note has not been published by this preview.'
+          } >> "$GITHUB_STEP_SUMMARY"

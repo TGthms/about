@@ -15,7 +15,7 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 - Projects: Personal Hub, duskline, Kit, and Travel Gallery, with USA Travel Guide, Japan Travel Guide, Folio, Nimbus, and Kiln in the archived-project shelf
 - Dual hosts for each project (Cloudflare main / GitHub backup). Every language uses the selected host preference
 - Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
-- Four project previews; the whole Personal Hub card opens an introduction and curated version history
+- Three project previews, led by Travel Gallery; a quieter Personal Hub row opens the site introduction and curated version history
 - Brief hover/press/dialog animations that respect reduced motion, with small animated interest doodles
 - Birthday balloons on every home-page visit on December 21 (visitor's local date), with reduced-motion support; preview with `?birthday=preview`
 - Seasonal hero greetings for Christmas, Good Friday, Easter, Palm Sunday, U.S. Thanksgiving, and New Year, in all six languages and the visitor's local date
@@ -81,7 +81,7 @@ Drafts and original media belong in the separate **private** `TGthms/about-notes
 
 The private repository's publication workflow uses a dedicated write-enabled deploy key for this public repository. It rebuilds against the latest website revision and retries if the public branch changes during a publish. Drafts, unused media, private configuration, and unpublished translations are never exported. Previously published files may remain in public Git history after unpublishing.
 
-The editor's **Preview privately** action produces a self-contained HTML artifact in the private repository. Download it and open it in a browser; no local server is necessary. Preview artifacts expire after three days. Their contents remain confidential only while the downloaded files themselves are kept private.
+The editor's **Build private preview** action produces a self-contained HTML artifact in the private repository. Download it and open it in a browser; no local server is necessary. Preview artifacts expire after three days. Their contents remain confidential only while the downloaded files themselves are kept private.
 
 Build checks: `python3 tests/notes_test.py` (requires `scripts/notes/requirements.txt`) and the existing interaction/HTML checks. Use `python3 scripts/notes/build.py --empty` only to initialize an empty archive; it removes previously generated Notes output. Normal development should preserve published Notes pages and update stylesheet/script query hashes recursively across `public/`.
 
@@ -124,15 +124,14 @@ The custom-domain host injects Cloudflare’s Web Analytics / RUM beacon. The pr
 
 The curated timeline ends at v16; its summary includes seasonal celebrations. The instrument dialog pairs a museum photograph with a single prose column on desktop and stacks them on phones. The performance dialog contains the player, its attribution, and a link to the instrument. Both bottom Close controls share the same delegated close handling as their header controls.
 
-The Photography interest links directly to the travel gallery using the selected
-main or backup host. Its project preview shares the travel guide's 122-photo
+The Photography interest jumps to the first project, Travel Gallery. Opening
+that project uses the selected main or backup host. Its project preview shares the travel guide's 122-photo
 catalog, with one photo visible, a four-second cadence, a soft crossfade and zoom,
 and a Public Sans location label. Selecting the project opens the currently
 displayed photo. A two-pixel interval line follows the bottom of the location
 label and freezes with the slideshow; resuming preserves the remaining time.
 Project cards stay still on hover and retain their press feedback. Local WebPs are bounded to 1200 pixels per edge and requested
-one at a time, only while the preview is visible. Rotation pauses on hover,
-keyboard navigation, a site dialog, a hidden page, or the explicit pause control.
+one at a time, only while the preview is visible. Rotation continues on pointer hover and pauses for keyboard focus on a control, a site dialog, a hidden page, or the explicit pause control.
 Reduced motion, data-saving connections, and lightweight browsers keep a still
 frame; the Watch copy is bounded to 480 pixels. Failed incoming photos preserve
 the current image, caption, and destination. The recording notice uses a native
