@@ -8,8 +8,9 @@ errors = []
 VOID_TAGS = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
 
 class Check(HTMLParser):
-    def __init__(self):
+    def __init__(self, page):
         super().__init__()
+        self.page = page
         self.ids = set()
         self.labels = []
         self.anchors = []
@@ -37,17 +38,21 @@ class Check(HTMLParser):
             value = a.get(key, '')
             if not value or value.startswith(('#', 'https:', 'http:', 'mailto:', 'data:')):
                 continue
-            path = root / value.split('?', 1)[0].split('#', 1)[0]
+            relative = value.split('?', 1)[0].split('#', 1)[0]
+            path = ((root / relative.lstrip('/')) if relative.startswith('/') else (self.page.parent / relative)).resolve()
+            if not path.is_relative_to(root.resolve()):
+                errors.append(f'Asset outside public folder: {value}')
+                continue
             if not path.is_file():
                 errors.append(f'Missing asset: {value}')
-            elif value.startswith(('js/', 'css/')):
+            elif path.suffix in ('.js', '.mjs', '.css'):
                 version = hashlib.sha256(path.read_bytes()).hexdigest()[:12]
-                if value != str(path.relative_to(root)) + '?v=' + version:
+                if value != relative + '?v=' + version:
                     errors.append(f'Resource version: {value}')
         for key in ('srcset', 'data-srcset'):
             for candidate in a.get(key, '').split(','):
                 parts = candidate.strip().split()
-                if parts and not (root / parts[0]).is_file():
+                if parts and not (self.page.parent / parts[0]).is_file():
                     errors.append(f'Missing responsive image: {parts[0]}')
         if tag == 'a' and a.get('target') == '_blank':
             if not {'noopener', 'noreferrer'}.issubset(a.get('rel', '').split()):
@@ -65,8 +70,8 @@ class Check(HTMLParser):
 
 preferences = Path('public/js/preferences.js').read_text()
 markup = preferences.split('root.innerHTML = `', 1)[1].split('`;', 1)[0]
-for page in root.glob('*.html'):
-    checker = Check()
+for page in root.rglob('*.html'):
+    checker = Check(page)
     checker.feed(page.read_text())
     checker.feed(markup)
     for target in checker.labels + checker.anchors:

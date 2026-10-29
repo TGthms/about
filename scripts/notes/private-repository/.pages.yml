@@ -1,0 +1,185 @@
+media:
+  - name: photographs
+    label: Photos
+    input: media/images
+    output: /media/images
+    extensions: [jpg, jpeg, png, webp]
+    rename: random
+  - name: videos
+    label: Short videos
+    input: media/videos
+    output: /media/videos
+    extensions: [mp4, webm]
+    rename: random
+
+components:
+  text:
+    type: rich-text
+    options:
+      format: html
+      media: photographs
+  blocks:
+    type: block
+    label: More content
+    description: Add photographs, videos, or more text in any order.
+    list: true
+    blockKey: type
+    blocks:
+      - name: text
+        label: Text
+        fields:
+          - name: body
+            label: Text
+            component: text
+      - name: photo
+        label: Photograph
+        fields:
+          - name: image
+            label: Photo
+            type: image
+            required: true
+            options:
+              media: photographs
+          - name: alt
+            label: Image description
+            type: string
+            required: true
+            description: A short description for people who cannot see the photograph.
+          - name: caption
+            label: Caption
+            type: text
+      - name: video
+        label: Video
+        fields:
+          - name: file
+            label: Upload a short video
+            type: file
+            description: MP4 or WebM, up to 20 MB. Use the hosted URL below for larger videos.
+            options:
+              media: videos
+          - name: url
+            label: Hosted video URL
+            type: string
+            description: A direct HTTPS link to an MP4 or WebM video. Leave empty when uploading a file.
+          - name: poster
+            label: Preview photograph
+            type: image
+            options:
+              media: photographs
+          - name: caption
+            label: Caption
+            type: text
+          - name: transcript
+            label: Transcript (optional)
+            type: text
+
+content:
+  - name: notes
+    label: Notes
+    type: collection
+    path: notes
+    format: json
+    exclude: [.gitkeep]
+    subfolders: false
+    filename:
+      template: "{year}-{month}-{day}-{hour}{minute}{second}.json"
+      field: false
+    view:
+      fields: [title, published, date, language]
+      primary: title
+      sort: [date, title]
+      default:
+        sort: date
+        order: desc
+    actions:
+      - name: preview-note
+        label: Preview privately
+        scope: entry
+        workflow: preview.yml
+        ref: current
+        confirm: false
+    fields:
+      - name: title
+        label: Title (optional)
+        type: string
+      - name: date
+        label: Date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: language
+        label: Original language
+        type: select
+        default: en
+        options:
+          values:
+            - {name: en, label: English}
+            - {name: zh, label: 简体中文}
+            - {name: zh-Hant, label: 繁體中文}
+            - {name: ja, label: 日本語}
+            - {name: ko, label: 한국어}
+            - {name: es, label: Español}
+      - name: body
+        label: Text
+        component: text
+      - name: blocks
+        component: blocks
+      - name: summary
+        label: Short introduction (optional)
+        type: text
+        description: Used beneath the title and when sharing. Leave empty to use the opening text.
+      - name: cover
+        label: Cover photograph (optional)
+        type: image
+        description: Used in the list and when sharing. Otherwise the first photograph is used.
+        options:
+          media: photographs
+      - name: cover_alt
+        label: Cover image description
+        type: string
+      - name: highlight
+        label: Feature beneath About
+        type: boolean
+        default: false
+      - name: highlight_until
+        label: Feature until (optional)
+        type: date
+        default: ""
+        description: The post stays in Notes after its homepage feature ends.
+        options:
+          format: yyyy-MM-dd
+      - name: translations
+        label: Other language versions (optional)
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{language} — {title}"
+        fields:
+          - name: language
+            label: Language code
+            type: string
+            required: true
+            description: en, es, zh, zh-Hant, ja, ko, or another valid language code.
+          - name: title
+            label: Title (optional)
+            type: string
+          - name: summary
+            label: Short introduction (optional)
+            type: text
+          - name: body
+            label: Text
+            component: text
+          - name: blocks
+            component: blocks
+          - name: published
+            label: Publish this translation
+            type: boolean
+            default: false
+            description: Keep off while this translation is still a draft.
+      - name: published
+        label: Published
+        type: boolean
+        default: false
+        description: Keep off to save a private draft. Turning this on and saving publishes the post. Turn off and save to remove it from the site; previously published copies may remain in Git history or feed readers.

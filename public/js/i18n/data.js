@@ -1341,3 +1341,26 @@ Object.keys(PHOTO_COPY).forEach(function (lang) {
   Object.assign(TRANSLATIONS[lang].interests.photo, { view: copy.view, pause: copy.pause, resume: copy.resume });
   TRANSLATIONS[lang].links.usaGallery.desc = copy.desc;
 });
+
+/* Post content is translated only when its author supplies another version. */
+const NOTES_COPY = {
+  en: { title: "Notes", home: "Home", intro: "Small updates, photographs, and things along the way.", explore: "Explore notes", latest: "Latest note", featured: "A little update", emptyTitle: "Nothing here just yet.", emptyText: "A place for photographs, stories, and little updates.", all: "All notes", read: "Read note", rss: "Follow via RSS", original: "Written in {language}", share: "Share this note", copied: "Link copied.", copyFailed: "You can copy the link below.", openVideo: "Open video", transcript: "Transcript", newer: "Newer notes", older: "Older notes" },
+  es: { title: "Notas", home: "Inicio", intro: "Pequeñas novedades, fotografías y momentos del camino.", explore: "Explorar las notas", latest: "Última nota", featured: "Una pequeña novedad", emptyTitle: "Todavía no hay notas.", emptyText: "Un lugar para fotografías, historias y pequeñas novedades.", all: "Todas las notas", read: "Leer la nota", rss: "Seguir por RSS", original: "Escrito en {language}", share: "Compartir esta nota", copied: "Enlace copiado.", copyFailed: "Puedes copiar el enlace de abajo.", openVideo: "Abrir vídeo", transcript: "Transcripción", newer: "Notas más recientes", older: "Notas anteriores" },
+  zh: { title: "随记", home: "首页", intro: "一些近况、照片，还有沿途的点滴。", explore: "看看随记", latest: "最新随记", featured: "分享一点近况", emptyTitle: "这里还没有随记。", emptyText: "用来分享照片、故事和生活中的点滴。", all: "全部随记", read: "阅读随记", rss: "通过 RSS 订阅", original: "原文语言：{language}", share: "分享这篇随记", copied: "链接已复制。", copyFailed: "你可以复制下方的链接。", openVideo: "打开视频", transcript: "文字稿", newer: "较新的随记", older: "更早的随记" },
+  "zh-Hant": { title: "隨記", home: "首頁", intro: "一些近況、照片，還有沿途的點滴。", explore: "看看隨記", latest: "最新隨記", featured: "分享一點近況", emptyTitle: "這裡還沒有隨記。", emptyText: "用來分享照片、故事和生活中的點滴。", all: "全部隨記", read: "閱讀隨記", rss: "透過 RSS 訂閱", original: "原文語言：{language}", share: "分享這篇隨記", copied: "連結已複製。", copyFailed: "你可以複製下方的連結。", openVideo: "開啟影片", transcript: "文字稿", newer: "較新的隨記", older: "更早的隨記" },
+  ja: { title: "ノート", home: "ホーム", intro: "近況や写真、日々の小さなできごと。", explore: "ノートを読む", latest: "最新のノート", featured: "ちょっとしたお知らせ", emptyTitle: "ノートはまだありません。", emptyText: "写真や物語、日々のできごとを綴る場所です。", all: "すべてのノート", read: "ノートを読む", rss: "RSSで購読", original: "原文の言語：{language}", share: "このノートを共有", copied: "リンクをコピーしました。", copyFailed: "下のリンクをコピーできます。", openVideo: "動画を開く", transcript: "文字起こし", newer: "新しいノート", older: "以前のノート" },
+  ko: { title: "노트", home: "홈", intro: "소소한 근황과 사진, 그리고 일상의 순간들.", explore: "노트 둘러보기", latest: "최근 노트", featured: "작은 소식", emptyTitle: "아직 노트가 없어요.", emptyText: "사진과 이야기, 소소한 근황을 담는 공간이에요.", all: "모든 노트", read: "노트 읽기", rss: "RSS로 구독", original: "원문 언어: {language}", share: "이 노트 공유하기", copied: "링크를 복사했어요.", copyFailed: "아래 링크를 복사할 수 있어요.", openVideo: "동영상 열기", transcript: "대본", newer: "최근 노트", older: "이전 노트" }
+};
+Object.keys(NOTES_COPY).forEach(function (lang) { TRANSLATIONS[lang].notes = NOTES_COPY[lang]; });
+const NOTES_A11Y_COPY = {
+  en: ["Read in", "Post languages", "Post link", "Notes pages"],
+  es: ["Leer en", "Idiomas de la nota", "Enlace de la nota", "Páginas de notas"],
+  zh: ["阅读语言", "随记语言", "随记链接", "随记分页"],
+  "zh-Hant": ["閱讀語言", "隨記語言", "隨記連結", "隨記分頁"],
+  ja: ["読む言語", "ノートの言語", "ノートのリンク", "ノートのページ"],
+  ko: ["읽을 언어", "노트 언어", "노트 링크", "노트 페이지"]
+};
+Object.keys(NOTES_A11Y_COPY).forEach(function (lang) {
+  var words = NOTES_A11Y_COPY[lang];
+  Object.assign(TRANSLATIONS[lang].notes, { readIn: words[0], languages: words[1], postLink: words[2], pages: words[3] });
+});

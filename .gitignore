@@ -19,3 +19,8 @@ node_modules/
 dist/
 coverage/
 .cache/
+
+# Private drafts and CMS bootstrap checkout are never part of the public repo.
+.private-notes/
+__pycache__/
+*.pyc

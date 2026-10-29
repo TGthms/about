@@ -301,6 +301,7 @@ function applyLanguage(lang) {
   const resolved = TRANSLATIONS[lang] ? lang : "en";
   const previous = document.documentElement.getAttribute("data-language");
   const isLegalPage = document.body && document.body.classList.contains("legal-page");
+  const hasOwnMetadata = isLegalPage || (document.body && document.body.classList.contains("notes-page"));
 
   const htmlLang =
     resolved === "zh" ? "zh-Hans" : resolved;
@@ -347,10 +348,10 @@ function applyLanguage(lang) {
   if (pack.meta) {
     const localeMap = { en: "en_US", es: "es_ES", zh: "zh_CN", "zh-Hant": "zh_TW", ja: "ja_JP", ko: "ko_KR" };
     const ogLocale = document.querySelector('meta[property="og:locale"]');
-    if (ogLocale) ogLocale.setAttribute("content", localeMap[resolved] || "en_US");
+    if (ogLocale && !hasOwnMetadata) ogLocale.setAttribute("content", localeMap[resolved] || "en_US");
 
     // Home-page metadata is owned here; legal.js owns legal-page metadata.
-    if (!isLegalPage) {
+    if (!hasOwnMetadata) {
       if (pack.meta.title) document.title = pack.meta.title;
       const desc = document.querySelector('meta[name="description"]');
       if (desc && pack.meta.description) desc.setAttribute("content", pack.meta.description);

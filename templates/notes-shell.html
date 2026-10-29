@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="{{html_lang}}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="{{prefix}}js/runtime.js"></script>
+  <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
+  <meta name="theme-color" content="#fafafa" id="meta-theme-color" />
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}" />
+  <meta name="author" content="Tim G" />
+  <link rel="canonical" href="{{canonical}}" />
+  <meta property="og:type" content="{{og_type}}" />
+  <meta property="og:url" content="{{canonical}}" />
+  <meta property="og:title" content="{{title}}" />
+  <meta property="og:description" content="{{description}}" />
+  <meta property="og:image" content="{{image}}" />
+  <meta property="og:image:alt" content="{{image_alt}}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="{{og_locale}}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{title}}" />
+  <meta name="twitter:description" content="{{description}}" />
+  <meta name="twitter:image" content="{{image}}" />
+  {{alternates}}
+  <link rel="icon" href="{{prefix}}favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="{{prefix}}apple-touch-icon.png" />
+  <link rel="alternate" type="application/rss+xml" title="Tim G — Notes" href="{{prefix}}feed.xml" />
+  <link rel="stylesheet" href="{{prefix}}css/styles.css" />
+  <link rel="stylesheet" href="{{prefix}}css/notes.css" />
+  <link rel="stylesheet" href="{{prefix}}css/compact.css" />
+  <script>
+    (function () {
+      try {
+        var theme = sessionStorage.getItem("timg-theme-session");
+        if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fafafa";
+      } catch (_) {}
+    })();
+  </script>
+  {{structured_data}}
+</head>
+<body class="notes-page" data-notes-kind="{{kind}}">
+  <a class="skip-link" href="#main" data-page-root data-i18n="skip">Skip to content</a>
+  <header class="top-bar" data-page-root>
+    <div class="top-bar__inner">
+      <a class="site-signature" href="{{prefix}}index.html" aria-label="Tim G — home">tg<span aria-hidden="true">.</span></a>
+      <nav class="site-nav" aria-label="Sections" data-i18n-aria="a11y.sections">
+        <a href="{{prefix}}index.html" data-i18n="notes.home">Home</a>
+        <a href="{{prefix}}notes.html" aria-current="page" data-i18n="notes.title">Notes</a>
+      </nav>
+      <div data-preferences-root></div>
+    </div>
+  </header>
+  <main id="main" class="notes-main" data-page-root>{{content}}</main>
+  <footer class="footer notes-footer" data-page-root>
+    <div class="container footer__inner">
+      <p class="notes-footer__signature">Tim G<span aria-hidden="true">.</span></p>
+      <nav class="footer__legal" aria-label="Legal" data-i18n-aria="footer.legalNav">
+        <a href="{{prefix}}privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
+        <span aria-hidden="true">·</span>
+        <a href="{{prefix}}terms.html" data-i18n="footer.terms">Terms of Use</a>
+      </nav>
+      <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
+      <p class="footer__copy">&copy; <span id="year">2026</span> Tim G</p>
+    </div>
+  </footer>
+  <script src="{{prefix}}js/preferences.js"></script>
+  <script src="{{prefix}}js/i18n/data.js"></script>
+  <script src="{{prefix}}js/i18n/core.js"></script>
+  <script src="{{prefix}}js/i18n/theme.js"></script>
+  <script src="{{prefix}}js/i18n/controls.js"></script>
+  <script src="{{prefix}}js/i18n/project-host.js"></script>
+  <script src="{{prefix}}js/i18n/language.js"></script>
+  <script src="{{prefix}}js/notes.js"></script>
+</body>
+</html>

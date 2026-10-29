@@ -71,6 +71,22 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 
 Repository documentation and licensing stay outside `public/`, so the deployment artifact contains only intentional site files.
 
+## Notes and private publishing
+
+The public site has a compact Notes entrance beneath About, a Notes shortcut in the hero, static reading pages, and an RSS feed at `feed.xml`. No publishing application or account code loads for visitors. The interface supports all six site languages; post translations are optional and have their own URLs and sharing metadata.
+
+Drafts and original media belong in the separate **private** `TGthms/about-notes` repository. Its Pages CMS configuration and workflow templates are maintained in `scripts/notes/private-repository/`; those files contain configuration only. Never place draft content, original uploads, or credentials in this public repository. `.private-notes/` is ignored for the local bootstrap checkout.
+
+`scripts/notes/build.py --content /path/to/private/content` exports only published notes and published translations. It sanitizes rich text, validates media paths, strips photograph metadata, creates responsive WebP images and JPEG share cards, copies referenced short videos, and updates the homepage entrance, archive, feed, and sitemap. It processes media during publication; visitors use native responsive images and video controls. Narrow screens receive an explicit small image source.
+
+The private repository's publication workflow uses a dedicated write-enabled deploy key for this public repository. It rebuilds against the latest website revision and retries if the public branch changes during a publish. Drafts, unused media, private configuration, and unpublished translations are never exported. Previously published files may remain in public Git history after unpublishing.
+
+The editor's **Preview privately** action produces a self-contained HTML artifact in the private repository. Download it and open it in a browser; no local server is necessary. Preview artifacts expire after three days. Their contents remain confidential only while the downloaded files themselves are kept private.
+
+Build checks: `python3 tests/notes_test.py` (requires `scripts/notes/requirements.txt`) and the existing interaction/HTML checks. Use `python3 scripts/notes/build.py --empty` only to initialize an empty archive; it removes previously generated Notes output. Normal development should preserve published Notes pages and update stylesheet/script query hashes recursively across `public/`.
+
+The supplied RSS icon is Google's Material Symbols icon, distributed under Apache 2.0; its license is in `LICENSES/material-symbols.txt`.
+
 ## Accessibility
 
 - Skip link, landmarks, focus-visible styles, and named controls
