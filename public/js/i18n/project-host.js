@@ -39,9 +39,9 @@ function setStoredProjectHost(value) {
  * Point each project card at the correct host URL(s).
  * Cards declare URLs on data-url-cloudflare / data-url-github.
  */
-function applyProjectUrls(host) {
+function applyProjectUrls(host, cardOnly) {
   var preferred = isValidProjectHost(host) ? host : getStoredProjectHost();
-  document.querySelectorAll("[data-project]").forEach(function (card) {
+  (cardOnly ? [cardOnly] : document.querySelectorAll("[data-project]")).forEach(function (card) {
     var urlCf = card.getAttribute("data-url-cloudflare") || "";
     var urlGh = card.getAttribute("data-url-github") || "";
     var single = card.querySelector("[data-project-single]");
@@ -53,6 +53,8 @@ function applyProjectUrls(host) {
 
     if (single) {
       var url = preferred === HOST_GITHUB ? urlGh : urlCf;
+      var photo = card.getAttribute("data-gallery-photo");
+      if (url && photo) url += (url.indexOf("?") < 0 ? "?" : "&") + "photo=" + encodeURIComponent(photo);
       if (url) single.setAttribute("href", url);
     }
   });

@@ -43,7 +43,7 @@ const TRANSLATIONS = {
     about: {
       label: "About",
       title: "A little more about me",
-      p1: "I'm a high school student in the Bay Area who loves {build}, {photo}, {erhu}, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.",
+      p1: "I'm a high school student in the Bay Area. I like having something new to figure out, whether I'm building a project, trying something for the first time, or working on my English.",
       p2: "Outside of school and projects, Psalm 23 keeps me grounded through busy seasons and reminds me of what matters most.",
       links: {
         build: "building things",
@@ -203,7 +203,7 @@ const TRANSLATIONS = {
     about: {
       label: "Sobre mí",
       title: "Un poco sobre mí",
-      p1: "Soy estudiante de secundaria en el Área de la Bahía. Me encanta {build}, {photo}, {erhu} y el tenis de mesa. Ya sea un proyecto, una experiencia nueva o aprender inglés, siempre tengo curiosidad por crear y descubrir algo nuevo.",
+      p1: "Soy estudiante de secundaria en el Área de la Bahía. Me gusta tener algo nuevo que aprender, ya sea al crear un proyecto, probar algo por primera vez o seguir mejorando mi inglés.",
       p2: "Fuera de la escuela y de los proyectos, el Salmo 23 me mantiene con los pies en la tierra en las épocas más ajetreadas y me recuerda lo que más importa.",
       links: {
         build: "crear cosas",
@@ -363,7 +363,7 @@ const TRANSLATIONS = {
     about: {
       label: "关于",
       title: "一点自我介绍",
-      p1: "我是旧金山湾区的一名高中生，喜欢{build}、{photo}、{erhu}和乒乓球。无论是项目、新体验，还是学英语，我总想创造、发现一点新的东西。",
+      p1: "我是旧金山湾区的一名高中生。无论是做项目、尝试从未做过的事，还是继续学英语，我都喜欢有新的东西可以琢磨。",
       p2: "在学业与项目之外，诗篇 23 让我在忙碌的日子里保持踏实，也提醒我什么最重要。",
       links: {
         build: "动手做东西",
@@ -523,7 +523,7 @@ const TRANSLATIONS = {
     about: {
       label: "自己紹介",
       title: "少しだけ自己紹介",
-      p1: "ベイエリアの高校生です。{build}、{photo}、{erhu}、それに卓球が好きです。プロジェクトでも、新しい体験でも、英語の勉強でも、つくることと見つけることにいつも好奇心があります。",
+      p1: "ベイエリアの高校生です。プロジェクトをつくるときも、初めてのことに挑戦するときも、英語を磨くときも、新しく学べることがあるとわくわくします。",
       p2: "学校やプロジェクトの外では、詩篇23が忙しい時期の軸になり、いちばん大切なことを思い出させてくれます。",
       links: {
         build: "ものづくり",
@@ -668,7 +668,7 @@ TRANSLATIONS["zh-Hant"] = {
       "erhu": "拉二胡",
       "photo": "捕捉瞬間"
     },
-    "p1": "我是舊金山灣區的一名高中生，喜歡{build}、{photo}、{erhu}和乒乓球。無論是專案、新體驗，還是學英語，我總想創造、發現一點新的東西。",
+    "p1": "我是舊金山灣區的一名高中生。無論是做專案、嘗試從未做過的事，還是繼續學英語，我都喜歡有新的東西可以琢磨。",
     "p2": "在學業與專案之外，詩篇 23 讓我在忙碌的日子裡保持踏實，也提醒我什麼最重要。",
     "title": "一點自我介紹"
   },
@@ -1007,7 +1007,7 @@ TRANSLATIONS.ko = {
   "about": {
     "label": "소개",
     "title": "저를 조금 더 소개할게요",
-    "p1": "저는 베이 지역에 사는 고등학생으로, {build}, {photo}, {erhu}, 탁구를 좋아해요. 프로젝트를 만들 때도, 새로운 경험을 할 때도, 영어를 배울 때도 새로운 것을 만들고 발견하는 일에 늘 호기심을 느낍니다.",
+    "p1": "저는 베이 지역에 사는 고등학생이에요. 프로젝트를 만들거나, 처음 해 보는 일에 도전하거나, 영어를 더 익힐 때처럼 새롭게 알아갈 것이 있는 걸 좋아해요.",
     "p2": "학교생활과 프로젝트로 바쁜 날에도 시편 23편은 마음의 중심을 잡아 주고, 정말 소중한 것이 무엇인지 떠올리게 해 줍니다.",
     "links": {
       "build": "무언가 만드는 일",
@@ -1296,3 +1296,48 @@ Object.keys(DETAIL_COPY).forEach(function (lang) {
 
 const RALLY_UNAVAILABLE_COPY = { en: "The table couldn’t load. Close and reopen it to try again.", es: "No se pudo cargar la mesa. Cierra y vuelve a abrir para intentarlo de nuevo.", zh: "球台暂时无法加载。请关闭后重新打开再试。", "zh-Hant": "球檯暫時無法載入。請關閉後重新開啟再試。", ja: "ゲームを読み込めませんでした。一度閉じて、もう一度開いてください。", ko: "게임을 불러오지 못했어요. 닫았다가 다시 열어 주세요." };
 Object.keys(RALLY_UNAVAILABLE_COPY).forEach(function (lang) { TRANSLATIONS[lang].rally.unavailable = RALLY_UNAVAILABLE_COPY[lang]; });
+
+/* Photography controls and gallery description. */
+const PHOTO_COPY = {
+  "en": {
+    "view": "View my photos",
+    "pause": "Pause photo slideshow",
+    "resume": "Resume photo slideshow",
+    "desc": "Photographs from my travels, from coastal views to moments along the road."
+  },
+  "es": {
+    "view": "Ver mis fotos",
+    "pause": "Pausar las fotos",
+    "resume": "Reanudar las fotos",
+    "desc": "Fotografías de mis viajes, desde paisajes costeros hasta momentos en el camino."
+  },
+  "zh": {
+    "view": "看看我拍的照片",
+    "pause": "暂停照片轮播",
+    "resume": "继续照片轮播",
+    "desc": "我在旅途中拍下的照片，从海岸风景到路上的日常瞬间。"
+  },
+  "zh-Hant": {
+    "view": "看看我拍的照片",
+    "pause": "暫停照片輪播",
+    "resume": "繼續照片輪播",
+    "desc": "我在旅途中拍下的照片，從海岸風景到路上的日常瞬間。"
+  },
+  "ja": {
+    "view": "私の写真を見る",
+    "pause": "写真の切り替えを一時停止",
+    "resume": "写真の切り替えを再開",
+    "desc": "海辺の風景から道中のひとこままで、旅先で撮った写真を集めました。"
+  },
+  "ko": {
+    "view": "제가 찍은 사진 보기",
+    "pause": "사진 슬라이드쇼 일시 정지",
+    "resume": "사진 슬라이드쇼 다시 시작",
+    "desc": "해안 풍경부터 길 위의 소소한 순간까지, 여행하며 찍은 사진들입니다."
+  }
+};
+Object.keys(PHOTO_COPY).forEach(function (lang) {
+  var copy = PHOTO_COPY[lang];
+  Object.assign(TRANSLATIONS[lang].interests.photo, { view: copy.view, pause: copy.pause, resume: copy.resume });
+  TRANSLATIONS[lang].links.usaGallery.desc = copy.desc;
+});

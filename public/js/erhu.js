@@ -227,7 +227,10 @@
         videoLink.href = VIDEO_SRC;
         body.appendChild(videoLink);
       }
-      body.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
+      var details = text("details", "erhu-recording-details");
+      details.appendChild(text("summary", "", copy.recordingDetails));
+      details.appendChild(text("p", "erhu-wiki__media-note", copy.videoCredit));
+      body.appendChild(details);
     } else {
       var layout = text("div", "erhu-instrument-layout");
       var figure = document.createElement("figure");

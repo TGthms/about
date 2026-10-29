@@ -153,3 +153,10 @@ test('constrained browsers never speculate on erhu media and release the player 
   h.closePerformance();assert.equal(h.videos[1].parentNode,null);
   assert.equal(h.locks(),0);
 });
+
+test('performance keeps its player and identity visible while recording details are collapsed by default',()=>{
+ const h=harness();h.open();const details=h.body.children.find(n=>n.tagName==='DETAILS');
+ assert.ok(details);assert.equal(details.attrs.open,undefined);assert.equal(details.children[0].tagName,'SUMMARY');assert.equal(details.children[0].textContent,'Recording details');
+ assert.ok(h.body.children[0].textContent.includes('opening solo'));assert.ok(h.body.children.includes(h.videos[0]));
+ h.translate('zh-Hant');const translated=h.body.children.find(n=>n.tagName==='DETAILS');assert.equal(translated.children[0].textContent,'錄影說明');assert.equal(h.videos.length,1);
+});

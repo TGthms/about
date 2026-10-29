@@ -189,3 +189,12 @@ test('clicking the open selector cannot blur-close and then reopen its popup', (
   h.trigger.handlers.click();
   assert.equal(h.switchers[0].hidden, false);
 });
+
+test('selected gallery photographs keep their deep link when switching main and backup hosts',()=>{
+ const h=harness();const link={attrs:{},setAttribute(k,v){this.attrs[k]=v;}};
+ const attrs={'data-url-cloudflare':'https://travelusa.pages.dev/gallery/','data-url-github':'https://tgthms.github.io/usa-travel-guide/gallery.html','data-gallery-photo':'SFgolden_gate_bridge.jpeg'};
+ const card={getAttribute:k=>attrs[k],querySelector:s=>s==='[data-project-single]'?link:null};
+ h.context.applyProjectUrls('cloudflare',card);assert.equal(link.attrs.href,'https://travelusa.pages.dev/gallery/?photo=SFgolden_gate_bridge.jpeg');
+ h.context.applyProjectUrls('github',card);assert.equal(link.attrs.href,'https://tgthms.github.io/usa-travel-guide/gallery.html?photo=SFgolden_gate_bridge.jpeg');
+ delete attrs['data-gallery-photo'];h.context.applyProjectUrls('cloudflare',card);assert.equal(link.attrs.href,'https://travelusa.pages.dev/gallery/');
+});

@@ -11,7 +11,7 @@ var ERHU_WIKI = {
     imageCredit: "Instrument image: Unknown author / Metropolitan Museum of Art, CC0.",
     imageSource: "View source",
     videoTitle: "A sound in context",
-    videoIntro: "A performance of “Always With Me” by Yumi Kimura, played with my former orchestra.",
+    videoIntro: "I led my former orchestra and its erhu section, and play the opening solo in this performance of “Always With Me” by Yumi Kimura.",
     videoCredit: "I performed the erhu in this recording and hold the rights to my performance and recording. “Always With Me” remains the property of its respective rights holders; please do not reuse or redistribute this video without permission.",
     sections: [
       { title: "What is the erhu?", paragraphs: [
@@ -34,7 +34,7 @@ var ERHU_WIKI = {
     imageCredit: "Imagen del instrumento: autor desconocido / Metropolitan Museum of Art, CC0.",
     imageSource: "Ver fuente",
     videoTitle: "El sonido en contexto",
-    videoIntro: "Una interpretación de “Always With Me”, de Yumi Kimura, tocada con mi antigua orquesta.",
+    videoIntro: "Fui líder de mi antigua orquesta y de su sección de erhu. En esta interpretación de «Always With Me», de Yumi Kimura, toco el solo inicial.",
     videoCredit: "Yo interpreto el erhu en esta grabación y poseo los derechos sobre mi interpretación y la grabación. «Always With Me» sigue siendo propiedad de sus respectivos titulares; no reutilices ni redistribuyas este vídeo sin permiso.",
     sections: [
       { title: "¿Qué es el erhu?", paragraphs: [
@@ -57,7 +57,7 @@ var ERHU_WIKI = {
     imageCredit: "乐器图片：作者未知 / 大都会艺术博物馆，CC0。",
     imageSource: "查看来源",
     videoTitle: "在音乐中感受它的声音",
-    videoIntro: "这是我与曾经所在的乐团演奏由木村弓创作的《永远同在》时的一段演出录像。",
+    videoIntro: "我曾担任乐团首席及二胡首席。这段演出中，我与原乐团演奏了木村弓的作品《永远同在》，开场的二胡独奏由我演奏。",
     videoCredit: "这段录像中的二胡演奏由我完成，我拥有自己演奏及该录音的相关权利。《永远同在》的作品权利仍归各自权利人所有；未经许可，请勿转载或再次使用本视频。",
     sections: [
       { title: "什么是二胡？", paragraphs: [
@@ -80,7 +80,7 @@ var ERHU_WIKI = {
     imageCredit: "楽器画像：作者不明 / メトロポリタン美術館、CC0。",
     imageSource: "出典を見る",
     videoTitle: "音色を聴いてみる",
-    videoIntro: "以前所属していたオーケストラで演奏した、木村弓作曲「いつも何度でも」の演奏映像です。",
+    videoIntro: "以前所属していたオーケストラで、楽団全体と二胡パートのリーダーを務めていました。木村弓作曲「いつも何度でも」のこの演奏では、冒頭のソロを弾いています。",
     videoCredit: "この映像では私が二胡を演奏しており、私の演奏および録音に関する権利を保有しています。「いつも何度でも」の楽曲に関する権利は各権利者に帰属します。許可なく、この動画を再利用・再配布しないでください。",
     sections: [
       { title: "二胡とは？", paragraphs: [
@@ -122,7 +122,7 @@ ERHU_WIKI["zh-Hant"] = {
   ],
   "title": "關於二胡",
   "videoCredit": "這段影片中的二胡演奏由我完成，我擁有自己演奏及該錄音的相關權利。《永遠同在》的作品權利仍歸各自權利人所有；未經許可，請勿轉載或再次使用本影片。",
-  "videoIntro": "這是我與曾經所在的樂團演奏由木村弓創作的《永遠同在》時的一段演出影片。",
+  "videoIntro": "我曾擔任樂團首席及二胡首席。這段演出中，我與原樂團演奏了木村弓的作品《永遠同在》，開場的二胡獨奏由我演奏。",
   "videoTitle": "在音樂中感受它的聲音"
 };
 
@@ -136,7 +136,7 @@ ERHU_WIKI.ko = {
   "imageCredit": "악기 사진: 작자 미상 / 메트로폴리탄 미술관, CC0.",
   "imageSource": "출처 보기",
   "videoTitle": "소리로 만나는 얼후",
-  "videoIntro": "예전에 함께했던 오케스트라와 연주한 기무라 유미의 ‘언제나 몇 번이라도’입니다.",
+  "videoIntro": "이전에 활동하던 오케스트라의 리더이자 얼후 파트의 수석을 맡았어요. 이 영상은 기무라 유미의 「언제나 몇 번이라도」를 연주한 것으로, 도입부의 독주는 제가 연주합니다.",
   "videoCredit": "이 영상에서 얼후를 연주한 사람은 저이며, 제 연주와 녹화물에 대한 권리를 보유하고 있습니다. ‘언제나 몇 번이라도’의 권리는 해당 권리자에게 있습니다. 허락 없이 영상을 재사용하거나 재배포하지 말아 주세요.",
   "sections": [
     {
@@ -158,3 +158,6 @@ ERHU_WIKI.ko = {
 
 var ERHU_PERFORMANCE_TITLES = { en: "My erhu performance", es: "Mi interpretación de erhu", zh: "我的二胡演奏", "zh-Hant": "我的二胡演奏", ja: "私の二胡演奏", ko: "저의 얼후 연주" };
 Object.keys(ERHU_PERFORMANCE_TITLES).forEach(function (lang) { ERHU_WIKI[lang].performanceTitle = ERHU_PERFORMANCE_TITLES[lang]; });
+
+var ERHU_RECORDING_DETAILS = {"en": "Recording details", "es": "Detalles de la grabación", "zh": "录像说明", "zh-Hant": "錄影說明", "ja": "録画について", "ko": "녹화 정보"};
+Object.keys(ERHU_RECORDING_DETAILS).forEach(function (lang) { ERHU_WIKI[lang].recordingDetails = ERHU_RECORDING_DETAILS[lang]; });

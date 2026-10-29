@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <script src="js/runtime.js?v=83d18721b7e9"></script>
+  <script src="js/runtime.js?v=45f7c2ef98dd"></script>
   <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
   <title>Tim G — Personal Hub</title>
   <meta name="description" content="Tim G — high school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
@@ -44,10 +44,10 @@
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <script src="js/season-calendar.js?v=5775c00de5c2"></script>
   <link rel="stylesheet" href="css/styles.css?v=604393d26cf9" />
-  <link rel="stylesheet" href="css/home.css?v=7256d2098ff8" />
+  <link rel="stylesheet" href="css/home.css?v=e67e2c115286" />
   <link rel="stylesheet" href="css/seasons.css?v=8b0d4a08d23f" />
 
-  <link rel="stylesheet" href="css/compact.css?v=a1688a3b0f4d" />
+  <link rel="stylesheet" href="css/compact.css?v=a41cd905e50c" />
 
   <script type="application/ld+json">
   {
@@ -197,7 +197,7 @@
         </header>
         <div class="about__body" data-about-content>
           <p class="about__text" data-about-copy="p1">
-            I'm a high school student in the Bay Area who loves building things, capturing moments, playing erhu, and table tennis. Whether it's a project, a new experience, or learning English, I'm always curious about creating and discovering something new.
+            I'm a high school student in the Bay Area. I like having something new to figure out, whether I'm building a project, trying something for the first time, or working on my English.
           </p>
           <p class="about__text" data-about-copy="p2">
             Outside of school and projects, Psalm 23 keeps me grounded through busy seasons and reminds me of what matters most.
@@ -214,20 +214,7 @@
           <h2 id="interests-heading" class="section__title" data-i18n="interests.title">Interests</h2>
         </header>
         <ul class="interests__grid" role="list">
-          <li class="interest-card" style="--stagger: 0" data-interest="bilingual">
-            <div class="interest-card__icon" aria-hidden="true">
-              <!-- Bilingual -->
-              <svg viewBox="0 0 40 40" fill="none" width="40" height="40" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 19L10.5 5 17 19M6.5 14h8"/>
-                <path d="M28 17l1 3M20 22h16M23 22c1.5 6 5 10 12 13M33 22c-1.5 6-5 10-12 13"/>
-                <path class="interest-arrow--right" d="M23 7h10l-3-3M33 7l-3 3" stroke-width="1.4"/>
-                <path class="interest-arrow--left" d="M16 31H6l3-3M6 31l3 3" stroke-width="1.4"/>
-              </svg>
-            </div>
-            <h3 class="interest-card__title" data-i18n="interests.bilingual.title">Bilingual</h3>
-            <p class="interest-card__desc" data-i18n="interests.bilingual.desc">Chinese-American — fluent in Mandarin Chinese and English</p>
-          </li>
-          <li class="interest-card" id="interest-erhu" style="--stagger: 1" data-interest="erhu">
+          <li class="interest-card" id="interest-erhu" style="--stagger: 0" data-interest="erhu">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Erhu -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -249,7 +236,7 @@
               <button type="button" class="erhu-actions__about" id="erhu-wiki-open" aria-haspopup="dialog" aria-controls="erhu-wiki-modal" aria-expanded="false" data-i18n="interests.erhu.learnMore">About the erhu</button>
             </div>
           </li>
-          <li class="interest-card" style="--stagger: 2" data-interest="photo">
+          <li class="interest-card" style="--stagger: 1" data-interest="photo">
             <div class="interest-card__icon" aria-hidden="true">
               <!-- Camera aperture -->
               <svg viewBox="0 0 40 40" fill="none" width="40" height="40">
@@ -260,6 +247,22 @@
             </div>
             <h3 class="interest-card__title" data-i18n="interests.photo.title">Photography</h3>
             <p class="interest-card__desc" data-i18n="interests.photo.desc">Finding light, frames, and quiet moments</p>
+            <p class="interest-card__action" data-project="photography" data-url-cloudflare="https://travelusa.pages.dev/gallery/" data-url-github="https://tgthms.github.io/usa-travel-guide/gallery.html">
+              <a class="interest-card__photos" data-project-single href="https://travelusa.pages.dev/gallery/" target="_blank" rel="noopener noreferrer"><span data-i18n="interests.photo.view">View my photos</span><span aria-hidden="true">↗</span></a>
+            </p>
+          </li>
+          <li class="interest-card" style="--stagger: 2" data-interest="bilingual">
+            <div class="interest-card__icon" aria-hidden="true">
+              <!-- Bilingual -->
+              <svg viewBox="0 0 40 40" fill="none" width="40" height="40" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19L10.5 5 17 19M6.5 14h8"/>
+                <path d="M28 17l1 3M20 22h16M23 22c1.5 6 5 10 12 13M33 22c-1.5 6-5 10-12 13"/>
+                <path class="interest-arrow--right" d="M23 7h10l-3-3M33 7l-3 3" stroke-width="1.4"/>
+                <path class="interest-arrow--left" d="M16 31H6l3-3M6 31l3 3" stroke-width="1.4"/>
+              </svg>
+            </div>
+            <h3 class="interest-card__title" data-i18n="interests.bilingual.title">Bilingual</h3>
+            <p class="interest-card__desc" data-i18n="interests.bilingual.desc">Chinese-American — fluent in Mandarin Chinese and English</p>
           </li>
           <li class="interest-card" style="--stagger: 3" data-interest="travel">
             <div class="interest-card__icon" aria-hidden="true">
@@ -488,12 +491,13 @@
               target="_blank"
               rel="noopener noreferrer"
               aria-labelledby="project-title-usa-gallery"
+              aria-describedby="gallery-preview-location"
             ></a>
             <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
             <div class="featured-card__content">
               <h3 class="featured-card__title" id="project-title-usa-gallery" data-i18n="links.usaGallery.title">Travel Gallery</h3>
               <p class="featured-card__desc" data-i18n="links.usaGallery.desc">
-                A photo gallery companion to the USA Travel Guide.
+                Photographs from my travels, from coastal views to moments along the road.
               </p>
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
@@ -534,8 +538,10 @@
                 </a>
               </div>
             </div>
-            <div class="featured-card__visual featured-card__visual--photo featured-card__visual--gallery" aria-hidden="true">
-              <img data-src="assets/projects/gallery-og.jpg" alt="" width="1200" height="630" decoding="async" />
+            <div class="featured-card__visual featured-card__visual--photo featured-card__visual--gallery gallery-preview" id="gallery-preview">
+              <img data-src="assets/gallery/bixby_bridge.webp" alt="" width="1200" height="750" decoding="async" />
+              <span class="gallery-preview__location" id="gallery-preview-location" aria-hidden="true">Monterey County, CA</span>
+              <button type="button" class="gallery-preview__toggle" hidden aria-label="Pause photo slideshow"><svg class="gallery-preview__pause" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M4 3h3v10H4zm5 0h3v10H9z"/></svg><svg class="gallery-preview__play" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M5 3v10l8-5z"/></svg></button>
             </div>
           </article>
 
@@ -1160,18 +1166,20 @@
   </footer>
 
   <script src="js/preferences.js?v=dc8aac2d324d"></script>
-  <script src="js/i18n/data.js?v=8247b689d9a1"></script>
+  <script src="js/i18n/data.js?v=3ffd7b7a6300"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=3ee595887b78"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
-  <script src="js/i18n/project-host.js?v=8e02cfad1e09"></script>
+  <script src="js/i18n/project-host.js?v=35b56e6bdb1d"></script>
   <script src="js/i18n/language.js?v=7157b35a4d5f"></script>
-  <script src="js/erhu-content.js?v=d92524d02846"></script>
-  <script src="js/erhu.js?v=eb43a76323d7"></script>
+  <script src="js/erhu-content.js?v=54853c9605ca"></script>
+  <script src="js/erhu.js?v=9a3bb356d867"></script>
   <script src="js/archived-projects.js?v=a0ce08a6ce8f"></script>
   <script src="js/about.js?v=cfcf08b1d2b9"></script>
   <script src="js/github-card.js?v=73e459e0133b"></script>
   <script src="js/image-loader.js?v=8d85316ce8e5"></script>
+  <script src="js/gallery-photos.js?v=aa3f170a2576"></script>
+  <script src="js/gallery-preview.js?v=eeb44a6cef4c"></script>
   <script src="js/haptics.js?v=189f612efc57"></script>
   <script src="js/site-history-content.js?v=ff99252c9465"></script>
   <script src="js/site-history.js?v=bcca24d9a5f4"></script>
