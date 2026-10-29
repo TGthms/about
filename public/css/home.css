@@ -61,7 +61,7 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
 .home-page .hero { min-height: 0; }
 .home-page .hero__inner { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(40px, 8vw, 110px); }
 .home-page .hero__eyebrow { display: block; background: none; color: var(--mute); border: 0; padding: 0; box-shadow: none; font-size: 1.15rem; font-weight: 400; text-transform: none; letter-spacing: 0; margin-bottom: 4px; }
-.home-page .hero__name { font-size: clamp(4.5rem, 10vw, 7rem); font-weight: 400; letter-spacing: -0.065em; margin-bottom: 24px; }
+.home-page .hero__name { font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif; font-size: clamp(4.5rem, 10vw, 7rem); font-weight: 400; letter-spacing: -0.065em; margin-bottom: 24px; }
 .hero__period { color: var(--signature-accent); }
 .hero__note { font: 1.4rem/1.5 var(--font-display); max-width: 25em; text-wrap: pretty; }
 .hero__index { padding-top: 20px; }
@@ -213,12 +213,6 @@ html[data-lightweight] .notes-spotlight__image img { max-height: 160px; }
   font-weight: 500;
   letter-spacing: 0.08em;
 }
-/* Hero: the tight Latin tracking does nothing for hanzi — use weight instead */
-:is([data-language="zh"], [data-language="zh-Hant"]) .home-page .hero__name {
-  font-family: var(--font-zh-sans);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-}
 :is([data-language="zh"], [data-language="zh-Hant"]) .home-page .hero__note {
   font-family: var(--font-zh-sans);
 }
@@ -255,11 +249,6 @@ html[data-lightweight] .notes-spotlight__image img { max-height: 160px; }
   font-weight: 500;
   letter-spacing: 0.08em;
 }
-[data-language="ja"] .home-page .hero__name {
-  font-family: var(--font-ja-sans);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-}
 [data-language="ja"] .home-page .hero__note {
   font-family: var(--font-ja-sans);
 }
@@ -269,9 +258,6 @@ html[data-lightweight] .notes-spotlight__image img { max-height: 160px; }
    with slightly relaxed tracking — Spanish words run longer. */
 [data-language="es"] .home-page .featured-card--duskline .featured-card__title {
   letter-spacing: 0.08em;
-}
-[data-language="es"] .home-page .hero__name {
-  letter-spacing: -0.04em;
 }
 
 /* Editorial system: one rhythm, quiet surfaces, and consistent utility type.
@@ -1067,7 +1053,6 @@ html .home-page .interest-card__icon {
   .home-page .interest-card__learn { margin-left: 30px; }
 }
 
-[data-language="ko"] .home-page .hero__name { font-family: Georgia, "Times New Roman", serif; }
 [data-language="ko"] .home-page .hero__note { font-family: var(--font); line-height: 1.7; font-size: clamp(1.1rem, 2.1vw, 1.35rem); }
 [data-language="ko"] .home-page :is(.section__title, .interest-card__title, .erhu-modal__title) { letter-spacing: -.025em; line-height: 1.45; }
 [data-language="ko"] .home-page .featured-card__desc { line-height: 1.8; }
@@ -1267,15 +1252,22 @@ html .home-page .project-host--section .host-option {
 @media (prefers-reduced-motion: reduce) { .gallery-preview__location::before, .gallery-preview__location::after { display: none; animation: none; } }
 
 /* Photography opens the project shelf; the current site takes a quieter row. */
-.home-page .featured-stack > #project-usa-gallery { grid-column: 1 / -1; }
+.home-page .featured-stack > #project-usa-gallery,
+.home-page .featured-stack > #project-signal-lab { grid-column: 1 / -1; }
+.home-page #project-signal-lab .featured-card__visual { aspect-ratio: 1200 / 630; background: #151a17; }
+.home-page #project-signal-lab .featured-card__visual img { object-fit: contain; }
+.home-page #project-signal-lab .featured-card__title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-weight: 650; letter-spacing: -.035em; }
 .home-page .featured-stack > .hub-row { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; padding-block: 24px; border-top: 1px solid var(--rule); }
 .home-page .hub-row .featured-card__title { font-size: 1.3rem; }
 .home-page .hub-row .featured-card__desc { font-size: .8125rem; max-width: 48em; }
 .home-page .hub-row .hub-card__learn { flex: 0 0 auto; font-size: .8125rem; }
 @media (min-width: 768px) {
-  .home-page #project-usa-gallery { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 32px; align-items: center; }
-  .home-page #project-usa-gallery .featured-card__visual { order: -1; grid-column: 1; grid-row: 1; width: 100%; }
-  .home-page #project-usa-gallery .featured-card__content { grid-column: 2; grid-row: 1; }
+  .home-page #project-usa-gallery,
+  .home-page #project-signal-lab { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+  .home-page #project-usa-gallery .featured-card__visual,
+  .home-page #project-signal-lab .featured-card__visual { order: -1; grid-column: 1; grid-row: 1; width: 100%; }
+  .home-page #project-usa-gallery .featured-card__content,
+  .home-page #project-signal-lab .featured-card__content { grid-column: 2; grid-row: 1; }
 }
 @media (max-width: 767px) {
   .home-page .featured-stack > .hub-row { align-items: start; flex-direction: column; gap: 8px; }

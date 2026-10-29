@@ -17,10 +17,10 @@ test('watch identification and constrained viewport/screen select lightweight mo
 test('compact photos cover every existing local photo and leave unknown or remote URLs alone',()=>{
  const r=runtime({viewport:240});
  const html=fs.readFileSync('public/index.html','utf8');
- const photos=[...html.matchAll(/data-(?:src|hero-src)="([^"]+)"/g)].map(m=>m[1]);
+ const photos=[...html.matchAll(/data-(?:src|hero-src)="([^"]+)"/g)].map(m=>m[1]).filter(src=>!/\.svg$/.test(src));
  photos.push('assets/erhu/erhu-instrument.jpg',...['christmas','good-friday','easter','palm-sunday','thanksgiving','new-year'].map(x=>'assets/seasonal/'+x+'.webp'));
  for(const src of photos){const small=r.api.image(src);assert.ok(small.startsWith('assets/compact/'),src);assert.ok(fs.existsSync('public/'+small),small);}
- for(const src of ['assets/projects/future.jpg','https://example.com/image.jpg','assets/example.svg'])assert.equal(r.api.image(src),src);
+ for(const src of ['assets/projects/future.jpg','https://example.com/image.jpg','assets/example.svg','assets/projects/signal-lab.svg'])assert.equal(r.api.image(src),src);
  assert.equal(runtime().api.image('assets/main-modern.webp'),'assets/main-modern.webp');
 });
 test('calendar preload and hero choose the same compact image without a high resolution source set',()=>{

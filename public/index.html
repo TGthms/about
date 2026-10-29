@@ -45,7 +45,7 @@
   <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
   <script src="js/season-calendar.js?v=5775c00de5c2"></script>
   <link rel="stylesheet" href="css/styles.css?v=55f6eb7fb62b" />
-  <link rel="stylesheet" href="css/home.css?v=b3647e419c71" />
+  <link rel="stylesheet" href="css/home.css?v=74c2c0655d14" />
   <link rel="stylesheet" href="css/seasons.css?v=8b0d4a08d23f" />
 
   <link rel="stylesheet" href="css/compact.css?v=13aee3eb3a19" />
@@ -404,22 +404,22 @@
             Project cards use one CTA, selected from the host preference.
             URLs live in data-url-cloudflare / data-url-github; applied by the project-host module.
           -->
-          <article class="featured-card featured-card--duskline" data-project="duskline"
-            data-url-cloudflare="https://dusklineweather.pages.dev"
-            data-url-github="https://tgthms.github.io/duskline/">
+          <article class="featured-card featured-card--signal" id="project-signal-lab" data-project="signal-lab"
+            data-url-cloudflare="https://signal-lab-tg.pages.dev/"
+            data-url-github="https://tgthms.github.io/SignalLab/">
             <a
               class="featured-card__hit"
               data-project-single
-              href="https://dusklineweather.pages.dev"
+              href="https://signal-lab-tg.pages.dev/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-labelledby="project-title-duskline"
+              aria-labelledby="project-title-signal-lab"
             ></a>
             <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
             <div class="featured-card__content">
-              <h3 class="featured-card__title" id="project-title-duskline" data-i18n="links.duskline.title">duskline</h3>
-              <p class="featured-card__desc" data-i18n="links.duskline.desc">
-                Weather, beautifully clear. Anywhere in the world.
+              <h3 class="featured-card__title" id="project-title-signal-lab" data-i18n="links.signalLab.title">Signal Lab</h3>
+              <p class="featured-card__desc" data-i18n="links.signalLab.desc">
+                Explore how sound carries data, with audio modems, Morse code, and EAS / SAME.
               </p>
               <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
                 <span data-i18n="links.open">Open project</span>
@@ -431,7 +431,7 @@
                 <a
                   class="project-line project-line--main"
                   data-project-line="cloudflare"
-                  href="https://dusklineweather.pages.dev"
+                  href="https://signal-lab-tg.pages.dev/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -446,7 +446,7 @@
                 <a
                   class="project-line project-line--backup"
                   data-project-line="github"
-                  href="https://tgthms.github.io/duskline/"
+                  href="https://tgthms.github.io/SignalLab/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -460,8 +460,8 @@
                 </a>
               </div>
             </div>
-            <div class="featured-card__visual featured-card__visual--photo featured-card__visual--duskline" aria-hidden="true">
-              <img data-src="assets/projects/duskline.jpg" alt="" width="1152" height="864" decoding="async" />
+            <div class="featured-card__visual featured-card__visual--photo featured-card__visual--signal" aria-hidden="true">
+              <img data-src="assets/projects/signal-lab.svg" alt="" width="1200" height="630" decoding="async" />
             </div>
           </article>
 
@@ -523,6 +523,67 @@
             </div>
             <div class="featured-card__visual featured-card__visual--photo featured-card__visual--kit" aria-hidden="true">
               <img data-src="assets/projects/kit-og.jpg" alt="" width="1200" height="630" decoding="async" />
+            </div>
+          </article>
+
+          <article class="featured-card featured-card--duskline" data-project="duskline"
+            data-url-cloudflare="https://dusklineweather.pages.dev"
+            data-url-github="https://tgthms.github.io/duskline/">
+            <a
+              class="featured-card__hit"
+              data-project-single
+              href="https://dusklineweather.pages.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-labelledby="project-title-duskline"
+            ></a>
+            <div class="featured-card__badge" data-i18n="links.featured">Featured</div>
+            <div class="featured-card__content">
+              <h3 class="featured-card__title" id="project-title-duskline" data-i18n="links.duskline.title">duskline</h3>
+              <p class="featured-card__desc" data-i18n="links.duskline.desc">
+                Weather, beautifully clear. Anywhere in the world.
+              </p>
+              <span class="featured-card__cta featured-card__cta--single" aria-hidden="true">
+                <span data-i18n="links.open">Open project</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <div class="featured-card__lines" data-project-lines>
+                <a
+                  class="project-line project-line--main"
+                  data-project-line="cloudflare"
+                  href="https://dusklineweather.pages.dev"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.main">Main line</span>
+                    <span class="project-line__name" data-i18n="host.cloudflare">Cloudflare</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                <a
+                  class="project-line project-line--backup"
+                  data-project-line="github"
+                  href="https://tgthms.github.io/duskline/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="project-line__meta">
+                    <span class="project-line__kicker" data-i18n="host.backup">Backup line</span>
+                    <span class="project-line__name" data-i18n="host.github">GitHub</span>
+                  </span>
+                  <svg class="project-line__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M4 12L12 4M6 4h6v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div class="featured-card__visual featured-card__visual--photo featured-card__visual--duskline" aria-hidden="true">
+              <img data-src="assets/projects/duskline.jpg" alt="" width="1152" height="864" decoding="async" />
             </div>
           </article>
 
@@ -1157,7 +1218,7 @@
   </footer>
 
   <script src="js/preferences.js?v=dc8aac2d324d"></script>
-  <script src="js/i18n/data.js?v=2d0274c2d7d3"></script>
+  <script src="js/i18n/data.js?v=78ca2be13eee"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=3ee595887b78"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>

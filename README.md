@@ -12,10 +12,10 @@ Static personal landing site for [timgong.me](https://timgong.me/) (GitHub Pages
 
 - English, Español, 简体中文, 繁體中文, 日本語, 한국어
 - Light / dark mode (system default, session override)
-- Projects: Personal Hub, duskline, Kit, and Travel Gallery, with USA Travel Guide, Japan Travel Guide, Folio, Nimbus, and Kiln in the archived-project shelf
+- Projects: Travel Gallery, Signal Lab, Kit, duskline, and Personal Hub, with USA Travel Guide, Japan Travel Guide, Folio, Nimbus, and Kiln in the archived-project shelf
 - Dual hosts for each project (Cloudflare main / GitHub backup). Every language uses the selected host preference
 - Compact introduction and section navigation with a current-section indicator and measured sticky-header offsets; all home content is readable immediately
-- Three project previews, led by Travel Gallery; a quieter Personal Hub row opens the site introduction and curated version history
+- Four project previews, led by Travel Gallery and Signal Lab; a quieter Personal Hub row opens the site introduction and curated version history
 - Brief hover/press/dialog animations that respect reduced motion, with small animated interest doodles
 - Birthday balloons on every home-page visit on December 21 (visitor's local date), with reduced-motion support; preview with `?birthday=preview`
 - Seasonal hero greetings for Christmas, Good Friday, Easter, Palm Sunday, U.S. Thanksgiving, and New Year, in all six languages and the visitor's local date

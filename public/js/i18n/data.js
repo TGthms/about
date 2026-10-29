@@ -1449,3 +1449,15 @@ Object.keys(NOTES_FOLLOW_COPY).forEach(function (lang) {
   ["followTitle", "followIntro", "followExplain", "followStep1", "followStep2", "followStep3", "feedAddress", "copyFeed", "openFeed", "feedCopied", "feedManual"]
     .forEach(function (key, index) { TRANSLATIONS[lang].notes[key] = NOTES_FOLLOW_COPY[lang][index]; });
 });
+
+const SIGNAL_LAB_COPY = {
+  en: "Explore how sound carries data, with audio modems, Morse code, and EAS / SAME.",
+  es: "Explora cómo el sonido transmite datos con módems de audio, código Morse y EAS / SAME.",
+  zh: "通过音频调制解调器、摩尔斯电码和 EAS / SAME，探索声音如何传递数据。",
+  "zh-Hant": "透過音訊數據機、摩斯密碼和 EAS / SAME，探索聲音如何傳遞資料。",
+  ja: "音声モデム、モールス信号、EAS / SAMEを通して、音がデータを運ぶ仕組みを探る。",
+  ko: "오디오 모뎀, 모스 부호, EAS / SAME으로 소리가 데이터를 전달하는 원리를 알아보세요."
+};
+Object.keys(SIGNAL_LAB_COPY).forEach(function (lang) {
+  TRANSLATIONS[lang].links.signalLab = { title: "Signal Lab", desc: SIGNAL_LAB_COPY[lang] };
+});
