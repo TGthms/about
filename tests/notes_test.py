@@ -139,6 +139,8 @@ class NotesTests(unittest.TestCase):
         self.assertIn('data:image/webp;base64,', markup)
         self.assertNotIn('<script', markup)
         self.assertNotIn('rel="stylesheet"', markup)
+        self.assertIn('href="https://timgong.me/notes.html"', markup)
+        self.assertNotIn('href="../', markup)
         self.assertEqual((self.public / 'index.html').read_bytes(), original)
         self.assertFalse((self.public / 'notes.html').exists())
     def test_home_entrance_is_compact_and_hero_uses_notes_icon(self):

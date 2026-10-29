@@ -388,6 +388,10 @@ def build(private, public, preview_path=None, preview_output=None):
                     markup = re.sub(r'<script\b[^>]*>.*?</script>', '', markup, flags=re.S)
                     css = re.sub(r'url\([^)]*\)', 'none', css)
                     markup = markup.replace('</head>', '<style>' + css.replace('</style', '<\\/style') + '</style></head>')
+                    # Downloaded previews keep navigation useful without a local server.
+                    markup = re.sub(r'href="\.\./notes/([^"/]+\.html)"', lambda m: 'href="' + m[1] + '"', markup)
+                    markup = re.sub(r'href="\.\./([^"/]+\.(?:html|xml))"', lambda m: 'href="' + ORIGIN + '/' + m[1] + '"', markup)
+                    markup = re.sub(r'<link[^>]+rel="(?:icon|apple-touch-icon)"[^>]*>', '', markup)
                     dest = preview_output / Path(filename).name; dest.parent.mkdir(parents=True, exist_ok=True); dest.write_text(markup)
                 else:
                     (stage / filename).write_text(markup)
