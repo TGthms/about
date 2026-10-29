@@ -3,8 +3,28 @@
   "use strict";
   var root = document.documentElement;
   var isPage = document.body.classList.contains("notes-page");
+  var posterObserver;
   var year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
+
+  function preparePosters() {
+    if (posterObserver) posterObserver.disconnect();
+    var connection = navigator.connection;
+    if (!isPage || document.hidden || (window.SiteRuntime && window.SiteRuntime.lightweight) ||
+      (connection && (connection.saveData || /^(slow-)?2g$/.test(connection.effectiveType || ""))) || !window.IntersectionObserver) return;
+    var videos = document.querySelectorAll("video[data-note-poster]");
+    if (!videos.length) return;
+    posterObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting || document.hidden) return;
+        var video = entry.target;
+        video.setAttribute("poster", video.getAttribute("data-note-poster"));
+        video.removeAttribute("data-note-poster");
+        posterObserver.unobserve(video);
+      });
+    }, { rootMargin: "120px" });
+    videos.forEach(function (video) { posterObserver.observe(video); });
+  }
 
   function refresh() {
     var lang = root.getAttribute("data-language") || "en";
@@ -60,10 +80,12 @@
     if (window.ResizeObserver && header && !(window.SiteRuntime && window.SiteRuntime.lightweight)) new ResizeObserver(measure).observe(header);
   }
   refresh();
+  preparePosters();
   /* Homepage language changes are owned by main.js. Observe only that attribute. */
   if (!isPage && window.MutationObserver) new MutationObserver(refresh).observe(root, { attributes: true, attributeFilter: ["data-language"] });
-  window.addEventListener("pageshow", refresh);
-  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
+  window.addEventListener("pageshow", function () { refresh(); preparePosters(); });
+  window.addEventListener("pagehide", function () { if (posterObserver) posterObserver.disconnect(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); preparePosters(); });
 
   var share = document.getElementById("note-share");
   if (!share) return;

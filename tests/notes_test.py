@@ -78,7 +78,8 @@ class NotesTests(unittest.TestCase):
     def test_video_does_not_autoload_and_has_direct_access(self):
         (self.private / 'media/videos').mkdir()
         (self.private / 'media/videos/clip.mp4').write_bytes(b'video-fixture')
-        self.post(blocks=[{'type': 'video', 'file': '/media/videos/clip.mp4', 'caption': 'A short clip', 'transcript': 'A short introduction.'}])
+        photo = self.image()
+        self.post(blocks=[{'type': 'video', 'file': '/media/videos/clip.mp4', 'poster': photo, 'caption': 'A short clip', 'transcript': 'A short introduction.'}])
         self.build()
         markup = (self.public / 'notes/example.html').read_text()
         self.assertIn('preload="none"', markup)
@@ -86,6 +87,8 @@ class NotesTests(unittest.TestCase):
         self.assertIn('Open video', markup)
         self.assertIn('Transcript', markup)
         self.assertNotIn('autoplay', markup)
+        self.assertRegex(markup, r'poster="\.\./assets/notes/[a-f0-9]+-320.webp"')
+        self.assertRegex(markup, r'data-note-poster="\.\./assets/notes/[a-f0-9]+-1920.webp"')
     def test_html_is_sanitized_in_body_metadata_and_feed(self):
         self.post(body='<p onclick="steal()">Hello <strong>world</strong>.</p><script>HIDDEN_SCRIPT</script><iframe src="https://evil.example">HIDDEN_FRAME</iframe><a href="javascript:steal()">bad link</a><a href="https://example.org">Good link</a>')
         self.build()

@@ -164,14 +164,19 @@ class Media:
             url = safe_link(value)
             if not url.startswith('https://') or not urlparse(url).path.lower().endswith(('.mp4', '.webm')):
                 raise ValueError('Use a direct HTTPS MP4 or WebM URL for hosted videos.')
-        poster = ''
+        poster, large_poster = '', ''
         if block.get('poster'):
             _, name = self.image(block['poster'], block.get('caption') or 'Video still', prefix)
-            poster = prefix + name
-            if self.preview: poster = 'data:image/webp;base64,' + base64.b64encode((self.output / name).read_bytes()).decode()
+            key = self.source_keys[self.source(block['poster'])]
+            poster = prefix + self.cache[key][0][0]
+            large_poster = prefix + name
+            if self.preview:
+                poster = 'data:image/webp;base64,' + base64.b64encode((self.output / name).read_bytes()).decode()
+                large_poster = ''
         caption = esc(block.get('caption', ''))
         transcript = str(block.get('transcript') or '').strip()
         return ('<figure class="note-media">' + f'<video controls playsinline preload="none"' + (f' poster="{esc(poster)}"' if poster else '') +
+                (f' data-note-poster="{esc(large_poster)}"' if large_poster and large_poster != poster else '') +
                 f' aria-label="{caption or "Video"}"><source src="{esc(url)}" type="{"video/webm" if urlparse(value).path.lower().endswith(".webm") else "video/mp4"}" /></video>' +
                 (f'<figcaption>{caption}</figcaption>' if caption else '') +
                 f'<a class="note-media__link" href="{esc(url)}" target="_blank" rel="noopener noreferrer"><span data-i18n="notes.openVideo">Open video</span> ↗</a>' +
