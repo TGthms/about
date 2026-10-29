@@ -71,3 +71,4 @@ html[data-lightweight] .rally-scoreboard strong { margin-left: 3px; }
 html[data-lightweight] .rally-panel .erhu-modal__top { position: sticky; top: -10px; z-index: 3; margin: -10px -10px 8px; padding: 10px; background: var(--bg-card); }
 html[data-lightweight] .rally-status { font-size: .75rem; margin-block: 8px; }
 html[data-lightweight] .gallery-preview__location { padding: 6px 8px; bottom: 8px; left: 8px; max-width: calc(100% - 16px); font-size: .65rem; }
+html[data-lightweight] .gallery-preview__location::before, html[data-lightweight] .gallery-preview__location::after { display: none; }

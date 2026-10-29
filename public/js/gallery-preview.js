@@ -1,4 +1,4 @@
-/* One visible photograph, with a four-second shuffle cadence. */
+/* One visible photograph, with a three-second shuffle cadence. */
 (function () {
   "use strict";
   var frame = document.getElementById("gallery-preview");
@@ -23,6 +23,15 @@
   var timer = 0, captionTimer = 0, exitTimer = 0, requestTimer = 0, pending = null;
   var generation = 0;
   var observer = null;
+  var interval = 3000, remaining = interval, startedAt = 0;
+
+  function now() { return window.performance ? window.performance.now() : Date.now(); }
+  function resetInterval() {
+    remaining = interval;
+    frame.classList.remove("is-gallery-timing", "is-gallery-running");
+    void label.offsetWidth;
+    frame.classList.add("is-gallery-timing");
+  }
 
   function words() {
     var lang = document.documentElement.getAttribute("data-language") || "en";
@@ -54,6 +63,8 @@
     }
   }
   function stop() {
+    if (timer) remaining = Math.max(0, remaining - (now() - startedAt));
+    frame.classList.remove("is-gallery-running");
     window.clearTimeout(timer); window.clearTimeout(requestTimer);
     timer = requestTimer = 0;
     generation += 1;
@@ -61,12 +72,20 @@
       pending.onload = pending.onerror = null;
       pending.removeAttribute("src");
       pending = null;
+      resetInterval();
     }
     settle();
   }
   function schedule() {
     if (!allowed() || !layers || timer || pending) return;
-    timer = window.setTimeout(function () { timer = 0; next(); }, 4000);
+    if (!frame.classList.contains("is-gallery-timing")) resetInterval();
+    startedAt = now();
+    frame.classList.add("is-gallery-running");
+    timer = window.setTimeout(function () {
+      timer = 0; remaining = 0;
+      frame.classList.remove("is-gallery-running");
+      next();
+    }, remaining);
   }
   function sync() {
     copy();
@@ -90,6 +109,7 @@
       }, 160);
     }
     exitTimer = window.setTimeout(settle, 1100);
+    resetInterval();
     schedule();
   }
   function next() {
@@ -103,7 +123,7 @@
       window.clearTimeout(requestTimer); requestTimer = 0;
       loader.onload = loader.onerror = null; pending = null;
       if (ok && allowed()) swap(photo);
-      else schedule();
+      else { resetInterval(); schedule(); }
     }
     loader.onload = function () {
       if (typeof loader.decode === "function") loader.decode().then(function () { done(true); }, function () { done(true); });
@@ -134,6 +154,7 @@
   }
   select(current); copy();
   if (constrained) { toggle.hidden = true; return; }
+  frame.style.setProperty("--gallery-interval", interval + "ms");
   image.addEventListener("load", prepare);
   prepare();
   toggle.addEventListener("click", function () { paused = !paused; sync(); });
@@ -149,7 +170,7 @@
   window.addEventListener("pagehide", stop);
   window.addEventListener("pageshow", sync);
   if (motion) {
-    function changed() { prepare(); sync(); }
+    function changed() { resetInterval(); prepare(); sync(); }
     if (motion.addEventListener) motion.addEventListener("change", changed);
     else if (motion.addListener) motion.addListener(changed);
   }

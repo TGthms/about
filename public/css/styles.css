@@ -1333,15 +1333,7 @@ html[data-project-links="single"] .featured-card:has(.featured-card__hit:focus-v
   outline: none;
   box-shadow: var(--focus);
 }
-@media (hover: hover) and (pointer: fine) {
-  html[data-project-links="single"] .featured-card.is-settled:hover {
-    transform: translate3d(0, calc(var(--lift-strong) * -1), 0);
-    box-shadow: var(--shadow-hover);
-  }
-  html[data-project-links="single"] .featured-card.is-settled:hover .featured-card__cta--single svg {
-    transform: translate3d(3px, 0, 0);
-  }
-}
+
 .featured-card__cta svg,
 .project-line__arrow {
   transition: transform var(--dur) var(--ease-out);
@@ -1467,15 +1459,7 @@ html[data-project-links="single"] .featured-card:has(.featured-card__hit:active)
 .project-line--main .project-line__arrow {
   color: var(--accent-text);
 }
-@media (hover: hover) and (pointer: fine) {
-  .project-line:hover {
-    transform: translate3d(0, calc(var(--lift) * -1), 0);
-    box-shadow: 3px 3px 0 var(--line);
-  }
-  .project-line:hover .project-line__arrow {
-    transform: translate3d(2px, 0, 0);
-  }
-}
+
 .project-line:active {
   transform: scale(0.98);
   box-shadow: 1px 1px 0 var(--line);
@@ -2630,13 +2614,9 @@ html[data-theme="dark"] .controls-trigger:hover {
   box-shadow: 4px 4px 0 #050403;
 }
 
-html[data-theme="dark"][data-project-links="single"] .featured-card.is-settled:hover,
 html[data-theme="dark"] .link-card:hover,
 html[data-theme="dark"] .duolingo-card__qr:hover .duolingo-card__frame {
   box-shadow: var(--shadow-hover);
-}
-html[data-theme="dark"] .project-line:hover {
-  box-shadow: 3px 3px 0 #050403;
 }
 html[data-theme="dark"] .host-option.is-selected {
   background: color-mix(in srgb, var(--accent) 22%, var(--bg-card));
