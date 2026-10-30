@@ -1303,7 +1303,7 @@ const PHOTO_COPY = {
     "view": "View my photos",
     "pause": "Pause photo slideshow",
     "resume": "Resume photo slideshow",
-    "desc": "Photographs from my travels, from coastal views to moments along the road."
+    "desc": "Photographs from my travels"
   },
   "es": {
     "view": "Ver mis fotos",
