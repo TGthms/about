@@ -38,7 +38,9 @@ html[data-theme="dark"] .notes-page { --rule: rgb(241 243 244 / 20%); background
 .notes-topics { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; }
 .notes-topics a { display: inline-flex; align-items: center; min-height: 40px; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 20px; font-size: .8125rem; }
 .notes-topics [aria-current] { color: var(--bg); background: var(--ink); border-color: var(--ink); }
-.note-return { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 20px; }
+.note-return { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 28px; }
+.note-return .notes-back { margin-bottom: 0; }
+.note-return [data-note-site-return] { color: var(--mute); font-size: .8125rem; }
 .notes-site-return { margin-bottom: 16px; }
 .note-contents { margin-bottom: 28px; padding: 16px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font-size: .8125rem; }
 .note-contents summary { cursor: pointer; font-weight: 600; color: var(--mute); }
@@ -116,6 +118,8 @@ html[data-lightweight] .note-card__link { grid-template-columns: minmax(0, 1fr);
 html[data-lightweight] .note-card__link > picture, html[data-lightweight] .note-card__link > .note-card__image { display: none; }
 html[data-lightweight] .notes-main { padding-top: 12px; }
 html[data-lightweight] .notes-back { margin-bottom: 12px; min-height: 36px; }
+html[data-lightweight] .note-return { margin-bottom: 12px; }
+html[data-lightweight] .note-return .notes-back { margin-bottom: 0; }
 html[data-lightweight] .note-header { margin-bottom: 16px; }
 html[data-lightweight] .note-header h1 { margin-top: 8px; }
 html[data-lightweight] .note-header__summary { margin-top: 12px; font-size: 1rem; }
