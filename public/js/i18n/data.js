@@ -1344,7 +1344,7 @@ Object.keys(PHOTO_COPY).forEach(function (lang) {
 
 /* Post content is translated only when its author supplies another version. */
 const NOTES_COPY = {
-  en: { title: "Notes", home: "Home", intro: "Small updates, photographs, and things along the way.", explore: "Explore notes", latest: "Latest note", featured: "A little update", emptyTitle: "Nothing here just yet.", emptyText: "A place for photographs, stories, and little updates.", all: "All notes", read: "Read note", rss: "Follow via RSS", original: "Written in {language}", share: "Share this note", copied: "Link copied.", copyFailed: "You can copy the link below.", openVideo: "Open video", transcript: "Transcript", newer: "Newer notes", older: "Older notes" },
+  en: { title: "Notes", home: "Home", intro: "Notes by Tim G.", explore: "Explore notes", latest: "Latest note", featured: "A little update", emptyTitle: "Nothing here just yet.", emptyText: "A place for photographs, stories, and little updates.", all: "All notes", read: "Read note", rss: "Follow via RSS", original: "Written in {language}", share: "Share this note", copied: "Link copied.", copyFailed: "You can copy the link below.", openVideo: "Open video", transcript: "Transcript", newer: "Newer notes", older: "Older notes" },
   es: { title: "Notas", home: "Inicio", intro: "Pequeñas novedades, fotografías y momentos del camino.", explore: "Explorar las notas", latest: "Última nota", featured: "Una pequeña novedad", emptyTitle: "Todavía no hay notas.", emptyText: "Un lugar para fotografías, historias y pequeñas novedades.", all: "Todas las notas", read: "Leer la nota", rss: "Seguir por RSS", original: "Escrito en {language}", share: "Compartir esta nota", copied: "Enlace copiado.", copyFailed: "Puedes copiar el enlace de abajo.", openVideo: "Abrir vídeo", transcript: "Transcripción", newer: "Notas más recientes", older: "Notas anteriores" },
   zh: { title: "随记", home: "首页", intro: "一些近况、照片，还有沿途的点滴。", explore: "看看随记", latest: "最新随记", featured: "分享一点近况", emptyTitle: "这里还没有随记。", emptyText: "用来分享照片、故事和生活中的点滴。", all: "全部随记", read: "阅读随记", rss: "通过 RSS 订阅", original: "原文语言：{language}", share: "分享这篇随记", copied: "链接已复制。", copyFailed: "你可以复制下方的链接。", openVideo: "打开视频", transcript: "文字稿", newer: "较新的随记", older: "更早的随记" },
   "zh-Hant": { title: "隨記", home: "首頁", intro: "一些近況、照片，還有沿途的點滴。", explore: "看看隨記", latest: "最新隨記", featured: "分享一點近況", emptyTitle: "這裡還沒有隨記。", emptyText: "用來分享照片、故事和生活中的點滴。", all: "全部隨記", read: "閱讀隨記", rss: "透過 RSS 訂閱", original: "原文語言：{language}", share: "分享這篇隨記", copied: "連結已複製。", copyFailed: "你可以複製下方的連結。", openVideo: "開啟影片", transcript: "文字稿", newer: "較新的隨記", older: "更早的隨記" },
@@ -1461,3 +1461,18 @@ const SIGNAL_LAB_COPY = {
 Object.keys(SIGNAL_LAB_COPY).forEach(function (lang) {
   TRANSLATIONS[lang].links.signalLab = { title: "Signal Lab", desc: SIGNAL_LAB_COPY[lang] };
 });
+
+const NOTES_READING_COPY = {
+  en: ["Back to site", "On this page", "Categories", "Projects", "Learning", "Photography", "Life", "Featured notes", "Previous note", "Next note", "Note {number} of {total}"],
+  es: ["Volver al sitio", "En esta página", "Categorías", "Proyectos", "Aprendizaje", "Fotografía", "Vida", "Notas destacadas", "Nota anterior", "Nota siguiente", "Nota {number} de {total}"],
+  zh: ["返回主页", "本文目录", "分类", "项目", "学习", "摄影", "生活", "精选随记", "上一篇随记", "下一篇随记", "第 {number} 篇，共 {total} 篇"],
+  "zh-Hant": ["返回主頁", "本文目錄", "分類", "專案", "學習", "攝影", "生活", "精選隨記", "上一篇隨記", "下一篇隨記", "第 {number} 篇，共 {total} 篇"],
+  ja: ["サイトに戻る", "このページの内容", "カテゴリー", "プロジェクト", "学び", "写真", "日々", "注目のノート", "前のノート", "次のノート", "{total} 件中 {number} 件目"],
+  ko: ["사이트로 돌아가기", "이 글의 목차", "카테고리", "프로젝트", "배움", "사진", "일상", "추천 노트", "이전 노트", "다음 노트", "{total}개 중 {number}번째 노트"]
+};
+Object.keys(NOTES_READING_COPY).forEach(function (lang) {
+  ["backToSite", "contents", "categories", "categoryProjects", "categoryLearning", "categoryPhotography", "categoryLife", "featuredNotes", "previousSlide", "nextSlide", "slideLabel"].forEach(function (key, i) { TRANSLATIONS[lang].notes[key] = NOTES_READING_COPY[lang][i]; });
+});
+
+const NOTES_STORY_COPY = { en:"Read the story", es:"Leer la historia", zh:"看看背后的故事", "zh-Hant":"看看背後的故事", ja:"制作の話を読む", ko:"만든 이야기 읽기" };
+Object.keys(NOTES_STORY_COPY).forEach(function (lang) { TRANSLATIONS[lang].notes.readStory = NOTES_STORY_COPY[lang]; });

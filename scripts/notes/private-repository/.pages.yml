@@ -141,6 +141,11 @@ content:
             - {name: sans, label: Sans serif — clean}
             - {name: serif, label: Serif — literary}
             - {name: mono, label: Monospace — notebook}
+      - name: categories
+        label: Categories (optional)
+        type: string
+        list: true
+        description: Add your own category names. Projects, Learning, Photography, and Life have translated labels; custom names appear as you write them. Use the same spelling to group posts together.
       - name: body
         label: Text
         component: text
@@ -164,6 +169,7 @@ content:
         label: Feature beneath About
         type: boolean
         default: false
+        description: Include this published post in the homepage Notes carousel. Multiple featured posts rotate every eight seconds. With none selected, the latest published post appears.
       - name: highlight_until
         label: Feature until (optional)
         type: date

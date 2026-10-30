@@ -23,7 +23,7 @@ html[data-lightweight] .home-page .hero__index a { font-size: 1rem; }
 html[data-lightweight] .hero__backdrop { -webkit-mask-image: none; mask-image: none; }
 html[data-lightweight] .hero__photo::after, html[data-lightweight] .hero::after { display: none; }
 html[data-lightweight] .hero__backdrop img { opacity: 1 !important; transform: none !important; }
-html[data-lightweight] .home-page .hero__backdrop::before { background: rgb(250 250 250 / 78%); }
+html[data-lightweight] .home-page .hero__backdrop::before { background: rgb(251 249 244 / 78%); }
 html[data-lightweight][data-theme="dark"] .home-page .hero__backdrop::after { background: rgb(20 23 25 / 72%); }
 html[data-lightweight] .hero__name, html[data-lightweight] .hero__note { color: var(--ink); }
 html[data-lightweight] .home-page .section__title { font-size: 1.55rem; }

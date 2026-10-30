@@ -30,7 +30,11 @@ In **More content**, choose **SAME header experiment** to add the silent field, 
 
 ## Homepage feature
 
-The homepage always has a small Notes entrance beneath About and shows the latest published post. **Feature beneath About** gives one post that spot instead. An optional end date returns the spot to the latest note. The post stays in the Notes archive.
+The homepage has a Notes entrance beneath About. Turn on **Feature beneath About** for each post you want in its carousel. Featured posts rotate every eight seconds; readers can use the dots, arrows, or swipe. Hover does not pause rotation; keyboard focus holds the current post. Reduced-motion and lightweight browsing use manual navigation. An optional end date removes a post from the carousel while keeping it in Notes. With no active featured posts, the latest published note appears.
+
+## Categories
+
+Add category names in **Categories** on each post. Use the same spelling to group posts; capitalization does not create a separate category. Projects, Learning, Photography, and Life have interface labels in all six languages. You can also enter your own names, which appear exactly as written. Use up to eight categories of 48 characters each. Category pages work without JavaScript, and only published posts and category names are exported.
 
 ## Publication access
 

@@ -57,7 +57,7 @@ function applyTheme(theme) {
 
   var meta = document.getElementById("meta-theme-color");
   if (meta) {
-    meta.setAttribute("content", resolved === "dark" ? "#141719" : "#fafafa");
+    meta.setAttribute("content", resolved === "dark" ? "#141719" : "#fbf9f4");
   }
   var colorScheme = document.getElementById("meta-color-scheme");
   if (colorScheme) colorScheme.setAttribute("content", resolved);

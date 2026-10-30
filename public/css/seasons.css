@@ -33,8 +33,8 @@ html[data-occasion="good-friday"] .hero__photo { filter: brightness(.88) saturat
 html[data-theme="dark"][data-occasion="good-friday"] .hero__photo { filter: brightness(.66) saturate(.76); }
 html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::before {
   background:
-    linear-gradient(to bottom, rgb(250 250 250 / 62%), transparent 28%),
-    linear-gradient(90deg, rgb(250 250 250 / 95%), rgb(250 250 250 / 88%) 36%, rgb(250 250 250 / 68%) 60%, rgb(250 250 250 / 12%));
+    linear-gradient(to bottom, rgb(251 249 244 / 62%), transparent 28%),
+    linear-gradient(90deg, rgb(251 249 244 / 95%), rgb(251 249 244 / 88%) 36%, rgb(251 249 244 / 68%) 60%, rgb(251 249 244 / 12%));
 }
 html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::after {
   background:
@@ -132,7 +132,7 @@ html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% 
   .home-page .hero__backdrop .seasonal-year-photo { object-position: 83% center; }
   html[data-occasion="easter"] .hero__backdrop img { object-position: 88% center; }
   html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::before {
-    background: linear-gradient(90deg, rgb(250 250 250 / 92%), rgb(250 250 250 / 82%) 45%, rgb(250 250 250 / 68%));
+    background: linear-gradient(90deg, rgb(251 249 244 / 92%), rgb(251 249 244 / 82%) 45%, rgb(251 249 244 / 68%));
   }
   html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::after {
     background: linear-gradient(90deg, rgb(20 23 25 / 88%), rgb(20 23 25 / 72%) 45%, rgb(20 23 25 / 58%));

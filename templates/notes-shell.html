@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="{{prefix}}js/runtime.js"></script>
   <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
-  <meta name="theme-color" content="#fafafa" id="meta-theme-color" />
+  <meta name="theme-color" content="#fbf9f4" id="meta-theme-color" />
   <title>{{title}}</title>
   <meta name="description" content="{{description}}" />
   <meta name="author" content="Tim G" />
@@ -37,7 +37,7 @@
         if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
         document.documentElement.style.colorScheme = theme;
-        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fafafa";
+        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fbf9f4";
       } catch (_) {}
     })();
   </script>
@@ -48,10 +48,6 @@
   <header class="top-bar" data-page-root>
     <div class="top-bar__inner">
       <a class="site-signature" href="{{prefix}}index.html" aria-label="Tim G — home">tg<span aria-hidden="true">.</span></a>
-      <nav class="site-nav" aria-label="Sections" data-i18n-aria="a11y.sections">
-        <a href="{{prefix}}index.html" data-i18n="notes.home">Home</a>
-        <a href="{{prefix}}notes.html" aria-current="page" data-i18n="notes.title">Notes</a>
-      </nav>
       <div data-preferences-root></div>
     </div>
   </header>

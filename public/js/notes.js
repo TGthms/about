@@ -4,6 +4,7 @@
   var root = document.documentElement;
   var isPage = document.body.classList.contains("notes-page");
   var posterObserver;
+  var contentsObserver;
   var year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
 
@@ -68,18 +69,16 @@
       element.textContent = pack.notes.original.replace("{language}", label);
     });
     document.querySelectorAll("[data-note-language-label]").forEach(function (element) { element.lang = root.lang; });
-    var expiry = document.querySelector("[data-note-highlight-until]");
-    if (expiry) {
-      var until = expiry.getAttribute("data-note-highlight-until");
-      var expired = until && new Date(until + "T23:59:59").getTime() < Date.now();
-      var latest = document.querySelector("[data-notes-latest]");
-      expiry.hidden = Boolean(expired && latest);
-      if (latest) latest.hidden = !expired;
-      else if (expired) {
-        var eyebrow = expiry.querySelector(".notes-spotlight__eyebrow");
-        if (eyebrow) eyebrow.textContent = pack.notes.latest;
-      }
+    document.querySelectorAll('[data-note-category]').forEach(function (element) {
+      var key = element.getAttribute('data-note-category');
+      var label = pack.notes['category' + key.charAt(0).toUpperCase() + key.slice(1)];
+      if (label) element.textContent = label;
+    });
+    if (isPage && document.body.getAttribute('data-notes-kind') === 'topic') {
+      var category = document.querySelector('h1[data-note-category]');
+      if (category) document.title = category.textContent + ' — ' + pack.notes.title + ' — Tim G';
     }
+    if (window.NotesCarousel) window.NotesCarousel.refresh();
   }
 
   if (isPage) {
@@ -104,13 +103,31 @@
     window.addEventListener("resize", measure, { passive: true });
     if (window.ResizeObserver && header && !(window.SiteRuntime && window.SiteRuntime.lightweight)) new ResizeObserver(measure).observe(header);
   }
+  var contents = document.querySelector('.note-contents');
+  if (contents && window.matchMedia && window.matchMedia('(max-width: 1000px)').matches) contents.open = false;
+  function prepareContents() {
+    if (contentsObserver) contentsObserver.disconnect();
+    if (!contents || document.hidden || !window.IntersectionObserver || (window.SiteRuntime && window.SiteRuntime.lightweight)) return;
+    var links = contents.querySelectorAll('a[href^="#"]');
+    contentsObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        links.forEach(function (link) {
+          if (link.getAttribute('href') === '#' + entry.target.id) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      });
+    }, {rootMargin:'-12% 0px -65% 0px',threshold:0});
+    links.forEach(function (link) { var section = document.getElementById(link.getAttribute('href').slice(1)); if (section) contentsObserver.observe(section); });
+  }
   refresh();
   preparePosters();
+  prepareContents();
   /* Homepage language changes are owned by main.js. Observe only that attribute. */
   if (!isPage && window.MutationObserver) new MutationObserver(refresh).observe(root, { attributes: true, attributeFilter: ["data-language"] });
-  window.addEventListener("pageshow", function () { refresh(); preparePosters(); });
-  window.addEventListener("pagehide", function () { if (posterObserver) posterObserver.disconnect(); });
-  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); preparePosters(); });
+  window.addEventListener("pageshow", function () { refresh(); preparePosters(); prepareContents(); });
+  window.addEventListener("pagehide", function () { if (posterObserver) posterObserver.disconnect(); if (contentsObserver) contentsObserver.disconnect(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); preparePosters(); prepareContents(); });
 
   var feedCopy = document.getElementById("feed-copy");
   if (feedCopy) {

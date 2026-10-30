@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const model = require('../public/js/same-study.js');
 
 test('header edits preserve fixed SAME fields, delimiters, and eight-character sender', () => {
-  assert.equal(model.header({event:'DMO',area:'006075',duration:'0100'}), 'ZCZC-EAS-DMO-006075+0100-3021800-SIGLAB  -');
+  assert.equal(model.header({event:'DMO',area:'026163',duration:'0100'}), 'ZCZC-EAS-DMO-026163+0100-3021800-SIGLAB  -');
   const safe = model.header({event:'<script>',area:'../../',duration:'9999'});
   assert.equal(safe, 'ZCZC-EAS-RWT-006037+0015-3021800-SIGLAB  -');
 });

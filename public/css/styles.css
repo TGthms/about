@@ -26,8 +26,8 @@
   --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Light — soft white, graphite, and a restrained slate accent */
-  --bg: #fafafa;
+  /* Light — warm paper, graphite, and a restrained slate accent */
+  --bg: #fbf9f4;
   --bg-card: #ffffff;
   --ink: #202529;
   --mute: #596168;

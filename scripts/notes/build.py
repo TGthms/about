@@ -19,6 +19,7 @@ ORIGIN = 'https://timgong.me'
 ROOT = Path(__file__).resolve().parents[2]
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
 FONTS = {'default', 'sans', 'serif', 'mono'}
+CATEGORIES = {'projects': 'Projects', 'learning': 'Learning', 'photography': 'Photography', 'life': 'Life'}
 LOCALES = {'en': 'en_US', 'es': 'es_ES', 'zh': 'zh_CN', 'zh-Hant': 'zh_TW', 'ja': 'ja_JP', 'ko': 'ko_KR'}
 RSS_ICON = '<svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg>'
 
@@ -59,6 +60,42 @@ def summary(post):
 def title(post):
     return str(post.get('title') or '').strip() or summary(post)[:72] or readable_date(post['date'])
 
+def categories(post):
+    values = post.get('categories') or []
+    if not isinstance(values, list) or len(values) > 8:
+        raise ValueError('Choose up to eight category names.')
+    result = {}
+    for value in values:
+        if not isinstance(value, str) or not 1 <= len(value.strip()) <= 48:
+            raise ValueError('Category names must contain 1–48 characters.')
+        value = value.strip()
+        key = value.casefold()
+        if key not in CATEGORIES: key = 'c-' + hashlib.sha256(key.encode()).hexdigest()[:12]
+        result[key] = CATEGORIES.get(key, value)
+    return result
+
+def category_labels(post, prefix, links=True):
+    result = []
+    for key, label in categories(post).items():
+        tag = 'a' if links else 'span'
+        href = f' href="{prefix}notes/topics/{key}.html"' if links else ''
+        result.append(f'<{tag}{href} data-note-category="{key}">{esc(label)}</{tag}>')
+    return '<span class="note-categories">' + ''.join(result) + '</span>' if result else ''
+
+def reading_contents(markup):
+    headings = []
+    def heading(match):
+        text = plain(match[1])
+        key = 'section-' + str(len(headings) + 1)
+        headings.append((key, text))
+        return f'<h2 id="{key}" tabindex="-1">{match[1]}</h2>'
+    markup = re.sub(r'<h2>(.*?)</h2>', heading, markup, flags=re.S)
+    if len(headings) < 3: return markup
+    links = ''.join(f'<li><a href="#{key}">{esc(label)}</a></li>' for key, label in headings)
+    return ('<div class="note-reading-layout"><details class="note-contents" open><summary data-i18n="notes.contents">On this page</summary>'
+            '<nav aria-label="On this page" data-i18n-aria="notes.contents"><ol>' + links + '</ol></nav></details>'
+            '<div class="note-body">' + markup + '</div></div>')
+
 def safe_link(value):
     value = str(value or '').strip()
     parsed = urlparse(value)
@@ -88,7 +125,7 @@ class Media:
             raise ValueError('A referenced media file is missing or outside the media folder.')
         return path
 
-    def image(self, value, alt='', prefix='../', loading='lazy'):
+    def image(self, value, alt='', prefix='../', loading='lazy', sizes='(max-width: 767px) calc(100vw - 32px), 720px'):
         if not str(alt).strip() and self.preview:
             alt = 'Image description pending'
         if not str(alt).strip():
@@ -129,7 +166,7 @@ class Media:
         if self.preview:
             path = 'data:image/webp;base64,' + base64.b64encode((self.output / largest[0]).read_bytes()).decode()
             srcset = ''
-        markup = (f'<img src="{esc(path)}"' + (f' srcset="{esc(srcset)}" sizes="(max-width: 767px) calc(100vw - 32px), 720px"' if srcset else '') +
+        markup = (f'<img src="{esc(path)}"' + (f' srcset="{esc(srcset)}" sizes="{esc(sizes)}"' if srcset else '') +
                   f' width="{largest[1]}" height="{largest[2]}" alt="{esc(alt)}" loading="{loading}" decoding="async" />')
         if not self.preview:
             markup = f'<picture><source media="(max-width: 320px), (max-device-width: 320px)" srcset="{esc(prefix + variants[0][0])}" />' + markup + '</picture>'
@@ -239,11 +276,11 @@ def same_study(lang, introduction=''):
     lang = 'zh' if chinese else 'en'
     words = {
         'en': {
-            'eyebrow': 'A small experiment', 'title': 'Read the signal',
+            'title': 'Read the signal',
             'intro': 'Change the fields, inspect a byte, and compare three header bursts. This is a silent model, not a live alert or a full decoder.',
             'event': 'Event', 'area': 'Geographic area', 'duration': 'Valid period',
             'events': ['RWT · Weekly test', 'DMO · Practice / demo'],
-            'areas': ['Los Angeles County, CA', 'San Francisco, CA', 'Alameda County, CA'],
+            'areas': ['Los Angeles County, CA', 'Detroit / Wayne County, MI', 'Travis County, TX'],
             'durations': ['15 minutes', '30 minutes', '1 hour'],
             'labels': ['Start', 'Originator', 'Event', 'Area', 'Valid period', 'Issue time', 'Sender'],
             'fields': {
@@ -255,7 +292,7 @@ def same_study(lang, introduction=''):
                 'issued': '3021800 means day 302 of the year at 18:00 UTC. The year itself is not in this field.',
                 'sender': 'SIGLAB followed by two spaces is a fictional, eight-character sender field for this example.'
             },
-            'values': {'RWT': 'RWT = Required Weekly Test.', 'DMO': 'DMO = Practice/Demo Warning.', '006037': '0 · 06 · 037 = Los Angeles County, California.', '006075': '0 · 06 · 075 = San Francisco, California.', '006001': '0 · 06 · 001 = Alameda County, California.', '0015': '+0015 = 00 hours, 15 minutes.', '0030': '+0030 = 00 hours, 30 minutes.', '0100': '+0100 = 01 hour, 00 minutes.'},
+            'values': {'RWT': 'RWT = Required Weekly Test.', 'DMO': 'DMO = Practice/Demo Warning.', '006037': '0 · 06 · 037 = Los Angeles County, California.', '026163': '0 · 26 · 163 = Wayne County, Michigan, including Detroit.', '048453': '0 · 48 · 453 = Travis County, Texas.', '0015': '+0015 = 00 hours, 15 minutes.', '0030': '+0030 = 00 hours, 30 minutes.', '0100': '+0100 = 01 hour, 00 minutes.'},
             'bytes': 'Go closer: one character on the wire', 'character': 'ASCII character',
             'bitHint': 'First bit sent → last bit sent',
             'byteHint': 'Each cell is one bit, lasting 1.92 ms. 0 uses 1,562.5 Hz; 1 uses about 2,083.3 Hz. The cells show transmission order, least significant bit first—not the usual way a binary number is printed.',
@@ -269,11 +306,11 @@ def same_study(lang, introduction=''):
             'reset': 'Reset experiment'
         },
         'zh': {
-            'eyebrow': '一个小实验', 'title': '读懂这段信号',
+            'title': '读懂这段信号',
             'intro': '改动字段、查看一个字节，再比较三次报头。这里只做无声演示，不会发出警报，也不是完整的解码器。',
             'event': '事件', 'area': '地理区域', 'duration': '有效时长',
             'events': ['RWT · 每周测试', 'DMO · 练习／演示'],
-            'areas': ['加利福尼亚州洛杉矶县', '加利福尼亚州旧金山', '加利福尼亚州阿拉米达县'],
+            'areas': ['加利福尼亚州洛杉矶县', '密歇根州韦恩县（含底特律）', '德克萨斯州特拉维斯县'],
             'durations': ['15 分钟', '30 分钟', '1 小时'],
             'labels': ['开始标记', '发起方', '事件', '区域', '有效时长', '发布时间', '发送方'],
             'fields': {
@@ -285,7 +322,7 @@ def same_study(lang, introduction=''):
                 'issued': '3021800 表示一年中的第 302 天、UTC 18:00。这个字段本身不含年份。',
                 'sender': 'SIGLAB 后补两个空格，组成八字符的虚构发送方标识，仅用于本例。'
             },
-            'values': {'RWT': 'RWT = Required Weekly Test（规定的每周测试）。', 'DMO': 'DMO = Practice/Demo Warning（练习／演示警报）。', '006037': '0 · 06 · 037 = 加利福尼亚州洛杉矶县。', '006075': '0 · 06 · 075 = 加利福尼亚州旧金山。', '006001': '0 · 06 · 001 = 加利福尼亚州阿拉米达县。', '0015': '+0015 = 0 小时 15 分钟。', '0030': '+0030 = 0 小时 30 分钟。', '0100': '+0100 = 1 小时 0 分钟。'},
+            'values': {'RWT': 'RWT = Required Weekly Test（规定的每周测试）。', 'DMO': 'DMO = Practice/Demo Warning（练习／演示警报）。', '006037': '0 · 06 · 037 = 加利福尼亚州洛杉矶县。', '026163': '0 · 26 · 163 = 密歇根州韦恩县（含底特律）。', '048453': '0 · 48 · 453 = 德克萨斯州特拉维斯县。', '0015': '+0015 = 0 小时 15 分钟。', '0030': '+0030 = 0 小时 30 分钟。', '0100': '+0100 = 1 小时 0 分钟。'},
             'bytes': '再往里看：一个字符如何传输', 'character': 'ASCII 字符',
             'bitHint': '最先发送的位 → 最后发送的位',
             'byteHint': '每格是一位，持续 1.92 毫秒。0 对应 1,562.5 Hz，1 对应约 2,083.3 Hz。这里按实际发送顺序排列，最低有效位在前，与通常书写二进制数的顺序不同。',
@@ -303,7 +340,7 @@ def same_study(lang, introduction=''):
     def options(values, labels):
         return ''.join(f'<option value="{esc(v)}">{esc(label)}</option>' for v, label in zip(values, labels))
     controls = ''.join(f'<label>{words[key]}<select data-study-input="{key}">{options(values, words[labels])}</select></label>' for key, values, labels in (
-        ('event', ['RWT', 'DMO'], 'events'), ('area', ['006037', '006075', '006001'], 'areas'), ('duration', ['0015', '0030', '0100'], 'durations')))
+        ('event', ['RWT', 'DMO'], 'events'), ('area', ['006037', '026163', '048453'], 'areas'), ('duration', ['0015', '0030', '0100'], 'durations')))
     field_keys = ['start', 'origin', 'event', 'area', 'duration', 'issued', 'sender']
     fields = ''.join(f'<button type="button" data-study-field="{key}" aria-pressed="{"true" if key == "event" else "false"}">{esc(label)}</button>' for key, label in zip(field_keys, words['labels']))
     defaults = {'event': 'RWT', 'area': '006037', 'duration': '0015'}
@@ -311,7 +348,7 @@ def same_study(lang, introduction=''):
     bursts = ''.join(f'<label>{words["burst"]} {i + 1}{" 次" if chinese else ""}<select data-study-burst>{options(["matching", "missing", "different"], words["burstOptions"])}</select></label>' for i in range(3))
     copy = esc(json.dumps({key: words[key] for key in ('fields', 'values', 'results')}, ensure_ascii=False, separators=(',', ':')))
     return (f'<section class="same-study" data-same-study data-study-copy="{copy}" lang="{lang}" aria-label="{esc(words["title"])}">'
-            f'<p class="same-study__eyebrow">{words["eyebrow"]}</p><h3>{words["title"]}</h3><p data-study-enhanced hidden>{words["intro"]}</p>'
+            f'<h3>{words["title"]}</h3><p data-study-enhanced hidden>{words["intro"]}</p>'
             f'<div class="same-study__controls" data-study-enhanced hidden>{controls}</div>'
             '<code class="same-study__header" data-study-header>ZCZC-EAS-RWT-006037+0015-3021800-SIGLAB  -</code>'
             f'<div data-study-enhanced hidden><div class="same-study__fields">{fields}</div><p class="same-study__detail" data-study-detail aria-live="polite"></p>'
@@ -366,6 +403,7 @@ def read_posts(private, preview_path=None):
         slugs.add(slug)
         date(value.get('date'))
         value['slug'], value['language'] = slug, language(value.get('language'))
+        categories(value)
         if value.get('highlight_until'): date(value['highlight_until'])
         if value.get('font', 'default') not in FONTS: raise ValueError('Choose one of the available reading fonts.')
         versions = [value]
@@ -393,12 +431,16 @@ def render_post(version, original, media, prefix='../'):
     versions = version_links(original, prefix).replace(f'data-note-version="{esc(version["language"])}"', f'aria-current="page" data-note-version="{esc(version["language"])}"')
     language_picker = ('<span data-note-language-label data-i18n="notes.readIn">Read in</span>' + versions) if len(original['_versions']) > 1 else f'<span data-note-language-label data-note-original="{esc(original["language"])}">Written in {esc(LANGS.get(original["language"], original["language"]))}</span>'
     heading = f'<h1>{esc(version["title"])}</h1>' if str(version.get('title') or '').strip() else '<h1 class="visually-hidden">' + esc(title(version)) + '</h1>'
-    return (f'<article class="notes-post" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}">'
-            f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>'
+    content = body(version, media, prefix)
+    content = reading_contents(content)
+    if not content.startswith('<div class="note-reading-layout">'): content = '<div class="note-body">' + content + '</div>'
+    return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}">'
+            f'<div class="note-return"><a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a>'
+            f'<a class="notes-back" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a></div>'
             f'<header class="note-header"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>{heading}' +
-            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + '</header>' +
+            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix) + '</header>' +
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
-            '<div class="note-body">' + body(version, media, prefix) + '</div>' +
+            content +
             '<footer class="note-end">' + f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>' +
             '<button class="note-share" type="button" id="note-share" hidden data-i18n="notes.share">Share this note</button>' +
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
@@ -412,15 +454,15 @@ def card(post, media, prefix):
     photo, alt = first_photo(post)
     image = ''
     if photo:
-        markup, _ = media.image(photo, alt, prefix)
+        markup, _ = media.image(photo, alt, prefix, sizes='(max-width: 480px) 96px, (max-width: 767px) 144px, 208px')
         image = markup.replace('<img ', '<img class="note-card__image" ', 1)
     heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
     text = summary(post)
     return (f'<li class="note-card" lang="{esc(post["language"])}"><time class="note-card__date" datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>'
-            f'<a class="note-card__link" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}">{heading}' +
-            (f'<p class="note-card__excerpt" data-note-summary>{esc(text)}</p>' if text else '') + image +
+            f'<a class="note-card__link{ " note-card__link--photo" if image else ""}" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}"><div class="note-card__copy">{heading}' +
+            (f'<p class="note-card__excerpt" data-note-summary>{esc(text)}</p>' if text else '') +
             '<span class="note-card__meta"><span class="note-card__more"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span>' +
-            f'<span data-note-language-name>{esc(LANGS.get(post["language"], post["language"]))}</span></span></a></li>')
+            f'<span data-note-language-name>{esc(LANGS.get(post["language"], post["language"]))}</span></span></div>' + image + '</a>' + category_labels(post, prefix) + '</li>')
 
 def resource_versions(markup, public):
     def replace(match):
@@ -438,7 +480,7 @@ def shell(public, **values):
 
 def page(public, content, prefix='', kind='index', post=None, image='', image_alt='', alternates=''):
     headline = title(post) + ' — Tim G' if post else ('Follow updates — Tim G' if kind == 'follow' else 'Notes — Tim G')
-    desc = summary(post) if post else ('New notes, in your own feed reader.' if kind == 'follow' else 'Small updates, photographs, and things along the way.')
+    desc = summary(post) if post else ('New notes, in your own feed reader.' if kind == 'follow' else 'Notes by Tim G.')
     canonical = ORIGIN + '/' + (post['_filename'] if post else ('subscribe.html' if kind == 'follow' else ('notes.html' if not prefix else 'notes/page-1.html')))
     structured = ''
     if post:
@@ -456,32 +498,45 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
 def entrance(posts, media):
     intro = ('<section class="notes-entrance" id="notes" aria-labelledby="notes-entrance-title"><div class="container">'
              '<a class="notes-entrance__main" href="notes.html"><span class="notes-entrance__heading"><span id="notes-entrance-title" data-i18n="notes.title">Notes</span>' + RSS_ICON + '</span>'
-             '<span class="notes-entrance__intro" data-i18n="notes.intro">Small updates, photographs, and things along the way.</span>'
              '<span class="notes-entrance__action"><span data-i18n="notes.explore">Explore notes</span> <span aria-hidden="true">→</span></span></a>')
-    def latest(post, attr, label):
+    def slide(post, featured, hidden=False):
         photo, alt = first_photo(post)
         image = ''
         if photo:
             markup, _ = media.image(photo, alt, prefix='')
             image = '<span class="notes-spotlight__image">' + markup + '</span>'
-        return (f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {attr} {variant_data(post, "")} href="{post_filename(post, post)}">' + image +
-                '<span class="notes-spotlight__copy">' +
-                f'<span class="notes-spotlight__eyebrow" data-i18n="notes.{label}">{"A little update" if label == "featured" else "Latest note"}</span>' +
+        expiry = f' data-note-highlight-until="{esc(post.get("highlight_until"))}"' if featured else ''
+        return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="{str(featured).lower()}"{expiry}{" hidden" if hidden else ""}>'
+                f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {variant_data(post, "")} href="{post_filename(post, post)}">' + image +
+                '<span class="notes-spotlight__copy">' + category_labels(post, '', links=False) +
                 f'<span class="notes-spotlight__title" lang="{esc(post["language"])}" data-note-title>{esc(title(post))}</span>' +
                 f'<span class="notes-spotlight__summary" lang="{esc(post["language"])}" data-note-summary>{esc(summary(post))}</span>' +
                 f'<time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' +
-                '<span class="notes-spotlight__action"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span></span></a>')
+                '<span class="notes-spotlight__action"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span></span></a></div>')
     if posts:
         today = dt.datetime.now(dt.timezone.utc).date()
         highlights = [p for p in posts if p.get('highlight') is True and (not p.get('highlight_until') or date(p['highlight_until']) >= today)]
-        if highlights:
-            chosen = highlights[0]
-            intro += latest(chosen, f'data-note-highlight-until="{esc(chosen.get("highlight_until"))}"', 'featured')
-            # A featured latest post needs no duplicate fallback, even after expiry.
-            if chosen['slug'] != posts[0]['slug']:
-                intro += latest(posts[0], 'data-notes-latest hidden', 'latest')
-        else: intro += latest(posts[0], 'data-notes-latest', 'latest')
+        chosen = highlights or [posts[0]]
+        slides = ''.join(slide(p, bool(highlights)) for p in chosen)
+        if posts[0]['slug'] not in [p['slug'] for p in chosen]: slides += slide(posts[0], False, hidden=True)
+        intro += ('<div class="notes-carousel" data-notes-carousel role="region" aria-label="Featured notes" data-i18n-aria="notes.featuredNotes">'
+                  '<div class="notes-carousel__viewport"><div class="notes-carousel__track">' + slides + '</div></div>'
+                  '<div class="notes-carousel__controls" hidden><button type="button" data-note-prev aria-label="Previous note" data-i18n-aria="notes.previousSlide">←</button>'
+                  '<div class="notes-carousel__dots" data-note-dots></div>'
+                  '<button type="button" data-note-next aria-label="Next note" data-i18n-aria="notes.nextSlide">→</button></div>'
+                  '<p class="visually-hidden" data-note-carousel-status role="status" aria-live="polite"></p></div>')
     return intro + '</div></section>'
+
+
+def category_nav(posts, prefix, current=''):
+    available = {}
+    for post in posts: available.update(categories(post))
+    if not available: return ''
+    links = f'<a href="{prefix}notes.html"' + (' aria-current="page"' if not current else '') + ' data-i18n="notes.all">All notes</a>'
+    for key, label in available.items():
+        active = ' aria-current="page"' if current == key else ''
+        links += f'<a href="{prefix}notes/topics/{key}.html" data-note-category="{key}"{active}>{esc(label)}</a>'
+    return '<nav class="notes-topics" aria-label="Categories" data-i18n-aria="notes.categories">' + links + '</nav>'
 
 
 def follow_page(public):
@@ -537,7 +592,8 @@ def build(private, public, preview_path=None, preview_output=None):
                         markup = markup.replace('</body>', '<script>' + script + '</script></body>')
                     # Downloaded previews keep navigation useful without a local server.
                     markup = re.sub(r'href="\.\./notes/([^"/]+\.html)"', lambda m: 'href="' + m[1] + '"', markup)
-                    markup = re.sub(r'href="\.\./([^"/]+\.(?:html|xml))"', lambda m: 'href="' + ORIGIN + '/' + m[1] + '"', markup)
+                    markup = re.sub(r'href="\.\./(notes/topics/[^"/]+\.html)"', lambda m: 'href="' + ORIGIN + '/' + m[1] + '"', markup)
+                    markup = re.sub(r'href="\.\./([^"/]+\.(?:html|xml)(?:#[^"]*)?)"', lambda m: 'href="' + ORIGIN + '/' + m[1] + '"', markup)
                     markup = re.sub(r'<link[^>]+rel="(?:icon|apple-touch-icon)"[^>]*>', '', markup)
                     dest = preview_output / Path(filename).name; dest.parent.mkdir(parents=True, exist_ok=True); dest.write_text(markup)
                 else:
@@ -549,7 +605,7 @@ def build(private, public, preview_path=None, preview_output=None):
         for index in range(page_count):
             prefix = '' if index == 0 else '../'
             filename = 'notes.html' if index == 0 else f'notes/page-{index + 1}.html'
-            hero = '<header class="notes-hero"><div><h1 data-i18n="notes.title">Notes</h1><p class="notes-hero__intro" data-i18n="notes.intro">Small updates, photographs, and things along the way.</p></div>' + f'<a class="notes-feed-link" href="{prefix}subscribe.html">{RSS_ICON}<span data-i18n="notes.followTitle">Follow updates</span></a></header>'
+            hero = '<header class="notes-hero"><div><h1 data-i18n="notes.title">Notes</h1></div>' + f'<a class="notes-feed-link" href="{prefix}subscribe.html">{RSS_ICON}<span data-i18n="notes.followTitle">Follow updates</span></a></header>'
             entries = ''.join(card(p, media, prefix) for p in posts[index * 20:(index + 1) * 20])
             if not entries: entries = '<div class="notes-empty"><span class="notes-empty__mark">' + RSS_ICON + '</span><h2 data-i18n="notes.emptyTitle">Nothing here just yet.</h2><p data-i18n="notes.emptyText">A place for photographs, stories, and little updates.</p></div>'
             else: entries = '<ol class="notes-list" role="list">' + entries + '</ol>'
@@ -559,13 +615,33 @@ def build(private, public, preview_path=None, preview_output=None):
                 if index: pagination += f'<a href="{prefix}{"notes.html" if index == 1 else "notes/page-" + str(index) + ".html"}"><span data-i18n="notes.newer">Newer notes</span> →</a>'
                 if index + 1 < page_count: pagination += f'<a href="{prefix}notes/page-{index + 2}.html"><span data-i18n="notes.older">Older notes</span> →</a>'
                 pagination += '</nav>'
-            markup = page(public, hero + entries + pagination, prefix=prefix)
+            markup = page(public, f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>' + hero + category_nav(posts, prefix) + entries + pagination, prefix=prefix)
             markup = markup.replace(ORIGIN + '/notes/page-1.html', ORIGIN + '/' + filename)
             (stage / filename).write_text(markup)
             urls.append((ORIGIN + '/' + filename, ''))
+        available = {}
+        for post in posts: available.update(categories(post))
+        if available: (stage / 'notes/topics').mkdir()
+        for key, label in available.items():
+            matches = [p for p in posts if key in categories(p)]
+            count = (len(matches) + 19) // 20
+            for index in range(count):
+                filename = f'notes/topics/{key}{"-page-" + str(index + 1) if index else ""}.html'
+                prefix = '../../'
+                entries = '<ol class="notes-list" role="list">' + ''.join(card(p, media, prefix) for p in matches[index * 20:(index + 1) * 20]) + '</ol>'
+                pagination = '<nav class="notes-pagination" aria-label="Notes pages" data-i18n-aria="notes.pages">'
+                if index: pagination += f'<a href="{key}{"-page-" + str(index) if index > 1 else ""}.html"><span data-i18n="notes.newer">Newer notes</span> →</a>'
+                if index + 1 < count: pagination += f'<a href="{key}-page-{index + 2}.html"><span data-i18n="notes.older">Older notes</span> →</a>'
+                pagination += '</nav>'
+                content = (f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>'
+                           f'<header class="notes-hero"><h1 data-note-category="{key}">{esc(label)}</h1></header>' + category_nav(posts, prefix, key) + entries + (pagination if count > 1 else ''))
+                markup = page(public, content, prefix=prefix, kind='topic').replace(ORIGIN + '/notes/page-1.html', ORIGIN + '/' + filename)
+                markup = markup.replace('<title>Notes — Tim G</title>', f'<title>{esc(label)} — Notes — Tim G</title>')
+                (stage / filename).write_text(markup)
+                urls.append((ORIGIN + '/' + filename, ''))
         atom = 'http://www.w3.org/2005/Atom'; ET.register_namespace('atom', atom)
         rss = ET.Element('rss', {'version': '2.0'}); channel = ET.SubElement(rss, 'channel')
-        for key, value in [('title', 'Tim G — Notes'), ('link', ORIGIN + '/notes.html'), ('description', 'Small updates, photographs, and things along the way.')]: ET.SubElement(channel, key).text = value
+        for key, value in [('title', 'Tim G — Notes'), ('link', ORIGIN + '/notes.html'), ('description', 'Notes by Tim G.')]: ET.SubElement(channel, key).text = value
         ET.SubElement(channel, '{' + atom + '}link', {'href': ORIGIN + '/feed.xml', 'rel': 'self', 'type': 'application/rss+xml'})
         for post in rss_items[:20]:
             item = ET.SubElement(channel, 'item'); url = ORIGIN + '/' + post_filename(post, post)
@@ -584,6 +660,12 @@ def build(private, public, preview_path=None, preview_output=None):
         home = public / 'index.html'; markup = home_markup
         markup, count = re.subn(r'<!-- notes-entrance:start -->.*?<!-- notes-entrance:end -->', lambda _: '<!-- notes-entrance:start -->\n' + home_entrance + '\n    <!-- notes-entrance:end -->', markup, flags=re.S)
         if count != 1: raise ValueError('The homepage Notes entrance marker is missing.')
+        def story_link(match):
+            slug = match[1]
+            post = next((p for p in posts if p['slug'] == slug), None)
+            link = (f'<a class="featured-card__story" {variant_data(post, "")} href="{post_filename(post, post)}"><span data-i18n="notes.readStory">Read the story</span> <span aria-hidden="true">→</span></a>' if post else '')
+            return f'<!-- note-story:{slug}:start -->{link}<!-- note-story:{slug}:end -->'
+        markup = re.sub(r'<!-- note-story:([a-z0-9-]+):start -->.*?<!-- note-story:\1:end -->', story_link, markup, flags=re.S)
         home.write_text(markup)
         namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9'; ET.register_namespace('', namespace)
         root = sitemap.getroot()

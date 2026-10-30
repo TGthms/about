@@ -73,7 +73,9 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 ## Notes and private publishing
 
-The public site has a compact Notes entrance beneath About, a Notes shortcut in the hero, static reading pages, and an RSS feed at `feed.xml`. No publishing application or account code loads for visitors. The interface supports all six site languages; post translations are optional and have their own URLs and sharing metadata.
+The public site has a featured Notes carousel beneath About, a Notes shortcut in the hero, static reading pages, category archives, and an RSS feed at `feed.xml`. No publishing application or account code loads for visitors. The interface supports all six site languages; post translations are optional and have their own URLs and sharing metadata. Authors may enter custom categories; the four starter categories have translated interface labels. Longer notes receive a section contents list and every reading page has an explicit return to the homepage Notes entrance.
+
+The carousel uses all active posts marked **Feature beneath About**, with the latest post as its fallback. It advances every eight seconds with a CSS progress indicator, continues on hover and pauses for keyboard focus, and provides arrows, dots, and touch swiping. It suspends offscreen, in hidden pages, and behind dialogs; reduced-motion and lightweight browsing remain manual. Without JavaScript, the cards use native horizontal scrolling.
 
 Drafts and original media belong in the separate **private** `TGthms/about-notes` repository. Its Pages CMS configuration and workflow templates are maintained in `scripts/notes/private-repository/`; those files contain configuration only. Never place draft content, original uploads, or credentials in this public repository. `.private-notes/` is ignored for the local bootstrap checkout.
 

@@ -6,7 +6,7 @@
   else model.init(root.document);
 }(typeof window !== "undefined" ? window : this, function () {
   "use strict";
-  var choices = { event: ["RWT", "DMO"], area: ["006037", "006075", "006001"], duration: ["0015", "0030", "0100"] };
+  var choices = { event: ["RWT", "DMO"], area: ["006037", "026163", "048453"], duration: ["0015", "0030", "0100"] };
   function header(values) {
     var safe = {};
     Object.keys(choices).forEach(function (key) {

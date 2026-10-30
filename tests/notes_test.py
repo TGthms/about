@@ -184,7 +184,7 @@ class NotesTests(unittest.TestCase):
         self.assertLess(markup.index('id="about"'), markup.index('id="notes"'))
         self.assertLess(markup.index('id="notes"'), markup.index('id="interests"'))
         self.assertIn('class="hero__notes-label"', markup)
-        self.assertIn('Latest note', markup)
+        self.assertIn('data-notes-carousel', markup)
         self.assertNotIn('notes/secret', markup)
     def test_titles_with_backslashes_and_markup_remain_plain_text(self):
         self.post(title='A \\ B <script>text</script>')
@@ -211,7 +211,7 @@ class NotesTests(unittest.TestCase):
         self.post('newer', date='2026-10-29')
         self.build()
         home = (self.public / 'index.html').read_text()
-        self.assertIn('data-notes-latest hidden', home)
+        self.assertIn('data-note-featured="false" hidden', home)
         self.assertIn('.notes-spotlight[hidden] { display: none;', (self.public / 'css/home.css').read_text())
 
     def test_fonts_are_bounded_and_reach_translations_and_preview(self):
@@ -223,6 +223,92 @@ class NotesTests(unittest.TestCase):
         self.assertIn('data-note-font="serif"', (dest / 'example.html').read_text())
         self.post(font='bad" onclick="alert(1)')
         with self.assertRaises(ValueError): self.build()
+
+    def test_categories_export_only_published_posts_and_have_static_safe_routes(self):
+        self.post('secret', published=False, categories=['PRIVATE_CATEGORY'])
+        self.post('one', categories=['Projects', 'Music & faith'])
+        self.post('two', categories=['projects'])
+        self.build()
+        page = (self.public / 'notes/topics/projects.html').read_text()
+        self.assertIn('notes/one.html', page)
+        self.assertIn('notes/two.html', page)
+        self.assertIn('../../index.html#notes', page)
+        self.assertIn('https://timgong.me/notes/topics/projects.html', page)
+        custom = list((self.public / 'notes/topics').glob('c-*.html'))
+        self.assertEqual(len(custom), 1)
+        self.assertIn('Music &amp; faith', custom[0].read_text())
+        self.assertNotIn('PRIVATE_CATEGORY', self.sinks())
+        self.post('one', categories=['<script>alert(1)</script>']); self.build()
+        self.assertNotIn('<script>alert(1)</script>', self.sinks())
+
+    def test_category_pagination_and_validation(self):
+        for i in range(21): self.post(f'note-{i}', categories=['learning'])
+        self.build()
+        page = (self.public / 'notes/topics/learning-page-2.html').read_text()
+        self.assertIn('learning.html', page)
+        self.assertIn('https://timgong.me/notes/topics/learning-page-2.html', page)
+        self.assertIn('src="../../js/notes.js?v=', page)
+        self.post(categories='not-a-list')
+        with self.assertRaises(ValueError): self.build()
+        self.post(categories=['x' * 49])
+        with self.assertRaises(ValueError): self.build()
+
+    def test_archive_covers_have_thumbnail_sizes_and_category_previews_use_live_links(self):
+        photo = self.image(size=(1200,630))
+        draft = self.post(cover=photo,cover_alt='A cover',categories=['Learning'])
+        self.build()
+        archive = (self.public / 'notes.html').read_text()
+        self.assertIn('(max-width: 480px) 96px',archive)
+        self.assertIn('208px',archive)
+        self.assertIn('note-card__copy',archive)
+        dest = self.root / 'preview'
+        notes.build(self.private,self.public,draft,dest)
+        preview = (dest / 'example.html').read_text()
+        self.assertIn('href="https://timgong.me/index.html#notes"',preview)
+        self.assertIn('href="https://timgong.me/notes/topics/learning.html"',preview)
+        self.assertNotIn('href="../',preview)
+
+    def test_long_articles_have_unique_keyboard_targets_and_short_notes_stay_simple(self):
+        self.post(body='<h2>First &amp; second</h2><p>Text.</p><h2>重复</h2><p>Text.</p><h2>重复</h2>')
+        self.build()
+        page = (self.public / 'notes/example.html').read_text()
+        self.assertIn('note-reading-layout', page)
+        for i in range(1,4):
+            self.assertEqual(page.count(f'id="section-{i}"'), 1)
+            self.assertIn(f'href="#section-{i}"', page)
+        self.assertIn('tabindex="-1"', page)
+        self.assertIn('class="note-return"',page)
+        self.assertIn('../index.html#notes',page)
+        self.assertNotIn('class="site-nav"',page)
+        self.post(body='<p>A short update.</p>'); self.build()
+        self.assertNotIn('note-reading-layout', (self.public / 'notes/example.html').read_text())
+
+    def test_carousel_uses_all_active_features_and_preserves_a_latest_fallback(self):
+        self.post('old-feature', highlight=True, date='2026-10-20')
+        self.post('other-feature', highlight=True, date='2026-10-21')
+        self.post('expired', highlight=True, highlight_until='2000-01-01')
+        self.post('latest', date='2026-10-29')
+        self.post('draft', published=False, highlight=True, title='PRIVATE_FEATURE')
+        self.build()
+        home = (self.public / 'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
+        self.assertEqual(home.count('data-note-featured="true"'), 2)
+        self.assertEqual(home.count('data-note-featured="false" hidden'), 1)
+        self.assertNotIn('PRIVATE_FEATURE', home)
+        self.assertNotIn('notes/expired.html', home)
+        self.assertNotIn('Small updates, photographs, and things along the way.', home)
+
+    def test_project_story_links_only_reference_published_versions_and_disappear_on_unpublish(self):
+        self.post('that-noise-was-data', translations=[{'language':'zh','published':True,'title':'信号','body':'<p>文字。</p>'},{'language':'ja','published':False,'title':'PRIVATE_STORY_TRANSLATION'}])
+        self.build()
+        home=(self.public/'index.html').read_text()
+        story=home.split('<!-- note-story:that-noise-was-data:start -->')[1].split('<!-- note-story:that-noise-was-data:end -->')[0]
+        self.assertIn('featured-card__story',story)
+        self.assertIn('notes/that-noise-was-data.zh.html',story)
+        self.assertNotIn('PRIVATE_STORY_TRANSLATION',story)
+        self.post('that-noise-was-data',published=False);self.build()
+        home=(self.public/'index.html').read_text()
+        story=home.split('<!-- note-story:that-noise-was-data:start -->')[1].split('<!-- note-story:that-noise-was-data:end -->')[0]
+        self.assertEqual(story,'')
 
     def test_previews_allow_missing_descriptions_but_publishing_still_requires_them(self):
         photo = self.image(size=(100, 60))

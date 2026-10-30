@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <script src="js/runtime.js?v=45f7c2ef98dd"></script>
   <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
-  <meta name="theme-color" content="#fafafa" id="meta-theme-color" />
+  <meta name="theme-color" content="#fbf9f4" id="meta-theme-color" />
   <title>Follow updates — Tim G</title>
   <meta name="description" content="New notes, in your own feed reader." />
   <meta name="author" content="Tim G" />
@@ -27,9 +27,9 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <link rel="alternate" type="application/rss+xml" title="Tim G — Notes" href="feed.xml" />
-  <link rel="stylesheet" href="css/styles.css?v=55f6eb7fb62b" />
-  <link rel="stylesheet" href="css/notes.css?v=87ebda9b9ed3" />
-  <link rel="stylesheet" href="css/compact.css?v=13aee3eb3a19" />
+  <link rel="stylesheet" href="css/styles.css?v=09431014fd3a" />
+  <link rel="stylesheet" href="css/notes.css?v=8598622ae6d2" />
+  <link rel="stylesheet" href="css/compact.css?v=97aada9c4257" />
   <script>
     (function () {
       try {
@@ -37,7 +37,7 @@
         if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
         document.documentElement.style.colorScheme = theme;
-        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fafafa";
+        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fbf9f4";
       } catch (_) {}
     })();
   </script>
@@ -48,10 +48,6 @@
   <header class="top-bar" data-page-root>
     <div class="top-bar__inner">
       <a class="site-signature" href="index.html" aria-label="Tim G — home">tg<span aria-hidden="true">.</span></a>
-      <nav class="site-nav" aria-label="Sections" data-i18n-aria="a11y.sections">
-        <a href="index.html" data-i18n="notes.home">Home</a>
-        <a href="notes.html" aria-current="page" data-i18n="notes.title">Notes</a>
-      </nav>
       <div data-preferences-root></div>
     </div>
   </header>
@@ -69,12 +65,12 @@
     </div>
   </footer>
   <script src="js/preferences.js?v=dc8aac2d324d"></script>
-  <script src="js/i18n/data.js?v=78ca2be13eee"></script>
+  <script src="js/i18n/data.js?v=e9f56855ff4b"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
-  <script src="js/i18n/theme.js?v=3ee595887b78"></script>
+  <script src="js/i18n/theme.js?v=27e8a00c2ee5"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
   <script src="js/i18n/project-host.js?v=35b56e6bdb1d"></script>
   <script src="js/i18n/language.js?v=957cf239f2ea"></script>
-  <script src="js/notes.js?v=b43158f13af5"></script>
+  <script src="js/notes.js?v=67f70a91685f"></script>
 </body>
 </html>
