@@ -3,18 +3,20 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness({ month = 11, day = 21, reduced = false, search = '', hidden = false } = {}) {
+function harness({ month = 11, day = 21, reduced = false, search = '', hidden = false, note = false, expired = false, lightweight = false } = {}) {
   const events = {}, timers = new Map(), scripts = [];
   let id = 0, plays = 0, clears = 0;
   const motion = { matches: reduced, addEventListener: (name, fn) => events['motion:' + name] = fn };
   const document = {
     hidden, readyState: 'complete',
-    currentScript: { getAttribute: () => 'js/vendor/balloons.js?v=test' },
+    currentScript: { getAttribute: () => 'js/vendor/balloons.js?v=test', hasAttribute: () => note },
+    querySelector: () => ({getAttribute: () => expired ? '2026-10-28T00:00:00Z' : '2026-10-30T00:00:00Z'}),
     head: { appendChild: node => scripts.push(node) },
     createElement: () => ({ remove() { this.removed = true; } }),
     addEventListener: (name, fn) => events[name] = fn,
   };
   const window = {
+    SiteRuntime: {lightweight},
     location: { search }, matchMedia: () => motion,
     setTimeout: fn => { timers.set(++id, fn); return id; },
     clearTimeout: id => timers.delete(id),
@@ -22,7 +24,7 @@ function harness({ month = 11, day = 21, reduced = false, search = '', hidden = 
   };
   vm.runInNewContext(fs.readFileSync('public/js/birthday.js', 'utf8'), {
     document, window, URLSearchParams,
-    Date: class { getMonth() { return month; } getDate() { return day; } },
+    Date: class extends Date { getMonth() { return month; } getDate() { return day; } static now() { return Date.parse('2026-10-29T00:00:00Z'); } },
   });
   return {
     document, window, motion, events, scripts, timers,
@@ -42,6 +44,16 @@ test('birthday is December 21 locally; other dates load no balloon library', () 
   }
   const h = harness(); h.flush(); assert.equal(h.scripts.length, 1); h.load();
   assert.equal(h.plays, 1); assert.equal(h.scripts[0].removed, true);
+});
+
+test('active Birthday notes celebrate outside December 21 and stop when the note expires', () => {
+  const h = harness({month: 9, day: 29, note: true});
+  h.flush(); h.load(); assert.equal(h.plays, 1);
+  h.events.noteexpired(); assert.equal(h.clears, 1);
+  h.events.visibilitychange(); h.flush(); assert.equal(h.plays, 1);
+  for (const settings of [{expired: true}, {reduced: true}, {lightweight: true}]) {
+    const silent = harness({note: true, ...settings}); silent.flush(); assert.equal(silent.scripts.length, 0);
+  }
 });
 
 test('every new visit celebrates, but focus and page-load events do not replay it', () => {

@@ -35,6 +35,13 @@ html[data-theme="dark"] .notes-page { --rule: rgb(241 243 244 / 20%); background
 .note-categories a { color: var(--accent-text); }
 .note-card > .note-categories { grid-column: 2; margin-top: 0; }
 .note-header .note-categories { margin-top: 20px; }
+.note-lifetime { margin: 4px 0 16px; color: var(--mute); font-size: .75rem; line-height: 1.6; }
+.note-lifetime time { white-space: nowrap; }
+.note-expired { max-width: 720px; margin: 0 auto; }
+.note-expired h1 { margin-top: 28px; font: 400 clamp(1.8rem, 5vw, 2.5rem)/1.2 var(--font-display); }
+.note-expired p { margin-top: 16px; color: var(--mute); }
+html[data-note-expired] .notes-post { display: none; }
+html[data-note-expired] .note-expired { display: block; }
 .notes-topics { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 28px; }
 .notes-topics a { display: inline-flex; align-items: center; min-height: 40px; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 20px; font-size: .8125rem; }
 .notes-topics [aria-current] { color: var(--bg); background: var(--ink); border-color: var(--ink); }

@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import tempfile
 from urllib.parse import urlparse, unquote
 import xml.etree.ElementTree as ET
@@ -19,7 +20,7 @@ ORIGIN = 'https://timgong.me'
 ROOT = Path(__file__).resolve().parents[2]
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
 FONTS = {'default', 'sans', 'serif', 'mono'}
-CATEGORIES = {'projects': 'Projects', 'learning': 'Learning', 'photography': 'Photography', 'life': 'Life'}
+CATEGORIES = {'projects': 'Projects', 'learning': 'Learning', 'photography': 'Photography', 'life': 'Life', 'birthday': 'Birthday'}
 LOCALES = {'en': 'en_US', 'es': 'es_ES', 'zh': 'zh_CN', 'zh-Hant': 'zh_TW', 'ja': 'ja_JP', 'ko': 'ko_KR'}
 RSS_ICON = '<svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg>'
 SHARE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6,22q-0.82,0-1.41-0.59T4,20V10Q4,9.17 4.59,8.59T6,8H9v2H6V20H18V10H15V8h3q0.82,0 1.41,0.59T20,10V20q0,0.82-0.59,1.41T18,22H6Zm5-6V4.82L9.4,6.43L8,5l4-4l4,4L14.6,6.43L13,4.82V16H11Z"/></svg>'
@@ -73,7 +74,32 @@ def categories(post):
         key = value.casefold()
         if key not in CATEGORIES: key = 'c-' + hashlib.sha256(key.encode()).hexdigest()[:12]
         result[key] = CATEGORIES.get(key, value)
+    if post.get('birthday') is True: result['birthday'] = 'Birthday'
     return result
+
+def is_birthday(post):
+    return post.get('birthday') is True or any(isinstance(v, str) and v.strip().casefold() == 'birthday' for v in (post.get('categories') or []))
+
+def birthday_publication_time(private, path):
+    """Use the first committed publication, never the editable display date."""
+    def git(*args):
+        result = subprocess.run(['git', '-C', str(private), *args], capture_output=True, text=True)
+        if result.returncode: raise ValueError('Birthday publishing requires the private repository’s full Git history.')
+        return result.stdout.strip()
+    if git('rev-parse', '--is-shallow-repository') == 'true':
+        raise ValueError('Birthday publishing requires fetch-depth: 0 in the private workflow.')
+    relative = path.relative_to(private).as_posix()
+    for entry in git('log', '--reverse', '--format=%H %cI', '--', relative).splitlines():
+        commit, timestamp = entry.split(' ', 1)
+        result = subprocess.run(['git', '-C', str(private), 'show', commit + ':' + relative], capture_output=True, text=True)
+        if result.returncode: continue  # A deletion has no file to inspect.
+        old = json.loads(result.stdout)
+        if old.get('published') is True and is_birthday(old):
+            return dt.datetime.fromisoformat(timestamp).astimezone(dt.timezone.utc)
+    raise ValueError('Save the published Birthday note in the private editor before exporting it.')
+
+def expiry_attr(post):
+    return f' data-note-expires="{esc(post["_expires"])}"' if post.get('_expires') else ''
 
 def category_labels(post, prefix, links=True):
     result = []
@@ -391,12 +417,18 @@ def first_photo(post):
     parser = Images(); parser.feed(str(post.get('body') or ''))
     return parser.found or ('', '')
 
-def read_posts(private, preview_path=None):
+def read_posts(private, preview_path=None, now=None):
     posts, slugs = [], set()
+    now = now or dt.datetime.now(dt.timezone.utc)
     for path in sorted((private / 'notes').glob('*.json')):
         value = json.loads(path.read_text())
         if preview_path and path.resolve() != preview_path.resolve(): continue
         if value.get('published') is not True and not preview_path: continue
+        if is_birthday(value):
+            published = now if preview_path else birthday_publication_time(private, path)
+            expires = published + dt.timedelta(hours=24)
+            if not preview_path and expires <= now: continue
+            value['_expires'] = expires.isoformat().replace('+00:00', 'Z')
         slug = str(value.get('slug') or path.stem)
         if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', slug) or re.match(r'page-\d+$', slug):
             raise ValueError('Use a short link name containing lowercase letters, numbers, and hyphens.')
@@ -436,18 +468,20 @@ def render_post(version, original, media, prefix='../'):
     content = body(version, media, prefix)
     content = reading_contents(content)
     if not content.startswith('<div class="note-reading-layout">'): content = '<div class="note-body">' + content + '</div>'
-    return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}">'
+    notice = '<p class="note-lifetime">Available for 24 hours <span aria-hidden="true">·</span> <time datetime="' + esc(original['_expires']) + '" data-note-expiry-label>Until ' + esc(original['_expires'].replace('T', ' ').replace('Z', ' UTC')) + '</time></p>' if original.get('_expires') else ''
+    expired = ('<section class="note-expired" hidden tabindex="-1"><a class="notes-back" href="../notes.html">← All notes</a><h1>This birthday note has ended.</h1><p>It was here for 24 hours.</p></section>' if original.get('_expires') else '')
+    return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
             f'<a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a></div>'
             f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>' +
-            '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div>' + heading +
+            '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div>' + notice + heading +
             (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix) +
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
             content +
             '<footer class="note-end">' + f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>' +
-            '</footer></article>')
+            '</footer></article>' + expired)
 
 def variant_data(post, prefix, from_about=False):
     variants = [{'language': v['language'], 'title': title(v), 'summary': summary(v), 'href': prefix + post_filename(v, post) + ('?from=about' if from_about else '')} for v in post['_versions']]
@@ -461,7 +495,7 @@ def card(post, media, prefix):
         image = markup.replace('<img ', '<img class="note-card__image" ', 1)
     heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
     text = summary(post)
-    return (f'<li class="note-card" lang="{esc(post["language"])}"><time class="note-card__date" datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>'
+    return (f'<li class="note-card" lang="{esc(post["language"])}"{expiry_attr(post)}><time class="note-card__date" datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>'
             f'<a class="note-card__link{ " note-card__link--photo" if image else ""}" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}"><div class="note-card__copy">{heading}' +
             (f'<p class="note-card__excerpt" data-note-summary>{esc(text)}</p>' if text else '') +
             '<span class="note-card__meta"><span class="note-card__more"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span>' +
@@ -491,6 +525,14 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         if image: data['image'] = ORIGIN + '/' + image
         structured = '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace('<', '\\u003c') + '</script>'
     markup = shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
+    if 'data-note-expires=' in content:
+        expiry = expiry_attr(post) if post else ''
+        guard = resource_versions(f'<script src="{prefix}js/notes-lifetime.js"{expiry}></script>', public)
+        markup = markup.replace('</head>', guard + '\n</head>')
+    if post and post.get('_expires'):
+        markup = markup.replace('</head>', '<meta name="robots" content="noindex" />\n</head>')
+        script = resource_versions(f'<script src="{prefix}js/birthday.js" data-note-birthday data-balloons-src="{prefix}js/vendor/balloons.js"></script>', public)
+        markup = markup.replace('</body>', script + '\n</body>')
     if 'data-same-study ' in content:
         resources = resource_versions(f'<link rel="stylesheet" href="{prefix}css/same-study.css" />', public)
         markup = markup.replace('</head>', resources + '\n</head>')
@@ -509,7 +551,7 @@ def entrance(posts, media):
             markup, _ = media.image(photo, alt, prefix='')
             image = '<span class="notes-spotlight__image">' + markup + '</span>'
         expiry = f' data-note-highlight-until="{esc(post.get("highlight_until"))}"' if featured else ''
-        return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="{str(featured).lower()}"{expiry}{" hidden" if hidden else ""}>'
+        return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="{str(featured).lower()}"{expiry}{expiry_attr(post)}{" hidden" if hidden else ""}>'
                 f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {variant_data(post, "", from_about=True)} href="{post_filename(post, post)}?from=about">' + image +
                 '<span class="notes-spotlight__copy">' + category_labels(post, '', links=False) +
                 f'<span class="notes-spotlight__title" lang="{esc(post["language"])}" data-note-title>{esc(title(post))}</span>' +
@@ -521,7 +563,8 @@ def entrance(posts, media):
         highlights = [p for p in posts if p.get('highlight') is True and (not p.get('highlight_until') or date(p['highlight_until']) >= today)]
         chosen = highlights or [posts[0]]
         slides = ''.join(slide(p, bool(highlights)) for p in chosen)
-        if posts[0]['slug'] not in [p['slug'] for p in chosen]: slides += slide(posts[0], False, hidden=True)
+        fallback = next((p for p in posts if not p.get('_expires')), posts[0])
+        if fallback['slug'] not in [p['slug'] for p in chosen]: slides += slide(fallback, False, hidden=True)
         intro += ('<div class="notes-carousel" data-notes-carousel role="region" aria-label="Featured notes" data-i18n-aria="notes.featuredNotes">'
                   '<div class="notes-carousel__viewport"><div class="notes-carousel__track">' + slides + '</div></div>'
                   '<div class="notes-carousel__controls" hidden><button type="button" data-note-prev aria-label="Previous note" data-i18n-aria="notes.previousSlide">←</button>'
@@ -538,7 +581,9 @@ def category_nav(posts, prefix, current=''):
     links = f'<a href="{prefix}notes.html"' + (' aria-current="page"' if not current else '') + ' data-i18n="notes.all">All notes</a>'
     for key, label in available.items():
         active = ' aria-current="page"' if current == key else ''
-        links += f'<a href="{prefix}notes/topics/{key}.html" data-note-category="{key}"{active}>{esc(label)}</a>'
+        matches = [p for p in posts if key in categories(p)]
+        expiry = expiry_attr({'_expires': max(p['_expires'] for p in matches)}) if all(p.get('_expires') for p in matches) else ''
+        links += f'<a href="{prefix}notes/topics/{key}.html" data-note-category="{key}"{active}{expiry}>{esc(label)}</a>'
     return '<nav class="notes-topics" aria-label="Categories" data-i18n-aria="notes.categories">' + links + '</nav>'
 
 
@@ -601,8 +646,8 @@ def build(private, public, preview_path=None, preview_output=None):
                     dest = preview_output / Path(filename).name; dest.parent.mkdir(parents=True, exist_ok=True); dest.write_text(markup)
                 else:
                     (stage / filename).write_text(markup)
-                    urls.append((ORIGIN + '/' + filename, post['date']))
-            rss_items.append(post)
+                    if not post.get('_expires'): urls.append((ORIGIN + '/' + filename, post['date']))
+            if not post.get('_expires'): rss_items.append(post)
         if preview_path: return {'posts': len(posts), 'preview': True}
         page_count = max(1, (len(posts) + 19) // 20)
         for index in range(page_count):
@@ -660,15 +705,20 @@ def build(private, public, preview_path=None, preview_output=None):
             if dest.exists(): shutil.rmtree(dest)
             if (stage / name).exists(): shutil.copytree(stage / name, dest)
         for name in ('notes.html', 'subscribe.html', 'feed.xml'): shutil.copyfile(stage / name, public / name)
+        (public / 'notes-expiry.json').write_text(json.dumps(sorted(p['_expires'] for p in posts if p.get('_expires'))) + '\n')
         home = public / 'index.html'; markup = home_markup
         markup, count = re.subn(r'<!-- notes-entrance:start -->.*?<!-- notes-entrance:end -->', lambda _: '<!-- notes-entrance:start -->\n' + home_entrance + '\n    <!-- notes-entrance:end -->', markup, flags=re.S)
         if count != 1: raise ValueError('The homepage Notes entrance marker is missing.')
         def story_link(match):
             identity = match[1]
             post = next((p for p in posts if p['_id'] == identity), None)
-            link = (f'<a class="featured-card__story" {variant_data(post, "")} href="{post_filename(post, post)}"><span data-i18n="notes.readStory">Read the story</span> <span aria-hidden="true">→</span></a>' if post else '')
+            link = (f'<a class="featured-card__story" {variant_data(post, "")}{expiry_attr(post)} href="{post_filename(post, post)}"><span data-i18n="notes.readStory">Read the story</span> <span aria-hidden="true">→</span></a>' if post else '')
             return f'<!-- note-story:{identity}:start -->{link}<!-- note-story:{identity}:end -->'
         markup = re.sub(r'<!-- note-story:([a-z0-9-]+):start -->.*?<!-- note-story:\1:end -->', story_link, markup, flags=re.S)
+        markup = re.sub(r'<script[^>]+data-notes-lifetime[^>]*></script>\s*', '', markup)
+        if any(p.get('_expires') for p in posts):
+            script = resource_versions('<script src="js/notes-lifetime.js" data-notes-lifetime></script>', public)
+            markup = markup.replace('<script src="js/notes-carousel.js', script + '\n  <script src="js/notes-carousel.js', 1)
         home.write_text(markup)
         namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9'; ET.register_namespace('', namespace)
         root = sitemap.getroot()

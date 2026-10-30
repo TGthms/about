@@ -24,8 +24,17 @@ function harness({lite=false,reduced=false}={}) {
   class MO {observe(){}}
   const window={SiteRuntime:{lightweight:lite},performance:{now:()=>clock},matchMedia:()=>motion,IntersectionObserver:IO,MutationObserver:MO,addEventListener(k,v){events[k]=v;}};
   vm.runInNewContext(fs.readFileSync('public/js/notes-carousel.js','utf8'),{window,document,IntersectionObserver:IO,MutationObserver:MO,TRANSLATIONS:{en:{notes:{slideLabel:'Note {number} of {total}',previousSlide:'Previous',nextSlide:'Next',featuredNotes:'Featured'}}},setTimeout(fn,delay){const id=++serial;timers.set(id,{fn,delay});return id;},clearTimeout:id=>timers.delete(id)});
-  return {frame,track,controls,dots,slides,prev,next,document,docEvents,events,timers,motion,io,advance(ms){clock+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);clock+=t.delay;t.fn();}};
+  return {frame,track,controls,dots,slides,prev,next,document,docEvents,events,timers,motion,io,refresh:window.NotesCarousel.refresh,advance(ms){clock+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);clock+=t.delay;t.fn();}};
 }
+test('expired birthday slides leave the rotation; an empty carousel releases its timer',()=>{
+  const h=harness();
+  h.slides[0].setAttribute('data-note-expires','2000-01-01T00:00:00Z'); h.refresh();
+  assert.equal(h.slides[0].hidden,true); assert.equal(h.slides[1].inert,false);
+  assert.equal(h.controls.hidden,true); assert.equal(h.timers.size,0);
+  h.slides[1].setAttribute('data-note-expires','2000-01-01T00:00:00Z'); h.refresh();
+  assert.equal(h.frame.hidden,true); assert.equal(h.timers.size,0);
+  h.next.listeners.click(); assert.equal(h.timers.size,0);
+});
 test('autoplay advances every eight seconds and keeps only the active article focusable',()=>{
   const h=harness(); assert.equal(h.timers.values().next().value.delay,8000);
   assert.equal(h.slides[1].inert,true); h.fire();

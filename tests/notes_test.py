@@ -1,10 +1,14 @@
 """Publication boundary tests: private input must never be copied wholesale."""
 import importlib.util
 import json
+import datetime as dt
+import os
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 import xml.etree.ElementTree as ET
 from PIL import Image
 
@@ -37,6 +41,65 @@ class NotesTests(unittest.TestCase):
         return notes.build(self.private, self.public)
     def sinks(self):
         return '\n'.join(path.read_text() for path in self.public.rglob('*') if path.suffix in ('.html', '.xml', '.json'))
+    def test_birthday_clock_uses_first_publication_and_survives_edits_and_republication(self):
+        def git(*args, stamp=None):
+            env = dict(os.environ)
+            if stamp: env.update(GIT_AUTHOR_DATE=stamp, GIT_COMMITTER_DATE=stamp)
+            return subprocess.run(['git', '-C', str(self.private), *args], check=True, capture_output=True, text=True, env=env)
+        git('init'); git('config', 'user.name', 'Test'); git('config', 'user.email', 'test@example.com')
+        def save(stamp, **values):
+            path = self.post(**values); git('add', '.'); git('commit', '-m', 'Save', stamp=stamp); return path
+        save('2026-10-20T09:00:00Z', published=False, birthday=True)
+        path = save('2026-10-29T09:00:00Z', birthday=True)
+        save('2026-10-29T10:00:00Z', birthday=True, title='An edit', date='2020-01-01')
+        save('2026-10-29T11:00:00Z', birthday=True, published=False)
+        save('2026-10-29T12:00:00Z', birthday=True)
+        self.assertEqual(notes.birthday_publication_time(self.private, path).isoformat(), '2026-10-29T09:00:00+00:00')
+        active = notes.read_posts(self.private, now=dt.datetime.fromisoformat('2026-10-30T08:59:59+00:00'))
+        self.assertEqual(active[0]['_expires'], '2026-10-30T09:00:00Z')
+        self.assertEqual(notes.read_posts(self.private, now=dt.datetime.fromisoformat('2026-10-30T09:00:00+00:00')), [])
+
+    def test_birthday_export_and_cleanup_cover_all_public_surfaces_and_preserve_shared_media(self):
+        shared = self.image('shared.png', (100, 60)); birthday_only = self.image('birthday.png', (120, 70))
+        self.post('ordinary', cover=shared, cover_alt='Shared photograph', highlight=True)
+        self.post('birthday', birthday=True, highlight=True, cover=shared, cover_alt='Shared photograph', blocks=[{'type':'photo', 'image':birthday_only, 'alt':'Birthday photograph'}], translations=[{'language':'zh','published':True,'title':'生日','body':'<p>生日快乐。</p>'}])
+        publication = dt.datetime.now(dt.timezone.utc)
+        with patch.object(notes, 'birthday_publication_time', return_value=publication): self.build()
+        article = (self.public / 'notes/birthday.html').read_text()
+        self.assertIn('Available for 24 hours', article)
+        self.assertIn('data-note-expires=', article)
+        self.assertIn('data-note-birthday', article)
+        self.assertIn('name="robots" content="noindex"', article)
+        self.assertIn('js/notes-lifetime.js?v=', article)
+        self.assertTrue((self.public / 'notes/birthday.zh.html').exists())
+        self.assertIn('data-notes-lifetime', (self.public / 'index.html').read_text())
+        self.assertIn('data-note-expires=', (self.public / 'notes.html').read_text())
+        self.assertTrue((self.public / 'notes/topics/birthday.html').exists())
+        self.assertNotIn('/notes/birthday', (self.public / 'feed.xml').read_text())
+        self.assertNotIn('/notes/birthday', (self.public / 'sitemap.xml').read_text())
+        self.assertEqual(len(json.loads((self.public / 'notes-expiry.json').read_text())), 1)
+        before = set(p.name for p in (self.public / 'assets/notes').iterdir())
+        with patch.object(notes, 'birthday_publication_time', return_value=publication - dt.timedelta(hours=25)): self.build()
+        self.assertFalse((self.public / 'notes/birthday.html').exists())
+        self.assertFalse((self.public / 'notes/birthday.zh.html').exists())
+        self.assertFalse((self.public / 'notes/topics/birthday.html').exists())
+        self.assertNotIn('data-note-expires=', (self.public / 'index.html').read_text())
+        self.assertNotIn('data-notes-lifetime', (self.public / 'index.html').read_text())
+        self.assertNotIn('birthday.html', (self.public / 'notes.html').read_text())
+        after = set(p.name for p in (self.public / 'assets/notes').iterdir())
+        self.assertTrue(after); self.assertLess(len(after), len(before))
+        self.assertEqual(json.loads((self.public / 'notes-expiry.json').read_text()), [])
+
+    def test_birthday_category_alone_activates_expiry_and_drafts_need_no_clock(self):
+        self.assertTrue(notes.is_birthday({'categories':[' Birthday ']}))
+        self.assertEqual(notes.categories({'birthday':True})['birthday'], 'Birthday')
+        draft = self.post(birthday=True, published=False)
+        with patch.object(notes, 'birthday_publication_time', side_effect=AssertionError('Draft leaked')):
+            self.assertEqual(notes.read_posts(self.private), [])
+            notes.build(self.private, self.public, draft, self.root / 'preview')
+        preview = (self.root / 'preview/example.html').read_text()
+        self.assertIn('Available for 24 hours', preview)
+        self.assertNotIn('src="../js/birthday.js', preview)
     def test_drafts_and_unreferenced_uploads_never_export(self):
         self.post('secret', published=False, title='PRIVATE_DRAFT_ABC', body='<p>PRIVATE_BODY_XYZ</p>')
         self.image('private-only.png')

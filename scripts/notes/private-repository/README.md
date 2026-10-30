@@ -36,6 +36,18 @@ The homepage has a Notes entrance beneath About. Turn on **Feature beneath About
 
 Add category names in **Categories** on each post. Use the same spelling to group posts; capitalization does not create a separate category. Projects, Learning, Photography, and Life have interface labels in all six languages. You can also enter your own names, which appear exactly as written. Use up to eight categories of 48 characters each. Category pages work without JavaScript, and only published posts and category names are exported.
 
+## Birthday notes
+
+Turn on **Birthday · 24 hours** to add the Birthday category and the same balloons used on December 21. You can still add other categories. Writing Birthday in Categories also activates this behavior.
+
+Keep **Published** off until ready. The 24-hour window begins with the first saved commit that is both published and marked Birthday; the display date does not control it. Editing, unpublishing, or republishing the same entry never restarts its clock. Create a new entry for another birthday. An ordinary note later marked Birthday starts its birthday window at that save.
+
+The article shows a quiet availability mark and a local expiry time. Balloons play once on entry, without sound, and honor reduced motion and lightweight browsing. No extra personal details are required. These posts are excluded from RSS and search sitemaps, and ask search engines not to index them.
+
+At expiry, cached pages hide the post and its listing immediately when scripting is available. An hourly cleanup at minute 17 rebuilds only when an exported post has expired, deleting its article pages and unshared media. GitHub schedules and deployment may be delayed; file removal is not guaranteed at the exact second. With JavaScript unavailable, removal depends on that cleanup. Private originals remain in this repository. Previously public copies, public Git history, saved files, and browser caches cannot be recalled. This is a temporary publication feature, not confidential messaging.
+
+Private previews show the Birthday mark without playing balloons or expiring the preview.
+
 ## Publication access
 
 The `NOTES_PUBLISH_KEY` Actions secret is a dedicated SSH deploy key for the public `TGthms/about` repository. It is not your GitHub account credential. The publication workflow exports published HTML and referenced media only. It does not copy this repository into the website.

@@ -1,9 +1,10 @@
-/* A birthday surprise on December 21, in the visitor's local time. */
+/* The same birthday surprise on December 21 and active Birthday notes. */
 (function () {
   "use strict";
   if (window.SiteRuntime && window.SiteRuntime.lightweight) return;
 
   var source = document.currentScript.getAttribute("data-balloons-src");
+  var note = document.currentScript.hasAttribute("data-note-birthday");
   var motion = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
   var preview = new URLSearchParams(window.location.search).get("birthday") === "preview";
   var started = false;
@@ -14,7 +15,9 @@
 
   function eligible() {
     var today = new Date();
-    return (preview || (today.getMonth() === 11 && today.getDate() === 21)) &&
+    var article = note && document.querySelector('.notes-post[data-note-expires]');
+    var activeNote = article && Date.parse(article.getAttribute('data-note-expires')) > Date.now();
+    return (note ? activeNote : (preview || (today.getMonth() === 11 && today.getDate() === 21))) &&
       !document.hidden && !(motion && motion.matches) && !started && !dismissed;
   }
 
@@ -63,6 +66,7 @@
     schedule();
   });
   window.addEventListener("pagehide", clear);
+  document.addEventListener("noteexpired", function () { dismissed = true; clear(); });
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) clear();
     else schedule();
