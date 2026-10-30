@@ -66,6 +66,7 @@ html[data-theme="dark"] .notes-page { --rule: rgb(241 243 244 / 20%); background
 .notes-post { max-width: 720px; margin: 0 auto; }
 .notes-back { margin-bottom: 28px; }
 .note-header { margin-bottom: 36px; }
+.note-header__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 20px; }
 .note-header__date { font-size: .8125rem; color: var(--mute); }
 .note-header h1 { margin-top: 16px; font: 400 clamp(2rem, 6vw, 3.4rem)/1.16 var(--font-display); letter-spacing: -.045em; overflow-wrap: anywhere; }
 .note-header__summary { margin-top: 20px; color: var(--mute); font-size: 1.125rem; line-height: 1.7; }
@@ -92,8 +93,8 @@ html[data-theme="dark"] .notes-page { --rule: rgb(241 243 244 / 20%); background
 .note-media__link { display: inline-flex; min-height: 40px; align-items: center; font-size: .8125rem; }
 .note-media details { color: var(--mute); font-size: .875rem; margin-top: 8px; }.note-media summary { cursor: pointer; min-height: 40px; }
 .note-end { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
-.note-end .notes-back { margin: 0; }.note-share { padding-inline: 4px; }.note-share:active { transform: scale(.97); }
-.note-share-fallback { width: 100%; color: var(--mute); font-size: .8125rem; }.note-share-fallback input { display: block; width: 100%; margin-top: 8px; padding: 10px; color: var(--ink); background: var(--bg-card); border: 1px solid var(--rule); border-radius: 4px; font: inherit; }
+.note-end .notes-back { margin: 0; }.note-share { padding: 0; border: 0; background: none; font-family: inherit; cursor: pointer; }.note-share svg { flex: 0 0 20px; }.note-share:active { transform: scale(.97); }
+.note-share-fallback { display: block; width: 100%; margin-top: 16px; color: var(--mute); font-size: .8125rem; }.note-share-fallback input { display: block; width: 100%; margin-top: 8px; padding: 10px; color: var(--ink); background: var(--bg-card); border: 1px solid var(--rule); border-radius: 4px; font: inherit; }
 .notes-footer { padding-top: 0; border-top: 0; }.notes-footer .footer__inner { border-top: 1px solid var(--rule); padding-top: 32px; }.notes-footer__signature { font: 400 1.5rem var(--font-display); }
 .notes-page :focus-visible { outline: 2px solid var(--accent-text); outline-offset: 5px; }
 @media (max-width: 767px) {

@@ -297,17 +297,43 @@ class NotesTests(unittest.TestCase):
         self.assertNotIn('notes/expired.html', home)
         self.assertNotIn('Small updates, photographs, and things along the way.', home)
 
+    def test_about_entry_context_is_not_added_to_archive_story_or_share_urls(self):
+        self.post('2026-10-29-that-noise-was-data', slug='that-noise-was-data', highlight=True, translations=[{'language':'zh','published':True,'title':'信号','body':'<p>文字。</p>'}])
+        self.build()
+        home = (self.public / 'index.html').read_text()
+        entrance = home.split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
+        self.assertIn('notes/that-noise-was-data.html?from=about', entrance)
+        self.assertIn('notes/that-noise-was-data.zh.html?from=about', entrance)
+        self.assertNotIn('?from=about', (self.public / 'notes.html').read_text())
+        story = home.split('<!-- note-story:2026-10-29-that-noise-was-data:start -->')[1].split('<!-- note-story:2026-10-29-that-noise-was-data:end -->')[0]
+        self.assertNotIn('?from=about', story)
+        for suffix in ('', '.zh'):
+            page = (self.public / f'notes/that-noise-was-data{suffix}.html').read_text()
+            self.assertIn('data-note-site-return hidden', page)
+            self.assertIn(f'rel="canonical" href="https://timgong.me/notes/that-noise-was-data{suffix}.html"', page)
+            header = page.split('<header class="note-header">')[1].split('</header>')[0]
+            self.assertIn('id="note-share"', header)
+            self.assertIn('fill="currentColor"', header)
+            self.assertIn('<span data-i18n="notes.share">Share this note</span>', header)
+            self.assertEqual(page.count('id="note-share"'), 1)
+            self.assertNotIn('id="note-share"', page.split('<footer class="note-end">')[1])
+
     def test_project_story_links_only_reference_published_versions_and_disappear_on_unpublish(self):
-        self.post('that-noise-was-data', translations=[{'language':'zh','published':True,'title':'信号','body':'<p>文字。</p>'},{'language':'ja','published':False,'title':'PRIVATE_STORY_TRANSLATION'}])
+        self.post('2026-10-29-that-noise-was-data', slug='that-noise-was-data', translations=[{'language':'zh','published':True,'title':'信号','body':'<p>文字。</p>'},{'language':'ja','published':False,'title':'PRIVATE_STORY_TRANSLATION'}])
         self.build()
         home=(self.public/'index.html').read_text()
-        story=home.split('<!-- note-story:that-noise-was-data:start -->')[1].split('<!-- note-story:that-noise-was-data:end -->')[0]
+        story=home.split('<!-- note-story:2026-10-29-that-noise-was-data:start -->')[1].split('<!-- note-story:2026-10-29-that-noise-was-data:end -->')[0]
         self.assertIn('featured-card__story',story)
         self.assertIn('notes/that-noise-was-data.zh.html',story)
         self.assertNotIn('PRIVATE_STORY_TRANSLATION',story)
-        self.post('that-noise-was-data',published=False);self.build()
+        self.post('2026-10-29-that-noise-was-data', slug='a-new-address')
+        self.build()
         home=(self.public/'index.html').read_text()
-        story=home.split('<!-- note-story:that-noise-was-data:start -->')[1].split('<!-- note-story:that-noise-was-data:end -->')[0]
+        story=home.split('<!-- note-story:2026-10-29-that-noise-was-data:start -->')[1].split('<!-- note-story:2026-10-29-that-noise-was-data:end -->')[0]
+        self.assertIn('notes/a-new-address.html',story)
+        self.post('2026-10-29-that-noise-was-data',published=False);self.build()
+        home=(self.public/'index.html').read_text()
+        story=home.split('<!-- note-story:2026-10-29-that-noise-was-data:start -->')[1].split('<!-- note-story:2026-10-29-that-noise-was-data:end -->')[0]
         self.assertEqual(story,'')
 
     def test_previews_allow_missing_descriptions_but_publishing_still_requires_them(self):

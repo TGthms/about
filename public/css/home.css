@@ -111,9 +111,9 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
 .notes-carousel__dots { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
 .notes-carousel__controls .notes-carousel__dot { min-width: 28px; width: 28px; padding: 0 10px; }
 .notes-carousel__controls .notes-carousel__dot[aria-current] { width: 56px; }
-.notes-carousel__dot span { position: relative; display: block; width: 100%; height: 6px; overflow: hidden; border-radius: 6px; background: color-mix(in srgb, var(--mute) 30%, transparent); }
-.notes-carousel__dot span::after { content: ''; position: absolute; inset: 0; background: var(--accent-text); transform: scaleX(var(--note-progress, 0)); transform-origin: left; transition: transform var(--note-progress-time, 0ms) linear; }
-.notes-carousel__dot[aria-current] span { background: color-mix(in srgb, var(--mute) 40%, transparent); }
+.notes-carousel__indicator { position: relative; display: block; width: 100%; height: 6px; overflow: hidden; border-radius: 6px; background: color-mix(in srgb, var(--mute) 30%, transparent); }
+.notes-carousel__indicator::after { content: ''; position: absolute; inset: 0; background: var(--accent-text); transform: scaleX(var(--note-progress, 0)); transform-origin: left; transition: transform var(--note-progress-time, 0ms) linear; }
+.notes-carousel__dot[aria-current] .notes-carousel__indicator { background: color-mix(in srgb, var(--mute) 40%, transparent); }
 @media (prefers-reduced-motion: no-preference) {
   html:not([data-lightweight]) .notes-carousel.is-enhanced .notes-carousel__track { transition: transform 540ms cubic-bezier(.22, .68, .2, 1); }
   html:not([data-lightweight]) .notes-carousel__dot { transition: width 240ms ease; }

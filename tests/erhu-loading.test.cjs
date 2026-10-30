@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 function harness(connection, deferred=false, lightweight=false) {
-  const videos=[],nodes=[],events={},inert=[],finishes=[],observers=[];let document,locks=0,language="en";
+  const videos=[],nodes=[],events={},inert=[],finishes=[],observers=[],progressTimers=new Map();let document,locks=0,language="en",timerId=0;
   function descendants(el) { return el.children.flatMap(child=>[child,...descendants(child)]); }
   function element(tag='div') {
     const attrs={},classes=new Set(),listeners={};
@@ -29,13 +29,13 @@ function harness(connection, deferred=false, lightweight=false) {
   modal.querySelector=()=>close;wiki.querySelector=()=>wikiClose;
   const ids={'erhu-wiki-open':opener,'erhu-performance-open':performance,'erhu-wiki-modal':wiki,'erhu-performance-modal':modal,'erhu-wiki-body':wikiBody,'erhu-performance-body':body,'erhu-wiki-title':element('h2'),'erhu-performance-title':element('h2')};
   document={activeElement:null,readyState:'complete',body:element(),documentElement:{getAttribute:()=>language},createElement:element,getElementById:id=>ids[id],addEventListener(k,fn){events[k]=fn;}};
-  const context={document,navigator:{connection},window:{SiteRuntime:{lightweight,image:src=>lightweight?src.replace("assets/erhu/erhu-instrument.jpg","assets/compact/erhu/erhu-instrument.webp"):src},setTimeout:fn=>fn(),addEventListener(){}},lockPageScroll(){locks++;},unlockPageScroll(){locks--;},setBackgroundInert(m,on){inert.push([m,on]);}};
+  const context={document,navigator:{connection},window:{SiteRuntime:{lightweight,image:src=>lightweight?src.replace("assets/erhu/erhu-instrument.jpg","assets/compact/erhu/erhu-instrument.webp"):src},setTimeout(fn,delay){if(delay!==2000)return fn();const id=++timerId;progressTimers.set(id,fn);return id;},clearTimeout:id=>progressTimers.delete(id),addEventListener(){}},lockPageScroll(){locks++;},unlockPageScroll(){locks--;},setBackgroundInert(m,on){inert.push([m,on]);}};
   context.MutationObserver=function(fn){observers.push(fn);this.observe=()=>{};};
   context.window.MutationObserver=context.MutationObserver;
   if(deferred)context.closeSiteDialog=(_modal,fn)=>finishes.push(fn);
   vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8')+fs.readFileSync('public/js/erhu-content.js','utf8')+fs.readFileSync('public/js/erhu.js','utf8'),context);
   function click(m,target){m.listeners.click({target});}
-  return {finishes,translate(lang){language=lang;observers.forEach(fn=>fn());},title:ids["erhu-performance-title"],opener,performance,wiki,modal,body,wikiBody,close,wikiClose,events,videos,nodes,document,locks:()=>locks,inert,click,open:()=>performance.listeners.click(),closePerformance:()=>click(modal,close),status:()=>nodes.findLast(x=>x.className==='erhu-wiki__video-status')};
+  return {progressTimers,waitForProgress(){for(const [id,fn] of progressTimers){progressTimers.delete(id);fn();}},finishes,translate(lang){language=lang;observers.forEach(fn=>fn());},title:ids["erhu-performance-title"],opener,performance,wiki,modal,body,wikiBody,close,wikiClose,events,videos,nodes,document,locks:()=>locks,inert,click,open:()=>performance.listeners.click(),closePerformance:()=>click(modal,close),status:()=>nodes.findLast(x=>x.className==='erhu-wiki__video-status')};
 }
 
 test('erhu media waits for interest and reuses the preloaded photo and video', () => {
@@ -78,6 +78,9 @@ test('buffer percentage measures real ranges, handles unknown duration, and reco
   video.duration = 100;
   video.buffered = { length: 2, start: i => [0, 20][i], end: i => [10, 30][i] };
   video.listeners.progress();
+  assert.equal(status.children[0].textContent, 'Loading video…');
+  assert.equal(status.children[1].hidden, true, 'fast loads do not flash a percentage');
+  h.waitForProgress();
   assert.equal(status.children[0].textContent, 'Video buffered · 20%');
   assert.equal(status.children[1].value, 20);
   video.readyState = 3; video.paused = false;
@@ -92,6 +95,24 @@ test('buffer percentage measures real ranges, handles unknown duration, and reco
   h.closePerformance();
   assert.equal(h.document.activeElement, h.performance, 'returns focus even when Safari never focused the click');
   assert.equal(h.performance.focusOptions.preventScroll, true);
+});
+
+test('video percentage waits two seconds, cancels on readiness and close, and never invents unknown progress', () => {
+  const h = harness(); h.open();
+  assert.equal(h.progressTimers.size, 1);
+  h.waitForProgress();
+  assert.equal(h.status().children[0].textContent, 'Loading video…');
+  assert.equal(h.status().children[1].hidden, true);
+  const video = h.videos[0];
+  video.duration = 100; video.buffered = {length: 1, start: () => 0, end: () => 50};
+  video.listeners.progress();
+  assert.equal(h.status().children[0].textContent, 'Video buffered · 50%');
+  video.readyState = 3; video.paused = false; video.listeners.playing();
+  assert.equal(h.status().hidden, true); assert.equal(h.progressTimers.size, 0);
+  video.readyState = 2; video.listeners.waiting();
+  assert.equal(h.status().children[1].hidden, true);
+  assert.equal(h.progressTimers.size, 1);
+  h.closePerformance(); assert.equal(h.progressTimers.size, 0);
 });
 
 test('every language has loading, buffering, and failure copy', () => {

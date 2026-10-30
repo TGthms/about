@@ -77,7 +77,10 @@
       active.forEach(function (_, i) {
         var button = document.createElement('button');
         button.type = 'button'; button.className = 'notes-carousel__dot';
-        button.appendChild(document.createElement('span'));
+        var indicator = document.createElement('span');
+        indicator.className = 'notes-carousel__indicator';
+        indicator.setAttribute('aria-hidden', 'true');
+        button.appendChild(indicator);
         button.addEventListener('click', function () { move(i, true); });
         dots.appendChild(button); buttons.push(button);
       });

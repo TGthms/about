@@ -8,6 +8,15 @@
   var year = document.getElementById("year");
   if (year) year.textContent = String(new Date().getFullYear());
 
+  /* Only the featured entrance beneath About adds this navigation context. */
+  if (isPage && window.location && /(?:^|[?&])from=about(?:&|$)/.test(window.location.search || "")) {
+    document.querySelectorAll("[data-note-site-return]").forEach(function (link) { link.hidden = false; });
+    document.querySelectorAll("[data-note-version]").forEach(function (link) {
+      var href = link.getAttribute("href");
+      link.setAttribute("href", href + (href.indexOf("?") === -1 ? "?" : "&") + "from=about");
+    });
+  }
+
   function preparePosters() {
     if (posterObserver) posterObserver.disconnect();
     var connection = navigator.connection;

@@ -23,6 +23,14 @@
   var videoStatusText = null;
   var lastStatus = "";
   var videoLoadFailed = false;
+  var videoProgressTimer = 0;
+  var videoProgressDelayed = false;
+
+  function resetVideoProgress() {
+    if (videoProgressTimer) window.clearTimeout(videoProgressTimer);
+    videoProgressTimer = 0;
+    videoProgressDelayed = false;
+  }
 
   function updateVideoStatus() {
     if (!videoEl || !videoStatus) return;
@@ -42,9 +50,17 @@
     var ready = percent === 100 || (videoEl.readyState >= 3 && (!videoEl.paused || videoEl.networkState === 1));
     var idle = lightweight && videoEl.paused && videoEl.readyState === 0 && videoEl.networkState !== 2;
     videoStatus.hidden = (ready || idle) && !failed;
-    videoProgress.hidden = percent === null || failed;
+    if (videoStatus.hidden || failed || activeModal !== performanceModal) resetVideoProgress();
+    else if (!videoProgressDelayed && !videoProgressTimer) {
+      videoProgressTimer = window.setTimeout(function () {
+        videoProgressTimer = 0;
+        videoProgressDelayed = true;
+        updateVideoStatus();
+      }, 2000);
+    }
+    videoProgress.hidden = !videoProgressDelayed || percent === null || failed;
     if (percent !== null) videoProgress.value = percent;
-    var label = failed ? copy.videoError : percent === null
+    var label = failed ? copy.videoError : !videoProgressDelayed || percent === null
       ? copy.videoLoading : copy.videoBuffering + " · " + percent + "%";
     if (label !== lastStatus) {
       videoStatusText.textContent = label;
@@ -115,6 +131,7 @@
   }
 
   function stashVideo() {
+    resetVideoProgress();
     if (!videoEl) return;
     if (lightweight) {
       videoEl.replaceChildren();
@@ -290,6 +307,7 @@
 
   function close() {
     if (!activeModal || closing) return;
+    resetVideoProgress();
     closing = true;
     var modal = activeModal;
     if (modal === performanceModal && videoEl) videoEl.pause();

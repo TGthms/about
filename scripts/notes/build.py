@@ -22,6 +22,7 @@ FONTS = {'default', 'sans', 'serif', 'mono'}
 CATEGORIES = {'projects': 'Projects', 'learning': 'Learning', 'photography': 'Photography', 'life': 'Life'}
 LOCALES = {'en': 'en_US', 'es': 'es_ES', 'zh': 'zh_CN', 'zh-Hant': 'zh_TW', 'ja': 'ja_JP', 'ko': 'ko_KR'}
 RSS_ICON = '<svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg>'
+SHARE_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true" focusable="false"><path d="M6,22q-0.82,0-1.41-0.59T4,20V10Q4,9.17 4.59,8.59T6,8H9v2H6V20H18V10H15V8h3q0.82,0 1.41,0.59T20,10V20q0,0.82-0.59,1.41T18,22H6Zm5-6V4.82L9.4,6.43L8,5l4-4l4,4L14.6,6.43L13,4.82V16H11Z"/></svg>'
 
 def esc(value):
     return html.escape(str(value or ''), quote=True)
@@ -403,6 +404,7 @@ def read_posts(private, preview_path=None):
         slugs.add(slug)
         date(value.get('date'))
         value['slug'], value['language'] = slug, language(value.get('language'))
+        value['_id'] = path.stem
         categories(value)
         if value.get('highlight_until'): date(value['highlight_until'])
         if value.get('font', 'default') not in FONTS: raise ValueError('Choose one of the available reading fonts.')
@@ -436,18 +438,19 @@ def render_post(version, original, media, prefix='../'):
     if not content.startswith('<div class="note-reading-layout">'): content = '<div class="note-body">' + content + '</div>'
     return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}">'
             f'<div class="note-return"><a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a>'
-            f'<a class="notes-back" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a></div>'
-            f'<header class="note-header"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>{heading}' +
-            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix) + '</header>' +
+            f'<a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a></div>'
+            f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>' +
+            '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div>' + heading +
+            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix) +
+            '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
+            '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
             content +
             '<footer class="note-end">' + f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>' +
-            '<button class="note-share" type="button" id="note-share" hidden data-i18n="notes.share">Share this note</button>' +
-            '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
-            '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></footer></article>')
+            '</footer></article>')
 
-def variant_data(post, prefix):
-    variants = [{'language': v['language'], 'title': title(v), 'summary': summary(v), 'href': prefix + post_filename(v, post)} for v in post['_versions']]
+def variant_data(post, prefix, from_about=False):
+    variants = [{'language': v['language'], 'title': title(v), 'summary': summary(v), 'href': prefix + post_filename(v, post) + ('?from=about' if from_about else '')} for v in post['_versions']]
     return 'data-note-versions="' + esc(json.dumps(variants, ensure_ascii=False, separators=(',', ':'))) + '"'
 
 def card(post, media, prefix):
@@ -507,7 +510,7 @@ def entrance(posts, media):
             image = '<span class="notes-spotlight__image">' + markup + '</span>'
         expiry = f' data-note-highlight-until="{esc(post.get("highlight_until"))}"' if featured else ''
         return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="{str(featured).lower()}"{expiry}{" hidden" if hidden else ""}>'
-                f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {variant_data(post, "")} href="{post_filename(post, post)}">' + image +
+                f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {variant_data(post, "", from_about=True)} href="{post_filename(post, post)}?from=about">' + image +
                 '<span class="notes-spotlight__copy">' + category_labels(post, '', links=False) +
                 f'<span class="notes-spotlight__title" lang="{esc(post["language"])}" data-note-title>{esc(title(post))}</span>' +
                 f'<span class="notes-spotlight__summary" lang="{esc(post["language"])}" data-note-summary>{esc(summary(post))}</span>' +
@@ -661,10 +664,10 @@ def build(private, public, preview_path=None, preview_output=None):
         markup, count = re.subn(r'<!-- notes-entrance:start -->.*?<!-- notes-entrance:end -->', lambda _: '<!-- notes-entrance:start -->\n' + home_entrance + '\n    <!-- notes-entrance:end -->', markup, flags=re.S)
         if count != 1: raise ValueError('The homepage Notes entrance marker is missing.')
         def story_link(match):
-            slug = match[1]
-            post = next((p for p in posts if p['slug'] == slug), None)
+            identity = match[1]
+            post = next((p for p in posts if p['_id'] == identity), None)
             link = (f'<a class="featured-card__story" {variant_data(post, "")} href="{post_filename(post, post)}"><span data-i18n="notes.readStory">Read the story</span> <span aria-hidden="true">→</span></a>' if post else '')
-            return f'<!-- note-story:{slug}:start -->{link}<!-- note-story:{slug}:end -->'
+            return f'<!-- note-story:{identity}:start -->{link}<!-- note-story:{identity}:end -->'
         markup = re.sub(r'<!-- note-story:([a-z0-9-]+):start -->.*?<!-- note-story:\1:end -->', story_link, markup, flags=re.S)
         home.write_text(markup)
         namespace = 'http://www.sitemaps.org/schemas/sitemap/0.9'; ET.register_namespace('', namespace)

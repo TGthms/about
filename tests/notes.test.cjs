@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness({lightweight = false, saveData = false, home = false} = {}) {
+function harness({lightweight = false, saveData = false, home = false, search = '', sharing = false, shareApi, clipboardApi} = {}) {
   const windows = {}, documents = {}, observers = [];
   const video = () => ({
     attrs: {poster: 'small.webp', 'data-note-poster': 'large.webp'},
@@ -12,6 +12,13 @@ function harness({lightweight = false, saveData = false, home = false} = {}) {
     removeAttribute(name) {delete this.attrs[name];},
   });
   const videos = [video(), video()];
+  const siteReturn = {hidden: true};
+  const version = {href: '../notes/example.zh.html', getAttribute(name) {return this[name];}, setAttribute(name, value) {this[name] = value;}};
+  const share = {hidden: true, addEventListener(name, callback) {this[name] = callback;}};
+  const status = {};
+  const input = {focus() {this.focused = true;}, select() {this.selected = true;}};
+  const fallback = {hidden: true, querySelector: () => input};
+  const canonical = {href: 'https://timgong.me/notes/example.html'};
   class Observer {
     constructor(callback) {this.callback = callback; this.targets = []; this.disconnected = false; observers.push(this);}
     observe(target) {this.targets.push(target);}
@@ -23,18 +30,59 @@ function harness({lightweight = false, saveData = false, home = false} = {}) {
     title: 'The author’s post title',
     body: {classList: {contains: name => name === 'notes-page' && !home}, getAttribute: () => 'post'},
     documentElement: {lang: 'en', getAttribute: () => 'en', classList: {contains: () => false}, style: {setProperty() {}}},
-    getElementById: () => null,
-    querySelector: () => null,
-    querySelectorAll: selector => selector === 'video[data-note-poster]' ? videos.filter(item => item.attrs['data-note-poster']) : [],
+    getElementById: id => sharing ? {'note-share': share, 'note-share-status': status, 'note-share-fallback': fallback}[id] || null : null,
+    querySelector: selector => selector === 'link[rel="canonical"]' ? canonical : null,
+    querySelectorAll: selector => selector === 'video[data-note-poster]' ? videos.filter(item => item.attrs['data-note-poster']) : selector === '[data-note-site-return]' ? [siteReturn] : selector === '[data-note-version]' ? [version] : [],
     addEventListener: (name, callback) => documents[name] = callback,
   };
-  const window = {SiteRuntime: {lightweight}, IntersectionObserver: Observer, addEventListener: (name, callback) => windows[name] = callback};
+  const window = {location: {search}, SiteRuntime: {lightweight}, IntersectionObserver: Observer, addEventListener: (name, callback) => windows[name] = callback};
   vm.runInNewContext(fs.readFileSync('public/js/notes.js', 'utf8'), {
-    window, document, navigator: {connection: {saveData}}, IntersectionObserver: Observer,
-    TRANSLATIONS: {en: {notes: {}}}, applyLanguage: () => 'en', detectLanguage: () => 'en',
+    window, document, navigator: {connection: {saveData}, share: shareApi, clipboard: clipboardApi}, IntersectionObserver: Observer,
+    TRANSLATIONS: {en: {notes: {copied: 'Copied', copyFailed: 'Copy the link below'}}}, applyLanguage: () => 'en', detectLanguage: () => 'en',
   });
-  return {window, document, windows, documents, videos, observers};
+  return {window, document, windows, documents, videos, observers, siteReturn, version, share, status, fallback, input};
 }
+
+test('only About entry context reveals the site return and carries through post translations', () => {
+  for (const search of ['', '?from=archive', '?other=from=about', '?from=about-other']) {
+    const h = harness({search});
+    assert.equal(h.siteReturn.hidden, true);
+    assert.equal(h.version.href, '../notes/example.zh.html');
+  }
+  for (const search of ['?from=about', '?other=1&from=about&next=2']) {
+    const h = harness({search, lightweight: true});
+    assert.equal(h.siteReturn.hidden, false);
+    assert.equal(h.version.href, '../notes/example.zh.html?from=about');
+    h.windows.pageshow();
+    assert.equal(h.version.href, '../notes/example.zh.html?from=about');
+  }
+});
+
+test('sharing uses the clean canonical link and cancellation does not display an error', async () => {
+  let sent;
+  const h = harness({sharing: true, search: '?from=about', shareApi: value => {sent = value; return Promise.reject({name: 'AbortError'});}});
+  assert.equal(h.share.hidden, false);
+  h.share.click(); await new Promise(setImmediate);
+  assert.equal(sent.url, 'https://timgong.me/notes/example.html');
+  assert.equal(h.fallback.hidden, true);
+  assert.equal(h.status.textContent, undefined);
+});
+
+test('sharing copies the canonical URL or presents a selected manual fallback with live feedback', async () => {
+  let copied;
+  const success = harness({sharing: true, clipboardApi: {writeText: value => {copied = value; return Promise.resolve();}}});
+  success.share.click(); await new Promise(setImmediate);
+  assert.equal(copied, 'https://timgong.me/notes/example.html');
+  assert.equal(success.status.textContent, 'Copied');
+  for (const api of [{}, {clipboardApi: {writeText: () => Promise.reject(new Error('Unavailable'))}}, {shareApi: () => Promise.reject(new Error('Unavailable'))}]) {
+    const h = harness({sharing: true, ...api});
+    h.share.click(); await new Promise(setImmediate);
+    assert.equal(h.fallback.hidden, false);
+    assert.equal(h.input.value, 'https://timgong.me/notes/example.html');
+    assert.equal(h.input.focused, true); assert.equal(h.input.selected, true);
+    assert.equal(h.status.textContent, 'Copy the link below');
+  }
+});
 
 test('Watch, data-saving, and home pages keep video previews on the small source', () => {
   for (const settings of [{lightweight: true}, {saveData: true}, {home: true}]) {
