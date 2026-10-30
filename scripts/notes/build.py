@@ -233,6 +233,95 @@ class RichText(HTMLParser):
 def rich(value, media, prefix):
     return RichText(media, prefix).finish(value)
 
+def same_study(lang, introduction=''):
+    # Fixed educational component: author content never becomes executable code.
+    chinese = lang in ('zh', 'zh-Hant')
+    lang = 'zh' if chinese else 'en'
+    words = {
+        'en': {
+            'eyebrow': 'A small experiment', 'title': 'Read the signal',
+            'intro': 'Change the fields, inspect a byte, and compare three header bursts. This is a silent model, not a live alert or a full decoder.',
+            'event': 'Event', 'area': 'Geographic area', 'duration': 'Valid period',
+            'events': ['RWT · Weekly test', 'DMO · Practice / demo'],
+            'areas': ['Los Angeles County, CA', 'San Francisco, CA', 'Alameda County, CA'],
+            'durations': ['15 minutes', '30 minutes', '1 hour'],
+            'labels': ['Start', 'Originator', 'Event', 'Area', 'Valid period', 'Issue time', 'Sender'],
+            'fields': {
+                'start': 'ZCZC marks the start of a header. The synchronization preamble comes before it and is not shown here.',
+                'origin': 'EAS identifies an EAS Participant as the originator. It is a category, not a station name.',
+                'event': 'The three-letter event code classifies the message. It does not contain the spoken announcement.',
+                'area': 'PSSCCC separates the partition, state, and county or equivalent area. These examples use 0 for all or unspecified portions.',
+                'duration': 'The four digits after + use HHMM and specify the message’s valid period.',
+                'issued': '3021800 means day 302 of the year at 18:00 UTC. The year itself is not in this field.',
+                'sender': 'SIGLAB followed by two spaces is a fictional, eight-character sender field for this example.'
+            },
+            'values': {'RWT': 'RWT = Required Weekly Test.', 'DMO': 'DMO = Practice/Demo Warning.', '006037': '0 · 06 · 037 = Los Angeles County, California.', '006075': '0 · 06 · 075 = San Francisco, California.', '006001': '0 · 06 · 001 = Alameda County, California.', '0015': '+0015 = 00 hours, 15 minutes.', '0030': '+0030 = 00 hours, 30 minutes.', '0100': '+0100 = 01 hour, 00 minutes.'},
+            'bytes': 'Go closer: one character on the wire', 'character': 'ASCII character',
+            'bitHint': 'First bit sent → last bit sent',
+            'byteHint': 'Each cell is one bit, lasting 1.92 ms. 0 uses 1,562.5 Hz; 1 uses about 2,083.3 Hz. The cells show transmission order, least significant bit first—not the usual way a binary number is printed.',
+            'wire': 'Bits in transmission order',
+            'repetition': 'What if a burst is missing—or different?',
+            'repeatIntro': 'A and B represent two complete, parseable headers that differ in one field. Each slot represents a separate physical burst. Choose which ones arrive.',
+            'burst': 'Burst', 'burstOptions': ['Header A', 'Missing', 'Header B'],
+            'results': {'matched': '3 / 3 · Three matching headers.', 'incomplete': '{count} / 3 · Incomplete set.', 'conflict': '{count} / 3 · Conflicting headers.'},
+            'repeatHint': 'This models Signal Lab’s complete-header comparison. Matching copies do not authenticate the sender. Real receivers may use different acceptance and recovery rules.',
+            'fallback': 'The header, field guide, and explanation remain readable without scripting.',
+            'reset': 'Reset experiment'
+        },
+        'zh': {
+            'eyebrow': '一个小实验', 'title': '读懂这段信号',
+            'intro': '改动字段、查看一个字节，再比较三次报头。这里只做无声演示，不会发出警报，也不是完整的解码器。',
+            'event': '事件', 'area': '地理区域', 'duration': '有效时长',
+            'events': ['RWT · 每周测试', 'DMO · 练习／演示'],
+            'areas': ['加利福尼亚州洛杉矶县', '加利福尼亚州旧金山', '加利福尼亚州阿拉米达县'],
+            'durations': ['15 分钟', '30 分钟', '1 小时'],
+            'labels': ['开始标记', '发起方', '事件', '区域', '有效时长', '发布时间', '发送方'],
+            'fields': {
+                'start': 'ZCZC 标记报头的开始。同步用的前导码位于它之前，这里没有显示。',
+                'origin': 'EAS 表示发起方属于 EAS 参与机构。这是类别，不是某个电台的名称。',
+                'event': '三个字母的事件码说明消息类型，并不包含语音播报的正文。',
+                'area': 'PSSCCC 依次表示分区、州和县或同等区域。这里的示例均以 0 表示全部或未指定的部分。',
+                'duration': '+ 后面的四位数字采用 HHMM 格式，表示消息的有效时长。',
+                'issued': '3021800 表示一年中的第 302 天、UTC 18:00。这个字段本身不含年份。',
+                'sender': 'SIGLAB 后补两个空格，组成八字符的虚构发送方标识，仅用于本例。'
+            },
+            'values': {'RWT': 'RWT = Required Weekly Test（规定的每周测试）。', 'DMO': 'DMO = Practice/Demo Warning（练习／演示警报）。', '006037': '0 · 06 · 037 = 加利福尼亚州洛杉矶县。', '006075': '0 · 06 · 075 = 加利福尼亚州旧金山。', '006001': '0 · 06 · 001 = 加利福尼亚州阿拉米达县。', '0015': '+0015 = 0 小时 15 分钟。', '0030': '+0030 = 0 小时 30 分钟。', '0100': '+0100 = 1 小时 0 分钟。'},
+            'bytes': '再往里看：一个字符如何传输', 'character': 'ASCII 字符',
+            'bitHint': '最先发送的位 → 最后发送的位',
+            'byteHint': '每格是一位，持续 1.92 毫秒。0 对应 1,562.5 Hz，1 对应约 2,083.3 Hz。这里按实际发送顺序排列，最低有效位在前，与通常书写二进制数的顺序不同。',
+            'wire': '按传输顺序排列的位',
+            'repetition': '如果少收到一次，或其中一次不同呢？',
+            'repeatIntro': 'A、B 代表两个完整、可解析，但有一个字段不同的报头。每个位置都是一次独立的物理发送。试着选择接收到了哪些。',
+            'burst': '第', 'burstOptions': ['报头 A', '未收到', '报头 B'],
+            'results': {'matched': '3 / 3 · 三次报头一致。', 'incomplete': '{count} / 3 · 接收不完整。', 'conflict': '{count} / 3 · 报头存在冲突。'},
+            'repeatHint': '这里演示 Signal Lab 对完整报头的比较方式。副本一致不能证明发送方的身份，实际接收设备的接受与恢复规则也可能不同。',
+            'fallback': '无需脚本，也能阅读报头、字段说明和正文。',
+            'reset': '重置实验'
+        }
+    }[lang]
+    if introduction: words['intro'] = esc(introduction)
+    def options(values, labels):
+        return ''.join(f'<option value="{esc(v)}">{esc(label)}</option>' for v, label in zip(values, labels))
+    controls = ''.join(f'<label>{words[key]}<select data-study-input="{key}">{options(values, words[labels])}</select></label>' for key, values, labels in (
+        ('event', ['RWT', 'DMO'], 'events'), ('area', ['006037', '006075', '006001'], 'areas'), ('duration', ['0015', '0030', '0100'], 'durations')))
+    field_keys = ['start', 'origin', 'event', 'area', 'duration', 'issued', 'sender']
+    fields = ''.join(f'<button type="button" data-study-field="{key}" aria-pressed="{"true" if key == "event" else "false"}">{esc(label)}</button>' for key, label in zip(field_keys, words['labels']))
+    defaults = {'event': 'RWT', 'area': '006037', 'duration': '0015'}
+    fallback = ''.join(f'<dt>{esc(label)}</dt><dd>{esc(words["fields"][key])} {esc(words["values"].get(defaults.get(key), ""))}</dd>' for key, label in zip(field_keys, words['labels']))
+    bursts = ''.join(f'<label>{words["burst"]} {i + 1}{" 次" if chinese else ""}<select data-study-burst>{options(["matching", "missing", "different"], words["burstOptions"])}</select></label>' for i in range(3))
+    copy = esc(json.dumps({key: words[key] for key in ('fields', 'values', 'results')}, ensure_ascii=False, separators=(',', ':')))
+    return (f'<section class="same-study" data-same-study data-study-copy="{copy}" lang="{lang}" aria-label="{esc(words["title"])}">'
+            f'<p class="same-study__eyebrow">{words["eyebrow"]}</p><h3>{words["title"]}</h3><p data-study-enhanced hidden>{words["intro"]}</p>'
+            f'<div class="same-study__controls" data-study-enhanced hidden>{controls}</div>'
+            '<code class="same-study__header" data-study-header>ZCZC-EAS-RWT-006037+0015-3021800-SIGLAB  -</code>'
+            f'<div data-study-enhanced hidden><div class="same-study__fields">{fields}</div><p class="same-study__detail" data-study-detail aria-live="polite"></p>'
+            f'<details><summary>{words["bytes"]}</summary><div class="same-study__byte-row"><label>{words["character"]}<select data-study-character>{options(["Z", "C", "-", "+", "0", " "], ["Z", "C", "-", "+", "0", "空格" if chinese else "Space"])}</select></label><code data-study-byte>0x5A</code></div>'
+            f'<p class="same-study__hint">{words["bitHint"]}</p><div class="same-study__bits" aria-hidden="true">' + ''.join('<span data-study-bit>0</span>' for _ in range(8)) + '</div>'
+            f'<p class="visually-hidden">{words["wire"]}: <span data-study-wire></span></p><p class="same-study__hint">{words["byteHint"]}</p></details>'
+            f'<details><summary>{words["repetition"]}</summary><p>{words["repeatIntro"]}</p><div class="same-study__bursts">{bursts}</div>'
+            f'<p class="same-study__result" data-study-result role="status"></p><p class="same-study__hint">{words["repeatHint"]}</p></details><button class="same-study__reset" type="button" data-study-reset>{words["reset"]}</button></div>'
+            f'<div class="same-study__fallback" data-study-fallback><p>{words["fallback"]}</p><dl>{fallback}</dl><p>{words["repeatHint"]}</p></div></section>')
+
 def body(post, media, prefix):
     result = rich(post.get('body'), media, prefix)
     for block in post.get('blocks') or []:
@@ -242,7 +331,8 @@ def body(post, media, prefix):
             markup, _ = media.image(block.get('image'), block.get('alt'), prefix)
             result += '<figure class="note-media">' + markup + (f'<figcaption>{esc(block["caption"])}</figcaption>' if block.get('caption') else '') + '</figure>'
         elif kind == 'video': result += media.video(block, prefix)
-        else: raise ValueError('Unknown content block. Choose text, photo, or video.')
+        elif kind == 'same-study': result += same_study(post['language'], block.get('introduction', ''))
+        else: raise ValueError('Unknown content block. Choose text, photo, video, or a SAME study.')
     if not plain(result).strip() and '<img ' not in result and '<video ' not in result:
         raise ValueError('Add some text, a photograph, or a video before publishing.')
     return result
@@ -355,7 +445,13 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         data = {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': title(post), 'datePublished': post['date'], 'inLanguage': post['language'], 'author': {'@type': 'Person', 'name': 'Tim G', 'url': ORIGIN + '/'}, 'url': canonical, 'description': desc}
         if image: data['image'] = ORIGIN + '/' + image
         structured = '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace('<', '\\u003c') + '</script>'
-    return shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
+    markup = shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
+    if 'data-same-study ' in content:
+        resources = resource_versions(f'<link rel="stylesheet" href="{prefix}css/same-study.css" />', public)
+        markup = markup.replace('</head>', resources + '\n</head>')
+        script = resource_versions(f'<script src="{prefix}js/same-study.js" defer></script>', public)
+        markup = markup.replace('</body>', script + '\n</body>')
+    return markup
 
 def entrance(posts, media):
     intro = ('<section class="notes-entrance" id="notes" aria-labelledby="notes-entrance-title"><div class="container">'
@@ -426,12 +522,19 @@ def build(private, public, preview_path=None, preview_output=None):
                 alternates = ''.join(f'<link rel="alternate" hreflang="{esc(v["language"])}" href="{ORIGIN}/{post_filename(v, post)}" />' for v in post['_versions'])
                 markup = page(public, rendered, prefix='../', kind='post', post=version, image=image_path, image_alt=alt, alternates=alternates)
                 if preview_path:
-                    # A downloaded private artifact has no external images, scripts, or CSS.
-                    css = '\n'.join((public / f'css/{name}.css').read_text() for name in ('styles', 'notes', 'compact'))
+                    # Private artifacts have no external scripts, styles, or media.
+                    styles = ['styles', 'notes', 'compact']
+                    interactive = 'data-same-study ' in rendered
+                    if interactive: styles.append('same-study')
+                    css = '\n'.join((public / f'css/{name}.css').read_text() for name in styles)
                     markup = re.sub(r'<link[^>]+rel="stylesheet"[^>]*>', '', markup)
                     markup = re.sub(r'<script\b[^>]*>.*?</script>', '', markup, flags=re.S)
                     css = re.sub(r'url\([^)]*\)', 'none', css)
                     markup = markup.replace('</head>', '<style>' + css.replace('</style', '<\\/style') + '</style></head>')
+                    if interactive:
+                        # Only this repository-owned component may execute in a preview.
+                        script = (public / 'js/same-study.js').read_text().replace('</script', '<\\/script')
+                        markup = markup.replace('</body>', '<script>' + script + '</script></body>')
                     # Downloaded previews keep navigation useful without a local server.
                     markup = re.sub(r'href="\.\./notes/([^"/]+\.html)"', lambda m: 'href="' + m[1] + '"', markup)
                     markup = re.sub(r'href="\.\./([^"/]+\.(?:html|xml))"', lambda m: 'href="' + ORIGIN + '/' + m[1] + '"', markup)

@@ -21,7 +21,7 @@ components:
   blocks:
     type: block
     label: More content
-    description: Add photographs, videos, or more text in any order.
+    description: Add photographs, videos, text, or a silent SAME experiment in any order.
     list: true
     blockKey: type
     blocks:
@@ -48,6 +48,13 @@ components:
           - name: caption
             label: Caption
             type: text
+      - name: same-study
+        label: SAME header experiment
+        fields:
+          - name: introduction
+            label: Introduction (optional)
+            type: text
+            description: A silent header, byte-order, and repeated-burst experiment. English and Simplified Chinese follow the post language; other languages use English. Leave blank for the standard introduction.
       - name: video
         label: Video
         fields:

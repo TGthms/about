@@ -83,6 +83,8 @@ The private repository's publication workflow uses a dedicated write-enabled dep
 
 The editor's **Build private preview** action produces a self-contained HTML artifact in the private repository. Download it and open it in a browser; no local server is necessary. Preview artifacts expire after three days. Their contents remain confidential only while the downloaded files themselves are kept private.
 
+Notes can include a fixed `same-study` content block: a silent SAME header, byte-order, and burst-comparison experiment in English or Simplified Chinese. Its small stylesheet and script load only on articles containing that block. Without scripting it presents a readable field guide. Private previews embed this trusted local component; author-supplied scripts remain blocked.
+
 Build checks: `python3 tests/notes_test.py` (requires `scripts/notes/requirements.txt`) and the existing interaction/HTML checks. Use `python3 scripts/notes/build.py --empty` only to initialize an empty archive; it removes previously generated Notes output. Normal development should preserve published Notes pages and update stylesheet/script query hashes recursively across `public/`.
 
 The supplied RSS icon is Google's Material Symbols icon, distributed under Apache 2.0; its license is in `LICENSES/material-symbols.txt`.

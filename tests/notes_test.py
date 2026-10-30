@@ -146,6 +146,36 @@ class NotesTests(unittest.TestCase):
         self.assertNotIn('href="../', markup)
         self.assertEqual((self.public / 'index.html').read_bytes(), original)
         self.assertFalse((self.public / 'notes.html').exists())
+
+    def test_same_study_loads_only_on_its_article_and_never_executes_author_code(self):
+        self.post(blocks=[{'type':'same-study', 'introduction':'<script>PRIVATE_EXECUTION</script>'}], translations=[{'language':'zh', 'published':True, 'body':'<p>一段信号。</p>', 'blocks':[{'type':'same-study'}]}])
+        self.build()
+        page = (self.public / 'notes/example.html').read_text()
+        translated = (self.public / 'notes/example.zh.html').read_text()
+        self.assertIn('js/same-study.js?v=', page)
+        self.assertIn('css/same-study.css?v=', page)
+        self.assertIn('&lt;script&gt;PRIVATE_EXECUTION&lt;/script&gt;', page)
+        self.assertNotIn('<script>PRIVATE_EXECUTION', page)
+        self.assertIn('data-study-fallback', page)
+        self.assertIn('data-study-enhanced hidden', page)
+        self.assertIn('读懂这段信号', translated)
+        self.assertNotIn('same-study.js', (self.public / 'notes.html').read_text())
+        self.assertNotIn('same-study.js', (self.public / 'index.html').read_text())
+        self.post(blocks=[]); self.build()
+        self.assertNotIn('same-study.js', (self.public / 'notes/example.html').read_text())
+
+    def test_same_study_private_preview_embeds_only_trusted_local_component(self):
+        draft = self.post(published=False, body='<script>AUTHOR_SCRIPT</script><p>Private text.</p>', blocks=[{'type':'same-study'}])
+        original = (self.public / 'index.html').read_bytes()
+        dest = self.root / 'preview'
+        notes.build(self.private, self.public, draft, dest)
+        page = (dest / 'example.html').read_text()
+        self.assertEqual(page.count('<script>'), 1)
+        self.assertIn('A silent, bounded model', page)
+        self.assertNotIn('AUTHOR_SCRIPT', page)
+        self.assertNotIn('<script src=', page)
+        self.assertNotIn('rel="stylesheet"', page)
+        self.assertEqual((self.public / 'index.html').read_bytes(), original)
     def test_home_entrance_is_compact_and_hero_uses_notes_icon(self):
         self.post(); self.build()
         markup = (self.public / 'index.html').read_text()
