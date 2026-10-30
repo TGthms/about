@@ -235,7 +235,7 @@ def rich(value, media, prefix):
 
 def same_study(lang, introduction=''):
     # Fixed educational component: author content never becomes executable code.
-    chinese = lang in ('zh', 'zh-Hant')
+    chinese = lang == 'zh'
     lang = 'zh' if chinese else 'en'
     words = {
         'en': {

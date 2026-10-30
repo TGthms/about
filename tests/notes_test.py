@@ -159,6 +159,8 @@ class NotesTests(unittest.TestCase):
         self.assertIn('data-study-fallback', page)
         self.assertIn('data-study-enhanced hidden', page)
         self.assertIn('读懂这段信号', translated)
+        self.assertIn('lang="en"', notes.same_study('ja'))
+        self.assertNotIn('读懂这段信号', notes.same_study('zh-Hant'))
         self.assertNotIn('same-study.js', (self.public / 'notes.html').read_text())
         self.assertNotIn('same-study.js', (self.public / 'index.html').read_text())
         self.post(blocks=[]); self.build()
