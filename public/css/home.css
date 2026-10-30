@@ -85,8 +85,8 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
 .notes-spotlight[hidden] { display: none; }
 .notes-spotlight--photo { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
 .notes-spotlight__image { display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--accent-soft); }
-.notes-spotlight__image picture { display: block; width: 100%; }
-.notes-spotlight__image img { display: block; width: 100%; max-height: 310px; object-fit: contain; border-radius: 8px; }
+.notes-spotlight__image picture { display: flex; justify-content: center; width: 100%; }
+.notes-spotlight__image img { display: block; width: auto; height: auto; max-width: 100%; max-height: 310px; border-radius: 20px; }
 .notes-spotlight__copy { display: flex; flex-direction: column; align-items: start; justify-content: center; gap: 14px; min-width: 0; padding: clamp(24px, 4vw, 44px); }
 .notes-spotlight__eyebrow, .notes-spotlight time { color: var(--mute); font-size: .75rem; }
 .notes-spotlight__title { font: 400 clamp(1.6rem, 3vw, 2.3rem)/1.2 var(--font-display); letter-spacing: -.03em; overflow-wrap: anywhere; }
@@ -99,12 +99,12 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
   .notes-entrance__action { grid-column: 1; }
   .notes-spotlight--photo { grid-template-columns: minmax(0, 1fr); }
   .notes-spotlight__image { padding: 20px; }
-  .notes-spotlight__image img { max-height: 240px; }
+  .notes-spotlight__image img { max-height: 240px; border-radius: 16px; }
   .notes-spotlight__copy { gap: 12px; }
 }
 html[data-lightweight] .notes-spotlight__image { padding: 12px; }
 html[data-lightweight] .notes-spotlight__copy { padding: 16px; }
-html[data-lightweight] .notes-spotlight__image img { max-height: 160px; }
+html[data-lightweight] .notes-spotlight__image img { max-height: 160px; border-radius: 8px; }
 .home-page .section > .container { border-top: 1px solid var(--rule); }
 .home-page .section__label { display: none; }
 .home-page .section__title { font: 400 clamp(1.75rem, 4vw, 2.4rem)/1.2 var(--font-display); letter-spacing: -0.035em; }
