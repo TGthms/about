@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script src="../js/runtime.js?v=45f7c2ef98dd"></script>
+  <meta name="color-scheme" content="light dark" id="meta-color-scheme" />
+  <meta name="theme-color" content="#fbf9f4" id="meta-theme-color" />
+  <title>原来，“噪声”里藏着数据 — Tim G</title>
+  <meta name="description" content="用 Signal Lab 探索 SAME 编码：紧急警报里的报头、二进制位与重复发送。" />
+  <meta name="author" content="Tim G" />
+  <link rel="canonical" href="https://timgong.me/notes/2026-10-29-that-noise-was-data.zh.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://timgong.me/notes/2026-10-29-that-noise-was-data.zh.html" />
+  <meta property="og:title" content="原来，“噪声”里藏着数据 — Tim G" />
+  <meta property="og:description" content="用 Signal Lab 探索 SAME 编码：紧急警报里的报头、二进制位与重复发送。" />
+  <meta property="og:image" content="https://timgong.me/assets/notes/9121c38408db73595f74-share.jpg" />
+  <meta property="og:image:alt" content="A blue, purple, and teal gradient with the title “That noise was data” and subtitle “Exploring SAME through Signal Lab”." />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="zh_CN" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="原来，“噪声”里藏着数据 — Tim G" />
+  <meta name="twitter:description" content="用 Signal Lab 探索 SAME 编码：紧急警报里的报头、二进制位与重复发送。" />
+  <meta name="twitter:image" content="https://timgong.me/assets/notes/9121c38408db73595f74-share.jpg" />
+  <link rel="alternate" hreflang="en" href="https://timgong.me/notes/2026-10-29-that-noise-was-data.html" /><link rel="alternate" hreflang="zh" href="https://timgong.me/notes/2026-10-29-that-noise-was-data.zh.html" />
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
+  <link rel="alternate" type="application/rss+xml" title="Tim G — Notes" href="../feed.xml" />
+  <link rel="stylesheet" href="../css/styles.css?v=09431014fd3a" />
+  <link rel="stylesheet" href="../css/notes.css?v=8598622ae6d2" />
+  <link rel="stylesheet" href="../css/compact.css?v=97aada9c4257" />
+  <script>
+    (function () {
+      try {
+        var theme = sessionStorage.getItem("timg-theme-session");
+        if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+        document.getElementById("meta-theme-color").content = theme === "dark" ? "#141719" : "#fbf9f4";
+      } catch (_) {}
+    })();
+  </script>
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "原来，“噪声”里藏着数据", "datePublished": "2026-10-29", "inLanguage": "zh", "author": {"@type": "Person", "name": "Tim G", "url": "https://timgong.me/"}, "url": "https://timgong.me/notes/2026-10-29-that-noise-was-data.zh.html", "description": "用 Signal Lab 探索 SAME 编码：紧急警报里的报头、二进制位与重复发送。", "image": "https://timgong.me/assets/notes/9121c38408db73595f74-share.jpg"}</script>
+<link rel="stylesheet" href="../css/same-study.css?v=47b1fbcc04b3" />
+</head>
+<body class="notes-page" data-notes-kind="post">
+  <a class="skip-link" href="#main" data-page-root data-i18n="skip">Skip to content</a>
+  <header class="top-bar" data-page-root>
+    <div class="top-bar__inner">
+      <a class="site-signature" href="../index.html" aria-label="Tim G — home">tg<span aria-hidden="true">.</span></a>
+      <div data-preferences-root></div>
+    </div>
+  </header>
+  <main id="main" class="notes-main" data-page-root><article class="notes-post notes-post--long" lang="zh" data-note-font="serif"><div class="note-return"><a class="notes-back" href="../notes.html">← <span data-i18n="notes.all">All notes</span></a><a class="notes-back" href="../index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a></div><header class="note-header"><p class="note-header__date"><time datetime="2026-10-29" data-note-date>Oct 29, 2026</time> · Tim G</p><h1>原来，“噪声”里藏着数据</h1><p class="note-header__summary">用 Signal Lab 探索 SAME 编码：紧急警报里的报头、二进制位与重复发送。</p><span class="note-categories"><a href="../notes/topics/projects.html" data-note-category="projects">Projects</a><a href="../notes/topics/learning.html" data-note-category="learning">Learning</a></span></header><nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages"><span data-note-language-label data-i18n="notes.readIn">Read in</span><a href="../notes/2026-10-29-that-noise-was-data.html" hreflang="en" lang="en" data-note-version="en">English</a><a href="../notes/2026-10-29-that-noise-was-data.zh.html" hreflang="zh" lang="zh" aria-current="page" data-note-version="zh">简体中文</a></nav><div class="note-reading-layout"><details class="note-contents" open><summary data-i18n="notes.contents">On this page</summary><nav aria-label="On this page" data-i18n-aria="notes.contents"><ol><li><a href="#section-1">一段听得见的报头</a></li><li><a href="#section-2">一些值得细看的地方</a></li><li><a href="#section-3">我在 Signal Lab 里做了什么</a></li><li><a href="#section-4">从一段声音，到可以读懂的东西</a></li></ol></nav></details><div class="note-body"><p>最开始，我觉得紧急警报开头的那三段声音只是噪声。后来才发现，里面竟然有信息。</p><p>这一下就有意思了：在人开始说话之前，接收设备就可能已经知道发生了哪类事件、涉及哪些区域，以及消息的有效时长。我想看看这个过程里面到底是什么，于是把 SAME 学习功能做进了 <a href="https://signal-lab-tg.pages.dev/" target="_blank" rel="noopener noreferrer">Signal Lab</a>。</p><h2 id="section-1" tabindex="-1">一段听得见的报头</h2><p><strong>SAME</strong> 的全称是 <em>Specific Area Message Encoding</em>，用于 NOAA 气象广播和美国的紧急警报系统 EAS。开头的短促信号传输的是供机器读取的报头，语音播报则是消息的另一个部分。<a href="https://www.weather.gov/nwr/usingsame" target="_blank" rel="noopener noreferrer">NOAA 的说明</a>介绍了接收设备如何利用这些字段筛选与自己有关的警报。</p><p>这里的“三段”指重复发送三次，并不是只有三种音高。每段信号内部用两种频率传递数据：1,562.5 Hz 表示 0，约 2,083.3 Hz 表示 1，速率约为每秒 520.83 位。后面那段较长的提示音是另一回事。<a href="https://www.ecfr.gov/current/title-47/section-11.31" target="_blank" rel="noopener noreferrer">EAS 协议</a>分别规定了它们的格式。</p><p>解码之后，报头会变成一行很紧凑的文字。下面用一个虚构的洛杉矶县每周测试消息做例子。可以改动事件、区域或有效时长，再点选字段看看里面的含义。</p><section class="same-study" data-same-study data-study-copy="{&quot;fields&quot;:{&quot;start&quot;:&quot;ZCZC 标记报头的开始。同步用的前导码位于它之前，这里没有显示。&quot;,&quot;origin&quot;:&quot;EAS 表示发起方属于 EAS 参与机构。这是类别，不是某个电台的名称。&quot;,&quot;event&quot;:&quot;三个字母的事件码说明消息类型，并不包含语音播报的正文。&quot;,&quot;area&quot;:&quot;PSSCCC 依次表示分区、州和县或同等区域。这里的示例均以 0 表示全部或未指定的部分。&quot;,&quot;duration&quot;:&quot;+ 后面的四位数字采用 HHMM 格式，表示消息的有效时长。&quot;,&quot;issued&quot;:&quot;3021800 表示一年中的第 302 天、UTC 18:00。这个字段本身不含年份。&quot;,&quot;sender&quot;:&quot;SIGLAB 后补两个空格，组成八字符的虚构发送方标识，仅用于本例。&quot;},&quot;values&quot;:{&quot;RWT&quot;:&quot;RWT = Required Weekly Test（规定的每周测试）。&quot;,&quot;DMO&quot;:&quot;DMO = Practice/Demo Warning（练习／演示警报）。&quot;,&quot;006037&quot;:&quot;0 · 06 · 037 = 加利福尼亚州洛杉矶县。&quot;,&quot;026163&quot;:&quot;0 · 26 · 163 = 密歇根州韦恩县（含底特律）。&quot;,&quot;048453&quot;:&quot;0 · 48 · 453 = 德克萨斯州特拉维斯县。&quot;,&quot;0015&quot;:&quot;+0015 = 0 小时 15 分钟。&quot;,&quot;0030&quot;:&quot;+0030 = 0 小时 30 分钟。&quot;,&quot;0100&quot;:&quot;+0100 = 1 小时 0 分钟。&quot;},&quot;results&quot;:{&quot;matched&quot;:&quot;3 / 3 · 三次报头一致。&quot;,&quot;incomplete&quot;:&quot;{count} / 3 · 接收不完整。&quot;,&quot;conflict&quot;:&quot;{count} / 3 · 报头存在冲突。&quot;}}" lang="zh" aria-label="读懂这段信号"><h3>读懂这段信号</h3><p data-study-enhanced hidden>改动字段、查看一个字节，再比较三次报头。这里只做无声演示，不会发出警报，也不是完整的解码器。</p><div class="same-study__controls" data-study-enhanced hidden><label>事件<select data-study-input="event"><option value="RWT">RWT · 每周测试</option><option value="DMO">DMO · 练习／演示</option></select></label><label>地理区域<select data-study-input="area"><option value="006037">加利福尼亚州洛杉矶县</option><option value="026163">密歇根州韦恩县（含底特律）</option><option value="048453">德克萨斯州特拉维斯县</option></select></label><label>有效时长<select data-study-input="duration"><option value="0015">15 分钟</option><option value="0030">30 分钟</option><option value="0100">1 小时</option></select></label></div><code class="same-study__header" data-study-header>ZCZC-EAS-RWT-006037+0015-3021800-SIGLAB  -</code><div data-study-enhanced hidden><div class="same-study__fields"><button type="button" data-study-field="start" aria-pressed="false">开始标记</button><button type="button" data-study-field="origin" aria-pressed="false">发起方</button><button type="button" data-study-field="event" aria-pressed="true">事件</button><button type="button" data-study-field="area" aria-pressed="false">区域</button><button type="button" data-study-field="duration" aria-pressed="false">有效时长</button><button type="button" data-study-field="issued" aria-pressed="false">发布时间</button><button type="button" data-study-field="sender" aria-pressed="false">发送方</button></div><p class="same-study__detail" data-study-detail aria-live="polite"></p><details><summary>再往里看：一个字符如何传输</summary><div class="same-study__byte-row"><label>ASCII 字符<select data-study-character><option value="Z">Z</option><option value="C">C</option><option value="-">-</option><option value="+">+</option><option value="0">0</option><option value=" ">空格</option></select></label><code data-study-byte>0x5A</code></div><p class="same-study__hint">最先发送的位 → 最后发送的位</p><div class="same-study__bits" aria-hidden="true"><span data-study-bit>0</span><span data-study-bit>0</span><span data-study-bit>0</span><span data-study-bit>0</span><span data-study-bit>0</span><span data-study-bit>0</span><span data-study-bit>0</span><span data-study-bit>0</span></div><p class="visually-hidden">按传输顺序排列的位: <span data-study-wire></span></p><p class="same-study__hint">每格是一位，持续 1.92 毫秒。0 对应 1,562.5 Hz，1 对应约 2,083.3 Hz。这里按实际发送顺序排列，最低有效位在前，与通常书写二进制数的顺序不同。</p></details><details><summary>如果少收到一次，或其中一次不同呢？</summary><p>A、B 代表两个完整、可解析，但有一个字段不同的报头。每个位置都是一次独立的物理发送。试着选择接收到了哪些。</p><div class="same-study__bursts"><label>第 1 次<select data-study-burst><option value="matching">报头 A</option><option value="missing">未收到</option><option value="different">报头 B</option></select></label><label>第 2 次<select data-study-burst><option value="matching">报头 A</option><option value="missing">未收到</option><option value="different">报头 B</option></select></label><label>第 3 次<select data-study-burst><option value="matching">报头 A</option><option value="missing">未收到</option><option value="different">报头 B</option></select></label></div><p class="same-study__result" data-study-result role="status"></p><p class="same-study__hint">这里演示 Signal Lab 对完整报头的比较方式。副本一致不能证明发送方的身份，实际接收设备的接受与恢复规则也可能不同。</p></details><button class="same-study__reset" type="button" data-study-reset>重置实验</button></div><div class="same-study__fallback" data-study-fallback><p>无需脚本，也能阅读报头、字段说明和正文。</p><dl><dt>开始标记</dt><dd>ZCZC 标记报头的开始。同步用的前导码位于它之前，这里没有显示。 </dd><dt>发起方</dt><dd>EAS 表示发起方属于 EAS 参与机构。这是类别，不是某个电台的名称。 </dd><dt>事件</dt><dd>三个字母的事件码说明消息类型，并不包含语音播报的正文。 RWT = Required Weekly Test（规定的每周测试）。</dd><dt>区域</dt><dd>PSSCCC 依次表示分区、州和县或同等区域。这里的示例均以 0 表示全部或未指定的部分。 0 · 06 · 037 = 加利福尼亚州洛杉矶县。</dd><dt>有效时长</dt><dd>+ 后面的四位数字采用 HHMM 格式，表示消息的有效时长。 +0015 = 0 小时 15 分钟。</dd><dt>发布时间</dt><dd>3021800 表示一年中的第 302 天、UTC 18:00。这个字段本身不含年份。 </dd><dt>发送方</dt><dd>SIGLAB 后补两个空格，组成八字符的虚构发送方标识，仅用于本例。 </dd></dl><p>这里演示 Signal Lab 对完整报头的比较方式。副本一致不能证明发送方的身份，实际接收设备的接受与恢复规则也可能不同。</p></div></section><h2 id="section-2" tabindex="-1">一些值得细看的地方</h2><p>地理区域码就很有意思。<code>006037</code> 可以拆成 <code>0 · 06 · 037</code>，分别对应分区、加利福尼亚州和洛杉矶县。它不是邮政编码。第一位可以选择由当地定义的县内分区，随便改一个数字，并不代表就选中了一个实际有效的区域。<a href="https://www.weather.gov/dsb/nwr_sameenz" target="_blank" rel="noopener noreferrer">NOAA 的分区说明</a>解释了这一点。</p><p>时间字段也很紧凑：<code>3021800</code> 表示一年中的第 302 天、UTC 18:00，但它本身不包含年份。发送方标识有固定长度，所以本例中 <code>SIGLAB</code> 后面的两个空格也有作用。在这些可读字符之前，还有十六字节的前导码帮助接收端同步。<a href="https://www.weather.gov/media/directives/010_pdfs_archived/pd01017012a.pdf" target="_blank" rel="noopener noreferrer">NOAA 存档的技术规范</a>记录了字节格式和时序。</p><h2 id="section-3" tabindex="-1">我在 Signal Lab 里做了什么</h2><p>在 Signal Lab 里，SAME 与音频调制解调器和摩尔斯电码工具放在一起。我把编码、解码和相关说明集中在一个地方，方便改动参数，再看看信号发生了什么变化。SAME 是这个声音与数据实验的一部分。</p><p>在 SAME 模式中，我可以修改报头字段、查找地理区域码、生成对应的波形，再通过 <strong>Test in decoder（在解码器中测试）</strong>直接送入解码器。这个内部测试是无声的：它处理生成的采样数据，不经过扬声器和麦克风。</p><p>接收端还会追踪重复发送的报头。其中有个容易忽略的实现细节：解码器可能通过几个不同的时序候选检测到同一次物理发送。如果把每次检测都算作一次新发送，一段信号就可能被误计成多份副本。Signal Lab 根据这些检测在音频中的位置，避免重复计数。</p><p>目前它比较的是完整、已经解析出来的报头。三次一致，才满足应用里的比较条件；少收到则是不完整，不同则标记为冲突。它不会用逐位多数表决来重建损坏的报头，副本一致也不能证明发送方的身份。上面的实验演示的是这个比较过程，而不是实际警报设备的全部处理规则。</p><h2 id="section-4" tabindex="-1">从一段声音，到可以读懂的东西</h2><p>这就是我想分享的小发现：原本被我当作噪声的声音，里面有可以拆开研究的结构。字段、时序和重复发送，各自都有具体作用。把它们做成一个小工具，也让我能顺着信息走一遍：从报头到波形，再从波形读回报头。</p><p>完整功能可以在 <a href="https://signal-lab-tg.pages.dev/" target="_blank" rel="noopener noreferrer">Signal Lab → Encoder（编码器）→ EAS / SAME</a> 中查看；<strong>Learn（学习）→ EAS / SAME</strong> 则有带注释的格式说明。</p><p>Signal Lab 是学习项目，不是经过认证的警报设备。本文的实验不播放声音。美国对 EAS 编码和提示音的传输有限制，也包括录音和模拟信号；标注“测试”并不等于获得授权。考虑播放或分发之前，请先阅读 <a href="https://www.ecfr.gov/current/title-47/section-11.45" target="_blank" rel="noopener noreferrer">47 CFR § 11.45</a>。</p></div></div><footer class="note-end"><a class="notes-back" href="../notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a><button class="note-share" type="button" id="note-share" hidden data-i18n="notes.share">Share this note</button><p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p><label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></footer></article></main>
+  <footer class="footer notes-footer" data-page-root>
+    <div class="container footer__inner">
+      <p class="notes-footer__signature">Tim G<span aria-hidden="true">.</span></p>
+      <nav class="footer__legal" aria-label="Legal" data-i18n-aria="footer.legalNav">
+        <a href="../privacy.html" data-i18n="footer.privacy">Privacy Policy</a>
+        <span aria-hidden="true">·</span>
+        <a href="../terms.html" data-i18n="footer.terms">Terms of Use</a>
+      </nav>
+      <a class="footer__email" href="mailto:contact.timg@icloud.com">contact.timg@icloud.com</a>
+      <p class="footer__copy">&copy; <span id="year">2026</span> Tim G</p>
+    </div>
+  </footer>
+  <script src="../js/preferences.js?v=dc8aac2d324d"></script>
+  <script src="../js/i18n/data.js?v=e9f56855ff4b"></script>
+  <script src="../js/i18n/core.js?v=9c901657f9db"></script>
+  <script src="../js/i18n/theme.js?v=27e8a00c2ee5"></script>
+  <script src="../js/i18n/controls.js?v=9183ed691488"></script>
+  <script src="../js/i18n/project-host.js?v=35b56e6bdb1d"></script>
+  <script src="../js/i18n/language.js?v=957cf239f2ea"></script>
+  <script src="../js/notes.js?v=67f70a91685f"></script>
+<script src="../js/same-study.js?v=215cd0f3a7a9" defer></script>
+</body>
+</html>
