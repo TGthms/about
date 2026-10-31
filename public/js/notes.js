@@ -113,7 +113,11 @@
     if (window.ResizeObserver && header && !(window.SiteRuntime && window.SiteRuntime.lightweight)) new ResizeObserver(measure).observe(header);
   }
   var contents = document.querySelector('.note-contents');
-  if (contents && window.matchMedia && window.matchMedia('(max-width: 1000px)').matches) contents.open = false;
+  if (contents && window.matchMedia) {
+    var contentsWide = window.matchMedia('(min-width: 1200px)');
+    contents.open = contentsWide.matches;
+    if (contentsWide.addEventListener) contentsWide.addEventListener('change', function () { contents.open = contentsWide.matches; });
+  }
   function prepareContents() {
     if (contentsObserver) contentsObserver.disconnect();
     if (!contents || document.hidden || !window.IntersectionObserver || (window.SiteRuntime && window.SiteRuntime.lightweight)) return;

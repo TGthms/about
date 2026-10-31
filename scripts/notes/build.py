@@ -5,6 +5,7 @@ import base64
 import datetime as dt
 import hashlib
 import html
+import importlib.util
 from html.parser import HTMLParser
 from io import BytesIO
 import json
@@ -80,8 +81,17 @@ def categories(post):
 def is_birthday(post):
     return post.get('birthday') is True or any(isinstance(v, str) and v.strip().casefold() == 'birthday' for v in (post.get('categories') or []))
 
+def temporary_birthday(post):
+    retention = post.get('birthday_visibility', '24-hours')
+    if retention not in ('24-hours', 'keep-link'): raise ValueError('Choose Remove article or Keep direct link for Birthday visibility.')
+    return is_birthday(post)
+
 def birthday_publication_time(private, path):
     """Use the first committed publication, never the editable display date."""
+    released = private / '.release-metadata.json'
+    if released.exists():
+        stamp = json.loads(released.read_text()).get(path.name, {}).get('birthday_at')
+        if stamp: return dt.datetime.fromisoformat(stamp.replace('Z', '+00:00'))
     def git(*args):
         result = subprocess.run(['git', '-C', str(private), *args], capture_output=True, text=True)
         if result.returncode: raise ValueError('Birthday publishing requires the private repository’s full Git history.')
@@ -101,6 +111,10 @@ def birthday_publication_time(private, path):
 def expiry_attr(post):
     return f' data-note-expires="{esc(post["_expires"])}"' if post.get('_expires') else ''
 
+def availability(post):
+    if not post.get('_expires'): return ''
+    return '<span class="note-availability"><time datetime="' + esc(post['_expires']) + '" data-note-expiry-label>Until ' + esc(post['_expires'].replace('T', ' ').replace('Z', ' UTC')) + '</time></span>'
+
 def category_labels(post, prefix, links=True):
     result = []
     for key, label in categories(post).items():
@@ -119,7 +133,7 @@ def reading_contents(markup):
     markup = re.sub(r'<h2>(.*?)</h2>', heading, markup, flags=re.S)
     if len(headings) < 3: return markup
     links = ''.join(f'<li><a href="#{key}">{esc(label)}</a></li>' for key, label in headings)
-    return ('<div class="note-reading-layout"><details class="note-contents" open><summary data-i18n="notes.contents">On this page</summary>'
+    return ('<div class="note-reading-layout"><details class="note-contents"><summary data-i18n="notes.contents">On this page</summary>'
             '<nav aria-label="On this page" data-i18n-aria="notes.contents"><ol>' + links + '</ol></nav></details>'
             '<div class="note-body">' + markup + '</div></div>')
 
@@ -176,9 +190,9 @@ class Media:
                     except ImageCms.PyCMSError as error:
                         raise ValueError('This photograph has an unreadable color profile. Export it as an sRGB image and upload it again.') from error
                 width, height = image.size
-                sizes = sorted(set([min(width, w) for w in (320, 640, 1280, 1920)]))
+                widths = sorted(set([min(width, w) for w in (320, 640, 1280, 1920)]))
                 variants = []
-                for size in sizes:
+                for size in widths:
                     copy = image.copy()
                     copy.thumbnail((size, max(1, round(height * size / width))), Image.Resampling.LANCZOS)
                     name = f'assets/notes/{key}-{copy.width}.webp'
@@ -330,6 +344,7 @@ def same_study(lang, introduction=''):
             'results': {'matched': '3 / 3 · Three matching headers.', 'incomplete': '{count} / 3 · Incomplete set.', 'conflict': '{count} / 3 · Conflicting headers.'},
             'repeatHint': 'This models Signal Lab’s complete-header comparison. Matching copies do not authenticate the sender. Real receivers may use different acceptance and recovery rules.',
             'fallback': 'The header, field guide, and explanation remain readable without scripting.',
+            'quiz': 'Read another header', 'quizChoose': 'Choose an answer', 'quizCheck': 'Check answers', 'quizFeedback': '{count} of 3 correct.', 'quizExplanation': '026163 identifies Wayne County, Michigan, including Detroit. +0030 means 30 minutes. DMO is a practice/demo message.',
             'reset': 'Reset experiment'
         },
         'zh': {
@@ -360,6 +375,7 @@ def same_study(lang, introduction=''):
             'results': {'matched': '3 / 3 · 三次报头一致。', 'incomplete': '{count} / 3 · 接收不完整。', 'conflict': '{count} / 3 · 报头存在冲突。'},
             'repeatHint': '这里演示 Signal Lab 对完整报头的比较方式。副本一致不能证明发送方的身份，实际接收设备的接受与恢复规则也可能不同。',
             'fallback': '无需脚本，也能阅读报头、字段说明和正文。',
+            'quiz': '试着读另一个报头', 'quizChoose': '请选择', 'quizCheck': '核对答案', 'quizFeedback': '答对 {count} / 3 题。', 'quizExplanation': '026163 表示密歇根州韦恩县（含底特律）；+0030 表示 30 分钟；DMO 表示练习／演示消息。',
             'reset': '重置实验'
         }
     }[lang]
@@ -373,7 +389,10 @@ def same_study(lang, introduction=''):
     defaults = {'event': 'RWT', 'area': '006037', 'duration': '0015'}
     fallback = ''.join(f'<dt>{esc(label)}</dt><dd>{esc(words["fields"][key])} {esc(words["values"].get(defaults.get(key), ""))}</dd>' for key, label in zip(field_keys, words['labels']))
     bursts = ''.join(f'<label>{words["burst"]} {i + 1}{" 次" if chinese else ""}<select data-study-burst>{options(["matching", "missing", "different"], words["burstOptions"])}</select></label>' for i in range(3))
-    copy = esc(json.dumps({key: words[key] for key in ('fields', 'values', 'results')}, ensure_ascii=False, separators=(',', ':')))
+    quiz_controls = ''.join(f'<label>{words[key]}<select data-quiz-field="{key}"><option value="">{words["quizChoose"]}</option>{options(values, words[labels])}</select></label>' for key, values, labels in (
+        ('area', ['006037', '026163', '048453'], 'areas'), ('duration', ['0015', '0030', '0100'], 'durations'), ('event', ['RWT', 'DMO'], 'events')))
+    quiz = f'<details data-study-challenge><summary>{words["quiz"]}</summary><code class="same-study__header">ZCZC-EAS-DMO-026163+0030-3021800-SIGLAB  -</code><div class="same-study__controls">{quiz_controls}</div><button type="button" class="same-study__check">{words["quizCheck"]}</button><p data-study-answers role="status"></p></details>'
+    copy = esc(json.dumps({key: words[key] for key in ('fields', 'values', 'results', 'quizFeedback', 'quizExplanation')}, ensure_ascii=False, separators=(',', ':')))
     return (f'<section class="same-study" data-same-study data-study-copy="{copy}" lang="{lang}" aria-label="{esc(words["title"])}">'
             f'<h3>{words["title"]}</h3><p data-study-enhanced hidden>{words["intro"]}</p>'
             f'<div class="same-study__controls" data-study-enhanced hidden>{controls}</div>'
@@ -383,7 +402,7 @@ def same_study(lang, introduction=''):
             f'<p class="same-study__hint">{words["bitHint"]}</p><div class="same-study__bits" aria-hidden="true">' + ''.join('<span data-study-bit>0</span>' for _ in range(8)) + '</div>'
             f'<p class="visually-hidden">{words["wire"]}: <span data-study-wire></span></p><p class="same-study__hint">{words["byteHint"]}</p></details>'
             f'<details><summary>{words["repetition"]}</summary><p>{words["repeatIntro"]}</p><div class="same-study__bursts">{bursts}</div>'
-            f'<p class="same-study__result" data-study-result role="status"></p><p class="same-study__hint">{words["repeatHint"]}</p></details><button class="same-study__reset" type="button" data-study-reset>{words["reset"]}</button></div>'
+            f'<p class="same-study__result" data-study-result role="status"></p><p class="same-study__hint">{words["repeatHint"]}</p></details>{quiz}<button class="same-study__reset" type="button" data-study-reset>{words["reset"]}</button></div>'
             f'<div class="same-study__fallback" data-study-fallback><p>{words["fallback"]}</p><dl>{fallback}</dl><p>{words["repeatHint"]}</p></div></section>')
 
 def body(post, media, prefix):
@@ -417,6 +436,10 @@ def first_photo(post):
     parser = Images(); parser.feed(str(post.get('body') or ''))
     return parser.found or ('', '')
 
+def thumbnail(post):
+    if post.get('thumbnail'): return post['thumbnail'], post.get('thumbnail_alt') or ''
+    return first_photo(post)
+
 def read_posts(private, preview_path=None, now=None):
     posts, slugs = [], set()
     now = now or dt.datetime.now(dt.timezone.utc)
@@ -424,10 +447,12 @@ def read_posts(private, preview_path=None, now=None):
         value = json.loads(path.read_text())
         if preview_path and path.resolve() != preview_path.resolve(): continue
         if value.get('published') is not True and not preview_path: continue
-        if is_birthday(value):
+        if temporary_birthday(value):
             published = now if preview_path else birthday_publication_time(private, path)
             expires = published + dt.timedelta(hours=24)
-            if not preview_path and expires <= now: continue
+            if not preview_path and expires <= now:
+                if value.get('birthday_visibility') != 'keep-link': continue
+                value['_unlisted'] = True
             value['_expires'] = expires.isoformat().replace('+00:00', 'Z')
         slug = str(value.get('slug') or path.stem)
         if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', slug) or re.match(r'page-\d+$', slug):
@@ -437,6 +462,8 @@ def read_posts(private, preview_path=None, now=None):
         date(value.get('date'))
         value['slug'], value['language'] = slug, language(value.get('language'))
         value['_id'] = path.stem
+        released = private / '.release-metadata.json'
+        value['_aliases'] = json.loads(released.read_text()).get(path.name, {}).get('aliases', []) if released.exists() else []
         categories(value)
         if value.get('highlight_until'): date(value['highlight_until'])
         if value.get('font', 'default') not in FONTS: raise ValueError('Choose one of the available reading fonts.')
@@ -468,14 +495,16 @@ def render_post(version, original, media, prefix='../'):
     content = body(version, media, prefix)
     content = reading_contents(content)
     if not content.startswith('<div class="note-reading-layout">'): content = '<div class="note-body">' + content + '</div>'
-    notice = '<p class="note-lifetime">Available for 24 hours <span aria-hidden="true">·</span> <time datetime="' + esc(original['_expires']) + '" data-note-expiry-label>Until ' + esc(original['_expires'].replace('T', ' ').replace('Z', ' UTC')) + '</time></p>' if original.get('_expires') else ''
-    expired = ('<section class="note-expired" hidden tabindex="-1"><a class="notes-back" href="../notes.html">← All notes</a><h1>This birthday note has ended.</h1><p>It was here for 24 hours.</p></section>' if original.get('_expires') else '')
-    return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{expiry_attr(original)}>'
+    keep_link = original.get('birthday_visibility') == 'keep-link'
+    lifetime = 'Shown in Notes for 24 hours; this link stays available.' if keep_link else 'Available for 24 hours'
+    notice = '<p class="note-lifetime">' + lifetime + ' <span aria-hidden="true">·</span> <time datetime="' + esc(original['_expires']) + '" data-note-expiry-label>Until ' + esc(original['_expires'].replace('T', ' ').replace('Z', ' UTC')) + '</time></p>' if original.get('_expires') else ''
+    expired = ('<section class="note-expired" hidden tabindex="-1"><a class="notes-back" href="../notes.html">← All notes</a><h1>This birthday note has ended.</h1><p>It was here for 24 hours.</p></section>' if original.get('_expires') and not keep_link else '')
+    return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{ "" if keep_link else expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
             f'<a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a></div>'
             f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>' +
             '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div>' + notice + heading +
-            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix) +
+            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix, links=not keep_link) +
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
@@ -488,14 +517,14 @@ def variant_data(post, prefix, from_about=False):
     return 'data-note-versions="' + esc(json.dumps(variants, ensure_ascii=False, separators=(',', ':'))) + '"'
 
 def card(post, media, prefix):
-    photo, alt = first_photo(post)
+    photo, alt = thumbnail(post)
     image = ''
     if photo:
         markup, _ = media.image(photo, alt, prefix, sizes='(max-width: 480px) 96px, (max-width: 767px) 144px, 208px')
         image = markup.replace('<img ', '<img class="note-card__image" ', 1)
     heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
     text = summary(post)
-    return (f'<li class="note-card" lang="{esc(post["language"])}"{expiry_attr(post)}><time class="note-card__date" datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>'
+    return (f'<li class="note-card" lang="{esc(post["language"])}"{expiry_attr(post)}><div class="note-card__date"><time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' + availability(post) + '</div>'
             f'<a class="note-card__link{ " note-card__link--photo" if image else ""}" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}"><div class="note-card__copy">{heading}' +
             (f'<p class="note-card__excerpt" data-note-summary>{esc(text)}</p>' if text else '') +
             '<span class="note-card__meta"><span class="note-card__more"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span>' +
@@ -525,12 +554,12 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         if image: data['image'] = ORIGIN + '/' + image
         structured = '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace('<', '\\u003c') + '</script>'
     markup = shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
-    if 'data-note-expires=' in content:
-        expiry = expiry_attr(post) if post else ''
+    if 'data-note-expires=' in content or (post and post.get('_expires')):
+        expiry = expiry_attr(post) if post and post.get('birthday_visibility') != 'keep-link' else ''
         guard = resource_versions(f'<script src="{prefix}js/notes-lifetime.js"{expiry}></script>', public)
         markup = markup.replace('</head>', guard + '\n</head>')
-    if post and post.get('_expires'):
-        markup = markup.replace('</head>', '<meta name="robots" content="noindex" />\n</head>')
+    if post and is_birthday(post):
+        if post.get('_expires'): markup = markup.replace('</head>', '<meta name="robots" content="noindex" />\n</head>')
         script = resource_versions(f'<script src="{prefix}js/birthday.js" data-note-birthday data-balloons-src="{prefix}js/vendor/balloons.js"></script>', public)
         markup = markup.replace('</body>', script + '\n</body>')
     if 'data-same-study ' in content:
@@ -545,7 +574,7 @@ def entrance(posts, media):
              '<a class="notes-entrance__main" href="notes.html"><span class="notes-entrance__heading"><span id="notes-entrance-title" data-i18n="notes.title">Notes</span>' + RSS_ICON + '</span>'
              '<span class="notes-entrance__action"><span data-i18n="notes.explore">Explore notes</span> <span aria-hidden="true">→</span></span></a>')
     def slide(post, featured, hidden=False):
-        photo, alt = first_photo(post)
+        photo, alt = thumbnail(post)
         image = ''
         if photo:
             markup, _ = media.image(photo, alt, prefix='')
@@ -556,7 +585,7 @@ def entrance(posts, media):
                 '<span class="notes-spotlight__copy">' + category_labels(post, '', links=False) +
                 f'<span class="notes-spotlight__title" lang="{esc(post["language"])}" data-note-title>{esc(title(post))}</span>' +
                 f'<span class="notes-spotlight__summary" lang="{esc(post["language"])}" data-note-summary>{esc(summary(post))}</span>' +
-                f'<time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' +
+                '<span class="notes-spotlight__date">' + f'<time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' + availability(post) + '</span>' +
                 '<span class="notes-spotlight__action"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span></span></a></div>')
     if posts:
         today = dt.datetime.now(dt.timezone.utc).date()
@@ -604,6 +633,12 @@ def follow_page(public):
 
 def build(private, public, preview_path=None, preview_output=None):
     private, public = private.resolve(), public.resolve()
+    if not preview_path and (private / '.published.json').exists():
+        spec = importlib.util.spec_from_file_location('notes_releases', Path(__file__).with_name('releases.py'))
+        releases = importlib.util.module_from_spec(spec); spec.loader.exec_module(releases)
+        with tempfile.TemporaryDirectory(prefix='notes-released-') as released:
+            releases.materialize(private, Path(released))
+            return build(Path(released), public)
     # Validate fixed output inputs before replacing any existing public pages.
     home_markup = (public / 'index.html').read_text()
     if home_markup.count('<!-- notes-entrance:start -->') != 1 or home_markup.count('<!-- notes-entrance:end -->') != 1:
@@ -649,6 +684,17 @@ def build(private, public, preview_path=None, preview_output=None):
                     if not post.get('_expires'): urls.append((ORIGIN + '/' + filename, post['date']))
             if not post.get('_expires'): rss_items.append(post)
         if preview_path: return {'posts': len(posts), 'preview': True}
+        for post in posts:
+            for version in post['_versions']:
+                for alias in post.get('_aliases', []):
+                    if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', alias) or alias == post['slug']: continue
+                    old = post_filename({**version, 'slug': alias}, post)
+                    target = ORIGIN + '/' + post_filename(version, post)
+                    if (stage / old).exists(): raise ValueError('A previous address conflicts with another published note.')
+                    redirect = shell(public, html_lang=esc(version['language']), prefix='../', title='This note has moved — Tim G', description='Read this note at its current address.', canonical=esc(target), image=ORIGIN + '/og-image.png', image_alt='Tim G', og_type='website', og_locale=LOCALES.get(version['language'], 'en_US'), structured_data='', alternates='', kind='redirect', content=f'<section class="note-expired"><h1>This note has moved.</h1><p><a class="notes-back" href="{esc(target)}">Read the note →</a></p><a class="notes-back" href="../notes.html">All notes →</a></section>')
+                    redirect = redirect.replace('</head>', '<meta name="robots" content="noindex" /><meta http-equiv="refresh" content="0;url=' + esc(target) + '" /></head>')
+                    (stage / old).write_text(redirect)
+        posts = [post for post in posts if not post.get('_unlisted')]
         page_count = max(1, (len(posts) + 19) // 20)
         for index in range(page_count):
             prefix = '' if index == 0 else '../'

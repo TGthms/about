@@ -15,8 +15,9 @@
 
   function eligible() {
     var today = new Date();
-    var article = note && document.querySelector('.notes-post[data-note-expires]');
-    var activeNote = article && Date.parse(article.getAttribute('data-note-expires')) > Date.now();
+    var article = note && document.querySelector('.notes-post');
+    var end = article && article.getAttribute('data-note-expires');
+    var activeNote = article && (!end || Date.parse(end) > Date.now());
     return (note ? activeNote : (preview || (today.getMonth() === 11 && today.getDate() === 21))) &&
       !document.hidden && !(motion && motion.matches) && !started && !dismissed;
   }

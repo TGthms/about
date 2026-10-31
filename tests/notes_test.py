@@ -41,6 +41,105 @@ class NotesTests(unittest.TestCase):
         return notes.build(self.private, self.public)
     def sinks(self):
         return '\n'.join(path.read_text() for path in self.public.rglob('*') if path.suffix in ('.html', '.xml', '.json'))
+    def release_tools(self):
+        spec = importlib.util.spec_from_file_location('releases', ROOT / 'scripts/notes/releases.py')
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        return module
+    def save_revision(self):
+        def git(*args):
+            return subprocess.run(['git', '-C', str(self.private), *args], check=True, capture_output=True, text=True).stdout.strip()
+        if not (self.private / '.git').exists():
+            git('init'); git('config', 'user.name', 'Test'); git('config', 'user.email', 'test@example.com')
+        git('add', '.'); git('commit', '-m', 'Saved revision')
+        return git('rev-parse', 'HEAD')
+    def test_released_text_and_media_stay_pinned_while_published_note_is_edited(self):
+        photo = self.image('shared.png', (80, 60))
+        self.post(body='<p>Released text.</p>', cover=photo, cover_alt='Blue photograph', translations=[{'language':'zh','published':False,'cover':'/media/images/not-uploaded-yet.png','body':'PRIVATE TRANSLATION'}])
+        self.save_revision(); releases = self.release_tools(); releases.initialize(self.private)
+        self.build(); before = self.sinks(); files = {p.name: p.read_bytes() for p in (self.public / 'assets/notes').iterdir()}
+        Image.new('RGB', (80, 60), 'red').save(self.private / 'media/images/shared.png')
+        self.post(body='<p>PRIVATE REVISION</p>', cover=photo, cover_alt='Red photograph')
+        self.post('other-draft', published=False, body='<p>UNRELATED SECRET</p>')
+        self.save_revision(); self.build()
+        self.assertEqual(before, self.sinks())
+        self.assertEqual(files, {p.name: p.read_bytes() for p in (self.public / 'assets/notes').iterdir()})
+        releases.select(self.private, 'notes/example.json'); self.build()
+        self.assertIn('PRIVATE REVISION', self.sinks()); self.assertNotIn('UNRELATED SECRET', self.sinks())
+        self.post(published=False); self.save_revision(); self.build()
+        self.assertTrue((self.public / 'notes/example.html').exists())
+        releases.select(self.private, 'notes/example.json'); self.build()
+        self.assertFalse((self.public / 'notes/example.html').exists())
+    def test_explicit_release_can_pin_the_revision_selected_in_the_editor(self):
+        self.post(body='<p>Previewed revision.</p>'); selected = self.save_revision()
+        releases = self.release_tools(); releases.initialize(self.private)
+        self.post(body='<p>Later private save.</p>'); self.save_revision()
+        releases.select(self.private, 'notes/example.json', revision=selected); self.build()
+        self.assertIn('Previewed revision.', self.sinks()); self.assertNotIn('Later private save.', self.sinks())
+    def test_release_validation_failure_preserves_last_publication_pin(self):
+        self.post(); self.save_revision(); releases = self.release_tools(); releases.initialize(self.private)
+        before = (self.private / '.published.json').read_bytes()
+        self.post(cover='/media/images/missing.png', cover_alt='Missing'); self.save_revision()
+        result = subprocess.run(['python3', str(ROOT / 'scripts/notes/releases.py'), 'select', '--content', str(self.private), '--public', str(self.public), '--payload', json.dumps({'context':{'path':'notes/example.json'}})], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual((self.private / '.published.json').read_bytes(), before)
+        self.build(); self.assertTrue((self.public / 'notes/example.html').exists())
+        for path in ['../notes/example.json', 'notes/../secret.json', '/notes/example.json']:
+            with self.assertRaises(ValueError): releases.select(self.private, path)
+    def test_birthday_clock_starts_at_explicit_release_and_does_not_restart(self):
+        self.post(birthday=True); self.save_revision(); releases = self.release_tools()
+        # An empty publication index represents a new, never-published note.
+        releases.save(self.private, {'version':1, 'entries':{}})
+        first = dt.datetime.now(dt.timezone.utc)
+        releases.select(self.private, 'notes/example.json', first)
+        self.post(birthday=True, title='An edited birthday'); self.save_revision()
+        value = releases.select(self.private, 'notes/example.json', first + dt.timedelta(hours=2))
+        self.assertEqual(value['entries']['notes/example.json']['birthday_at'], first.isoformat().replace('+00:00','Z'))
+        self.build(); self.assertIn('Available for 24 hours', self.sinks())
+    def test_birthday_kept_link_leaves_discovery_but_article_and_media_remain(self):
+        self.post('ordinary')
+        photo = self.image('birthday.png', (80, 60))
+        self.post('birthday', birthday=True, birthday_visibility='keep-link', highlight=True, cover=photo, cover_alt='Birthday photograph')
+        old = dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=25)
+        with patch.object(notes, 'birthday_publication_time', return_value=old): self.build()
+        article = (self.public / 'notes/birthday.html').read_text()
+        self.assertIn('this link stays available', article)
+        self.assertIn('data-note-birthday', article)
+        self.assertNotIn('href="../notes/topics/birthday.html"', article)
+        self.assertNotIn('data-note-expires=', article)
+        self.assertIn('content="noindex"', article)
+        for name in ['index.html','notes.html','feed.xml','sitemap.xml']:
+            self.assertNotIn('notes/birthday.html', (self.public / name).read_text())
+        self.assertFalse((self.public / 'notes/topics/birthday.html').exists())
+        self.assertEqual(json.loads((self.public / 'notes-expiry.json').read_text()), [])
+        self.assertTrue(list((self.public / 'assets/notes').iterdir()))
+    def test_silent_study_includes_optional_challenge_in_both_article_languages(self):
+        for lang in ['en', 'zh']:
+            markup = notes.same_study(lang)
+            self.assertIn('data-study-challenge', markup)
+            self.assertIn('data-quiz-field="area"', markup)
+            self.assertIn('data-study-answers role="status"', markup)
+    def test_thumbnail_override_preserves_sharing_cover_and_valid_responsive_sizes(self):
+        cover = self.image('cover.png', (1200, 630)); thumb = self.image('thumb.png', (600, 400))
+        self.post(cover=cover, cover_alt='Cover title', thumbnail=thumb, thumbnail_alt='Waveform detail', highlight=True)
+        self.build()
+        index = (self.public / 'notes.html').read_text(); article = (self.public / 'notes/example.html').read_text()
+        self.assertIn('Waveform detail', index); self.assertNotIn('Cover title', index)
+        self.assertIn('Cover title', article); self.assertIn('96px', index)
+        self.assertNotIn('sizes="[', index)
+        self.assertIn('Waveform detail', (self.public / 'index.html').read_text())
+        self.post(cover=cover, cover_alt='Cover title'); self.build()
+        self.assertIn('Cover title', (self.public / 'notes.html').read_text())
+    def test_previous_slugs_redirect_each_language_without_duplicate_feed_entries(self):
+        self.post('new-address', translations=[{'language':'zh','published':True,'title':'标题','body':'<p>文字</p>'}])
+        (self.private / '.release-metadata.json').write_text(json.dumps({'new-address.json':{'aliases':['old-address']}}))
+        self.build()
+        for suffix in ['', '.zh']:
+            redirect = (self.public / ('notes/old-address' + suffix + '.html')).read_text()
+            self.assertIn('content="0;url=https://timgong.me/notes/new-address' + suffix + '.html"', redirect)
+            self.assertIn('content="noindex"', redirect)
+        self.assertNotIn('old-address', (self.public / 'feed.xml').read_text())
+        self.post('old-address')
+        with self.assertRaises(ValueError): self.build()
     def test_birthday_clock_uses_first_publication_and_survives_edits_and_republication(self):
         def git(*args, stamp=None):
             env = dict(os.environ)

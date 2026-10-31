@@ -2,10 +2,15 @@ name: Publish notes
 on:
   push:
     branches: [main]
-    paths: ['notes/**', 'media/**', '.github/workflows/publish.yml']
+    paths: ['.published.json', '.github/workflows/publish.yml']
   schedule:
     - cron: '17 * * * *'
   workflow_dispatch:
+    inputs:
+      payload:
+        description: Pages CMS publication request; leave empty to rebuild released notes
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -13,6 +18,8 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
+    permissions:
+      contents: write
     if: vars.NOTES_PUBLICATION_READY == 'true'
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +64,49 @@ jobs:
       - name: Prepare image processing
         if: steps.expiry.outputs.publish == 'true'
         run: python -m pip install --disable-pip-version-check -r website/scripts/notes/requirements.txt
+      - name: Select and validate the saved revision
+        if: steps.expiry.outputs.publish == 'true' && github.event_name == 'workflow_dispatch' && inputs.payload != ''
+        working-directory: website
+        env:
+          RELEASE_PAYLOAD: ${{ inputs.payload }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/notes/releases.py select --content ../content --payload "$RELEASE_PAYLOAD"
+          cd ../content
+          git config user.name 'Notes publisher'
+          git config user.email 'notes-publisher@users.noreply.github.com'
+          git add .published.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish selected note revision'
+            # Authentication is ephemeral and never stored in the checkout.
+            ASKPASS="$RUNNER_TEMP/notes-askpass"
+            cat > "$ASKPASS" <<'SH'
+          #!/bin/sh
+          case "$1" in *Username*) echo x-access-token ;; *) echo "$GH_TOKEN" ;; esac
+          SH
+            chmod 700 "$ASKPASS"
+            export GIT_ASKPASS="$ASKPASS" GIT_TERMINAL_PROMPT=0
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+            rm -f "$ASKPASS"
+          fi
       - name: Export, validate, and publish notes
         if: steps.expiry.outputs.publish == 'true'
         working-directory: website
         run: bash scripts/notes/publish.sh
+      - name: Publication result
+        if: steps.expiry.outputs.publish == 'true' && success()
+        run: |
+          {
+            echo '## Released notes exported'
+            echo '[Open Notes](https://timgong.me/notes.html)'
+            echo 'Website deployment follows this export. Saved edits remain private until you use Publish saved changes.'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Explain publication failure
+        if: failure()
+        run: |
+          {
+            echo '## Publication did not finish'
+            echo 'Your saved revision is still private unless an earlier export completed. Read the failed step above, correct the issue, then run Publish saved changes again. Repeating the action does not restart a Birthday clock.'
+          } >> "$GITHUB_STEP_SUMMARY"

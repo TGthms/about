@@ -1476,3 +1476,30 @@ Object.keys(NOTES_READING_COPY).forEach(function (lang) {
 
 const NOTES_STORY_COPY = { en:"Read the story", es:"Leer la historia", zh:"看看背后的故事", "zh-Hant":"看看背後的故事", ja:"制作の話を読む", ko:"만든 이야기 읽기" };
 Object.keys(NOTES_STORY_COPY).forEach(function (lang) { TRANSLATIONS[lang].notes.readStory = NOTES_STORY_COPY[lang]; });
+
+const PERSONAL_INTEREST_COPY = {
+  en: ['Photos & travel', 'Photographs from places I’ve visited, from the coast to the open road.', 'Drag on the table or use the arrows to move. Tap Serve to start.'],
+  es: ['Fotos y viajes', 'Fotografías de los lugares que he visitado, desde la costa hasta la carretera.', 'Arrastra sobre la mesa o usa las flechas para moverte. Toca Sacar para empezar.'],
+  zh: ['摄影与旅行', '用照片记录走过的地方，从海岸到沿途的风景。', '在球台上拖动，或使用箭头移动。轻点“发球”开始。'],
+  'zh-Hant': ['攝影與旅行', '用照片記錄走過的地方，從海岸到沿途的風景。', '在球桌上拖曳，或使用箭頭移動。輕點「發球」開始。'],
+  ja: ['写真と旅', '海辺から旅先の道まで、訪れた場所を写真に残しています。', '台の上をドラッグするか、矢印で移動します。「サーブ」をタップして開始。'],
+  ko: ['사진과 여행', '해안에서 여행길까지, 제가 다녀온 곳을 사진으로 기록해요.', '탁구대 위를 드래그하거나 화살표로 움직이세요. 서브를 눌러 시작하세요.']
+};
+Object.keys(PERSONAL_INTEREST_COPY).forEach(function (lang) {
+  var copy = PERSONAL_INTEREST_COPY[lang];
+  TRANSLATIONS[lang].interests.photo.title = copy[0];
+  TRANSLATIONS[lang].interests.photo.desc = copy[1];
+  TRANSLATIONS[lang].rally.touchInstructions = copy[2];
+});
+
+const NOTES_NOT_FOUND_COPY = {
+  en: ['This page isn’t here.', 'The link may have changed, or the note may no longer be available.', 'Home'],
+  es: ['Esta página no está aquí.', 'El enlace puede haber cambiado o la nota ya no estar disponible.', 'Inicio'],
+  zh: ['这个页面不在这里。', '链接可能已更改，或这篇随记已不再公开。', '主页'],
+  'zh-Hant': ['這個頁面不在這裡。', '連結可能已變更，或這篇隨記已不再公開。', '主頁'],
+  ja: ['このページは見つかりません。', 'リンクが変わったか、ノートの公開が終了した可能性があります。', 'ホーム'],
+  ko: ['이 페이지를 찾을 수 없어요.', '링크가 바뀌었거나 노트가 더 이상 공개되어 있지 않을 수 있어요.', '홈']
+};
+Object.keys(NOTES_NOT_FOUND_COPY).forEach(function (lang) {
+  ['notFoundTitle', 'notFoundText', 'home'].forEach(function (key, i) { TRANSLATIONS[lang].notes[key] = NOTES_NOT_FOUND_COPY[lang][i]; });
+});

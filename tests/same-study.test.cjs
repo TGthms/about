@@ -29,3 +29,18 @@ test('all 27 burst selections distinguish missing copies, conflicts, and matchin
     assert.equal(result.state,new Set(received).size>1?'conflict':received.length===3?'matched':'incomplete');
   }
 });
+
+
+test('header tokens keep delimiters intact and identify the selected fields', () => {
+  for (const event of ['RWT','DMO']) for (const area of ['006037','026163','048453']) for (const duration of ['0015','0030','0100']) {
+    const values={event,area,duration}, parts=model.parts(values);
+    assert.equal(parts.map(part=>part[1]).join(''),model.header(values));
+    for (const key of ['event','area','duration']) assert.equal(parts.find(part=>part[0]===key)[1],values[key]);
+  }
+});
+
+test('optional reading challenge accepts only all three correct header fields', () => {
+  assert.deepEqual(model.checkChallenge({area:'026163',duration:'0030',event:'DMO'}),[true,true,true]);
+  assert.deepEqual(model.checkChallenge({}),[false,false,false]);
+  assert.deepEqual(model.checkChallenge({area:'006037',duration:'0030',event:'RWT'}),[false,true,false]);
+});

@@ -2756,3 +2756,5 @@ html[data-language="ko"] body {
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
+
+.note-availability { display: block; font-size: .75rem; color: var(--mute); line-height: 1.5; margin-top: 4px; }

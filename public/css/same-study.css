@@ -31,3 +31,7 @@
 .same-study__reset { margin-top: 8px; font-size: .75rem !important; }
 @media (max-width: 520px) { .same-study__controls, .same-study__bursts { grid-template-columns: 1fr; gap: 10px; }.same-study .same-study__detail { min-height: 0; } }
 html[data-lightweight] .same-study { padding: 12px; border-radius: 8px; margin: 24px 0; }
+
+.same-study__header [data-selected] { color: var(--accent-text); background: var(--accent-soft); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; border-radius: 2px; }
+.same-study .same-study__check { margin-top: 16px; }
+.same-study [data-study-answers]:empty { display: none; }

@@ -1292,3 +1292,14 @@ html .home-page .project-host--section .host-option {
 @media (max-width: 767px) {
   .home-page .featured-stack > .hub-row { align-items: start; flex-direction: column; gap: 8px; }
 }
+
+/* Four interests: the activities first, then the language connection. */
+.home-page .interest-card { padding-block: 24px; }
+.rally-instructions__touch { display: none; }
+@media (hover: none) and (pointer: coarse) { .rally-instructions__pointer { display: none; }.rally-instructions__touch { display: inline; } }
+@media (max-width: 767px) { .home-page .interest-card { padding-block: 20px; } }
+
+.notes-spotlight__date { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.notes-spotlight__date .note-availability { margin: 0; }
+
+@media (min-width: 768px) { .home-page [data-interest="tt"] > .interest-card__learn { grid-column: 1 / -1; margin-top: 8px; } }

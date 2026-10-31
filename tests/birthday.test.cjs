@@ -3,14 +3,14 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness({ month = 11, day = 21, reduced = false, search = '', hidden = false, note = false, expired = false, lightweight = false } = {}) {
+function harness({ month = 11, day = 21, reduced = false, search = '', hidden = false, note = false, expired = false, retained = false, lightweight = false } = {}) {
   const events = {}, timers = new Map(), scripts = [];
   let id = 0, plays = 0, clears = 0;
   const motion = { matches: reduced, addEventListener: (name, fn) => events['motion:' + name] = fn };
   const document = {
     hidden, readyState: 'complete',
     currentScript: { getAttribute: () => 'js/vendor/balloons.js?v=test', hasAttribute: () => note },
-    querySelector: () => ({getAttribute: () => expired ? '2026-10-28T00:00:00Z' : '2026-10-30T00:00:00Z'}),
+    querySelector: () => ({getAttribute: () => retained ? null : expired ? '2026-10-28T00:00:00Z' : '2026-10-30T00:00:00Z'}),
     head: { appendChild: node => scripts.push(node) },
     createElement: () => ({ remove() { this.removed = true; } }),
     addEventListener: (name, fn) => events[name] = fn,
@@ -54,6 +54,11 @@ test('active Birthday notes celebrate outside December 21 and stop when the note
   for (const settings of [{expired: true}, {reduced: true}, {lightweight: true}]) {
     const silent = harness({note: true, ...settings}); silent.flush(); assert.equal(silent.scripts.length, 0);
   }
+});
+
+test('retained direct Birthday articles still celebrate after leaving discovery', () => {
+  const h=harness({note:true,retained:true,month:9,day:30});
+  h.flush(); h.load(); assert.equal(h.plays,1);
 });
 
 test('every new visit celebrates, but focus and page-load events do not replay it', () => {

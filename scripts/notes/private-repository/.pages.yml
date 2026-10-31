@@ -108,6 +108,15 @@ content:
           title: Build a private preview
           message: Save your changes first. When the run finishes, open its GitHub run and use the download link in the Summary. Unzip note-preview and open the HTML file. It will not open automatically.
           button: Build preview
+      - name: publish-note
+        label: Publish saved changes
+        scope: entry
+        workflow: publish.yml
+        ref: current
+        confirm:
+          title: Publish this saved revision?
+          message: Save and preview first. This publishes the last saved revision of this note. To remove it, turn Published off, save, then run this action.
+          button: Publish saved changes
     fields:
       - name: title
         label: Title (optional)
@@ -142,10 +151,19 @@ content:
             - {name: serif, label: Serif — literary}
             - {name: mono, label: Monospace — notebook}
       - name: birthday
-        label: Birthday · 24 hours
+        label: Birthday
         type: boolean
         default: false
-        description: Adds the Birthday category and balloons. Disappears 24 hours after the first published save; edits do not restart the clock. Leave Published off until ready. Birthday notes stay out of RSS.
+        description: Adds the Birthday category and balloons. Appears in Notes for 24 hours after its first explicit publication. Edits do not restart the clock.
+      - name: birthday_visibility
+        label: Birthday · after 24 hours
+        type: select
+        default: 24-hours
+        description: Both options remove the note from lists and the homepage after 24 hours. Your private original stays saved.
+        options:
+          values:
+            - {name: 24-hours, label: Remove the public article}
+            - {name: keep-link, label: Keep the direct link accessible}
       - name: categories
         label: Categories (optional)
         type: string
@@ -161,15 +179,25 @@ content:
         type: text
         description: Used beneath the title and when sharing. Leave empty to use the opening text.
       - name: cover
-        label: Cover photograph (optional)
+        label: Sharing cover (optional)
         type: image
-        description: Used in the list and when sharing. Otherwise the first photograph is used.
+        description: Used for link previews and, by default, on the site. Responsive compressed images are generated automatically. Otherwise the first photograph is used.
         options:
           media: photographs
       - name: cover_alt
         label: Cover image description
         type: string
         description: Required when you choose a cover. Describe the picture for people who cannot see it.
+      - name: thumbnail
+        label: On-site thumbnail (optional)
+        type: image
+        description: Overrides the image in Notes lists and the homepage carousel. Leave empty to use a compressed version of the sharing cover.
+        options:
+          media: photographs
+      - name: thumbnail_alt
+        label: Thumbnail image description
+        type: string
+        description: Required if you choose a separate thumbnail.
       - name: highlight
         label: Feature beneath About
         type: boolean
@@ -222,4 +250,4 @@ content:
         label: Published
         type: boolean
         default: false
-        description: Keep off to save a private draft. Turning this on and saving publishes the post. Turn off and save to remove it from the site; previously published copies may remain in Git history or feed readers.
+        description: Saving always stays private. Turn on, save, preview, then use Publish saved changes. To remove an existing article, turn off, save, and use Publish saved changes. Previously published copies may remain in Git history or feed readers.

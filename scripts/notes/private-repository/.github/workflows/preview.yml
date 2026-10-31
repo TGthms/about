@@ -37,10 +37,16 @@ jobs:
           PREVIEW_PAYLOAD: ${{ inputs.payload }}
         run: |
           python - <<'PY'
-          import importlib.util, json, os
+          import importlib.util, json, os, re, subprocess
           from pathlib import Path
           private = Path('../content').resolve()
           request = json.loads(os.environ['PREVIEW_PAYLOAD'])
+          revision = request.get('repository', {}).get('sha')
+          if revision:
+              if not re.fullmatch(r'[a-f0-9]{40}', revision):
+                  raise SystemExit('Choose a saved revision from Pages CMS.')
+              subprocess.run(['git', '-C', str(private), 'merge-base', '--is-ancestor', revision, 'HEAD'], check=True)
+              subprocess.run(['git', '-C', str(private), 'checkout', '--detach', revision], check=True)
           path = (private / request['context']['path']).resolve()
           if not path.is_relative_to(private / 'notes') or path.suffix != '.json':
               raise SystemExit('Choose a note from the Notes collection.')
@@ -68,7 +74,7 @@ jobs:
             echo '2. Unzip it and open an HTML file in your browser. Each available language has its own file.'
             echo '3. Resize the browser to check the layout. No local server is needed.'
             echo
-            echo 'This is the last saved version. The preview does not open automatically. Missing image descriptions are allowed in previews, but must be completed before publishing.'
+            echo 'This is the last saved version. Saving and previewing never changes the released article. The preview does not open automatically. Missing image descriptions are allowed in previews, but must be completed before publishing.'
             echo
             echo 'The download is private, expires after three days, and does not publish your draft. Keep downloaded files private too.'
           } >> "$GITHUB_STEP_SUMMARY"
