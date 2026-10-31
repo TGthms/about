@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 
-function harness({lite=false,reduced=false}={}) {
+function harness({lite=false,reduced=false,count=2}={}) {
   let clock=0,serial=0,io;
   const timers=new Map(),events={},docEvents={};
   function node(attrs={}) {
@@ -14,7 +14,7 @@ function harness({lite=false,reduced=false}={}) {
       addEventListener(k,v){listeners[k]=v;},appendChild(n){this.children.push(n);},contains:()=>false};
   }
   const root=node(),track=node(),controls=node(),dots=node(),prev=node(),next=node(),status=node();
-  const slides=[node({'data-note-featured':'true'}),node({'data-note-featured':'true'})];
+  const slides=Array.from({length:count},()=>node({'data-note-featured':'true'}));
   slides.forEach(s=>{const a=node();s.querySelector=()=>a;});
   const frame=node();frame.querySelectorAll=()=>slides;
   frame.querySelector=s=>({'.notes-carousel__track':track,'.notes-carousel__controls':controls,'[data-note-dots]':dots,'[data-note-prev]':prev,'[data-note-next]':next,'[data-note-carousel-status]':status}[s]);
@@ -26,6 +26,14 @@ function harness({lite=false,reduced=false}={}) {
   vm.runInNewContext(fs.readFileSync('public/js/notes-carousel.js','utf8'),{window,document,IntersectionObserver:IO,MutationObserver:MO,TRANSLATIONS:{en:{notes:{slideLabel:'Note {number} of {total}',previousSlide:'Previous',nextSlide:'Next',featuredNotes:'Featured'}}},setTimeout(fn,delay){const id=++serial;timers.set(id,{fn,delay});return id;},clearTimeout:id=>timers.delete(id)});
   return {frame,track,controls,dots,slides,prev,next,document,docEvents,events,timers,motion,io,refresh:window.NotesCarousel.refresh,advance(ms){clock+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);clock+=t.delay;t.fn();}};
 }
+test('at most six featured notes appear, including with older cached markup',()=>{
+  const h=harness({count:8});
+  assert.equal(h.dots.children.length,6);
+  assert.equal(h.slides[6].hidden,true); assert.equal(h.slides[7].hidden,true);
+  for(let i=0;i<6;i++)h.fire();
+  assert.equal(h.track.style.transform,'translateX(0%)');
+  assert.equal(h.timers.values().next().value.delay,5000);
+});
 test('expired birthday slides leave the rotation; an empty carousel releases its timer',()=>{
   const h=harness();
   h.slides[0].setAttribute('data-note-expires','2000-01-01T00:00:00Z'); h.refresh();

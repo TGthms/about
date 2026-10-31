@@ -615,7 +615,7 @@ def entrance(posts, media):
     if posts:
         today = dt.datetime.now(dt.timezone.utc).date()
         highlights = [p for p in posts if p.get('highlight') is True and (not p.get('highlight_until') or date(p['highlight_until']) >= today)]
-        chosen = highlights or [posts[0]]
+        chosen = highlights[:6] or [posts[0]]
         slides = ''.join(slide(p, bool(highlights)) for p in chosen)
         fallback = next((p for p in posts if not p.get('_expires')), posts[0])
         if fallback['slug'] not in [p['slug'] for p in chosen]: slides += slide(fallback, False, hidden=True)

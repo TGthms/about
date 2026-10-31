@@ -74,7 +74,7 @@
       return slide.getAttribute('data-note-featured') === 'true' && (!until || new Date(until + 'T23:59:59') >= today);
     });
     var fallback = available.filter(function (slide) { return slide.getAttribute('data-note-featured') === 'false'; })[0] || available[0];
-    var selected = featured.length ? featured : (fallback ? [fallback] : []);
+    var selected = featured.length ? featured.slice(0, 6) : (fallback ? [fallback] : []);
     frame.hidden = !selected.length;
     var changed = selected.length !== active.length || selected.some(function (slide, i) { return slide !== active[i]; });
     if (changed) {

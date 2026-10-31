@@ -462,6 +462,23 @@ class NotesTests(unittest.TestCase):
         self.assertNotIn('notes/expired.html', home)
         self.assertNotIn('Small updates, photographs, and things along the way.', home)
 
+    def test_carousel_keeps_six_newest_features_without_removing_older_articles(self):
+        for day in range(10,18):
+            self.post(f'feature-{day}',highlight=True,date=f'2026-10-{day}')
+        self.post('expired-feature',highlight=True,highlight_until='2000-01-01',date='2026-10-30')
+        self.post('private-feature',highlight=True,published=False,date='2026-10-31')
+        self.build()
+        home=(self.public/'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
+        self.assertEqual(home.count('data-note-featured="true"'),6)
+        positions=[home.index(f'notes/feature-{day}.html?from=about') for day in range(17,11,-1)]
+        self.assertEqual(positions,sorted(positions))
+        for name in ('feature-10','feature-11','private-feature'):
+            self.assertNotIn(f'notes/{name}.html',home)
+        self.assertNotIn('notes/expired-feature.html',home.split('data-note-featured="false" hidden')[0])
+        for name in ('feature-10','feature-11'):
+            self.assertTrue((self.public/f'notes/{name}.html').exists())
+            self.assertIn(f'notes/{name}.html',(self.public/'notes.html').read_text())
+
     def test_about_entry_context_is_not_added_to_archive_story_or_share_urls(self):
         self.post('2026-10-29-that-noise-was-data', slug='that-noise-was-data', highlight=True, translations=[{'language':'zh','published':True,'title':'信号','body':'<p>文字。</p>'}])
         self.build()

@@ -32,7 +32,7 @@ In **More content**, choose **SAME header experiment** to add the silent field, 
 
 ## Homepage feature
 
-The homepage has a Notes entrance beneath About. Turn on **Feature beneath About** for each post you want in its carousel. Featured posts rotate every five seconds; readers can use the dots, arrows, or swipe. Hover does not pause rotation; keyboard focus holds the current post. Reduced-motion and lightweight browsing use manual navigation. An optional end date removes a post from the carousel while keeping it in Notes. With no active featured posts, the latest published note appears. There is no fixed post limit: every eligible featured post is included, newest first. Around three to six featured posts is a useful size; the rest remain in All notes.
+The homepage has a Notes entrance beneath About. Turn on **Feature beneath About** for each post you want in its carousel. Featured posts rotate every five seconds; readers can use the dots, arrows, or swipe. Hover does not pause rotation; keyboard focus holds the current post. Reduced-motion and lightweight browsing use manual navigation. An optional end date removes a post from the carousel while keeping it in Notes. With no active featured posts, the latest published note appears. The carousel includes at most six eligible featured posts, newest first by the post’s Date. If more than six are featured, older notes leave the carousel but remain in All notes and keep their article links. Their Feature switch stays on, so they can return if newer features are removed.
 
 ## Categories
 
