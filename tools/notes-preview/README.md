@@ -14,7 +14,7 @@ The private `preview.yml` workflow uploads with a short-lived GitHub Actions OID
 
 Do not upload drafts to public Pages preview URLs or enable a bypass policy for `/preview`. The Worker independently validates Access signatures and the owner's email even if an outer policy is accidentally changed. It also checks expiration itself; deleting a preview from KV is not the only expiration control.
 
-The checked-in config intentionally contains empty identity settings, so deploying it without the private setup fails closed. Preserve the active identity configuration when deploying a subsequent Worker update.
+The checked-in config intentionally omits personal identity settings. Initial deployment fails closed until they are configured. `keep_vars: true` preserves those existing private settings on subsequent deployments, so the ordinary checked-in deployment command does not remove the sign-in configuration.
 
 ## Verification
 
