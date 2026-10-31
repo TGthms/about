@@ -12,6 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+USER_AGENT = 'TimG-Notes-Preview/1.0'
 
 def bundle(directory):
     files, entries = {}, []
@@ -41,11 +42,12 @@ def upload(directory, origin, preview_id, token):
     if not re.fullmatch(r'https://[a-z0-9.-]+', origin): raise ValueError('Use the configured HTTPS preview origin.')
     if not re.fullmatch(r'\d{1,20}-\d{1,4}', preview_id): raise ValueError('Use the current workflow run identity.')
     # Never send private bytes until the service confirms authentication is configured.
-    with urllib.request.urlopen(origin + '/health', timeout=20) as response:
+    health = urllib.request.Request(origin + '/health', headers={'User-Agent': USER_AGENT})
+    with urllib.request.urlopen(health, timeout=20) as response:
         if json.load(response).get('ready') is not True: raise ValueError('Private preview sign-in has not been configured.')
     for name, (data, mime) in bundle(directory).items():
         request = urllib.request.Request(origin + '/upload/' + preview_id + '/' + name, data=data, method='PUT',
-                                         headers={'Authorization': 'Bearer ' + token, 'Content-Type': mime})
+                                         headers={'Authorization': 'Bearer ' + token, 'Content-Type': mime, 'User-Agent': USER_AGENT})
         with urllib.request.urlopen(request, timeout=120) as response:
             if response.status != 201: raise ValueError('The preview service could not save a file.')
     return origin + '/preview/' + preview_id + '/'
@@ -61,7 +63,7 @@ def main():
     stage = 'GitHub workflow identity'
     try:
         request_url = os.environ['ACTIONS_ID_TOKEN_REQUEST_URL'] + '&audience=' + urllib.parse.quote(origin, safe='')
-        request = urllib.request.Request(request_url, headers={'Authorization':'Bearer ' + os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']})
+        request = urllib.request.Request(request_url, headers={'Authorization':'Bearer ' + os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN'], 'User-Agent': USER_AGENT})
         with urllib.request.urlopen(request, timeout=20) as response: token = json.load(response)['value']
         stage = 'Private preview service'
         url = upload(args.directory, origin, os.environ['GITHUB_RUN_ID'] + '-' + os.environ['GITHUB_RUN_ATTEMPT'], token)

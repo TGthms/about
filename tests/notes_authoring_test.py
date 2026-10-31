@@ -141,6 +141,23 @@ class AuthoringTests(unittest.TestCase):
         self.assertEqual(path.read_text(),html)
         self.assertEqual(json.loads(files['index.json'][0])['files'][0]['language'],'zh-Hant')
 
+    def test_browser_uploader_identifies_itself_on_health_and_upload_requests(self):
+        from unittest.mock import patch
+        from io import BytesIO
+        (self.root/'preview.html').write_text('<html lang="en"><p>Fixture</p></html>')
+        requests=[]
+        def respond(request,timeout):
+            requests.append(request)
+            response=BytesIO(b'{"ready":true}' if request.full_url.endswith('/health') else b'')
+            response.status=200 if request.full_url.endswith('/health') else 201
+            return response
+        with patch.object(preview_upload.urllib.request,'urlopen',side_effect=respond):
+            url=preview_upload.upload(self.root,'https://preview.example.com','123-1','short-lived-fixture')
+        self.assertEqual(url,'https://preview.example.com/preview/123-1/')
+        self.assertEqual(len(requests),3)
+        self.assertTrue(all(r.get_header('User-agent')==preview_upload.USER_AGENT for r in requests))
+        self.assertIsNone(requests[0].get_header('Authorization'))
+
     def test_deployment_success_requires_both_hosts_and_latest_attempt(self):
         checks=[{'id':1,'name':'Cloudflare Pages','status':'completed','conclusion':'success'}]
         self.assertFalse(deployment.checks_ready(checks))
