@@ -189,8 +189,10 @@ class NotesTests(unittest.TestCase):
         self.assertTrue(after); self.assertLess(len(after), len(before))
         self.assertEqual(json.loads((self.public / 'notes-expiry.json').read_text()), [])
 
-    def test_birthday_category_alone_activates_expiry_and_drafts_need_no_clock(self):
-        self.assertTrue(notes.is_birthday({'categories':[' Birthday ']}))
+    def test_birthday_switch_is_authoritative_and_drafts_need_no_clock(self):
+        self.assertFalse(notes.is_birthday({'categories':[' Birthday ']}))
+        self.assertFalse(notes.is_birthday({'birthday':False,'categories':['Birthday']}))
+        self.assertNotIn('birthday', notes.categories({'birthday':False,'categories':['Birthday']}))
         self.assertEqual(notes.categories({'birthday':True})['birthday'], 'Birthday')
         draft = self.post(birthday=True, published=False)
         with patch.object(notes, 'birthday_publication_time', side_effect=AssertionError('Draft leaked')):

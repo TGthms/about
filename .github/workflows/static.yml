@@ -46,10 +46,13 @@ jobs:
           python-version: '3.12'
 
       - name: Prepare Notes image checks
-        run: python3 -m pip install --disable-pip-version-check -r scripts/notes/requirements.txt
+        run: python3 -m pip install --disable-pip-version-check -r scripts/notes/test-requirements.txt
 
       - name: Check Notes publication and privacy
         run: python3 tests/notes_test.py
+
+      - name: Check Notes editor compatibility and private previews
+        run: python3 tests/notes_authoring_test.py
 
       - name: Check Gallery Manager sync
         run: python3 tests/gallery_sync_test.py

@@ -24,3 +24,6 @@ coverage/
 .private-notes/
 __pycache__/
 *.pyc
+
+# Local Cloudflare development state
+.wrangler/

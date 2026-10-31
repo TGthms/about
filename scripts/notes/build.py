@@ -17,10 +17,15 @@ import tempfile
 from urllib.parse import urlparse, unquote
 import xml.etree.ElementTree as ET
 
+_authoring_spec = importlib.util.spec_from_file_location('notes_authoring', Path(__file__).with_name('authoring.py'))
+authoring = importlib.util.module_from_spec(_authoring_spec)
+_authoring_spec.loader.exec_module(authoring)
+
 ORIGIN = 'https://timgong.me'
 ROOT = Path(__file__).resolve().parents[2]
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
 FONTS = {'default', 'sans', 'serif', 'mono'}
+TABLE_NAMES = {'en': 'Table', 'zh': '表格', 'zh-Hant': '表格', 'ja': '表', 'ko': '표', 'es': 'Tabla'}
 CATEGORIES = {'projects': 'Projects', 'learning': 'Learning', 'photography': 'Photography', 'life': 'Life', 'birthday': 'Birthday'}
 LOCALES = {'en': 'en_US', 'es': 'es_ES', 'zh': 'zh_CN', 'zh-Hant': 'zh_TW', 'ja': 'ja_JP', 'ko': 'ko_KR'}
 RSS_ICON = '<svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg>'
@@ -73,13 +78,14 @@ def categories(post):
             raise ValueError('Category names must contain 1–48 characters.')
         value = value.strip()
         key = value.casefold()
+        if key == 'birthday': continue
         if key not in CATEGORIES: key = 'c-' + hashlib.sha256(key.encode()).hexdigest()[:12]
         result[key] = CATEGORIES.get(key, value)
     if post.get('birthday') is True: result['birthday'] = 'Birthday'
     return result
 
 def is_birthday(post):
-    return post.get('birthday') is True or any(isinstance(v, str) and v.strip().casefold() == 'birthday' for v in (post.get('categories') or []))
+    return post.get('birthday') is True
 
 def temporary_birthday(post):
     retention = post.get('birthday_visibility', '24-hours')
@@ -264,11 +270,12 @@ class Media:
                 (f'<details><summary data-i18n="notes.transcript">Transcript</summary><p>{esc(transcript)}</p></details>' if transcript else '') + '</figure>')
 
 class RichText(HTMLParser):
-    allowed = {'p', 'h2', 'h3', 'h4', 'strong', 'em', 'b', 'i', 'u', 's', 'blockquote', 'ul', 'ol', 'li', 'br', 'hr', 'pre', 'code', 'a', 'sub', 'sup'}
+    allowed = {'p', 'h2', 'h3', 'h4', 'strong', 'em', 'b', 'i', 'u', 's', 'blockquote', 'ul', 'ol', 'li', 'br', 'hr', 'pre', 'code', 'a', 'sub', 'sup', 'table', 'caption', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td'}
     forbidden = {'script', 'style', 'iframe', 'object', 'embed', 'svg', 'math', 'form', 'template'}
-    def __init__(self, media, prefix):
+    def __init__(self, media, prefix, table_label='Table'):
         super().__init__(convert_charrefs=True)
         self.media, self.prefix, self.output, self.stack, self.blocked = media, prefix, [], [], []
+        self.table_label = table_label
     def handle_starttag(self, tag, attrs):
         if self.blocked:
             if tag in self.forbidden: self.blocked.append(tag)
@@ -282,6 +289,11 @@ class RichText(HTMLParser):
         if tag == 'h1': tag = 'h2'
         if tag not in self.allowed: return
         attr = ''
+        if tag == 'table': self.output.append(f'<div class="note-table" role="region" aria-label="{esc(self.table_label)}" tabindex="0">')
+        if tag in ('th', 'td'):
+            for key in ('colspan', 'rowspan'):
+                if str(values.get(key, '')).isdigit() and 1 <= int(values[key]) <= 20: attr += f' {key}="{int(values[key])}"'
+            if tag == 'th': attr += f' scope="{values.get("scope") if values.get("scope") in ("col", "row", "colgroup", "rowgroup") else "col"}"'
         if tag == 'a':
             link = safe_link(values.get('href'))
             if link:
@@ -299,17 +311,20 @@ class RichText(HTMLParser):
         if tag == 'h1': tag = 'h2'
         if tag in self.stack:
             while self.stack:
-                current = self.stack.pop(); self.output.append(f'</{current}>')
+                current = self.stack.pop(); self.output.append(self.closing(current))
                 if current == tag: break
     def handle_data(self, data):
         if not self.blocked: self.output.append(esc(data))
+    @staticmethod
+    def closing(tag):
+        return f'</{tag}>' + ('</div>' if tag == 'table' else '')
     def finish(self, value):
         self.feed(str(value or '')); self.close()
-        while self.stack: self.output.append(f'</{self.stack.pop()}>')
+        while self.stack: self.output.append(self.closing(self.stack.pop()))
         return ''.join(self.output)
 
-def rich(value, media, prefix):
-    return RichText(media, prefix).finish(value)
+def rich(value, media, prefix, language='en'):
+    return RichText(media, prefix, TABLE_NAMES.get(language, 'Table')).finish(value)
 
 def same_study(lang, introduction=''):
     # Fixed educational component: author content never becomes executable code.
@@ -406,16 +421,22 @@ def same_study(lang, introduction=''):
             f'<div class="same-study__fallback" data-study-fallback><p>{words["fallback"]}</p><dl>{fallback}</dl><p>{words["repeatHint"]}</p></div></section>')
 
 def body(post, media, prefix):
-    result = rich(post.get('body'), media, prefix)
+    result = rich(post.get('body'), media, prefix, post['language'])
     for block in post.get('blocks') or []:
         kind = block.get('type')
-        if kind == 'text': result += rich(block.get('body'), media, prefix)
+        if kind == 'text': result += rich(block.get('body'), media, prefix, post['language'])
         elif kind == 'photo':
             markup, _ = media.image(block.get('image'), block.get('alt'), prefix)
             result += '<figure class="note-media">' + markup + (f'<figcaption>{esc(block["caption"])}</figcaption>' if block.get('caption') else '') + '</figure>'
         elif kind == 'video': result += media.video(block, prefix)
+        elif kind == 'table':
+            caption = str(block.get('caption') or TABLE_NAMES.get(post['language'], 'Table'))
+            columns = ''.join(f'<th scope="col">{esc(c)}</th>' for c in block['columns'])
+            rows = ''.join('<tr>' + ''.join(f'<td>{esc(c)}</td>' for c in row['cells']) + '</tr>' for row in block['rows'])
+            result += (f'<div class="note-table" role="region" aria-label="{esc(caption)}" tabindex="0"><table>'
+                       f'<caption>{esc(caption)}</caption><thead><tr>{columns}</tr></thead><tbody>{rows}</tbody></table></div>')
         elif kind == 'same-study': result += same_study(post['language'], block.get('introduction', ''))
-        else: raise ValueError('Unknown content block. Choose text, photo, video, or a SAME study.')
+        else: raise ValueError('Unknown content block. Choose text, photo, video, table, or a SAME study.')
     if not plain(result).strip() and '<img ' not in result and '<video ' not in result:
         raise ValueError('Add some text, a photograph, or a video before publishing.')
     return result
@@ -447,6 +468,9 @@ def read_posts(private, preview_path=None, now=None):
         value = json.loads(path.read_text())
         if preview_path and path.resolve() != preview_path.resolve(): continue
         if value.get('published') is not True and not preview_path: continue
+        errors, _ = authoring.issues(value, private, strict=not bool(preview_path))
+        if errors: raise ValueError(path.name + ':\n' + '\n'.join('• ' + e for e in errors))
+        value = authoring.normalize(value)
         if temporary_birthday(value):
             published = now if preview_path else birthday_publication_time(private, path)
             expires = published + dt.timedelta(hours=24)

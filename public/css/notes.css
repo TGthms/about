@@ -90,9 +90,21 @@ html[data-note-expired] .note-expired { display: block; }
 .note-body a { color: var(--accent-text); text-decoration: underline; text-underline-offset: 4px; }
 .note-body ul, .note-body ol { padding-left: 1.4em; }
 .note-body li + li { margin-top: .4em; }
-.note-body blockquote { padding-left: 24px; border-left: 2px solid var(--accent-text); color: var(--mute); font-family: var(--font-display); font-size: 1.2em; }
+.note-body blockquote { margin-inline: 0; padding: 4px 0 4px 20px; border-left: 2px solid var(--accent-text); color: var(--mute); font-family: var(--font-display); font-size: 1.15em; }
+.note-body blockquote > * + * { margin-top: .7em; }
 .note-body pre { padding: 20px; overflow-x: auto; background: var(--bg-card); border: 1px solid var(--rule); border-radius: 6px; font-size: .8125rem; }
 .note-body code { font-family: var(--font-mono); font-size: .9em; }
+.note-body :not(pre) > code { padding: .1em .3em; border-radius: 3px; background: var(--bg-card); }
+.note-body pre code { font-size: inherit; line-height: 1.7; white-space: pre; overflow-wrap: normal; }
+.note-table { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; margin-block: 28px; border: 1px solid var(--rule); border-radius: 6px; }
+.note-table:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; }
+.note-table table { width: 100%; border-collapse: collapse; font: inherit; font-size: .875em; line-height: 1.65; }
+.note-table caption { text-align: start; padding: 14px 16px; font-weight: 600; color: var(--ink); }
+.note-table th, .note-table td { min-width: 8ch; padding: 12px 16px; text-align: start; vertical-align: top; border-top: 1px solid var(--rule); }
+.note-table th { font-weight: 600; background: var(--bg-card); }
+.note-table tbody tr:last-child td { border-bottom: 0; }
+html[data-lightweight] .note-table { border-radius: 0; }
+html[data-lightweight] .note-table th, html[data-lightweight] .note-table td { padding: 8px; }
 .note-body hr { border: 0; border-top: 1px solid var(--rule); margin-block: 40px; }
 .note-body img { max-width: 100%; height: auto; }
 .note-media { margin-block: 32px; }

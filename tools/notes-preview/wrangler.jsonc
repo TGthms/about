@@ -1,0 +1,16 @@
+{
+  "name": "notes-preview",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-31",
+  "workers_dev": true,
+  "preview_urls": false,
+  "vars": {
+    "PREVIEW_ORIGIN": "https://notes-preview.tgthms.workers.dev",
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUDIENCE": "",
+    "OWNER_EMAIL": ""
+  },
+  "kv_namespaces": [
+    { "binding": "PREVIEWS", "id": "fff86615a1c44047b709559ebdc11394" }
+  ]
+}

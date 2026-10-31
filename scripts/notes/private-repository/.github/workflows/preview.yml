@@ -1,87 +1,100 @@
 name: Preview a note privately
-on:
+'on':
   workflow_dispatch:
     inputs:
       payload:
-        description: 'Pages CMS preview request'
+        description: Pages CMS preview request
         required: true
         type: string
 permissions:
   contents: read
+  id-token: write
 jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-      - name: Read private content
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          path: content
-          ref: main
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Read website templates
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: TGthms/about
-          path: website
-          persist-credentials: false
-      - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
-        with:
-          python-version: '3.12'
-      - name: Prepare image processing
-        run: python -m pip install --disable-pip-version-check -r website/scripts/notes/requirements.txt
-      - name: Build a self-contained preview
-        working-directory: website
-        env:
-          PREVIEW_PAYLOAD: ${{ inputs.payload }}
-        run: |
-          python - <<'PY'
-          import importlib.util, json, os, re, subprocess
-          from pathlib import Path
-          private = Path('../content').resolve()
-          request = json.loads(os.environ['PREVIEW_PAYLOAD'])
-          revision = request.get('repository', {}).get('sha')
-          if revision:
-              if not re.fullmatch(r'[a-f0-9]{40}', revision):
-                  raise SystemExit('Choose a saved revision from Pages CMS.')
-              subprocess.run(['git', '-C', str(private), 'merge-base', '--is-ancestor', revision, 'HEAD'], check=True)
-              subprocess.run(['git', '-C', str(private), 'checkout', '--detach', revision], check=True)
-          path = (private / request['context']['path']).resolve()
-          if not path.is_relative_to(private / 'notes') or path.suffix != '.json':
-              raise SystemExit('Choose a note from the Notes collection.')
-          spec = importlib.util.spec_from_file_location('notes', 'scripts/notes/build.py')
-          notes = importlib.util.module_from_spec(spec); spec.loader.exec_module(notes)
-          notes.build(private, Path('public').resolve(), path, Path('../preview').resolve())
-          PY
-      - name: Save private preview
-        id: artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: note-preview
-          path: preview/*.html
-          retention-days: 3
-      - name: Explain the preview
-        env:
-          PREVIEW_DOWNLOAD: ${{ steps.artifact.outputs.artifact-url }}
-        run: |
-          {
-            echo '## Your private preview is ready'
-            echo
-            echo "[Download note-preview]($PREVIEW_DOWNLOAD)"
-            echo
-            echo '1. Download the ZIP using the link above (sign in to GitHub if asked).'
-            echo '2. Unzip it and open an HTML file in your browser. Each available language has its own file.'
-            echo '3. Resize the browser to check the layout. No local server is needed.'
-            echo
-            echo 'This is the last saved version. Saving and previewing never changes the released article. The preview does not open automatically. Missing image descriptions are allowed in previews, but must be completed before publishing.'
-            echo
-            echo 'The download is private, expires after three days, and does not publish your draft. Keep downloaded files private too.'
-          } >> "$GITHUB_STEP_SUMMARY"
-      - name: Explain a failed preview
-        if: failure()
-        run: |
-          {
-            echo '## The preview could not be built'
-            echo 'Open the failed step above for the exact reason. Save your note, check uploaded file paths and content blocks, then build the preview again. Your saved note has not been published by this preview.'
-          } >> "$GITHUB_STEP_SUMMARY"
+    - name: Read private content
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        path: content
+        ref: main
+        fetch-depth: 0
+        persist-credentials: false
+    - name: Read website templates
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      with:
+        repository: TGthms/about
+        path: website
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+      with:
+        python-version: '3.12'
+    - name: Prepare image processing
+      run: python -m pip install --disable-pip-version-check -r website/scripts/notes/requirements.txt
+    - name: Build a self-contained preview
+      working-directory: website
+      env:
+        PREVIEW_PAYLOAD: ${{ inputs.payload }}
+      run: |
+        python - <<'PY'
+        import importlib.util, json, os, re, subprocess
+        from pathlib import Path
+        private = Path('../content').resolve()
+        request = json.loads(os.environ['PREVIEW_PAYLOAD'])
+        revision = request.get('repository', {}).get('sha')
+        if revision:
+            if not re.fullmatch(r'[a-f0-9]{40}', revision):
+                raise SystemExit('Choose a saved revision from Pages CMS.')
+            subprocess.run(['git', '-C', str(private), 'merge-base', '--is-ancestor', revision, 'HEAD'], check=True)
+            subprocess.run(['git', '-C', str(private), 'checkout', '--detach', revision], check=True)
+        path = (private / request['context']['path']).resolve()
+        if not path.is_relative_to(private / 'notes') or path.suffix != '.json':
+            raise SystemExit('Choose a note from the Notes collection.')
+        spec = importlib.util.spec_from_file_location('notes', 'scripts/notes/build.py')
+        notes = importlib.util.module_from_spec(spec); spec.loader.exec_module(notes)
+        errors, warnings = notes.authoring.issues(json.loads(path.read_text()), private, strict=False)
+        summary_path = os.environ.get('GITHUB_STEP_SUMMARY')
+        if (errors or warnings) and summary_path:
+            with open(summary_path, 'a') as summary:
+                summary.write('## Preview checks\n\n```text\n' + '\n'.join(errors + warnings).replace('`', '') + '\n```\n\n')
+        if errors:
+            raise SystemExit('Check these fields:\n' + '\n'.join(errors))
+        notes.build(private, Path('public').resolve(), path, Path('../preview').resolve())
+        PY
+    - name: Open a private browser preview
+      working-directory: website
+      env:
+        NOTES_PREVIEW_ORIGIN: ${{ vars.NOTES_PREVIEW_ORIGIN }}
+      run: python scripts/notes/preview_upload.py --directory ../preview
+    - name: Save private preview
+      id: artifact
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: note-preview
+        path: preview/*.html
+        retention-days: 3
+    - name: Explain the preview
+      env:
+        PREVIEW_DOWNLOAD: ${{ steps.artifact.outputs.artifact-url }}
+      run: |
+        {
+          echo '## Download a private preview'
+          echo
+          echo "[Download note-preview]($PREVIEW_DOWNLOAD)"
+          echo
+          echo '1. Download the ZIP using the link above (sign in to GitHub if asked).'
+          echo '2. Unzip it and open an HTML file in your browser. Each available language has its own file.'
+          echo '3. Resize the browser to check the layout. No local server is needed.'
+          echo
+          echo 'This is the last saved version. Saving and previewing never changes the released article. The browser-preview link appears above when available; neither preview opens automatically. Missing image descriptions are allowed in previews, but must be completed before publishing.'
+          echo
+          echo 'The download is private, expires after three days, and does not publish your draft. Keep downloaded files private too.'
+        } >> "$GITHUB_STEP_SUMMARY"
+    - name: Explain a failed preview
+      if: failure()
+      run: |
+        {
+          echo '## The preview could not be built'
+          echo 'Open the failed step above for the exact reason. Save your note, check uploaded file paths and content blocks, then build the preview again. Your saved note has not been published by this preview.'
+        } >> "$GITHUB_STEP_SUMMARY"

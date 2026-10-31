@@ -4,6 +4,7 @@ import argparse
 import datetime as dt
 import importlib.util
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import subprocess
@@ -37,7 +38,7 @@ def slug(value, path):
     return str(value.get('slug') or Path(path).stem)
 
 def birthday(value):
-    return value.get('birthday') is True or any(isinstance(c, str) and c.strip().casefold() == 'birthday' for c in value.get('categories', []))
+    return value.get('birthday') is True
 
 def initialize(private):
     if (private / MANIFEST).exists(): raise ValueError('A publication index already exists; it was left unchanged.')
@@ -88,6 +89,15 @@ def select(private, path, now=None, revision=None):
     save(private, value)
     return value
 
+def withdraw(private, path):
+    """Keep the draft and its release history while withdrawing public output."""
+    path = note_path(path)
+    value = load(private)
+    if path in value['entries']:
+        value['entries'][path]['withdrawn'] = True
+        save(private, value)
+    return value
+
 def materialize(private, output):
     """Read only pinned note and media blobs; each upload keeps its revision."""
     output.mkdir(parents=True, exist_ok=True)
@@ -115,13 +125,15 @@ def materialize(private, output):
                 destination.write_bytes(git(private, 'show', revision + ':' + decoded, binary=True))
                 cache.add(target)
             return '/' + target
-        def walk(node):
-            if isinstance(node, list): return [walk(n) for n in node]
-            if isinstance(node, dict): return {k: walk(v) for k, v in node.items()}
+        def walk(node, field=''):
+            if isinstance(node, list): return [walk(n, field) for n in node]
+            if isinstance(node, dict): return {k: walk(v, k) for k, v in node.items()}
             if not isinstance(node, str): return node
-            if re.fullmatch(r'/?media/[^\s<>"\']+', node): return media(node)
+            if field in ('cover', 'thumbnail', 'image', 'poster', 'file') and re.fullmatch(r'/?media/[^\s<>"\']+', node): return media(node)
             # Rich text image references are the only media URLs embedded in HTML.
-            return re.sub(r'''(\bsrc\s*=\s*)(["'])(/?media/[^"'<>]+)\2''', lambda m: m[1] + m[2] + media(m[3]) + m[2], node)
+            if field == 'body':
+                return re.sub(r'''(\bsrc\s*=\s*)(["'])(/?media/[^"'<>]+)\2''', lambda m: m[1] + m[2] + media(m[3]) + m[2], node)
+            return node
         (output / path).write_text(json.dumps(walk(value), ensure_ascii=False))
         metadata[Path(path).name] = {key: entry.get(key) for key in ('birthday_at', 'aliases', 'published_at')}
     (output / '.release-metadata.json').write_text(json.dumps(metadata))
@@ -144,7 +156,15 @@ def main():
     path = note_path(payload.get('context', {}).get('path', ''))
     previous = (private / MANIFEST).read_bytes()
     try:
-        select(private, path, revision=payload.get('repository', {}).get('sha'))
+        action = payload.get('action', {}).get('name')
+        if action == 'withdraw-note':
+            withdraw(private, path)
+        else:
+            if action == 'publish-note':
+                selected = payload.get('repository', {}).get('sha') or git(private, 'rev-parse', 'HEAD')
+                if read_note(private, selected, path).get('published') is not True:
+                    raise ValueError('Ready to publish: turn this on and save before publishing. To remove a live note, use Withdraw from website.')
+            select(private, path, revision=payload.get('repository', {}).get('sha'))
         # Validate everything in a disposable public tree before updating the pin.
         import shutil
         with tempfile.TemporaryDirectory(prefix='notes-release-check-') as temporary:
@@ -159,4 +179,7 @@ def main():
 if __name__ == '__main__':
     try: main()
     except (ValueError, OSError, KeyError, json.JSONDecodeError) as error:
+        if os.environ.get('GITHUB_REPOSITORY') == 'TGthms/about-notes' and os.environ.get('GITHUB_STEP_SUMMARY'):
+            with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                summary.write('## Check these fields\n\nThe released version was not changed by validation.\n\n```text\n' + str(error).replace('`', '') + '\n```\n\n')
         raise SystemExit('Publication was not changed: ' + str(error))

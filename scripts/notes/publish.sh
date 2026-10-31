@@ -18,10 +18,14 @@ for attempt in 1 2 3; do
   git add public/*.html public/notes public/assets/notes public/feed.xml public/sitemap.xml public/notes-expiry.json
   if git diff --cached --quiet; then
     git push --dry-run origin HEAD:main
+    echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
     exit 0
   fi
   git commit -m 'Publish notes'
-  if git push origin HEAD:main; then exit 0; fi
+  if git push origin HEAD:main; then
+    echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+    exit 0
+  fi
 done
 echo 'The website changed during publishing. Your private post is saved; run Publish notes again.' >&2
 exit 1

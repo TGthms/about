@@ -1,253 +1,412 @@
 media:
-  - name: photographs
-    label: Photos
-    input: media/images
-    output: /media/images
-    extensions: [jpg, jpeg, png, webp]
-    rename: random
-  - name: videos
-    label: Short videos
-    input: media/videos
-    output: /media/videos
-    extensions: [mp4, webm]
-    rename: random
-
+- name: photographs
+  label: Photos
+  input: media/images
+  output: /media/images
+  extensions:
+  - jpg
+  - jpeg
+  - png
+  - webp
+  rename: random
+- name: videos
+  label: Short videos
+  input: media/videos
+  output: /media/videos
+  extensions:
+  - mp4
+  - webm
+  rename: random
 components:
   text:
     type: rich-text
     options:
       format: html
       media: photographs
+    description: For photographs with captions, use a Photograph block in More content. Every image needs a description
+      before publication.
   blocks:
     type: block
     label: More content
-    description: Add photographs, videos, text, or a silent SAME experiment in any order.
-    list: true
+    description: Add and reorder text, photographs, video, tables, and interactive content.
+    list:
+      collapsible:
+        collapsed: false
+        summary: '{type} · {caption}'
     blockKey: type
     blocks:
-      - name: text
-        label: Text
-        fields:
-          - name: body
-            label: Text
-            component: text
-      - name: photo
-        label: Photograph
-        fields:
-          - name: image
-            label: Photo
-            type: image
-            required: true
-            options:
-              media: photographs
-          - name: alt
-            label: Image description
-            type: string
-            required: true
-            description: A short description for people who cannot see the photograph.
-          - name: caption
-            label: Caption
-            type: text
-      - name: same-study
-        label: SAME header experiment
-        fields:
-          - name: introduction
-            label: Introduction (optional)
-            type: text
-            description: A silent header, byte-order, and repeated-burst experiment. English and Simplified Chinese follow the post language; other languages use English. Leave blank for the standard introduction.
-      - name: video
-        label: Video
-        fields:
-          - name: file
-            label: Upload a short video
-            type: file
-            description: MP4 or WebM, up to 20 MB. Use the hosted URL below for larger videos.
-            options:
-              media: videos
-          - name: url
-            label: Hosted video URL
-            type: string
-            description: A direct HTTPS link to an MP4 or WebM video. Leave empty when uploading a file.
-          - name: poster
-            label: Preview photograph
-            type: image
-            options:
-              media: photographs
-          - name: caption
-            label: Caption
-            type: text
-          - name: transcript
-            label: Transcript (optional)
-            type: text
-
-content:
-  - name: notes
-    label: Notes
-    type: collection
-    path: notes
-    format: json
-    exclude: [.gitkeep]
-    subfolders: false
-    filename:
-      template: "{year}-{month}-{day}-{hour}{minute}{second}.json"
-      field: false
-    view:
-      fields: [title, published, date, language]
-      primary: title
-      sort: [date, title]
-      default:
-        sort: date
-        order: desc
-    actions:
-      - name: preview-note
-        label: Build private preview
-        scope: entry
-        workflow: preview.yml
-        ref: current
-        confirm:
-          title: Build a private preview
-          message: Save your changes first. When the run finishes, open its GitHub run and use the download link in the Summary. Unzip note-preview and open the HTML file. It will not open automatically.
-          button: Build preview
-      - name: publish-note
-        label: Publish saved changes
-        scope: entry
-        workflow: publish.yml
-        ref: current
-        confirm:
-          title: Publish this saved revision?
-          message: Save and preview first. This publishes the last saved revision of this note. To remove it, turn Published off, save, then run this action.
-          button: Publish saved changes
-    fields:
-      - name: title
-        label: Title (optional)
-        type: string
-      - name: date
-        label: Date
-        type: date
-        required: true
-        options:
-          format: yyyy-MM-dd
-      - name: language
-        label: Original language
-        type: select
-        default: en
-        options:
-          values:
-            - {name: en, label: English}
-            - {name: zh, label: 简体中文}
-            - {name: zh-Hant, label: 繁體中文}
-            - {name: ja, label: 日本語}
-            - {name: ko, label: 한국어}
-            - {name: es, label: Español}
-      - name: font
-        label: Reading font
-        type: select
-        default: default
-        description: Applies to this post’s text. Local fonts keep reading fast; the exact face depends on the reader’s device and language.
-        options:
-          values:
-            - {name: default, label: Site default}
-            - {name: sans, label: Sans serif — clean}
-            - {name: serif, label: Serif — literary}
-            - {name: mono, label: Monospace — notebook}
-      - name: birthday
-        label: Birthday
-        type: boolean
-        default: false
-        description: Adds the Birthday category and balloons. Appears in Notes for 24 hours after its first explicit publication. Edits do not restart the clock.
-      - name: birthday_visibility
-        label: Birthday · after 24 hours
-        type: select
-        default: 24-hours
-        description: Both options remove the note from lists and the homepage after 24 hours. Your private original stays saved.
-        options:
-          values:
-            - {name: 24-hours, label: Remove the public article}
-            - {name: keep-link, label: Keep the direct link accessible}
-      - name: categories
-        label: Categories (optional)
-        type: string
-        list: true
-        description: Add your own category names. Projects, Learning, Photography, and Life have translated labels; custom names appear as you write them. Use the same spelling to group posts together.
+    - name: text
+      label: Text
+      fields:
       - name: body
         label: Text
         component: text
-      - name: blocks
-        component: blocks
-      - name: summary
-        label: Short introduction (optional)
+    - name: photo
+      label: Photograph
+      fields:
+      - name: image
+        label: Photo
+        type: image
+        required: true
+        options:
+          media: photographs
+      - name: alt
+        label: Image description
+        type: string
+        required: true
+        description: A short description for people who cannot see the photograph.
+      - name: caption
+        label: Caption
         type: text
-        description: Used beneath the title and when sharing. Leave empty to use the opening text.
-      - name: cover
-        label: Sharing cover (optional)
-        type: image
-        description: Used for link previews and, by default, on the site. Responsive compressed images are generated automatically. Otherwise the first photograph is used.
-        options:
-          media: photographs
-      - name: cover_alt
-        label: Cover image description
-        type: string
-        description: Required when you choose a cover. Describe the picture for people who cannot see it.
-      - name: thumbnail
-        label: On-site thumbnail (optional)
-        type: image
-        description: Overrides the image in Notes lists and the homepage carousel. Leave empty to use a compressed version of the sharing cover.
-        options:
-          media: photographs
-      - name: thumbnail_alt
-        label: Thumbnail image description
-        type: string
-        description: Required if you choose a separate thumbnail.
-      - name: highlight
-        label: Feature beneath About
-        type: boolean
-        default: false
-        description: Include this published post in the homepage Notes carousel. Multiple featured posts rotate every eight seconds. With none selected, the latest published post appears.
-      - name: highlight_until
-        label: Feature until (optional)
-        type: date
-        default: ""
-        description: The post stays in Notes after its homepage feature ends.
-        options:
-          format: yyyy-MM-dd
-      - name: translations
-        label: Other language versions (optional)
-        type: object
-        list:
-          collapsible:
-            collapsed: true
-            summary: "{language} — {title}"
-        fields:
-          - name: language
-            label: Language
-            type: select
+    - name: same-study
+      label: SAME header experiment
+      fields:
+      - name: introduction
+        label: Introduction (optional)
+        type: text
+        description: A silent header, byte-order, and repeated-burst experiment. English and Simplified Chinese
+          follow the post language; other languages use English. Leave blank for the standard introduction.
+    - name: video
+      label: Video
+      fields:
+      - name: source
+        label: Video source
+        type: block
+        blockKey: type
+        required: true
+        blocks:
+        - name: upload
+          label: Upload a short clip
+          fields:
+          - name: file
+            label: Video file
+            type: file
             required: true
+            description: MP4 or WebM, up to 20 MB. For a larger clip, choose Hosted video link instead.
             options:
-              values:
-                - {name: en, label: English}
-                - {name: zh, label: 简体中文}
-                - {name: zh-Hant, label: 繁體中文}
-                - {name: ja, label: 日本語}
-                - {name: ko, label: 한국어}
-                - {name: es, label: Español}
-          - name: title
-            label: Title (optional)
+              media: videos
+        - name: hosted
+          label: Hosted video link
+          fields:
+          - name: url
+            label: Video URL
             type: string
-          - name: summary
-            label: Short introduction (optional)
-            type: text
-          - name: body
-            label: Text
-            component: text
-          - name: blocks
-            component: blocks
-          - name: published
-            label: Publish this translation
-            type: boolean
-            default: false
-            description: Keep off while this translation is still a draft.
-      - name: published
-        label: Published
-        type: boolean
-        default: false
-        description: Saving always stays private. Turn on, save, preview, then use Publish saved changes. To remove an existing article, turn off, save, and use Publish saved changes. Previously published copies may remain in Git history or feed readers.
+            required: true
+            description: A direct HTTPS MP4 or WebM link.
+            pattern:
+              regex: ^https://[^\s]+\.(?:[mM][pP]4|[wW][eE][bB][mM])(?:[?#][^\s]*)?$
+              message: Use a direct HTTPS MP4 or WebM link.
+      - name: poster
+        label: Preview photograph
+        type: image
+        options:
+          media: photographs
+      - name: caption
+        label: Caption
+        type: text
+      - name: transcript
+        label: Transcript (optional)
+        type: text
+    - name: table
+      label: Table
+      fields:
+      - name: caption
+        label: Table title
+        type: string
+        required: true
+        description: A short title that identifies the table.
+      - name: columns
+        label: Column headings
+        type: string
+        required: true
+        list:
+          min: 1
+          max: 8
+      - name: rows
+        label: Rows
+        type: object
+        required: true
+        list:
+          min: 1
+          collapsible:
+            collapsed: false
+            summary: Row {index}
+        fields:
+        - name: cells
+          label: Cells, in column order
+          type: string
+          list:
+            min: 1
+            max: 8
+          required: true
+          description: Add one cell for each column heading.
+content:
+- name: notes
+  label: Notes
+  type: collection
+  path: notes
+  format: json
+  exclude:
+  - .gitkeep
+  subfolders: false
+  filename:
+    template: '{year}-{month}-{day}-{hour}{minute}{second}.json'
+    field: false
+  view:
+    fields:
+    - title
+    - date
+    - language
+    - highlight
+    - published
+    primary: title
+    sort:
+    - date
+    - title
+    default:
+      sort: date
+      order: desc
+    search:
+    - title
+    - summary
+    - body
+    - categories
+  actions:
+  - name: preview-note
+    label: Build private preview
+    scope: entry
+    workflow: preview.yml
+    ref: current
+    confirm:
+      title: Build a private preview
+      message: Save your changes first. When the action finishes, open its run Summary for the private browser link,
+        when available, or Download note-preview. Previews do not open automatically.
+      button: Build preview
+  - name: publish-note
+    label: Publish saved changes
+    scope: entry
+    workflow: publish.yml
+    ref: current
+    confirm:
+      title: Publish this saved revision?
+      message: Save your changes first. This publishes exactly the saved revision of this note and its enabled translations.
+        Other drafts remain private.
+      button: Publish saved changes
+    cancelable: false
+  - name: withdraw-note
+    label: Withdraw from website
+    scope: entry
+    workflow: publish.yml
+    ref: current
+    cancelable: false
+    confirm:
+      title: Withdraw this note?
+      message: Remove the released article and its listings from the website. Your saved note, original uploads,
+        and publication history stay private and unchanged. Previously saved public copies cannot be recalled.
+      button: Withdraw note
+  fields:
+  - name: title
+    label: Title (optional)
+    type: string
+    options:
+      maxlength: 160
+  - name: body
+    label: Text
+    component: text
+  - name: blocks
+    component: blocks
+  - name: date
+    label: Date
+    type: date
+    required: true
+    options:
+      format: yyyy-MM-dd
+  - name: language
+    label: Original language
+    type: select
+    default: en
+    options:
+      values:
+      - name: en
+        label: English
+      - name: zh
+        label: 简体中文
+      - name: zh-Hant
+        label: 繁體中文
+      - name: ja
+        label: 日本語
+      - name: ko
+        label: 한국어
+      - name: es
+        label: Español
+  - name: categories
+    label: Categories (optional)
+    type: string
+    list:
+      max: 8
+    description: Add your own names, using the same spelling each time. Up to eight categories. The Birthday switch
+      adds its category automatically.
+    options:
+      minlength: 1
+      maxlength: 48
+  - name: summary
+    label: Short introduction (optional)
+    type: text
+    description: Used beneath the title and when sharing. Leave empty to use the opening text.
+    options:
+      maxlength: 240
+  - name: sharing_image
+    label: Sharing image (optional)
+    type: object
+    description: Used for link previews and as the default image on the site. Select an image and add its required
+      description, or leave both empty.
+    fields:
+    - name: image
+      label: Image
+      type: image
+      required: true
+      options:
+        media: photographs
+    - name: alt
+      label: Image description
+      type: string
+      required: true
+      description: Describe the image for people who cannot see it.
+  - name: list_image
+    label: On-site image (optional)
+    type: object
+    description: A separate image for Notes and the homepage. Leave empty to use the sharing image or the first
+      photograph.
+    fields:
+    - name: image
+      label: Image
+      type: image
+      required: true
+      options:
+        media: photographs
+    - name: alt
+      label: Image description
+      type: string
+      required: true
+      description: Describe the image for people who cannot see it.
+  - name: highlight
+    label: Feature beneath About
+    type: boolean
+    default: false
+    description: Include this published post in the homepage Notes carousel. Multiple featured posts rotate every
+      eight seconds. With none selected, the latest published post appears.
+  - name: highlight_until
+    label: Feature until (optional)
+    type: date
+    default: ''
+    description: The post stays in Notes after its homepage feature ends.
+    options:
+      format: yyyy-MM-dd
+  - name: font
+    label: Reading font
+    type: select
+    default: default
+    description: Applies to this post’s text. Local fonts keep reading fast; the exact face depends on the reader’s
+      device and language.
+    options:
+      values:
+      - name: default
+        label: Site default
+      - name: sans
+        label: Sans serif — clean
+      - name: serif
+        label: Serif — literary
+      - name: mono
+        label: Monospace — notebook
+  - name: translations
+    label: Other language versions (optional)
+    type: object
+    list:
+      collapsible:
+        collapsed: true
+        summary: '{language} — {title}'
+      max: 5
+    fields:
+    - name: language
+      label: Language
+      type: select
+      required: true
+      options:
+        values:
+        - name: en
+          label: English
+        - name: zh
+          label: 简体中文
+        - name: zh-Hant
+          label: 繁體中文
+        - name: ja
+          label: 日本語
+        - name: ko
+          label: 한국어
+        - name: es
+          label: Español
+    - name: title
+      label: Title (optional)
+      type: string
+    - name: summary
+      label: Short introduction (optional)
+      type: text
+      options:
+        maxlength: 240
+    - name: body
+      label: Text
+      component: text
+    - name: blocks
+      component: blocks
+    - name: published
+      label: Publish this translation
+      type: boolean
+      default: false
+      description: Include this language when you next publish the note. Saving a translation never publishes it
+        by itself.
+  - name: birthday
+    label: Birthday
+    type: boolean
+    default: false
+    description: Adds balloons and the Birthday category. The note appears in Notes and on the homepage for 24 hours
+      from its first publication. Saving or editing does not restart that clock.
+  - name: birthday_visibility
+    label: Birthday only · after 24 hours
+    type: select
+    default: 24-hours
+    description: Used only when Birthday is on. Birthday notes leave Notes and the homepage after 24 hours. Choose
+      whether the article itself is removed or its direct link stays available. Your private original is always
+      retained.
+    options:
+      values:
+      - name: 24-hours
+        label: Remove the public article
+      - name: keep-link
+        label: Keep the direct link accessible
+  - name: published
+    label: Ready to publish
+    type: boolean
+    default: false
+    description: Saving stays private. Turn this on and save, then use Publish saved changes. Use Withdraw from
+      website to remove the live article while keeping your private original.
+  - name: slug
+    label: Article address (automatic)
+    type: string
+    readonly: true
+    description: New notes receive an automatic address. Existing article addresses stay unchanged when you edit
+      the title.
+  - name: editor_version
+    type: number
+    hidden: true
+    default: 2
+  operations:
+    create: true
+    rename: false
+    delete: false
+settings:
+  content:
+    merge: true
+  commit:
+    templates:
+      create: Save new {filename} (via Pages CMS)
+      update: Save {filename} (via Pages CMS)
