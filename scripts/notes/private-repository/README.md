@@ -7,14 +7,14 @@ Open [Pages CMS](https://app.pagescms.org), sign in with GitHub, and select **TG
 1. Choose **Notes → New**. Titles are optional. Write in Text first; add photographs, video, tables, or more text using More content. Content blocks can be collapsed and reordered.
 2. Save whenever you want. Saving never publishes edits, even when Ready to publish is on. The currently released revision stays online while you edit privately.
 3. Choose **Build private preview** after saving. Open the resulting private GitHub Actions run. Its Summary provides **View saved note** when private browser previews are configured; sign in using your authorized email. It also contains **Download note-preview** as a fallback. Download and unzip that ZIP, then open an HTML file in any browser. Neither preview opens automatically. Browser previews and downloads expire after three days; keep downloaded copies private.
-4. Turn **Ready to publish** on, save, preview, then use **Publish saved changes**. This releases exactly the saved revision of this entry and its referenced uploads. Other drafts remain private. Publication waits for both Cloudflare Pages and GitHub Pages and links to the article after deployment. Saving is not publishing.
+4. Turn **Ready to publish** on, save, preview, then use **Publish saved changes**. This releases exactly the saved revision of this entry and its referenced uploads. Other drafts remain private. Publication waits for both Cloudflare Pages and GitHub Pages and links to the article after deployment. Saving is not publishing. The Date field is the displayed date, not a publication schedule.
 5. Use **Withdraw from website** to remove a live article while retaining the saved note, original uploads, and publication history. You can publish it again later. Direct file deletion and renaming are disabled in the editor so they cannot be confused with withdrawal. Previously public copies may remain in Git history, browser caches, and feed readers.
 
 ## Photographs and videos
 
 Upload JPG, PNG, or WebP photos. Describe what is in each photograph. Published photos are resized into responsive WebP files with metadata removed; original uploads stay here. Only photos referenced by explicitly released revisions are exported. The sharing cover is compressed into a social preview and responsive on-site images. Choose an optional **On-site image** and its description to use a different image in the archive and homepage without changing the sharing cover.
 
-Sharing image and On-site image are optional groups. When you choose an image, its **Image description** is required and marked accordingly. Leave both fields empty when no image is needed.
+Image controls start empty: nothing is required until you choose **Add a sharing image** or **Use a different on-site image**. Then both Image and Image description are required. Remove that image block to return to the default; removing an image block does not delete its upload from the media library.
 
 For a Video block, explicitly choose **Upload a short clip** or **Hosted video link**. MP4 and WebM uploads support clips up to 20 MB. For larger videos, use a direct HTTPS MP4/WebM URL hosted on your chosen media service. Add a preview photograph and, when helpful, a transcript. Videos never autoplay.
 
@@ -32,7 +32,7 @@ In **More content**, choose **SAME header experiment** to add the silent field, 
 
 ## Homepage feature
 
-The homepage has a Notes entrance beneath About. Turn on **Feature beneath About** for each post you want in its carousel. Featured posts rotate every eight seconds; readers can use the dots, arrows, or swipe. Hover does not pause rotation; keyboard focus holds the current post. Reduced-motion and lightweight browsing use manual navigation. An optional end date removes a post from the carousel while keeping it in Notes. With no active featured posts, the latest published note appears.
+The homepage has a Notes entrance beneath About. Turn on **Feature beneath About** for each post you want in its carousel. Featured posts rotate every five seconds; readers can use the dots, arrows, or swipe. Hover does not pause rotation; keyboard focus holds the current post. Reduced-motion and lightweight browsing use manual navigation. An optional end date removes a post from the carousel while keeping it in Notes. With no active featured posts, the latest published note appears. There is no fixed post limit: every eligible featured post is included, newest first. Around three to six featured posts is a useful size; the rest remain in All notes.
 
 ## Categories
 

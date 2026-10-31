@@ -221,6 +221,8 @@ content:
     required: true
     options:
       format: yyyy-MM-dd
+    description: The date displayed on the note. It does not schedule publication; Publish saved changes releases
+      it immediately.
   - name: language
     label: Original language
     type: select
@@ -256,50 +258,60 @@ content:
     options:
       maxlength: 240
   - name: sharing_image
-    label: Sharing image (optional)
-    type: object
-    description: Used for link previews and as the default image on the site. Select an image and add its required
-      description, or leave both empty.
-    fields:
-    - name: image
-      label: Image
-      type: image
-      required: true
-      options:
-        media: photographs
-    - name: alt
-      label: Image description
-      type: string
-      required: true
-      description: Describe the image for people who cannot see it.
+    label: Sharing image
+    type: block
+    description: Add a cover for link previews. Without one, the first photograph is used; a text-only note uses
+      the site preview. Adding an image opens its required image and description fields.
+    blockKey: type
+    blocks:
+    - name: custom
+      label: Add a sharing image
+      fields:
+      - name: image
+        label: Image
+        type: image
+        required: true
+        options:
+          media: photographs
+      - name: alt
+        label: Image description
+        type: string
+        required: true
+        description: Describe what is shown. This is required for the image you have added.
   - name: list_image
-    label: On-site image (optional)
-    type: object
-    description: A separate image for Notes and the homepage. Leave empty to use the sharing image or the first
-      photograph.
-    fields:
-    - name: image
-      label: Image
-      type: image
-      required: true
-      options:
-        media: photographs
-    - name: alt
-      label: Image description
-      type: string
-      required: true
-      description: Describe the image for people who cannot see it.
+    label: On-site image
+    type: block
+    description: By default, Notes and the homepage use the sharing image or the first photograph. Only add this
+      if you want a different thumbnail.
+    blockKey: type
+    blocks:
+    - name: custom
+      label: Use a different on-site image
+      fields:
+      - name: image
+        label: Image
+        type: image
+        required: true
+        options:
+          media: photographs
+      - name: alt
+        label: Image description
+        type: string
+        required: true
+        description: Describe what is shown. This is required for the image you have added.
   - name: highlight
     label: Feature beneath About
     type: boolean
     default: false
-    description: Include this published post in the homepage Notes carousel. Multiple featured posts rotate every
-      eight seconds. With none selected, the latest published post appears.
+    description: Include this published post in the homepage Notes carousel. All featured posts rotate every five
+      seconds, newest first. With none selected, the latest published post appears. Around three to six featured
+      posts keeps the carousel easy to browse.
   - name: highlight_until
     label: Feature until (optional)
     type: date
     default: ''
-    description: The post stays in Notes after its homepage feature ends.
+    description: Only applies when Feature beneath About is on. The post stays in Notes after its homepage feature
+      ends.
     options:
       format: yyyy-MM-dd
   - name: font
@@ -387,8 +399,8 @@ content:
     label: Ready to publish
     type: boolean
     default: false
-    description: Saving stays private. Turn this on and save, then use Publish saved changes. Use Withdraw from
-      website to remove the live article while keeping your private original.
+    description: Saving keeps your changes private, even when this is on. Turn on and save before using Publish
+      saved changes. To remove an existing article, use Withdraw from website.
   - name: slug
     label: Article address (automatic)
     type: string

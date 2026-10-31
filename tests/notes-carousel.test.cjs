@@ -35,16 +35,16 @@ test('expired birthday slides leave the rotation; an empty carousel releases its
   assert.equal(h.frame.hidden,true); assert.equal(h.timers.size,0);
   h.next.listeners.click(); assert.equal(h.timers.size,0);
 });
-test('autoplay advances every eight seconds and keeps only the active article focusable',()=>{
-  const h=harness(); assert.equal(h.timers.values().next().value.delay,8000);
+test('autoplay advances every five seconds and keeps only the active article focusable',()=>{
+  const h=harness(); assert.equal(h.timers.values().next().value.delay,5000);
   assert.equal(h.slides[1].inert,true); h.fire();
   assert.equal(h.track.style.transform,'translateX(-100%)');
   assert.equal(h.slides[1].inert,false); assert.equal(h.slides[0].querySelector('a').tabIndex,-1);
-  assert.equal(h.timers.values().next().value.delay,8000);
+  assert.equal(h.timers.values().next().value.delay,5000);
 });
 test('keyboard focus suspends the interval while hover and mouse clicks leave autoplay running',()=>{
   const h=harness();h.advance(1200);h.frame.listeners.focusin();assert.equal(h.timers.size,0);
-  h.frame.listeners.focusout({relatedTarget:null});assert.equal(h.timers.values().next().value.delay,6800);
+  h.frame.listeners.focusout({relatedTarget:null});assert.equal(h.timers.values().next().value.delay,3800);
   h.frame.listeners.focusin({target:{matches:()=>false}});h.next.listeners.click();assert.equal(h.timers.size,1);
   assert.equal(h.frame.listeners.pointerenter,undefined);assert.equal(h.frame.listeners.pointerleave,undefined);
 });

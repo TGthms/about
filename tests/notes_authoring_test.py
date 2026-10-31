@@ -39,7 +39,7 @@ class AuthoringTests(unittest.TestCase):
         self.assertEqual(old, before)
         self.assertEqual(new['body'], old['body']); self.assertEqual(new['translations'], old['translations'])
         self.assertEqual(new['extra'], old['extra']); self.assertEqual(new['slug'], 'established-address')
-        self.assertEqual(new['sharing_image'], {'image':old['cover'],'alt':old['cover_alt']})
+        self.assertEqual(new['sharing_image'], {'type':'custom','image':old['cover'],'alt':old['cover_alt']})
         self.assertTrue(new['birthday'])
         self.assertEqual(new['blocks'][0]['source'], {'type':'upload','file':'/media/videos/a.mp4'})
         self.assertEqual(authoring.migrate(new, 'automatic.json'), new)
@@ -54,6 +54,23 @@ class AuthoringTests(unittest.TestCase):
         self.assertEqual(result['blocks'][0]['file'],'')
         self.assertEqual(result['blocks'][0]['url'],'https://example.com/new.webm')
         self.assertEqual(value['cover'],'/media/images/old.png')
+
+    def test_image_choices_preserve_existing_photos_and_can_return_to_defaults(self):
+        value={**self.post,'editor_version':2,
+               'sharing_image':{'image':'/media/images/photo.png','alt':'Original description','credit':'Kept'},
+               'list_image':{'image':'','alt':''}}
+        migrated=authoring.migrate(value,'post.json')
+        self.assertEqual(migrated['sharing_image'],{'type':'custom',**value['sharing_image']})
+        self.assertIsNone(migrated['list_image'])
+        self.assertEqual(authoring.normalize(migrated)['cover'],'/media/images/photo.png')
+        self.assertEqual(authoring.issues(migrated,self.root),([],[]))
+        migrated['cover']='/media/images/old.png'
+        migrated['sharing_image']=None
+        self.assertEqual(authoring.normalize(migrated)['cover'],'')
+        self.assertEqual(authoring.issues(migrated,self.root),([],[]))
+        selected={**self.post,'sharing_image':{'type':'custom','image':'','alt':''}}
+        self.assertIn('Sharing image → Image','\n'.join(authoring.issues(selected,self.root)[0]))
+        self.assertEqual(authoring.issues(selected,self.root,strict=False)[0],[])
 
     def test_errors_identify_all_fields_and_draft_preview_keeps_alt_as_warning(self):
         value={**self.post,'sharing_image':{'image':'/media/images/photo.png'},'categories':['x'*49],
@@ -116,7 +133,7 @@ class AuthoringTests(unittest.TestCase):
         self.assertNotEqual(result.returncode,0);self.assertIn('Ready to publish',result.stderr)
         self.assertEqual((self.root/'.published.json').read_bytes(),previous)
 
-    def test_editor_configuration_keeps_required_images_optional_as_groups(self):
+    def test_editor_configuration_only_shows_required_image_fields_after_opting_in(self):
         config=yaml.safe_load((ROOT/'scripts/notes/private-repository/.pages.yml').read_text())
         self.assertTrue(config['settings']['content']['merge'])
         collection=config['content'][0];fields={f['name']:f for f in collection['fields']}
@@ -124,7 +141,12 @@ class AuthoringTests(unittest.TestCase):
         self.assertLess(list(fields).index('body'),list(fields).index('font'))
         for key in ('sharing_image','list_image'):
             self.assertNotIn('required',fields[key])
-            self.assertTrue(all(f.get('required') for f in fields[key]['fields']))
+            self.assertNotIn('(optional)',fields[key]['label'])
+            self.assertEqual(fields[key]['type'],'block')
+            self.assertNotIn('default',fields[key])
+            self.assertEqual(fields[key]['blockKey'],'type')
+            self.assertEqual(fields[key]['blocks'][0]['name'],'custom')
+            self.assertTrue(all(f.get('required') for f in fields[key]['blocks'][0]['fields']))
         self.assertEqual(fields['categories']['list']['max'],8)
         self.assertEqual(fields['categories']['options']['maxlength'],48)
         actions={a['name']:a for a in collection['actions']}

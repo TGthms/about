@@ -1,4 +1,4 @@
-/* Eight-second featured Notes carousel. Native scrolling is the fallback. */
+/* Five-second featured Notes carousel. Native scrolling is the fallback. */
 (function () {
   "use strict";
   var frame = document.querySelector('[data-notes-carousel]');
@@ -12,7 +12,8 @@
   var status = frame.querySelector('[data-note-carousel-status]');
   var motion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
   var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
-  var active = [], index = 0, timer = 0, remaining = 8000, started = 0;
+  var interval = 5000;
+  var active = [], index = 0, timer = 0, remaining = interval, started = 0;
   var visible = false, focused = false, touching = false, touchStart = null;
   var buttons = [], observer = null;
   function now() { return window.performance ? window.performance.now() : Date.now(); }
@@ -33,7 +34,7 @@
   }
   function stop() {
     if (timer) { remaining = Math.max(0, remaining - (now() - started)); clearTimeout(timer); timer = 0; }
-    progress(1 - remaining / 8000, 0);
+    progress(1 - remaining / interval, 0);
   }
   function run() {
     if (!allowed() || timer) return;
@@ -43,7 +44,7 @@
   }
   function move(nextIndex, manual) {
     if (!active.length) return;
-    stop(); remaining = 8000;
+    stop(); remaining = interval;
     index = (nextIndex + active.length) % active.length;
     active.forEach(function (slide, i) {
       var current = i === index;

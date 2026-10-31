@@ -44,6 +44,12 @@ def migrate(value, filename):
     for group, image, alt in (('sharing_image', 'cover', 'cover_alt'), ('list_image', 'thumbnail', 'thumbnail_alt')):
         if group not in result and (result.get(image) or result.get(alt)):
             result[group] = {'image': result.get(image, ''), 'alt': result.get(alt, '')}
+        if group in result:
+            selected = result[group]
+            if not selected or (isinstance(selected, dict) and not any(selected.values())):
+                result[group] = None
+            elif isinstance(selected, dict):
+                result[group] = {'type': 'custom', **selected}
         result.pop(image, None)
         result.pop(alt, None)
     for version in [result] + (result.get('translations') or []):
@@ -111,6 +117,12 @@ def issues(value, private, strict=True):
 
     for key, alt, label in (('cover', 'cover_alt', 'Sharing image'), ('thumbnail', 'thumbnail_alt', 'On-site image')):
         image(post.get(key), post.get(alt), label)
+    for group, label in (('sharing_image', 'Sharing image'), ('list_image', 'On-site image')):
+        selected = post.get(group) or {}
+        if selected.get('type') not in (None, 'custom'):
+            problem(label, 'choose an image using the image control.')
+        if selected.get('type') == 'custom' and not selected.get('image'):
+            problem(label + ' → Image', 'select an image, or remove this image block to use the default.', True)
 
     class InlineImages(HTMLParser):
         def __init__(self, label):
