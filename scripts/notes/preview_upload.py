@@ -69,6 +69,9 @@ def main():
     except (ValueError, KeyError, OSError, urllib.error.URLError, json.JSONDecodeError) as error:
         # No token, request body, or confidential article text is ever logged.
         detail = ('HTTP ' + str(error.code)) if isinstance(error, urllib.error.HTTPError) else type(error).__name__
+        if isinstance(error, urllib.error.HTTPError):
+            check = error.headers.get('X-Preview-Check')
+            if check in ('repository', 'branch', 'workflow', 'event', 'run'): detail += ' · ' + check + ' identity'
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
             summary.write('## Browser preview unavailable\n\nYour draft remains private. Use the download below; the saved preview was built successfully.\n\nService check: ' + detail + '.\n\n')
         print('Browser preview unavailable (' + detail + '); the private download remains available.')

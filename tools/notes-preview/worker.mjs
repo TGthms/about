@@ -56,9 +56,15 @@ export default {
         const token = request.headers.get('Authorization')?.replace(/^Bearer /, '');
         claims = await verify(token, 'https://token.actions.githubusercontent.com', env.PREVIEW_ORIGIN, env.FETCH || fetch);
       } catch { return reply('Authentication required', 401); }
-      if (claims.repository !== 'TGthms/about-notes' || claims.ref !== 'refs/heads/main' ||
-          claims.workflow_ref !== 'TGthms/about-notes/.github/workflows/preview.yml@refs/heads/main' ||
-          claims.event_name !== 'workflow_dispatch' || upload[1] !== claims.run_id + '-' + claims.run_attempt) return reply('Forbidden', 403);
+      const scope = [
+        ['repository', claims.repository === 'TGthms/about-notes'],
+        ['branch', claims.ref === 'refs/heads/main'],
+        ['workflow', claims.workflow_ref === 'TGthms/about-notes/.github/workflows/preview.yml@refs/heads/main'],
+        ['event', claims.event_name === 'workflow_dispatch'],
+        ['run', upload[1] === claims.run_id + '-' + claims.run_attempt]
+      ];
+      const mismatch = scope.find(([, matches]) => !matches);
+      if (mismatch) return reply('Forbidden', 403, { 'X-Preview-Check': mismatch[0] });
       const length = Number(request.headers.get('Content-Length'));
       if (!length || length > MAX_FILE) return reply('Preview file is too large', 413);
       const bytes = await request.arrayBuffer();
