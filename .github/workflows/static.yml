@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Refresh resource versions
+        run: python3 scripts/version-assets.py
 
       - name: Check JavaScript syntax
         shell: bash
@@ -31,6 +33,9 @@ jobs:
 
       - name: Check interaction regressions
         run: node --test tests/*.test.cjs
+
+      - name: Check resource version generation
+        run: python3 tests/resource_versions_test.py
 
       - name: Check HTML integrity
         run: python3 tests/html-integrity.py
@@ -60,6 +65,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Refresh resource versions
+        run: python3 scripts/version-assets.py
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Upload public artifact

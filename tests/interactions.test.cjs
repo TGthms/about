@@ -165,3 +165,18 @@ test('constrained image loading stays serial and visible-only without Intersecti
  b.img.complete=true;b.img.naturalWidth=200;b.fire('load');
  assert.equal(c.img.getAttribute('src'),'compact/image-2.jpg');
 });
+
+
+test('Simplified Chinese uses WeChat while Traditional Chinese opens Instagram', () => {
+  const context = {};
+  vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8') + '\nthis.packs = TRANSLATIONS;', context);
+  assert.equal(context.packs.zh.links.social.mode,'wechat');
+  assert.equal(context.packs.zh.links.social.href,null);
+  for (const lang of ['en','zh-Hant']) {
+    const social=context.packs[lang].links.social;
+    assert.equal(social.mode,'instagram');
+    assert.equal(social.href,'https://www.instagram.com/timg.ins/');
+    assert.equal(social.label,'Instagram');
+    assert.equal(social.sub,'@timg.ins');
+  }
+});

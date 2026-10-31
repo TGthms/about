@@ -163,3 +163,7 @@ must never be added to normal image source sets: this path selects them before
 requests begin. `?lite=1` explicitly selects this path if a browser reports an
 unexpected screen size or user agent. Test a fresh navigation after setting a small viewport; resizing
 an already-open desktop page intentionally keeps its original runtime policy.
+
+### Asset cache versions
+
+After editing JavaScript or CSS, run `python3 scripts/version-assets.py` to refresh local resource references. GitHub Actions performs this automatically before validation and again in the deployment checkout, so small text edits in the language data can deploy without manually editing hashes. Missing assets and invalid references still fail validation.

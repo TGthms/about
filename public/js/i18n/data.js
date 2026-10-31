@@ -786,12 +786,10 @@ TRANSLATIONS["zh-Hant"] = {
       "title": "一些小專案"
     },
     "social": {
-      "href": null,
-      "label": "微信",
-      "mode": "wechat",
-      "sub": "realTimGong",
-      "copyHint": "點擊複製",
-      "copySuccess": "已複製"
+      "href": "https://www.instagram.com/timg.ins/",
+      "label": "Instagram",
+      "mode": "instagram",
+      "sub": "@timg.ins"
     },
     "travelGuide": {
       "desc": "一份精心製作的指南 — 小型網頁專案",

@@ -11,10 +11,11 @@ for attempt in 1 2 3; do
   git fetch origin main
   git reset --hard origin/main
   python scripts/notes/build.py --content ../content
+  python scripts/version-assets.py
   python tests/html-integrity.py
   python tests/notes_test.py
   git diff --check
-  git add public/index.html public/notes.html public/subscribe.html public/notes public/assets/notes public/feed.xml public/sitemap.xml public/notes-expiry.json
+  git add public/*.html public/notes public/assets/notes public/feed.xml public/sitemap.xml public/notes-expiry.json
   if git diff --cached --quiet; then
     git push --dry-run origin HEAD:main
     exit 0
