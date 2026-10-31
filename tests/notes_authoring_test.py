@@ -72,6 +72,31 @@ class AuthoringTests(unittest.TestCase):
         self.assertIn('Sharing image → Image','\n'.join(authoring.issues(selected,self.root)[0]))
         self.assertEqual(authoring.issues(selected,self.root,strict=False)[0],[])
 
+    def test_article_experiment_is_preserved_outside_reusable_content_menu(self):
+        study={'type':'same-study','introduction':'My original introduction.'}
+        old={**self.post,'editor_version':2,'blocks':[{'type':'text','body':'<p>Before.</p>'},study,{'type':'text','body':'<p>After.</p>'}],
+             'translations':[{'language':'zh','published':True,'body':'<p>原文。</p>','blocks':[{'type':'same-study'}, {'type':'text','body':'<p>结尾。</p>'}]}]}
+        before=copy.deepcopy(old)
+        new=authoring.migrate(old,'article.json')
+        self.assertEqual(old,before)
+        self.assertEqual(new['same_study'],{**study,'before_block':1})
+        self.assertNotIn('same-study',[b['type'] for b in new['blocks']])
+        self.assertEqual(authoring.migrate(new,'article.json'),new)
+        normalized=authoring.normalize(new)
+        self.assertEqual(normalized['blocks'],old['blocks'])
+        self.assertEqual(normalized['translations'][0]['blocks'],old['translations'][0]['blocks'])
+        self.assertEqual(authoring.normalize(normalized),normalized)
+        self.assertEqual(authoring.issues(new,self.root),([],[]))
+        media=notes.Media(self.root,self.root/'output')
+        self.assertEqual(notes.body(normalized,media,''),notes.body(old,media,''))
+        config=yaml.safe_load((ROOT/'scripts/notes/private-repository/.pages.yml').read_text())
+        self.assertNotIn('same-study',[b['name'] for b in config['components']['blocks']['blocks']])
+        hidden=config['components']['article-study']
+        self.assertTrue(hidden['hidden']);self.assertTrue(hidden['readonly'])
+        fields=config['content'][0]['fields']
+        for versions in (fields,next(f for f in fields if f['name']=='translations')['fields']):
+            self.assertEqual(next(f for f in versions if f['name']=='same_study')['component'],'article-study')
+
     def test_errors_identify_all_fields_and_draft_preview_keeps_alt_as_warning(self):
         value={**self.post,'sharing_image':{'image':'/media/images/photo.png'},'categories':['x'*49],
                'blocks':[{'type':'photo','image':'/media/images/missing.png','alt':''}],

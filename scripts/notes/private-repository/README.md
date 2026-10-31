@@ -26,9 +26,9 @@ Choose your original language. Add other language versions only when you want th
 
 Choose **Site default**, **Sans serif**, **Serif**, or **Monospace** for each post. The choice also applies to its translations and private preview. These use fonts already on the reader’s device, with appropriate language fallbacks.
 
-## Interactive SAME study
+## Signal Lab article experiment
 
-In **More content**, choose **SAME header experiment** to add the silent field, byte-order, and repeated-burst model. It follows English and Simplified Chinese post versions; other languages currently show the English model. The optional introduction is plain text. The experiment uses a fixed, bundled component, not arbitrary scripts from the editor. It also works in the downloaded private preview. Ordinary previews remain script-free; experiment previews embed only that local component and make no network requests. The field guide stays readable when scripting is unavailable.
+The existing Signal Lab article keeps its interactive SAME experiment as hidden, article-specific content. It is not offered in More content for new posts. Editing and saving the article preserves the experiment and its position among the surrounding content. Its English and Simplified Chinese versions continue to work in published pages and private previews.
 
 ## Homepage feature
 

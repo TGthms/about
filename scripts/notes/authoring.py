@@ -20,6 +20,13 @@ def normalize(value):
             selected = result.get(group) or {}
             result[image] = selected.get('image', '')
             result[alt] = selected.get('alt', '')
+    study = result.get('same_study')
+    if study and not any(b.get('type') == 'same-study' for b in result.get('blocks') or []):
+        block = copy.deepcopy(study)
+        position = block.pop('before_block', 0)
+        blocks = result.get('blocks') or []
+        result['blocks'] = blocks
+        blocks.insert(max(0, min(int(position), len(blocks))), block)
     for block in result.get('blocks') or []:
         if block.get('type') == 'video':
             if 'source' in block:
@@ -53,6 +60,14 @@ def migrate(value, filename):
         result.pop(image, None)
         result.pop(alt, None)
     for version in [result] + (result.get('translations') or []):
+        studies = [b for b in version.get('blocks') or [] if b.get('type') == 'same-study']
+        if studies:
+            if len(studies) != 1 or version.get('same_study'):
+                raise ValueError('The article contains conflicting saved experiments; its content was left unchanged.')
+            blocks = version['blocks']
+            study = studies[0]
+            version['same_study'] = {**study, 'before_block': blocks.index(study)}
+            version['blocks'] = [b for b in blocks if b is not study]
         for block in version.get('blocks') or []:
             if block.get('type') == 'video' and 'source' not in block:
                 block['source'] = ({'type': 'upload', 'file': block['file']} if block.get('file') else
@@ -69,7 +84,7 @@ def issues(value, private, strict=True):
         (warnings if draft_ok and not strict else errors).append(f'{label}: {message}')
     try:
         post = normalize(value)
-    except (AttributeError, TypeError):
+    except (AttributeError, TypeError, ValueError):
         return ['Content: one of the image, video, or translation groups is malformed.'], []
     lang = post.get('language') or 'en'
     try:
@@ -184,7 +199,7 @@ def issues(value, private, strict=True):
                         cells = row.get('cells') if isinstance(row, dict) else None
                         if not isinstance(cells, list) or len(cells) != len(columns) or any(not isinstance(c, str) for c in cells):
                             problem(f'{field} → Row {row_index}', 'provide one text cell for every column.')
-            elif kind != 'same-study': problem(field, 'choose text, photograph, video, table, or SAME experiment.')
+            elif kind != 'same-study': problem(field, 'choose text, photograph, video, or table.')
     return list(dict.fromkeys(errors)), list(dict.fromkeys(warnings))
 
 

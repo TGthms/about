@@ -28,7 +28,7 @@ components:
   blocks:
     type: block
     label: More content
-    description: Add and reorder text, photographs, video, tables, and interactive content.
+    description: Add and reorder text, photographs, video, and tables.
     list:
       collapsible:
         collapsed: false
@@ -58,14 +58,6 @@ components:
       - name: caption
         label: Caption
         type: text
-    - name: same-study
-      label: SAME header experiment
-      fields:
-      - name: introduction
-        label: Introduction (optional)
-        type: text
-        description: A silent header, byte-order, and repeated-burst experiment. English and Simplified Chinese
-          follow the post language; other languages use English. Leave blank for the standard introduction.
     - name: video
       label: Video
       fields:
@@ -140,6 +132,22 @@ components:
             max: 8
           required: true
           description: Add one cell for each column heading.
+  article-study:
+    type: block
+    blockKey: type
+    hidden: true
+    readonly: true
+    blocks:
+    - name: same-study
+      label: SAME header experiment
+      fields:
+      - name: introduction
+        label: Introduction (optional)
+        type: text
+        description: A silent header, byte-order, and repeated-burst experiment. English and Simplified Chinese
+          follow the post language; other languages use English. Leave blank for the standard introduction.
+      - name: before_block
+        type: number
 content:
 - name: notes
   label: Notes
@@ -303,9 +311,9 @@ content:
     label: Feature beneath About
     type: boolean
     default: false
-    description: Show this published post in the homepage Notes carousel. Only the six newest eligible featured posts
-      appear, ordered by Date, rotating every five seconds. Older featured posts remain in All notes. With none
-      selected, the latest published post appears.
+    description: Show this published post in the homepage Notes carousel. Only the six newest eligible featured
+      posts appear, ordered by Date, rotating every five seconds. Older featured posts remain in All notes. With
+      none selected, the latest published post appears.
   - name: highlight_until
     label: Feature until (optional)
     type: date
@@ -376,6 +384,8 @@ content:
       default: false
       description: Include this language when you next publish the note. Saving a translation never publishes it
         by itself.
+    - name: same_study
+      component: article-study
   - name: birthday
     label: Birthday
     type: boolean
@@ -411,6 +421,8 @@ content:
     type: number
     hidden: true
     default: 2
+  - name: same_study
+    component: article-study
   operations:
     create: true
     rename: false
