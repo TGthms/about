@@ -58,10 +58,12 @@ def main():
     origin = os.environ.get('NOTES_PREVIEW_ORIGIN', '').rstrip('/')
     if not origin:
         print('Browser preview is not configured; use the private download.'); return
+    stage = 'GitHub workflow identity'
     try:
         request_url = os.environ['ACTIONS_ID_TOKEN_REQUEST_URL'] + '&audience=' + urllib.parse.quote(origin, safe='')
         request = urllib.request.Request(request_url, headers={'Authorization':'Bearer ' + os.environ['ACTIONS_ID_TOKEN_REQUEST_TOKEN']})
         with urllib.request.urlopen(request, timeout=20) as response: token = json.load(response)['value']
+        stage = 'Private preview service'
         url = upload(args.directory, origin, os.environ['GITHUB_RUN_ID'] + '-' + os.environ['GITHUB_RUN_ATTEMPT'], token)
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
             summary.write('## Open your private preview\n\n[View saved note](' + url + ')\n\nSign in with your authorized email. This preview expires after three days.\n\n')
@@ -72,6 +74,10 @@ def main():
         if isinstance(error, urllib.error.HTTPError):
             check = error.headers.get('X-Preview-Check')
             if check in ('repository', 'branch', 'workflow', 'event', 'run'): detail += ' · ' + check + ' identity'
+            elif error.code == 403:
+                response = error.read(256000).lower()
+                if b'cloudflare' in response: detail += ' · Cloudflare gateway'
+        detail = stage + ': ' + detail
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
             summary.write('## Browser preview unavailable\n\nYour draft remains private. Use the download below; the saved preview was built successfully.\n\nService check: ' + detail + '.\n\n')
         print('Browser preview unavailable (' + detail + '); the private download remains available.')
