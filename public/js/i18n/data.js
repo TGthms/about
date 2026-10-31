@@ -56,7 +56,7 @@ const TRANSLATIONS = {
       title: "Interests",
       bilingual: {
         title: "Bilingual",
-        desc: "Chinese-American — fluent in Mandarin Chinese and English",
+        desc: "Fluent in Mandarin Chinese and English",
       },
       erhu: {
         title: "Erhu",
