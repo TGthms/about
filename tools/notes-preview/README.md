@@ -18,6 +18,6 @@ The checked-in config intentionally omits personal identity settings. Initial de
 
 ## Verification
 
-`node --test tests/notes-preview.test.cjs` checks owner-only access, JWT verification, upload scope, expiry, Traditional Chinese filenames, script hashes, and video ranges.
+`node --test tests/notes-preview.test.cjs` checks owner-only access, JWT verification, upload scope, expiry, Traditional Chinese filenames, script hashes, audio/video ranges, and authenticated download attachments.
 
-`python scripts/notes/preview_upload.py --directory PATH` runs only in the private preview workflow with GitHub-provided OIDC environment variables. It checks `/health` before transmitting preview bytes. Images and short videos are extracted into deduplicated media files for browser playback; downloadable HTML files remain self-contained and unchanged.
+`python scripts/notes/preview_upload.py --directory PATH` runs only in the private preview workflow with GitHub-provided OIDC environment variables. It checks `/health` before transmitting preview bytes. Images, short videos, audio, and attached documents are extracted into deduplicated files for private browser previews; downloaded HTML previews remain self-contained and unchanged. PDF, ZIP, TXT, CSV, and JSON files are served as attachments. The same owner authentication, workflow identity, file-size limit, and expiry apply to every format.

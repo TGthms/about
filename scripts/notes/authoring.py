@@ -10,6 +10,8 @@ import re
 from urllib.parse import unquote, urlparse
 
 LANGUAGES = ('en', 'zh', 'zh-Hant', 'ja', 'ko', 'es')
+AUDIO_TYPES = {'mp3':'audio/mpeg', 'm4a':'audio/mp4', 'ogg':'audio/ogg', 'wav':'audio/wav'}
+DOWNLOAD_TYPES = {'pdf':'application/pdf', 'zip':'application/zip', 'txt':'text/plain', 'csv':'text/csv', 'json':'application/json'}
 
 
 def normalize(value):
@@ -130,6 +132,20 @@ def issues(value, private, strict=True):
         if not isinstance(alt, str) or not alt.strip():
             problem(label + ' → Image description', 'describe the image before publishing.', True)
 
+    def link(value, label):
+        parsed = urlparse(str(value or ''))
+        valid = ((parsed.scheme == 'https' and parsed.netloc and not parsed.username and not parsed.password) or
+                 (str(value).startswith('/') and not parsed.scheme and not parsed.netloc))
+        if not valid or '\\' in str(value) or any(c.isspace() or ord(c) < 32 for c in str(value)):
+            problem(label, 'use an HTTPS link or a site path beginning with /.')
+
+    def attachment(value, label, types):
+        path = local(value, label, types)
+        if path and path.stat().st_size == 0:
+            problem(label, 'the selected file is empty; upload a complete file.')
+        if path and path.stat().st_size > 20 * 1024 * 1024:
+            problem(label, 'choose a file up to 20 MB.')
+
     for key, alt, label in (('cover', 'cover_alt', 'Sharing image'), ('thumbnail', 'thumbnail_alt', 'On-site image')):
         image(post.get(key), post.get(alt), label)
     for group, label in (('sharing_image', 'Sharing image'), ('list_image', 'On-site image')):
@@ -176,6 +192,50 @@ def issues(value, private, strict=True):
                 if not block.get('image'): problem(field + ' → Photo', 'choose an image.')
                 else: image(block.get('image'), block.get('alt'), field)
             elif kind == 'text': InlineImages(field).feed(str(block.get('body') or ''))
+            elif kind == 'gallery':
+                photos = block.get('images') or []
+                if not isinstance(photos, list) or not 2 <= len(photos) <= 12:
+                    problem(field + ' → Photos', 'add 2–12 photographs.'); continue
+                for i, photo in enumerate(photos, 1):
+                    if not isinstance(photo, dict) or not photo.get('image'): problem(f'{field} → Photo {i}', 'choose a photograph.')
+                    else: image(photo.get('image'), photo.get('alt'), f'{field} → Photo {i}')
+            elif kind == 'comparison':
+                for key in ('before','after'):
+                    photo = block.get(key) or {}
+                    if not isinstance(photo, dict) or not photo.get('image'): problem(field + ' → ' + key.title(), 'choose a photograph.')
+                    else: image(photo.get('image'), photo.get('alt'), field + ' → ' + key.title())
+            elif kind in ('aside','details'):
+                if kind == 'details' and not str(block.get('title') or '').strip(): problem(field + ' → Heading', 'add a heading.')
+                text = str(block.get('body') or '')
+                if not re.sub(r'<[^>]*>', '', text).strip() and '<img' not in text: problem(field + ' → Text', 'add some text or a photograph.')
+                InlineImages(field + ' → Text').feed(text)
+            elif kind in ('link','download','audio'):
+                if not str(block.get('title') or '').strip(): problem(field + ' → Title', 'add a title.')
+                if kind == 'link':
+                    link(block.get('url'), field + ' → Link')
+                    photo = block.get('image') or {}
+                    if not isinstance(photo, dict):
+                        problem(field + ' → Image', 'choose a card image using the image control.'); continue
+                    if photo:
+                        if not photo.get('image'): problem(field + ' → Image', 'select an image or remove this image block.')
+                        else: image(photo.get('image'), photo.get('alt'), field + ' → Image')
+                elif kind == 'download': attachment(block.get('file'), field + ' → File', DOWNLOAD_TYPES)
+                else:
+                    source = block.get('source') or {}
+                    if not isinstance(source, dict):
+                        problem(field + ' → Audio source', 'choose an upload or a hosted audio link.'); continue
+                    if source.get('type') == 'upload': attachment(source.get('file'), field + ' → Audio file', AUDIO_TYPES)
+                    elif source.get('type') == 'hosted':
+                        url = str(source.get('url') or ''); link(url, field + ' → Audio URL')
+                        if urlparse(url).scheme != 'https' or urlparse(url).path.rsplit('.',1)[-1].lower() not in AUDIO_TYPES:
+                            problem(field + ' → Audio URL', 'use a direct HTTPS MP3, M4A, OGG, or WAV link.')
+                    else: problem(field + ' → Audio source', 'choose an upload or a hosted audio link.')
+            elif kind == 'quote':
+                if not str(block.get('text') or '').strip(): problem(field + ' → Quotation', 'add the quotation.')
+                if block.get('url'): link(block['url'], field + ' → Source link')
+            elif kind == 'code':
+                if not isinstance(block.get('code'), str) or not block['code'].strip(): problem(field + ' → Code', 'paste the code to display.')
+                elif len(block['code']) > 100000: problem(field + ' → Code', 'keep code excerpts under 100,000 characters; use a download for larger files.')
             elif kind == 'video':
                 file, url = block.get('file'), block.get('url')
                 if bool(file) == bool(url): problem(field + ' → Source', 'choose either an upload or a hosted video link.')
@@ -199,7 +259,7 @@ def issues(value, private, strict=True):
                         cells = row.get('cells') if isinstance(row, dict) else None
                         if not isinstance(cells, list) or len(cells) != len(columns) or any(not isinstance(c, str) for c in cells):
                             problem(f'{field} → Row {row_index}', 'provide one text cell for every column.')
-            elif kind != 'same-study': problem(field, 'choose text, photograph, video, or table.')
+            elif kind != 'same-study': problem(field, 'choose one of the available content blocks.')
     return list(dict.fromkeys(errors)), list(dict.fromkeys(warnings))
 
 

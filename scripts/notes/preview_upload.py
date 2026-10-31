@@ -16,7 +16,9 @@ USER_AGENT = 'TimG-Notes-Preview/1.0'
 
 def bundle(directory):
     files, entries = {}, []
-    types = {'image/webp': 'webp', 'video/mp4': 'mp4', 'video/webm': 'webm'}
+    types = {'image/webp': 'webp', 'video/mp4': 'mp4', 'video/webm': 'webm',
+             'audio/mpeg':'mp3', 'audio/mp4':'m4a', 'audio/ogg':'ogg', 'audio/wav':'wav',
+             'application/pdf':'pdf', 'application/zip':'zip', 'text/plain':'txt', 'text/csv':'csv', 'application/json':'json'}
     for path in sorted(directory.glob('*.html')):
         html = path.read_text()
         def replace(match):
@@ -25,7 +27,7 @@ def bundle(directory):
             name = hashlib.sha256(raw).hexdigest() + '.' + types[mime]
             files[name] = (raw, mime)
             return name
-        html = re.sub(r'data:(image/webp|video/mp4|video/webm);base64,([A-Za-z0-9+/=]+)', replace, html)
+        html = re.sub(r'data:(' + '|'.join(re.escape(t) for t in types) + r');base64,([A-Za-z0-9+/=]+)', replace, html)
         class Language(HTMLParser):
             language = 'en'
             def handle_starttag(self, tag, attrs):

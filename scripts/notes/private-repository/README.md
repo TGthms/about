@@ -18,6 +18,22 @@ Image controls start empty: nothing is required until you choose **Add a sharing
 
 For a Video block, explicitly choose **Upload a short clip** or **Hosted video link**. MP4 and WebM uploads support clips up to 20 MB. For larger videos, use a direct HTTPS MP4/WebM URL hosted on your chosen media service. Add a preview photograph and, when helpful, a transcript. Videos never autoplay.
 
+## More content choices
+
+The block menu explains each format; its instructions are only for you in the editor. Blocks can be reordered and used in any language version.
+
+- **Photo gallery:** 2–12 photographs together, each with a required description and an optional caption. Readers can open individual images larger.
+- **Audio:** upload MP3, M4A, OGG, or WAV up to 20 MB, or use a direct HTTPS audio-file link. Playback starts only when requested. Add a title and an optional transcript.
+- **Aside:** a highlighted inset for a short observation or clarification, with an optional heading.
+- **Expandable section:** a heading the reader selects to reveal optional text. Write the heading and the text to reveal.
+- **Link card:** a link with your title, description, and optional image. No automatic fetching or third-party embed is involved. Use HTTPS URLs or paths on this site.
+- **Download:** attach a PDF, ZIP, TXT, CSV, or JSON file up to 20 MB. The public link shows its format and size. Attachments are exported only with a released revision, just like photographs.
+- **Quote:** quoted words with optional author, source or verse reference, and source link.
+- **Code snippet:** literal code, optional filename and language label, plus a Copy button for readers. The editor uses JavaScript coloring; the published text is always the code you wrote, never executed. Keep excerpts under 100,000 characters.
+- **Before and after:** two described images with optional labels and caption. Similar framing works best. A slider compares them on supported browsers; Watch-sized or lightweight browsers show both images separately.
+
+Audio files, downloads, and new block controls work in private browser previews and downloaded previews. Expandable sections use the browser’s native controls. Galleries use responsive images. Code copying and image comparisons add a small script only to articles using those controls. No new animation loop or external rendering library is loaded.
+
 ## Languages
 
 Choose your original language. Add other language versions only when you want them. Each translation has its own **Publish this translation** switch; unfinished translations remain private even when the original is published. Readers can choose the available languages on the post.

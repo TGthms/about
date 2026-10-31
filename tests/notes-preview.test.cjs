@@ -78,3 +78,19 @@ test('preview expiration and video range requests remain private',async()=>{
   env.entries.get('123-1/clip.mp4').metadata.expires=Date.now()-1;
   assert.equal((await get(env,'/preview/123-1/clip.mp4')).status,404);
 });
+
+test('audio and downloadable preview files keep owner authentication and attachment rules',async()=>{
+ const env=await environment();
+ for(const [name,type] of [['recording.wav','audio/wav'],['example.csv','text/csv'],['data.json','application/json'],['document.pdf','application/pdf']]) {
+  assert.equal((await put(env,name,'0123456789')).status,201);
+  const response=await get(env,'/preview/123-1/'+name);
+  assert.equal(response.headers.get('Content-Type'),type);
+  assert.equal(response.headers.get('Cache-Control'),'private, no-store');
+  if(!type.startsWith('audio/'))assert.match(response.headers.get('Content-Disposition'),/^attachment;/);
+  const unauthorized=await (await service).default.fetch(new Request('https://preview.example.com/preview/123-1/'+name),env);
+  assert.equal(unauthorized.status,401);
+ }
+ const range=await get(env,'/preview/123-1/recording.wav',{Range:'bytes=3-6'});
+ assert.equal(range.status,206);assert.equal(await range.text(),'3456');
+ assert.equal((await put(env,'unsafe.exe','bytes')).status,405);
+});

@@ -20,6 +20,9 @@ import xml.etree.ElementTree as ET
 _authoring_spec = importlib.util.spec_from_file_location('notes_authoring', Path(__file__).with_name('authoring.py'))
 authoring = importlib.util.module_from_spec(_authoring_spec)
 _authoring_spec.loader.exec_module(authoring)
+_blocks_spec = importlib.util.spec_from_file_location('notes_content_blocks', Path(__file__).with_name('content_blocks.py'))
+content_blocks = importlib.util.module_from_spec(_blocks_spec)
+_blocks_spec.loader.exec_module(content_blocks)
 
 ORIGIN = 'https://timgong.me'
 ROOT = Path(__file__).resolve().parents[2]
@@ -151,11 +154,12 @@ def safe_link(value):
         return ''
     if parsed.scheme in ('https', 'mailto') and (parsed.netloc or parsed.scheme == 'mailto'):
         return value
-    if value.startswith('/notes/') or value in ('/notes.html', '/feed.xml'):
+    if value.startswith('/') and not parsed.netloc:
         return ORIGIN + value
     return ''
 
 class Media:
+    audio_types = authoring.AUDIO_TYPES
     def __init__(self, private, output, preview=False):
         self.private, self.output, self.preview = private, output, preview
         self.cache = {}
@@ -230,6 +234,23 @@ class Media:
                 rgb = opened.convert('RGB')
                 ImageOps.pad(rgb, (1200, 630), color=(20, 23, 25)).save(path, 'JPEG', quality=88, optimize=True)
         return name
+
+    def file(self, value, prefix, kind):
+        source = self.source(value)
+        extension = source.suffix.lower().lstrip('.')
+        allowed = self.audio_types if kind == 'audio' else authoring.DOWNLOAD_TYPES
+        if extension not in allowed: raise ValueError('Choose a supported ' + kind + ' file.')
+        size = source.stat().st_size
+        if not size: raise ValueError('Choose a non-empty file.')
+        if size > 20 * 1024 * 1024: raise ValueError('Choose a file up to 20 MB.')
+        raw = source.read_bytes()
+        mime = allowed[extension]
+        if self.preview: return 'data:' + mime + ';base64,' + base64.b64encode(raw).decode(), mime, size
+        name = 'assets/notes/' + hashlib.sha256(raw).hexdigest()[:20] + '.' + extension
+        destination = self.output / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if not destination.exists(): destination.write_bytes(raw)
+        return prefix + name, mime, size
 
     def video(self, block, prefix):
         value = str(block.get('file') or block.get('url') or '')
@@ -437,7 +458,10 @@ def body(post, media, prefix):
             result += (f'<div class="note-table" role="region" aria-label="{esc(caption)}" tabindex="0"><table>'
                        f'<caption>{esc(caption)}</caption><thead><tr>{columns}</tr></thead><tbody>{rows}</tbody></table></div>')
         elif kind == 'same-study': result += same_study(post['language'], block.get('introduction', ''))
-        else: raise ValueError('Unknown content block. Choose text, photo, video, table, or a SAME study.')
+        else:
+            rendered = content_blocks.render(block, post['language'], media, prefix, rich, esc, safe_link)
+            if rendered is None: raise ValueError('Choose one of the available content blocks.')
+            result += rendered
     if not plain(result).strip() and '<img ' not in result and '<video ' not in result:
         raise ValueError('Add some text, a photograph, or a video before publishing.')
     return result
@@ -446,6 +470,12 @@ def first_photo(post):
     if post.get('cover'): return post['cover'], post.get('cover_alt') or ''
     for block in post.get('blocks') or []:
         if block.get('type') == 'photo' and block.get('image'): return block['image'], block.get('alt', '')
+        if block.get('type') == 'gallery' and block.get('images'):
+            photo = block['images'][0]
+            return photo['image'], photo.get('alt', '')
+        if block.get('type') == 'comparison' and block.get('before'):
+            photo = block['before']
+            return photo['image'], photo.get('alt', '')
     class Images(HTMLParser):
         found = None
         blocked = False
@@ -592,6 +622,10 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         markup = markup.replace('</head>', resources + '\n</head>')
         script = resource_versions(f'<script src="{prefix}js/same-study.js" defer></script>', public)
         markup = markup.replace('</body>', script + '\n</body>')
+    if 'data-note-block=' in content:
+        markup = markup.replace('</head>', resource_versions(f'<link rel="stylesheet" href="{prefix}css/note-blocks.css" />', public) + '\n</head>')
+    if 'data-note-code' in content or 'data-note-compare' in content:
+        markup = markup.replace('</body>', resource_versions(f'<script src="{prefix}js/note-blocks.js" defer></script>', public) + '\n</body>')
     return markup
 
 def entrance(posts, media):
@@ -689,6 +723,8 @@ def build(private, public, preview_path=None, preview_output=None):
                     styles = ['styles', 'notes', 'compact']
                     interactive = 'data-same-study ' in rendered
                     if interactive: styles.append('same-study')
+                    enhanced_blocks = 'data-note-code' in rendered or 'data-note-compare' in rendered
+                    if 'data-note-block=' in rendered: styles.append('note-blocks')
                     css = '\n'.join((public / f'css/{name}.css').read_text() for name in styles)
                     markup = re.sub(r'<link[^>]+rel="stylesheet"[^>]*>', '', markup)
                     markup = re.sub(r'<script\b[^>]*>.*?</script>', '', markup, flags=re.S)
@@ -697,6 +733,9 @@ def build(private, public, preview_path=None, preview_output=None):
                     if interactive:
                         # Only this repository-owned component may execute in a preview.
                         script = (public / 'js/same-study.js').read_text().replace('</script', '<\\/script')
+                        markup = markup.replace('</body>', '<script>' + script + '</script></body>')
+                    if enhanced_blocks:
+                        script = (public / 'js/note-blocks.js').read_text().replace('</script', '<\\/script')
                         markup = markup.replace('</body>', '<script>' + script + '</script></body>')
                     # Downloaded previews keep navigation useful without a local server.
                     markup = re.sub(r'href="\.\./notes/([^"/]+\.html)"', lambda m: 'href="' + m[1] + '"', markup)

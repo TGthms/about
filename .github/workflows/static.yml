@@ -54,6 +54,9 @@ jobs:
       - name: Check Notes editor compatibility and private previews
         run: python3 tests/notes_authoring_test.py
 
+      - name: Check reusable Notes content blocks
+        run: python3 tests/notes_blocks_test.py
+
       - name: Check Gallery Manager sync
         run: python3 tests/gallery_sync_test.py
 

@@ -2,7 +2,8 @@
 const TTL = 3 * 24 * 60 * 60;
 const MAX_FILE = 22 * 1024 * 1024;
 const keys = new Map();
-const types = { html: 'text/html; charset=utf-8', webp: 'image/webp', mp4: 'video/mp4', webm: 'video/webm', json: 'application/json' };
+const types = { html: 'text/html; charset=utf-8', webp: 'image/webp', mp4: 'video/mp4', webm: 'video/webm', json: 'application/json',
+  mp3:'audio/mpeg', m4a:'audio/mp4', ogg:'audio/ogg', wav:'audio/wav', pdf:'application/pdf', zip:'application/zip', txt:'text/plain', csv:'text/csv' };
 const headers = { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow, noarchive', 'Referrer-Policy': 'no-referrer' };
 const reply = (text, status = 200, extra = {}) => new Response(text, { status, headers: { ...headers, ...extra } });
 const configured = env => Boolean(env.ACCESS_TEAM_DOMAIN && env.ACCESS_AUDIENCE && env.OWNER_EMAIL);
@@ -48,7 +49,7 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/health') return reply(JSON.stringify({ ready: configured(env) }), 200, { 'Content-Type': 'application/json' });
     if (!configured(env)) return reply('Private previews are not configured yet.', 503);
-    const upload = url.pathname.match(/^\/upload\/(\d{1,20}-\d{1,4})\/([a-z0-9][a-zA-Z0-9.-]{0,180}\.(?:html|webp|mp4|webm|json))$/);
+    const upload = url.pathname.match(/^\/upload\/(\d{1,20}-\d{1,4})\/([a-z0-9][a-zA-Z0-9.-]{0,180}\.(?:html|webp|mp4|webm|json|mp3|m4a|ogg|wav|pdf|zip|txt|csv))$/);
     if (upload) {
       if (request.method !== 'PUT') return reply('Method not allowed', 405);
       let claims;
@@ -78,8 +79,7 @@ export default {
           metadata.hashes.push("'sha256-" + btoa(String.fromCharCode(...digest)) + "'");
         }
       }
-      if (extension === 'json') {
-        if (upload[2] !== 'index.json') return reply('Invalid manifest', 400);
+      if (upload[2] === 'index.json') {
         try {
           const data = JSON.parse(new TextDecoder().decode(bytes));
           if (!Array.isArray(data.files) || !data.files.length || data.files.length > 6 || data.files.some(f =>
@@ -95,7 +95,7 @@ export default {
       const claims = await verify(request.headers.get('Cf-Access-Jwt-Assertion'), 'https://' + env.ACCESS_TEAM_DOMAIN, env.ACCESS_AUDIENCE, env.FETCH || fetch);
       if (typeof claims.email !== 'string' || claims.email.toLowerCase() !== env.OWNER_EMAIL.toLowerCase()) return reply('Forbidden', 403);
     } catch { return reply('Sign in through Cloudflare Access to view this private preview.', 401); }
-    const route = url.pathname.match(/^\/preview\/(\d{1,20}-\d{1,4})\/(?:([a-z0-9][a-zA-Z0-9.-]{0,180}\.(?:html|webp|mp4|webm)))?$/);
+    const route = url.pathname.match(/^\/preview\/(\d{1,20}-\d{1,4})\/(?:([a-z0-9][a-zA-Z0-9.-]{0,180}\.(?:html|webp|mp4|webm|json|mp3|m4a|ogg|wav|pdf|zip|txt|csv)))?$/);
     if (!route) return reply('Open the private preview link from your Notes action.', 200);
     const selected = route[1] + '/' + (route[2] || 'index.json');
     const file = await env.PREVIEWS.getWithMetadata(selected, { type: 'arrayBuffer' });
@@ -108,7 +108,8 @@ export default {
       return reply('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Private preview — Notes</title><style>body{font:17px/1.7 system-ui;max-width:40rem;margin:8vh auto;padding:24px;color:#202629;background:#fbf9f4}a{color:#355e70}li{margin:12px 0}small{color:#626c71}@media(prefers-color-scheme:dark){body{background:#141718;color:#eee}a{color:#a0c5d2}}</style><h1>Private preview</h1><p>Choose a language.</p><ul>' + links + '</ul><small>This saved revision stays private. The preview expires after three days.</small></html>', 200, { 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': contentPolicy() });
     }
     const extra = { 'Content-Type': file.metadata.type, 'Content-Security-Policy': contentPolicy(file.metadata.hashes) };
-    if (file.metadata.type.startsWith('video/')) {
+    if (['pdf','zip','txt','csv','json'].includes(route[2].split('.').pop())) extra['Content-Disposition'] = 'attachment; filename="' + route[2] + '"';
+    if (file.metadata.type.startsWith('video/') || file.metadata.type.startsWith('audio/')) {
       extra['Accept-Ranges'] = 'bytes';
       const range = request.headers.get('Range')?.match(/^bytes=(\d+)-(\d*)$/);
       if (range) {

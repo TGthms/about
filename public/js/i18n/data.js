@@ -1501,3 +1501,82 @@ const NOTES_NOT_FOUND_COPY = {
 Object.keys(NOTES_NOT_FOUND_COPY).forEach(function (lang) {
   ['notFoundTitle', 'notFoundText', 'home'].forEach(function (key, i) { TRANSLATIONS[lang].notes[key] = NOTES_NOT_FOUND_COPY[lang][i]; });
 });
+
+// Interface labels for reusable Notes content blocks.
+const NOTES_BLOCK_COPY = {
+  "en": [
+    "Open image",
+    "Open audio",
+    "Download file",
+    "Copy code",
+    "Code copied.",
+    "Select and copy the code below.",
+    "Before",
+    "After",
+    "Compare images",
+    "Image comparison position"
+  ],
+  "zh": [
+    "查看大图",
+    "打开音频",
+    "下载文件",
+    "复制代码",
+    "代码已复制。",
+    "请选中并复制下方代码。",
+    "之前",
+    "之后",
+    "对比图片",
+    "图片对比分界位置"
+  ],
+  "zh-Hant": [
+    "查看大圖",
+    "開啟音訊",
+    "下載檔案",
+    "複製程式碼",
+    "程式碼已複製。",
+    "請選取並複製下方程式碼。",
+    "之前",
+    "之後",
+    "比較圖片",
+    "圖片比較分界位置"
+  ],
+  "ja": [
+    "画像を開く",
+    "音声を開く",
+    "ファイルをダウンロード",
+    "コードをコピー",
+    "コードをコピーしました。",
+    "下のコードを選択してコピーしてください。",
+    "変更前",
+    "変更後",
+    "画像を比較",
+    "画像の比較位置"
+  ],
+  "ko": [
+    "이미지 열기",
+    "오디오 열기",
+    "파일 다운로드",
+    "코드 복사",
+    "코드를 복사했어요.",
+    "아래 코드를 선택해서 복사해 주세요.",
+    "이전",
+    "이후",
+    "이미지 비교",
+    "이미지 비교 위치"
+  ],
+  "es": [
+    "Abrir imagen",
+    "Abrir audio",
+    "Descargar archivo",
+    "Copiar código",
+    "Código copiado.",
+    "Selecciona y copia el código de abajo.",
+    "Antes",
+    "Después",
+    "Comparar imágenes",
+    "Posición de comparación de imágenes"
+  ]
+};
+Object.keys(NOTES_BLOCK_COPY).forEach(function (lang) {
+  ["openImage", "openAudio", "downloadFile", "copyCode", "codeCopied", "codeCopyFailed", "beforeImage", "afterImage", "compareImages", "comparisonPosition"].forEach(function (key, i) { TRANSLATIONS[lang].notes[key] = NOTES_BLOCK_COPY[lang][i]; });
+});

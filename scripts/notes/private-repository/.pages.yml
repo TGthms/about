@@ -17,6 +17,27 @@ media:
   - mp4
   - webm
   rename: random
+- name: audio
+  label: Audio recordings
+  input: media/audio
+  output: /media/audio
+  extensions:
+  - mp3
+  - m4a
+  - ogg
+  - wav
+  rename: random
+- name: downloads
+  label: Downloadable files
+  input: media/downloads
+  output: /media/downloads
+  extensions:
+  - pdf
+  - zip
+  - txt
+  - csv
+  - json
+  rename: random
 components:
   text:
     type: rich-text
@@ -28,7 +49,8 @@ components:
   blocks:
     type: block
     label: More content
-    description: Add and reorder text, photographs, video, and tables.
+    description: Add and reorder content. The choices explain their purpose; each selected block has guidance for
+      its fields.
     list:
       collapsible:
         collapsed: false
@@ -132,6 +154,250 @@ components:
             max: 8
           required: true
           description: Add one cell for each column heading.
+    - name: gallery
+      label: Photo gallery — a group of photographs
+      fields:
+      - name: images
+        label: Photographs
+        type: object
+        list:
+          min: 2
+          max: 12
+          collapsible:
+            collapsed: false
+            summary: Photo {index} · {caption}
+        fields:
+        - name: image
+          label: Photograph
+          type: image
+          options:
+            media: photographs
+          required: true
+        - name: alt
+          label: Image description
+          type: string
+          required: true
+          description: Describe what is shown for people who cannot see the photograph.
+        - name: caption
+          label: Caption (optional)
+          type: text
+        required: true
+        description: A photo set displayed together. Add 2–12 photographs; each can have its own caption.
+      - name: caption
+        label: Gallery caption (optional)
+        type: text
+    - name: audio
+      label: Audio — a recording with playback controls
+      fields:
+      - name: title
+        label: Recording title
+        type: string
+        required: true
+        description: An audio recording readers can choose to play. It never autoplays.
+      - name: source
+        label: Audio source
+        type: block
+        blockKey: type
+        blocks:
+        - name: upload
+          label: Upload a recording
+          fields:
+          - name: file
+            label: Audio file
+            type: file
+            options:
+              media: audio
+            required: true
+            description: MP3, M4A, OGG, or WAV, up to 20 MB. MP3 is a good choice for broad playback support.
+        - name: hosted
+          label: Use a hosted audio link
+          fields:
+          - name: url
+            label: Audio URL
+            type: string
+            pattern:
+              regex: ^https://[^\s]+\.(?:[mM][pP]3|[mM]4[aA]|[oO][gG][gG]|[wW][aA][vV])(?:[?#][^\s]*)?$
+              message: Use a direct HTTPS MP3, M4A, OGG, or WAV link.
+            required: true
+            description: A direct HTTPS link ending in .mp3, .m4a, .ogg, or .wav; a streaming-service page is not
+              an audio file.
+        required: true
+      - name: caption
+        label: Caption (optional)
+        type: text
+      - name: transcript
+        label: Transcript (optional)
+        type: text
+        description: The words spoken in the recording, if it contains speech.
+    - name: aside
+      label: Aside — a highlighted note
+      fields:
+      - name: title
+        label: Heading (optional)
+        type: string
+        description: A separate inset for a short observation or clarification alongside your main writing.
+      - name: body
+        label: Text
+        component: text
+        required: true
+        description: Write the observation or clarification to highlight.
+    - name: details
+      label: Expandable section — text readers can reveal
+      fields:
+      - name: title
+        label: Clickable heading
+        type: string
+        required: true
+        description: Readers select this heading to show or hide the text. Useful for optional technical details
+          or an answer.
+      - name: body
+        label: Text
+        component: text
+        required: true
+        description: Content revealed when the reader opens the heading.
+    - name: link
+      label: Link card — a titled link with context
+      fields:
+      - name: title
+        label: Link title
+        type: string
+        required: true
+        description: A visual link to a project, another note, or a useful reference. You supply its title and description.
+      - name: url
+        label: Link URL
+        type: string
+        pattern:
+          regex: ^(?:https://[^\s]+|/(?!/)[^\s]*)$
+          message: Use an HTTPS link or a site path beginning with /.
+        required: true
+        description: Use https://… for another website, or /notes/… or /index.html#projects for this site.
+      - name: description
+        label: Short description (optional)
+        type: text
+      - name: image
+        label: Card image
+        type: block
+        description: Add an image only if this link needs one. Otherwise the card uses text.
+        blockKey: type
+        blocks:
+        - name: custom
+          label: Add a card image
+          fields:
+          - name: image
+            label: Image
+            type: image
+            required: true
+            options:
+              media: photographs
+          - name: alt
+            label: Image description
+            type: string
+            required: true
+            description: Describe what is shown. This is required for the image you have added.
+    - name: download
+      label: Download — an attached file
+      fields:
+      - name: title
+        label: Download title
+        type: string
+        required: true
+        description: A file the reader can download. Give it a descriptive name, such as Trip itinerary or Example
+          data.
+      - name: file
+        label: File
+        type: file
+        options:
+          media: downloads
+        required: true
+        description: PDF, ZIP, TXT, CSV, or JSON, up to 20 MB. Only files attached to a released note become public.
+      - name: description
+        label: Description (optional)
+        type: text
+    - name: quote
+      label: Quote — quotation with attribution
+      fields:
+      - name: text
+        label: Quotation
+        type: text
+        required: true
+        description: The quoted words. Author and source below identify who said or wrote them.
+      - name: author
+        label: Author (optional)
+        type: string
+      - name: source
+        label: Source or verse reference (optional)
+        type: string
+        description: For example, a book title or John 11:25.
+      - name: url
+        label: Source link (optional)
+        type: string
+        description: An HTTPS link or a path on this site.
+    - name: code
+      label: Code snippet — displayed code with copying
+      fields:
+      - name: code
+        label: Code
+        type: code
+        options:
+          format: javascript
+        required: true
+        description: Paste a short code example. It is displayed as written, never executed.
+      - name: filename
+        label: Filename (optional)
+        type: string
+        description: For example, decoder.js. Shown above the code.
+      - name: language
+        label: Language label (optional)
+        type: string
+        description: For example, JavaScript, Python, or JSON. A display label for readers.
+    - name: comparison
+      label: Before and after — compare two images
+      fields:
+      - name: before
+        label: Before image
+        type: object
+        fields:
+        - name: image
+          label: Photograph
+          type: image
+          options:
+            media: photographs
+          required: true
+        - name: alt
+          label: Image description
+          type: string
+          required: true
+          description: Describe what is shown for people who cannot see the photograph.
+        - name: label
+          label: Label (optional)
+          type: string
+          description: Leave blank to use Before.
+        required: true
+        description: The original image. Similar framing and dimensions give the clearest comparison.
+      - name: after
+        label: After image
+        type: object
+        fields:
+        - name: image
+          label: Photograph
+          type: image
+          options:
+            media: photographs
+          required: true
+        - name: alt
+          label: Image description
+          type: string
+          required: true
+          description: Describe what is shown for people who cannot see the photograph.
+        - name: label
+          label: Label (optional)
+          type: string
+          description: Leave blank to use After.
+        required: true
+        description: The second image. Readers can move a slider to compare; small devices show both images separately.
+      - name: caption
+        label: Comparison caption (optional)
+        type: text
   article-study:
     type: block
     blockKey: type
