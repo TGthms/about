@@ -22,6 +22,7 @@ test('compact photos cover every existing local photo and leave unknown or remot
  for(const src of photos){const small=r.api.image(src);assert.ok(small.startsWith('assets/compact/'),src);assert.ok(fs.existsSync('public/'+small),small);}
  for(const src of ['assets/projects/future.jpg','https://example.com/image.jpg','assets/example.svg','assets/projects/signal-lab.svg'])assert.equal(r.api.image(src),src);
  assert.equal(runtime().api.image('assets/main-modern.webp'),'assets/main-modern.webp');
+ assert.equal(r.api.image('assets/gallery/new-default.webp'),'assets/compact/gallery/new-default.webp','a new manager-selected still frame keeps its Watch path');
 });
 test('calendar preload and hero choose the same compact image without a high resolution source set',()=>{
  const r=runtime({viewport:240}),links=[];

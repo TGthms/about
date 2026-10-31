@@ -2,7 +2,7 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-function harness({lite=false,reduced=false,saveData=false,firstLoaded=true,finePointer=false}={}) {
+function harness({lite=false,reduced=false,saveData=false,firstLoaded=true,finePointer=false,catalogCount=2}={}) {
   const timers=new Map(),requests=[],events={},windowEvents={},nodes=[];let id=0,clock=0,observer,mutate,motionChanged;
   function element(){const classes=new Set();const e={attrs:{},style:{setProperty(k,v){this[k]=v;}},children:[],events:{},hidden:false,textContent:'',offsetWidth:400,
     classList:{add(...keys){keys.forEach(k=>classes.add(k));},remove(...keys){keys.forEach(k=>classes.delete(k));},contains:k=>classes.has(k),toggle(k,on){on?classes.add(k):classes.delete(k);}},
@@ -11,6 +11,7 @@ function harness({lite=false,reduced=false,saveData=false,firstLoaded=true,fineP
   const frame=element(),image=element(),label=element(),button=element(),card=element(),root=element();
   const initial={src:'assets/gallery/bixby_bridge.webp',file:'bixby_bridge.jpeg',location:'Monterey County, CA'};
   const catalog=[initial,{src:'assets/gallery/disneyland.webp',file:'disneyland.jpeg',location:'Anaheim, CA'}];
+  catalog.length=catalogCount;
   image.attrs['data-src']=initial.src;image.currentSrc=initial.src;image.complete=firstLoaded;image.naturalWidth=firstLoaded?1200:0;
   label.textContent=initial.location;button.hidden=true;
   frame.querySelector=s=>s==='img'?image:s==='button'?button:label;
@@ -35,6 +36,11 @@ test('gallery loads only its visible next photo, updates location and destinatio
  h.tick(1100);const layers=h.frame.children;assert.equal(layers.length,2);assert.equal(layers.filter(l=>l.style.backgroundImage).length,1);
  assert.equal(h.timersOf(4000),1);assert.equal(h.image.removed,true);
 });
+test('a gallery containing one photo keeps its correct destination without a timer or pause control',()=>{
+ const h=harness({catalogCount:1});h.visible(true);
+ assert.equal(h.urls.at(-1),'bixby_bridge.jpeg');assert.equal(h.button.hidden,true);
+ assert.equal(h.requests.length,0);assert.equal(h.timers.size,0);
+});
 test('offscreen, hidden tabs, dialogs, and pause cancel requests and do not rotate until resumed',()=>{
  const h=harness();h.visible(true);h.tick(4000);const pending=h.requests[0];h.visible(false);
  assert.equal(pending.onload,null);assert.equal(h.timers.size,0);
@@ -55,7 +61,8 @@ test('failed or timed-out next photos leave the current photograph, label, and d
  h.tick(4000);h.tick(12000);assert.equal(h.label.textContent,'Monterey County, CA');assert.equal(h.timersOf(4000),1);
 });
 test('gallery catalog has local bounded assets for every reference photo, and all six languages cover personal additions',()=>{
- const c={window:{}};vm.runInNewContext(fs.readFileSync('public/js/gallery-photos.js','utf8'),c);assert.equal(c.window.GALLERY_PHOTOS.length,122);
+ const c={window:{}};vm.runInNewContext(fs.readFileSync('public/js/gallery-photos.js','utf8'),c);assert.ok(Array.isArray(c.window.GALLERY_PHOTOS));
+ assert.equal(new Set(c.window.GALLERY_PHOTOS.map(p=>p.file)).size,c.window.GALLERY_PHOTOS.length);
  for(const p of c.window.GALLERY_PHOTOS){assert.ok(fs.existsSync('public/'+p.src));assert.ok(p.location&&p.file&&p.caption);}
  vm.runInNewContext(fs.readFileSync('public/js/i18n/data.js','utf8')+fs.readFileSync('public/js/erhu-content.js','utf8')+';this.packs=TRANSLATIONS;this.erhu=ERHU_WIKI;',c);
  for(const lang of ['en','es','zh','zh-Hant','ja','ko']){const p=c.packs[lang];for(const key of ['view','pause','resume'])assert.ok(p.interests.photo[key]);assert.ok(c.erhu[lang].recordingDetails);assert.ok(c.erhu[lang].videoIntro);assert.ok(!/\{(build|photo|erhu)\}/.test(p.about.p1));}

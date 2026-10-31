@@ -51,6 +51,9 @@ jobs:
       - name: Check Notes publication and privacy
         run: python3 tests/notes_test.py
 
+      - name: Check Gallery Manager sync
+        run: python3 tests/gallery_sync_test.py
+
   deploy:
     name: Deploy to GitHub Pages
     needs: validate

@@ -129,7 +129,7 @@ The custom-domain host injects Cloudflare’s Web Analytics / RUM beacon. The pr
 The curated timeline ends at v16; its summary includes seasonal celebrations. The instrument dialog pairs a museum photograph with a single prose column on desktop and stacks them on phones. The performance dialog contains the player, its attribution, and a link to the instrument. Both bottom Close controls share the same delegated close handling as their header controls.
 
 The Photography interest jumps to the first project, Travel Gallery. Opening
-that project uses the selected main or backup host. Its project preview shares the travel guide's 122-photo
+that project uses the selected main or backup host. Its project preview shares the travel guide's photo
 catalog, with one photo visible, a four-second cadence, a soft crossfade and zoom,
 and a Public Sans location label. Selecting the project opens the currently
 displayed photo. A two-pixel interval line follows the bottom of the location
@@ -140,6 +140,37 @@ Reduced motion, data-saving connections, and lightweight browsers keep a still
 frame; the Watch copy is bounded to 480 pixels. Failed incoming photos preserve
 the current image, caption, and destination. The recording notice uses a native
 disclosure beneath the video in all six languages.
+
+### Gallery Manager sync
+
+The Travel Guide's local Gallery Manager automatically updates this project's
+shuffle after adding, editing, removing, or rebuilding gallery photos. Photos
+stay local under `public/assets/gallery/`; visitors do not depend on the Travel
+Guide host. Existing photos are adopted without recompression. New or replaced
+photos receive a 1200-pixel WebP at quality 85, and the still-frame preview has a
+480-pixel Watch variant. Video covers are excluded from this shuffle.
+
+By default the manager finds the sibling `about` folder. Start it with
+`--about-root /path/to/about` or set `ABOUT_SITE_ROOT` for a different location;
+`--no-about-sync` disables syncing for a session. The manager shows sync status
+and a **Sync now** retry button. To catch up without opening the manager:
+
+```sh
+python3 tools/gallery_manager.py --sync-about
+```
+
+Run that command from the Travel Guide project. Syncing never commits, pushes,
+or publishes either project. Review and publish each repository separately.
+If About is unavailable or an image conflicts with a local edit, Gallery saves
+still succeed and the manager reports the sync issue. Retry after resolving it.
+
+`scripts/gallery_sync.py` plans and validates the update before writing, refreshes
+HTML resource versions, and rolls back write failures. Its tracked
+`scripts/gallery-sync-state.json` records source hashes and generated-file
+ownership; keep it with the image changes. Unchanged photos are not re-encoded,
+and removal only deletes owned, unmodified files. An empty gallery uses the
+project preview; removing the still-frame photo selects another live photograph.
+Run the isolated regression checks with `python3 tests/gallery_sync_test.py`.
 
 ### Constrained browsers
 

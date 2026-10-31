@@ -8,7 +8,7 @@
   var label = frame.querySelector(".gallery-preview__location");
   var toggle = frame.querySelector("button");
   var card = frame.closest("[data-project]");
-  if (!image || !label || !toggle || !card || catalog.length < 2) return;
+  if (!image || !label || !toggle || !card || !catalog.length) return;
   var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
   var connection = navigator.connection || {};
   var constrained = lightweight || connection.saveData || /(^|-)2g$/.test(connection.effectiveType || "");
@@ -153,7 +153,7 @@
     sync();
   }
   select(current); copy();
-  if (constrained) { toggle.hidden = true; return; }
+  if (constrained || catalog.length < 2) { toggle.hidden = true; return; }
   frame.style.setProperty("--gallery-interval", interval + "ms");
   image.addEventListener("load", prepare);
   prepare();

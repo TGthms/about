@@ -11,7 +11,7 @@
     image: function (src) {
       if (!compact) return src;
       /* Only these local photographs have compact counterparts. */
-      if (!/^assets\/(main-modern\.webp|gallery\/bixby_bridge\.webp|seasonal\/(christmas|good-friday|easter|thanksgiving|palm-sunday|new-year)\.webp|projects\/(duskline|kit-og|gallery-og|tri-valley-mars-society|usa-og|japan-og)\.(jpg|png)|duolingo-qr(-light)?\.jpg|erhu\/erhu-instrument\.jpg)$/.test(src)) return src;
+      if (!/^assets\/(main-modern\.webp|gallery\/[\w.-]+\.webp|seasonal\/(christmas|good-friday|easter|thanksgiving|palm-sunday|new-year)\.webp|projects\/(duskline|kit-og|gallery-og|tri-valley-mars-society|usa-og|japan-og)\.(jpg|png)|duolingo-qr(-light)?\.jpg|erhu\/erhu-instrument\.jpg)$/.test(src)) return src;
       return src.replace(/^assets\//, "assets/compact/").replace(/\.(jpg|png)$/, ".webp");
     }
   };

@@ -731,5 +731,35 @@ window.GALLERY_PHOTOS = [
     "file": "goldengatebridgewithapelican.jpeg",
     "location": "San Francisco, CA",
     "caption": "Golden Gate Bridge with a pelican"
+  },
+  {
+    "src": "assets/gallery/994987b142294fa5804460e6f73e70fc.webp",
+    "file": "994987b142294fa5804460e6f73e70fc.jpeg",
+    "location": "Stanford, CA",
+    "caption": "Main Quad"
+  },
+  {
+    "src": "assets/gallery/stanfordclocktower.webp",
+    "file": "stanfordclocktower.jpeg",
+    "location": "Stanford, CA",
+    "caption": "Stanford Clock Tower"
+  },
+  {
+    "src": "assets/gallery/historicengineeringcorner.webp",
+    "file": "historicengineeringcorner.jpeg",
+    "location": "Stanford, CA",
+    "caption": "Historic Engineering Corner"
+  },
+  {
+    "src": "assets/gallery/stanfordmemorialchuch.webp",
+    "file": "stanfordmemorialchuch.jpeg",
+    "location": "Stanford, CA",
+    "caption": "Stanford Memorial Chuch"
+  },
+  {
+    "src": "assets/gallery/infiniteloop.webp",
+    "file": "infiniteloop.jpeg",
+    "location": "Cupertino, CA",
+    "caption": "Infinite Loop"
   }
 ];
