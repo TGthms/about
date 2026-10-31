@@ -88,9 +88,10 @@ def is_birthday(post):
     return post.get('birthday') is True
 
 def temporary_birthday(post):
+    if not is_birthday(post): return False
     retention = post.get('birthday_visibility', '24-hours')
     if retention not in ('24-hours', 'keep-link'): raise ValueError('Choose Remove article or Keep direct link for Birthday visibility.')
-    return is_birthday(post)
+    return True
 
 def birthday_publication_time(private, path):
     """Use the first committed publication, never the editable display date."""

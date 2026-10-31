@@ -193,6 +193,7 @@ class NotesTests(unittest.TestCase):
         self.assertFalse(notes.is_birthday({'categories':[' Birthday ']}))
         self.assertFalse(notes.is_birthday({'birthday':False,'categories':['Birthday']}))
         self.assertNotIn('birthday', notes.categories({'birthday':False,'categories':['Birthday']}))
+        self.assertFalse(notes.temporary_birthday({'birthday':False,'birthday_visibility':'not-applicable'}))
         self.assertEqual(notes.categories({'birthday':True})['birthday'], 'Birthday')
         draft = self.post(birthday=True, published=False)
         with patch.object(notes, 'birthday_publication_time', side_effect=AssertionError('Draft leaked')):
