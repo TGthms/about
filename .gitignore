@@ -27,3 +27,6 @@ __pycache__/
 
 # Local Cloudflare development state
 .wrangler/
+
+# Local Notes manager recovery and backups contain private writing.
+.notes-manager/

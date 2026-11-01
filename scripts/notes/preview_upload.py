@@ -27,7 +27,9 @@ def bundle(directory):
             name = hashlib.sha256(raw).hexdigest() + '.' + types[mime]
             files[name] = (raw, mime)
             return name
-        html = re.sub(r'data:(' + '|'.join(re.escape(t) for t in types) + r');base64,([A-Za-z0-9+/=]+)', replace, html)
+        # Only actual quoted URL attributes are assets. A code example containing
+        # an escaped data URL must remain exactly what the author wrote.
+        html = re.sub(r'''(?<=["'])data:(''' + '|'.join(re.escape(t) for t in types) + r''');base64,([A-Za-z0-9+/=]+)(?=["'])''', replace, html)
         class Language(HTMLParser):
             language = 'en'
             def handle_starttag(self, tag, attrs):

@@ -185,6 +185,12 @@ class AuthoringTests(unittest.TestCase):
         files=preview_upload.bundle(self.root)
         self.assertEqual(len([n for n in files if n.endswith('.webp')]),1)
         self.assertNotIn('data:image',files[path.name][0].decode())
+        code=self.root/'code-example.html'
+        example='data:text/plain;base64,SGVsbG8='
+        code.write_text('<html><pre><code>&quot;'+example+'&quot;</code></pre><a download href="'+example+'">Download</a></html>')
+        bundled=preview_upload.bundle(self.root)[code.name][0].decode()
+        self.assertIn('&quot;'+example+'&quot;',bundled)
+        self.assertNotIn('href="'+example+'"',bundled)
         self.assertEqual(path.read_text(),html)
         self.assertEqual(json.loads(files['index.json'][0])['files'][0]['language'],'zh-Hant')
 

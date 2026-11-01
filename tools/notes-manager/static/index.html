@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Notes · Workspace</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <aside class="library" aria-label="Notes library">
+    <header class="library-brand"><span class="monogram">tg<span>.</span></span><div><strong>Notes</strong><small>Your local workspace</small></div><button id="library-close" class="quiet mobile-only" aria-label="Close library">✕</button></header>
+    <button id="new-note" class="primary">＋ New note</button>
+    <label class="search"><span class="sr-only">Search notes</span><input id="search" type="search" placeholder="Find a note…" autocomplete="off"></label>
+    <label class="sr-only" for="filter">Filter notes</label>
+    <select id="filter"><option value="">All notes</option><option>Draft</option><option>Unpublished changes</option><option>Published</option><option>Withdrawn</option></select>
+    <nav id="note-list" aria-label="Choose a note"></nav>
+    <button id="media-library" class="quiet">▧ Media library</button>
+    <footer><button id="sync">↥ Sync privately</button><button id="app-theme" aria-label="Switch workspace theme">◐</button><small id="sync-status">Writing stays on this Mac until synced.</small></footer>
+  </aside>
+  <button id="library-backdrop" aria-label="Close library" hidden></button>
+  <main>
+    <header class="workspace-bar"><button id="library-toggle" class="quiet mobile-only" aria-label="Toggle library">☰</button><div id="save-status" role="status">Opening your workspace…</div><div class="bar-actions"><button id="history" class="quiet" disabled>History</button><button id="settings" class="quiet" disabled>Settings</button><button id="save" disabled>Save locally <kbd>⌘S</kbd></button><button id="publish" class="primary" disabled>Publish…</button></div></header>
+    <div id="notice" role="status" hidden></div>
+    <section id="empty" class="empty"><span class="eyebrow">A place to write</span><h1>What’s on your mind?</h1><p>Choose a note, or start with a blank page.</p><button id="empty-new" class="primary">Write a note →</button></section>
+    <div id="workspace" class="workspace" hidden>
+      <section class="writing-pane" aria-label="Article editor">
+        <div class="document-bar"><div class="language-control"><label class="sr-only" for="language-version">Language version</label><select id="language-version"></select><button id="add-language" class="quiet" title="Add another language version">＋</button></div><span id="release-state" class="status-pill"></span></div>
+        <div id="recovery" class="recovery" hidden><strong>Recovered writing is available.</strong><p>Your last session has a version that differs from this saved file.</p><button id="restore-recovery">Restore writing</button><button id="discard-recovery" class="quiet">Keep saved file</button></div>
+        <div id="document" class="document"></div>
+        <button id="add-block" class="add-block">＋ Add content <span>Text, photographs, audio, and more</span></button>
+        <div class="writing-foot"><span id="word-count"></span><span>Private until you publish</span></div>
+      </section>
+      <section class="preview-pane" aria-label="Live article preview">
+        <div class="preview-bar"><strong>Preview</strong><div class="segmented" role="group" aria-label="Preview width"><button data-width="desktop" aria-pressed="true">Desktop</button><button data-width="phone" aria-pressed="false">Phone</button><button data-width="watch" aria-pressed="false">Watch</button></div><button id="preview-theme" class="quiet" aria-label="Switch preview theme">◐</button><button id="refresh-preview" class="quiet" aria-label="Refresh preview">↻</button></div>
+        <div class="preview-canvas"><iframe id="preview" title="Private live article preview" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads" referrerpolicy="no-referrer"></iframe><div id="preview-placeholder">Your article will appear here.</div></div>
+        <details id="checks" class="checks"><summary id="checks-summary">Preview checks</summary><div id="check-list"></div></details>
+      </section>
+    </div>
+  </main>
+  <dialog id="modal"><header><h2 id="modal-title"></h2><button id="modal-close" class="quiet" aria-label="Close dialog">✕</button></header><div id="modal-body"></div></dialog>
+  <div id="toast" role="status" hidden></div>
+</body>
+</html>

@@ -73,6 +73,12 @@ Repository documentation and licensing stay outside `public/`, so the deployment
 
 ## Notes and private publishing
 
+The Mac-first [local Notes workspace](tools/notes-manager/README.md) provides writing
+beside a live article preview, all 13 content formats, local recovery/history,
+private synchronization, and explicit publication through the existing release
+workflow. Open `tools/notes-manager/Open Notes.command` to use it. Its software and
+private state remain outside `public/`; it adds no runtime weight for visitors.
+
 The public site has a featured Notes carousel beneath About, a Notes shortcut in the hero, static reading pages, category archives, and an RSS feed at `feed.xml`. No publishing application or account code loads for visitors. The interface supports all six site languages; post translations are optional and have their own URLs and sharing metadata. Authors may enter custom categories; the four starter categories have translated interface labels. Longer notes receive a section contents list and every reading page has an explicit return to the homepage Notes entrance.
 
 Reusable article blocks include text, photographs, video, tables, photo galleries, audio, asides, expandable sections, link cards, downloads, attributed quotes, code snippets, and before/after comparisons. Required descriptions and file limits are checked before publication. Audio and downloads remain pinned to the released revision and work in owner-only previews. A small optional script supplies code copying and a native range comparison; lightweight browsers keep both images visible. The Signal Lab experiment is preserved as article-specific data and is not offered in the reusable menu.

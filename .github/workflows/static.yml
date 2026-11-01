@@ -57,6 +57,19 @@ jobs:
       - name: Check reusable Notes content blocks
         run: python3 tests/notes_blocks_test.py
 
+      - name: Check local Notes manager privacy and synchronization
+        run: python3 tests/notes_manager_test.py
+
+      - name: Check local Notes manager document operations
+        run: node --test tools/notes-manager/test/*.test.js
+
+      - name: Verify bundled local editor matches its source
+        working-directory: tools/notes-manager
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          git diff --exit-code -- static/app.js static/app.js.LEGAL.txt THIRD_PARTY_NOTICES.md
+
       - name: Check Gallery Manager sync
         run: python3 tests/gallery_sync_test.py
 

@@ -1,0 +1,898 @@
+{
+  "components": {
+    "text": {
+      "type": "rich-text",
+      "options": {
+        "format": "html",
+        "media": "photographs"
+      },
+      "description": "For photographs with captions, use a Photograph block in More content. Every image needs a description before publication."
+    },
+    "blocks": {
+      "type": "block",
+      "label": "More content",
+      "description": "Add and reorder content. The choices explain their purpose; each selected block has guidance for its fields.",
+      "list": {
+        "collapsible": {
+          "collapsed": false,
+          "summary": "{type} · {caption}"
+        }
+      },
+      "blockKey": "type",
+      "blocks": [
+        {
+          "name": "text",
+          "label": "Text",
+          "fields": [
+            {
+              "name": "body",
+              "label": "Text",
+              "component": "text"
+            }
+          ]
+        },
+        {
+          "name": "photo",
+          "label": "Photograph",
+          "fields": [
+            {
+              "name": "image",
+              "label": "Photo",
+              "type": "image",
+              "required": true,
+              "options": {
+                "media": "photographs"
+              }
+            },
+            {
+              "name": "alt",
+              "label": "Image description",
+              "type": "string",
+              "required": true,
+              "description": "A short description for people who cannot see the photograph."
+            },
+            {
+              "name": "caption",
+              "label": "Caption",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "video",
+          "label": "Video",
+          "fields": [
+            {
+              "name": "source",
+              "label": "Video source",
+              "type": "block",
+              "blockKey": "type",
+              "required": true,
+              "blocks": [
+                {
+                  "name": "upload",
+                  "label": "Upload a short clip",
+                  "fields": [
+                    {
+                      "name": "file",
+                      "label": "Video file",
+                      "type": "file",
+                      "required": true,
+                      "description": "MP4 or WebM, up to 20 MB. For a larger clip, choose Hosted video link instead.",
+                      "options": {
+                        "media": "videos"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "hosted",
+                  "label": "Hosted video link",
+                  "fields": [
+                    {
+                      "name": "url",
+                      "label": "Video URL",
+                      "type": "string",
+                      "required": true,
+                      "description": "A direct HTTPS MP4 or WebM link.",
+                      "pattern": {
+                        "regex": "^https://[^\\s]+\\.(?:[mM][pP]4|[wW][eE][bB][mM])(?:[?#][^\\s]*)?$",
+                        "message": "Use a direct HTTPS MP4 or WebM link."
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "poster",
+              "label": "Preview photograph",
+              "type": "image",
+              "options": {
+                "media": "photographs"
+              }
+            },
+            {
+              "name": "caption",
+              "label": "Caption",
+              "type": "text"
+            },
+            {
+              "name": "transcript",
+              "label": "Transcript (optional)",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "table",
+          "label": "Table",
+          "fields": [
+            {
+              "name": "caption",
+              "label": "Table title",
+              "type": "string",
+              "required": true,
+              "description": "A short title that identifies the table."
+            },
+            {
+              "name": "columns",
+              "label": "Column headings",
+              "type": "string",
+              "required": true,
+              "list": {
+                "min": 1,
+                "max": 8
+              }
+            },
+            {
+              "name": "rows",
+              "label": "Rows",
+              "type": "object",
+              "required": true,
+              "list": {
+                "min": 1,
+                "collapsible": {
+                  "collapsed": false,
+                  "summary": "Row {index}"
+                }
+              },
+              "fields": [
+                {
+                  "name": "cells",
+                  "label": "Cells, in column order",
+                  "type": "string",
+                  "list": {
+                    "min": 1,
+                    "max": 8
+                  },
+                  "required": true,
+                  "description": "Add one cell for each column heading."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "gallery",
+          "label": "Photo gallery — a group of photographs",
+          "fields": [
+            {
+              "name": "images",
+              "label": "Photographs",
+              "type": "object",
+              "list": {
+                "min": 2,
+                "max": 12,
+                "collapsible": {
+                  "collapsed": false,
+                  "summary": "Photo {index} · {caption}"
+                }
+              },
+              "fields": [
+                {
+                  "name": "image",
+                  "label": "Photograph",
+                  "type": "image",
+                  "options": {
+                    "media": "photographs"
+                  },
+                  "required": true
+                },
+                {
+                  "name": "alt",
+                  "label": "Image description",
+                  "type": "string",
+                  "required": true,
+                  "description": "Describe what is shown for people who cannot see the photograph."
+                },
+                {
+                  "name": "caption",
+                  "label": "Caption (optional)",
+                  "type": "text"
+                }
+              ],
+              "required": true,
+              "description": "A photo set displayed together. Add 2–12 photographs; each can have its own caption."
+            },
+            {
+              "name": "caption",
+              "label": "Gallery caption (optional)",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "audio",
+          "label": "Audio — a recording with playback controls",
+          "fields": [
+            {
+              "name": "title",
+              "label": "Recording title",
+              "type": "string",
+              "required": true,
+              "description": "An audio recording readers can choose to play. It never autoplays."
+            },
+            {
+              "name": "source",
+              "label": "Audio source",
+              "type": "block",
+              "blockKey": "type",
+              "blocks": [
+                {
+                  "name": "upload",
+                  "label": "Upload a recording",
+                  "fields": [
+                    {
+                      "name": "file",
+                      "label": "Audio file",
+                      "type": "file",
+                      "options": {
+                        "media": "audio"
+                      },
+                      "required": true,
+                      "description": "MP3, M4A, OGG, or WAV, up to 20 MB. MP3 is a good choice for broad playback support."
+                    }
+                  ]
+                },
+                {
+                  "name": "hosted",
+                  "label": "Use a hosted audio link",
+                  "fields": [
+                    {
+                      "name": "url",
+                      "label": "Audio URL",
+                      "type": "string",
+                      "pattern": {
+                        "regex": "^https://[^\\s]+\\.(?:[mM][pP]3|[mM]4[aA]|[oO][gG][gG]|[wW][aA][vV])(?:[?#][^\\s]*)?$",
+                        "message": "Use a direct HTTPS MP3, M4A, OGG, or WAV link."
+                      },
+                      "required": true,
+                      "description": "A direct HTTPS link ending in .mp3, .m4a, .ogg, or .wav; a streaming-service page is not an audio file."
+                    }
+                  ]
+                }
+              ],
+              "required": true
+            },
+            {
+              "name": "caption",
+              "label": "Caption (optional)",
+              "type": "text"
+            },
+            {
+              "name": "transcript",
+              "label": "Transcript (optional)",
+              "type": "text",
+              "description": "The words spoken in the recording, if it contains speech."
+            }
+          ]
+        },
+        {
+          "name": "aside",
+          "label": "Aside — a highlighted note",
+          "fields": [
+            {
+              "name": "title",
+              "label": "Heading (optional)",
+              "type": "string",
+              "description": "A separate inset for a short observation or clarification alongside your main writing."
+            },
+            {
+              "name": "body",
+              "label": "Text",
+              "component": "text",
+              "required": true,
+              "description": "Write the observation or clarification to highlight."
+            }
+          ]
+        },
+        {
+          "name": "details",
+          "label": "Expandable section — text readers can reveal",
+          "fields": [
+            {
+              "name": "title",
+              "label": "Clickable heading",
+              "type": "string",
+              "required": true,
+              "description": "Readers select this heading to show or hide the text. Useful for optional technical details or an answer."
+            },
+            {
+              "name": "body",
+              "label": "Text",
+              "component": "text",
+              "required": true,
+              "description": "Content revealed when the reader opens the heading."
+            }
+          ]
+        },
+        {
+          "name": "link",
+          "label": "Link card — a titled link with context",
+          "fields": [
+            {
+              "name": "title",
+              "label": "Link title",
+              "type": "string",
+              "required": true,
+              "description": "A visual link to a project, another note, or a useful reference. You supply its title and description."
+            },
+            {
+              "name": "url",
+              "label": "Link URL",
+              "type": "string",
+              "pattern": {
+                "regex": "^(?:https://[^\\s]+|/(?!/)[^\\s]*)$",
+                "message": "Use an HTTPS link or a site path beginning with /."
+              },
+              "required": true,
+              "description": "Use https://… for another website, or /notes/… or /index.html#projects for this site."
+            },
+            {
+              "name": "description",
+              "label": "Short description (optional)",
+              "type": "text"
+            },
+            {
+              "name": "image",
+              "label": "Card image",
+              "type": "block",
+              "description": "Add an image only if this link needs one. Otherwise the card uses text.",
+              "blockKey": "type",
+              "blocks": [
+                {
+                  "name": "custom",
+                  "label": "Add a card image",
+                  "fields": [
+                    {
+                      "name": "image",
+                      "label": "Image",
+                      "type": "image",
+                      "required": true,
+                      "options": {
+                        "media": "photographs"
+                      }
+                    },
+                    {
+                      "name": "alt",
+                      "label": "Image description",
+                      "type": "string",
+                      "required": true,
+                      "description": "Describe what is shown. This is required for the image you have added."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "download",
+          "label": "Download — an attached file",
+          "fields": [
+            {
+              "name": "title",
+              "label": "Download title",
+              "type": "string",
+              "required": true,
+              "description": "A file the reader can download. Give it a descriptive name, such as Trip itinerary or Example data."
+            },
+            {
+              "name": "file",
+              "label": "File",
+              "type": "file",
+              "options": {
+                "media": "downloads"
+              },
+              "required": true,
+              "description": "PDF, ZIP, TXT, CSV, or JSON, up to 20 MB. Only files attached to a released note become public."
+            },
+            {
+              "name": "description",
+              "label": "Description (optional)",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "quote",
+          "label": "Quote — quotation with attribution",
+          "fields": [
+            {
+              "name": "text",
+              "label": "Quotation",
+              "type": "text",
+              "required": true,
+              "description": "The quoted words. Author and source below identify who said or wrote them."
+            },
+            {
+              "name": "author",
+              "label": "Author (optional)",
+              "type": "string"
+            },
+            {
+              "name": "source",
+              "label": "Source or verse reference (optional)",
+              "type": "string",
+              "description": "For example, a book title or John 11:25."
+            },
+            {
+              "name": "url",
+              "label": "Source link (optional)",
+              "type": "string",
+              "description": "An HTTPS link or a path on this site."
+            }
+          ]
+        },
+        {
+          "name": "code",
+          "label": "Code snippet — displayed code with copying",
+          "fields": [
+            {
+              "name": "code",
+              "label": "Code",
+              "type": "code",
+              "options": {
+                "format": "javascript"
+              },
+              "required": true,
+              "description": "Paste a short code example. It is displayed as written, never executed."
+            },
+            {
+              "name": "filename",
+              "label": "Filename (optional)",
+              "type": "string",
+              "description": "For example, decoder.js. Shown above the code."
+            },
+            {
+              "name": "language",
+              "label": "Language label (optional)",
+              "type": "string",
+              "description": "For example, JavaScript, Python, or JSON. A display label for readers."
+            }
+          ]
+        },
+        {
+          "name": "comparison",
+          "label": "Before and after — compare two images",
+          "fields": [
+            {
+              "name": "before",
+              "label": "Before image",
+              "type": "object",
+              "fields": [
+                {
+                  "name": "image",
+                  "label": "Photograph",
+                  "type": "image",
+                  "options": {
+                    "media": "photographs"
+                  },
+                  "required": true
+                },
+                {
+                  "name": "alt",
+                  "label": "Image description",
+                  "type": "string",
+                  "required": true,
+                  "description": "Describe what is shown for people who cannot see the photograph."
+                },
+                {
+                  "name": "label",
+                  "label": "Label (optional)",
+                  "type": "string",
+                  "description": "Leave blank to use Before."
+                }
+              ],
+              "required": true,
+              "description": "The original image. Similar framing and dimensions give the clearest comparison."
+            },
+            {
+              "name": "after",
+              "label": "After image",
+              "type": "object",
+              "fields": [
+                {
+                  "name": "image",
+                  "label": "Photograph",
+                  "type": "image",
+                  "options": {
+                    "media": "photographs"
+                  },
+                  "required": true
+                },
+                {
+                  "name": "alt",
+                  "label": "Image description",
+                  "type": "string",
+                  "required": true,
+                  "description": "Describe what is shown for people who cannot see the photograph."
+                },
+                {
+                  "name": "label",
+                  "label": "Label (optional)",
+                  "type": "string",
+                  "description": "Leave blank to use After."
+                }
+              ],
+              "required": true,
+              "description": "The second image. Readers can move a slider to compare; small devices show both images separately."
+            },
+            {
+              "name": "caption",
+              "label": "Comparison caption (optional)",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    "article-study": {
+      "type": "block",
+      "blockKey": "type",
+      "hidden": true,
+      "readonly": true,
+      "blocks": [
+        {
+          "name": "same-study",
+          "label": "SAME header experiment",
+          "fields": [
+            {
+              "name": "introduction",
+              "label": "Introduction (optional)",
+              "type": "text",
+              "description": "A silent header, byte-order, and repeated-burst experiment. English and Simplified Chinese follow the post language; other languages use English. Leave blank for the standard introduction."
+            },
+            {
+              "name": "before_block",
+              "type": "number"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "fields": [
+    {
+      "name": "title",
+      "label": "Title (optional)",
+      "type": "string",
+      "options": {
+        "maxlength": 160
+      }
+    },
+    {
+      "name": "body",
+      "label": "Text",
+      "component": "text"
+    },
+    {
+      "name": "blocks",
+      "component": "blocks"
+    },
+    {
+      "name": "date",
+      "label": "Date",
+      "type": "date",
+      "required": true,
+      "options": {
+        "format": "yyyy-MM-dd"
+      },
+      "description": "The date displayed on the note. It does not schedule publication; Publish saved changes releases it immediately."
+    },
+    {
+      "name": "language",
+      "label": "Original language",
+      "type": "select",
+      "default": "en",
+      "options": {
+        "values": [
+          {
+            "name": "en",
+            "label": "English"
+          },
+          {
+            "name": "zh",
+            "label": "简体中文"
+          },
+          {
+            "name": "zh-Hant",
+            "label": "繁體中文"
+          },
+          {
+            "name": "ja",
+            "label": "日本語"
+          },
+          {
+            "name": "ko",
+            "label": "한국어"
+          },
+          {
+            "name": "es",
+            "label": "Español"
+          }
+        ]
+      }
+    },
+    {
+      "name": "categories",
+      "label": "Categories (optional)",
+      "type": "string",
+      "list": {
+        "max": 8
+      },
+      "description": "Add your own names, using the same spelling each time. Up to eight categories. The Birthday switch adds its category automatically.",
+      "options": {
+        "minlength": 1,
+        "maxlength": 48
+      }
+    },
+    {
+      "name": "summary",
+      "label": "Short introduction (optional)",
+      "type": "text",
+      "description": "Used beneath the title and when sharing. Leave empty to use the opening text.",
+      "options": {
+        "maxlength": 240
+      }
+    },
+    {
+      "name": "sharing_image",
+      "label": "Sharing image",
+      "type": "block",
+      "description": "Add a cover for link previews. Without one, the first photograph is used; a text-only note uses the site preview. Adding an image opens its required image and description fields.",
+      "blockKey": "type",
+      "blocks": [
+        {
+          "name": "custom",
+          "label": "Add a sharing image",
+          "fields": [
+            {
+              "name": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true,
+              "options": {
+                "media": "photographs"
+              }
+            },
+            {
+              "name": "alt",
+              "label": "Image description",
+              "type": "string",
+              "required": true,
+              "description": "Describe what is shown. This is required for the image you have added."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "list_image",
+      "label": "On-site image",
+      "type": "block",
+      "description": "By default, Notes and the homepage use the sharing image or the first photograph. Only add this if you want a different thumbnail.",
+      "blockKey": "type",
+      "blocks": [
+        {
+          "name": "custom",
+          "label": "Use a different on-site image",
+          "fields": [
+            {
+              "name": "image",
+              "label": "Image",
+              "type": "image",
+              "required": true,
+              "options": {
+                "media": "photographs"
+              }
+            },
+            {
+              "name": "alt",
+              "label": "Image description",
+              "type": "string",
+              "required": true,
+              "description": "Describe what is shown. This is required for the image you have added."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "highlight",
+      "label": "Feature beneath About",
+      "type": "boolean",
+      "default": false,
+      "description": "Show this published post in the homepage Notes carousel. Only the six newest eligible featured posts appear, ordered by Date, rotating every five seconds. Older featured posts remain in All notes. With none selected, the latest published post appears."
+    },
+    {
+      "name": "highlight_until",
+      "label": "Feature until (optional)",
+      "type": "date",
+      "default": "",
+      "description": "Only applies when Feature beneath About is on. The post stays in Notes after its homepage feature ends.",
+      "options": {
+        "format": "yyyy-MM-dd"
+      }
+    },
+    {
+      "name": "font",
+      "label": "Reading font",
+      "type": "select",
+      "default": "default",
+      "description": "Applies to this post’s text. Local fonts keep reading fast; the exact face depends on the reader’s device and language.",
+      "options": {
+        "values": [
+          {
+            "name": "default",
+            "label": "Site default"
+          },
+          {
+            "name": "sans",
+            "label": "Sans serif — clean"
+          },
+          {
+            "name": "serif",
+            "label": "Serif — literary"
+          },
+          {
+            "name": "mono",
+            "label": "Monospace — notebook"
+          }
+        ]
+      }
+    },
+    {
+      "name": "translations",
+      "label": "Other language versions (optional)",
+      "type": "object",
+      "list": {
+        "collapsible": {
+          "collapsed": true,
+          "summary": "{language} — {title}"
+        },
+        "max": 5
+      },
+      "fields": [
+        {
+          "name": "language",
+          "label": "Language",
+          "type": "select",
+          "required": true,
+          "options": {
+            "values": [
+              {
+                "name": "en",
+                "label": "English"
+              },
+              {
+                "name": "zh",
+                "label": "简体中文"
+              },
+              {
+                "name": "zh-Hant",
+                "label": "繁體中文"
+              },
+              {
+                "name": "ja",
+                "label": "日本語"
+              },
+              {
+                "name": "ko",
+                "label": "한국어"
+              },
+              {
+                "name": "es",
+                "label": "Español"
+              }
+            ]
+          }
+        },
+        {
+          "name": "title",
+          "label": "Title (optional)",
+          "type": "string"
+        },
+        {
+          "name": "summary",
+          "label": "Short introduction (optional)",
+          "type": "text",
+          "options": {
+            "maxlength": 240
+          }
+        },
+        {
+          "name": "body",
+          "label": "Text",
+          "component": "text"
+        },
+        {
+          "name": "blocks",
+          "component": "blocks"
+        },
+        {
+          "name": "published",
+          "label": "Publish this translation",
+          "type": "boolean",
+          "default": false,
+          "description": "Include this language when you next publish the note. Saving a translation never publishes it by itself."
+        },
+        {
+          "name": "same_study",
+          "component": "article-study"
+        }
+      ]
+    },
+    {
+      "name": "birthday",
+      "label": "Birthday",
+      "type": "boolean",
+      "default": false,
+      "description": "Adds balloons and the Birthday category. The note appears in Notes and on the homepage for 24 hours from its first publication. Saving or editing does not restart that clock."
+    },
+    {
+      "name": "birthday_visibility",
+      "label": "Birthday only · after 24 hours",
+      "type": "select",
+      "default": "24-hours",
+      "description": "Used only when Birthday is on. Birthday notes leave Notes and the homepage after 24 hours. Choose whether the article itself is removed or its direct link stays available. Your private original is always retained.",
+      "options": {
+        "values": [
+          {
+            "name": "24-hours",
+            "label": "Remove the public article"
+          },
+          {
+            "name": "keep-link",
+            "label": "Keep the direct link accessible"
+          }
+        ]
+      }
+    },
+    {
+      "name": "published",
+      "label": "Ready to publish",
+      "type": "boolean",
+      "default": false,
+      "description": "Saving keeps your changes private, even when this is on. Turn on and save before using Publish saved changes. To remove an existing article, use Withdraw from website."
+    },
+    {
+      "name": "slug",
+      "label": "Article address (automatic)",
+      "type": "string",
+      "readonly": true,
+      "description": "New notes receive an automatic address. Existing article addresses stay unchanged when you edit the title."
+    },
+    {
+      "name": "editor_version",
+      "type": "number",
+      "hidden": true,
+      "default": 2
+    },
+    {
+      "name": "same_study",
+      "component": "article-study"
+    }
+  ]
+}

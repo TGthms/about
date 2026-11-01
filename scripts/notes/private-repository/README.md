@@ -2,6 +2,34 @@
 
 Your posts, drafts, and original uploads live in this **private** repository.
 
+## Local Notes workspace
+
+For daily writing, open **tools/notes-manager/Open Notes.command** in your local
+website checkout. The editor runs on your Mac, with a live article preview, all
+13 content formats, media selection, local recovery/history, and explicit publishing.
+It does not require Pages CMS.
+
+- Writing is recovered as you type and saved locally after a short pause. Command-S
+  saves immediately.
+- **Sync privately** synchronizes drafts and uploads to this private repository;
+  it never publishes them.
+- **Publish…** checks and synchronizes the saved note, asks for confirmation, and
+  releases that revision through the existing workflow. Wait for both website
+  deployments to finish.
+- Categories, fonts, images, featuring, Birthday options, and per-language publication
+  controls are in **Settings**. Conditional fields appear only when relevant.
+- **History** restores local saved revisions without changing the published article.
+  If two versions conflict, compare them and keep one or both.
+
+The unpublished **Reference — Notes workspace and content** draft contains examples
+plus a daily editing checklist. The [local workspace guide](https://github.com/TGthms/about/tree/main/tools/notes-manager)
+explains setup, privacy, testing, and recovery.
+
+## Optional online editor
+
+The following instructions describe the existing Pages CMS fallback. They are not
+required by the local manager. Both use the same private content files.
+
 Open [Pages CMS](https://app.pagescms.org), sign in with GitHub, and select **TGthms/about-notes** on the **main** branch. The first time, install the Pages CMS GitHub App for **only this repository**.
 
 1. Choose **Notes → New**. Titles are optional. Write in Text first; add photographs, video, tables, or more text using More content. Content blocks can be collapsed and reordered.

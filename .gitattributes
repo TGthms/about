@@ -1,0 +1,3 @@
+# Preserve intentional whitespace in bundled Markdown serializers; verify the
+# generated file against its source in CI instead of changing string literals.
+tools/notes-manager/static/app.js linguist-generated=true whitespace=-blank-at-eol
