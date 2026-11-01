@@ -25,6 +25,8 @@ content_blocks = importlib.util.module_from_spec(_blocks_spec)
 _blocks_spec.loader.exec_module(content_blocks)
 
 ORIGIN = 'https://timgong.me'
+FEED_ORIGIN = 'https://t-g.pages.dev'
+FEED_URL = FEED_ORIGIN + '/feed.xml'
 ROOT = Path(__file__).resolve().parents[2]
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
 FONTS = {'default', 'sans', 'serif', 'mono'}
@@ -594,6 +596,7 @@ def resource_versions(markup, public):
     return re.sub(r'((?:src|href)=")((?:\.\./)*)((?:js|css)/[\w/.-]+)(?:\?v=[a-f0-9]+)?"', replace, markup)
 
 def shell(public, **values):
+    values.setdefault('feed_url', FEED_URL)
     template = (ROOT / 'templates/notes-shell.html').read_text()
     for key, value in values.items(): template = template.replace('{{' + key + '}}', str(value))
     if re.search(r'{{\w+}}', template): raise ValueError('Incomplete page template.')
@@ -684,10 +687,10 @@ def follow_page(public):
         '<li data-i18n="notes.followStep2">Choose its option to follow a website or add a feed.</li>'
         '<li data-i18n="notes.followStep3">Paste the address below. New notes will appear there.</li></ol>'
         '<label class="notes-follow__label" for="feed-address" data-i18n="notes.feedAddress">Feed address</label>'
-        f'<div class="notes-follow__copy"><input id="feed-address" type="url" readonly value="{ORIGIN}/feed.xml" />'
+        f'<div class="notes-follow__copy"><input id="feed-address" type="url" readonly value="{FEED_URL}" />'
         '<button type="button" id="feed-copy" hidden data-i18n="notes.copyFeed">Copy feed link</button></div>'
         '<p id="feed-status" class="notes-follow__status" role="status" aria-live="polite"></p>'
-        '<a class="notes-feed-link" href="feed.xml">' + RSS_ICON + '<span data-i18n="notes.openFeed">Open RSS feed</span> ↗</a></article>')
+        f'<a class="notes-feed-link" href="{FEED_URL}">' + RSS_ICON + '<span data-i18n="notes.openFeed">Open RSS feed</span> ↗</a></article>')
     return page(public, content, kind='follow')
 
 def build(private, public, preview_path=None, preview_output=None):
@@ -799,12 +802,13 @@ def build(private, public, preview_path=None, preview_output=None):
                 urls.append((ORIGIN + '/' + filename, ''))
         atom = 'http://www.w3.org/2005/Atom'; ET.register_namespace('atom', atom)
         rss = ET.Element('rss', {'version': '2.0'}); channel = ET.SubElement(rss, 'channel')
-        for key, value in [('title', 'Tim G — Notes'), ('link', ORIGIN + '/notes.html'), ('description', 'Notes by Tim G.')]: ET.SubElement(channel, key).text = value
-        ET.SubElement(channel, '{' + atom + '}link', {'href': ORIGIN + '/feed.xml', 'rel': 'self', 'type': 'application/rss+xml'})
+        for key, value in [('title', 'Tim G — Notes'), ('link', FEED_ORIGIN + '/notes.html'), ('description', 'Notes by Tim G.')]: ET.SubElement(channel, key).text = value
+        ET.SubElement(channel, '{' + atom + '}link', {'href': FEED_URL, 'rel': 'self', 'type': 'application/rss+xml'})
         for post in rss_items[:20]:
-            item = ET.SubElement(channel, 'item'); url = ORIGIN + '/' + post_filename(post, post)
+            item = ET.SubElement(channel, 'item'); url = FEED_ORIGIN + '/' + post_filename(post, post)
             for key, value in [('title', title(post)), ('link', url), ('description', summary(post)), ('pubDate', dt.datetime.combine(date(post['date']), dt.time(12), dt.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT'))]: ET.SubElement(item, key).text = value
-            ET.SubElement(item, 'guid', {'isPermaLink': 'true'}).text = url
+            # Keep existing identifiers stable when feed delivery moves to another host.
+            ET.SubElement(item, 'guid', {'isPermaLink': 'false'}).text = ORIGIN + '/' + post_filename(post, post)
         ET.ElementTree(rss).write(stage / 'feed.xml', encoding='utf-8', xml_declaration=True)
         home_entrance = entrance(posts, media)
         (stage / 'subscribe.html').write_text(follow_page(public))

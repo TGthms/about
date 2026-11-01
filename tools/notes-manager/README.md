@@ -32,6 +32,21 @@ Use `--content PATH` for another private checkout, `--port NUMBER` for another p
 or `--no-open` to print the launch link. `--http` is available for isolated development
 tests; normal daily launches use HTTPS.
 
+## Where your writing lives and what to back up
+
+By default, `.private-notes/` inside the About folder is a separate Git clone of
+`TGthms/about-notes`. It contains notes, uploads, editable cover sources, and private
+publication records. Autosave writes there. **Back up drafts** synchronizes that
+clone with the private GitHub repository; pushing the public About repository does
+not include it.
+
+For a full Mac backup, include the entire About folder **with hidden folders**,
+especially `.private-notes/` and `.notes-manager/`. The latter holds local History,
+recovery, Trash, and HTTPS settings that are not included in GitHub draft backups.
+Keep that backup private. For the freshest copy, save and stop the manager before
+copying. On a different Mac, set up HTTPS there rather than transferring the local
+certificate authority's private key.
+
 ## Three clear states
 
 - **Autosaved on this Mac:** typing updates the local draft after a short pause.
