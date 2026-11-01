@@ -10,7 +10,7 @@ import fcntl
 import hashlib
 import html
 from http import cookies
-from http.client import HTTPConnection, HTTPException
+from http.client import HTTPConnection, HTTPSConnection, HTTPException
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import importlib.util
 import json
@@ -20,6 +20,8 @@ from pathlib import Path
 import re
 import secrets
 import shutil
+import ssl
+import math
 import subprocess
 import tempfile
 import threading
@@ -220,8 +222,136 @@ class Workspace:
         raw = path.read_bytes()
         value = json.loads(raw)
         recoveries = self.recoveries(relative)
-        return {'path': relative, 'document': notes.authoring.migrate(value, path.name), 'etag': digest(raw),
+        baseline = self.baseline(relative)
+        return {'path': relative, 'title':notes.title(value), 'document': notes.authoring.migrate(value, path.name), 'etag': digest(raw),
+                'design_etags':{identity:self.cover_design(identity)['etag'] for identity in (value.get('og_designs') or {}).values()},
+                'baseline': baseline, 'local_changes': bool(baseline and (baseline['etag'] != digest(raw) or any(self.cover_design(identity)['etag']!=etag for identity,etag in baseline.get('design_etags',{}).items()))),
                 'status': self.status(relative, value), 'recovery': json.loads(recoveries[0].read_text()) if recoveries else None}
+
+    def baseline(self, relative):
+        self.path(relative)
+        remote = git(self.content, 'rev-parse', '--verify', 'refs/remotes/origin/main', okay=True)
+        revision = remote.stdout.decode().strip() if remote.returncode == 0 else git_text(self.content, 'rev-parse', 'HEAD')
+        saved = git(self.content, 'show', revision + ':' + relative, okay=True)
+        if saved.returncode: return None
+        designs={}
+        for identity in (json.loads(saved.stdout).get('og_designs') or {}).values():
+            if not isinstance(identity,str) or not re.fullmatch(r'[a-f0-9]{24}',identity): continue
+            source=git(self.content,'show',revision+':media/designs/'+identity+'.json',okay=True)
+            designs[identity]=digest(source.stdout) if source.returncode==0 else None
+        return {'revision': revision, 'etag': digest(saved.stdout), 'design_etags':designs,'label': 'last GitHub backup' if remote.returncode == 0 else 'last committed version'}
+
+    def discard(self, relative, etag, revision, design_etags=None):
+        with self.writing():
+            current = self.get(relative)
+            if current['etag'] != etag: raise Problem('This note changed in another window. Review it before discarding.', 409)
+            if design_etags is not None and current['design_etags']!=design_etags: raise Problem('A cover changed in another window. Review it before discarding.',409)
+            baseline = self.baseline(relative)
+            if not baseline or baseline['revision'] != revision: raise Problem('The backup changed. Review the latest version before discarding.', 409)
+            path = self.path(relative)
+            self.backup(relative, path.read_bytes(), 'discarded')
+            for recovery in self.recoveries(relative):
+                self.backup(relative, recovery.read_bytes(), 'recovery')
+                recovery.unlink()
+            saved = git(self.content, 'show', revision + ':' + relative).stdout
+            for identity in baseline.get('design_etags',{}):
+                source=git(self.content,'show',revision+':media/designs/'+identity+'.json',okay=True)
+                if source.returncode: continue
+                design_path=self.path('media/designs/'+identity+'.json',media=True)
+                if design_path.exists(): atomic(self.state/'discarded-designs'/Path(relative).stem/(str(time.time_ns())+'-'+identity+'.json'),design_path.read_bytes())
+                atomic(design_path,source.stdout)
+            atomic(path, saved)
+            return self.get(relative)
+
+    def trash(self, relative, etag):
+        with self.writing():
+            last = self.state/'last-publication.json'
+            record = json.loads(last.read_text()) if last.exists() else {}
+            if record.get('path')==relative and record.get('action')=='withdraw-note' and record.get('conclusion')!='success':
+                raise Problem('Wait for withdrawal to finish on both hosts before moving the original to Trash.',409)
+            current = self.get(relative)
+            if current['etag'] != etag: raise Problem('This note has newer edits. Review them before moving it to Trash.', 409)
+            entry = self.release_index().get(relative)
+            if entry and not entry.get('withdrawn'): raise Problem('Withdraw the live article before moving its private original to Trash.', 409)
+            identity = secrets.token_hex(12)
+            folder = self.state / 'trash' / identity
+            folder.mkdir(parents=True, mode=0o700)
+            atomic(folder / 'metadata.json', encode({'id': identity, 'path': relative, 'title': notes.title(current['document']), 'created': stamp()}))
+            atomic(folder / 'note.json', self.path(relative).read_bytes())
+            self.path(relative).unlink()
+            for index, recovery in enumerate(self.recoveries(relative)):
+                shutil.move(str(recovery), str(folder / ('recovery-' + str(index) + '.json')))
+            return {'trashed': True, 'id': identity, 'path': relative}
+
+    def trash_list(self):
+        values = []
+        for path in (self.state / 'trash').glob('*/metadata.json'):
+            value = json.loads(path.read_text())
+            if not value.get('restored'): values.append(value)
+        return sorted(values, key=lambda v:v['created'], reverse=True)
+
+    def restore_trash(self, identity):
+        if not re.fullmatch(r'[a-f0-9]{24}', str(identity)): raise Problem('Choose an item from Trash.')
+        with self.writing():
+            folder = self.state / 'trash' / identity
+            if not (folder / 'metadata.json').is_file(): raise Problem('This item is no longer in Trash.', 404)
+            metadata = json.loads((folder / 'metadata.json').read_text())
+            if metadata.get('restored'): raise Problem('This item was already restored.', 409)
+            value = json.loads((folder / 'note.json').read_text())
+            target = self.path(metadata['path'])
+            value.update(published=False, highlight=False)
+            if target.exists(): result = self.create(title=value.get('title',''), value=value)
+            else:
+                atomic(target, encode(value))
+                result = self.get(metadata['path'])
+            metadata['restored'] = stamp()
+            atomic(folder / 'metadata.json', encode(metadata))
+            return result
+
+    def delete_note(self, relative, etag):
+        last = self.state/'last-publication.json'
+        record = json.loads(last.read_text()) if last.exists() else {}
+        if record.get('path')==relative and record.get('action')=='withdraw-note' and record.get('conclusion')!='success':
+            if record.get('status')=='completed': return self.publication(relative,etag,'withdraw-note',trash_after=True)
+            current=self.get(relative)
+            if current['etag']!=etag: raise Problem('The note changed. Review it before deleting.',409)
+            record.update(trash_after=True,etag=etag);atomic(last,encode(record));return record
+        entry = self.release_index().get(relative)
+        if entry and not entry.get('withdrawn'):
+            return self.publication(relative, etag, 'withdraw-note', trash_after=True)
+        return self.trash(relative, etag)
+
+    def cover_design(self, identity):
+        if not re.fullmatch(r'[a-f0-9]{24}', str(identity)): raise Problem('Invalid cover design.')
+        path = self.path('media/designs/' + identity + '.json', media=True)
+        if not path.exists(): return {'id':identity, 'etag':None, 'design':None}
+        raw = path.read_bytes()
+        return {'id':identity, 'etag':digest(raw), 'design':json.loads(raw)}
+
+    def save_design(self, identity, design, etag):
+        defaults = json.loads((HERE / 'vendor/og-studio/defaults.json').read_text())
+        if not isinstance(design, dict): raise Problem('The cover design is invalid.')
+        result = {}
+        for key, default in defaults.items():
+            value = design.get(key, default)
+            if key == 'colors':
+                if not isinstance(value,list) or not 4 <= len(value) <= 8 or any(not isinstance(c,str) or not re.fullmatch(r'#[a-fA-F0-9]{6}',c) for c in value): raise Problem('Use four to eight valid cover colors.')
+            elif isinstance(default, bool):
+                if not isinstance(value,bool): raise Problem('Invalid cover option: ' + key)
+            elif isinstance(default, (int,float)):
+                if not isinstance(value,(int,float)) or isinstance(value,bool) or not math.isfinite(value) or abs(value)>10000: raise Problem('Invalid cover setting: ' + key)
+            elif not isinstance(value,str) or len(value)>10000: raise Problem('Invalid cover text: ' + key)
+            if key in ('backgroundData','logoData') and value:
+                if not value.startswith('/media/images/'): raise Problem('Save cover images to the private media library first.')
+                self.media.source(value)
+            result[key] = value
+        if not 100 <= result['width'] <= 4000 or not 100 <= result['height'] <= 4000: raise Problem('Use a cover canvas between 100 and 4000 pixels.')
+        with self.writing():
+            current = self.cover_design(identity)
+            if current['etag'] != etag: raise Problem('This cover changed in another window. Your current design remains open; reopen the saved version before replacing it.',409)
+            path = self.path('media/designs/' + identity + '.json', media=True)
+            atomic(path, encode(result))
+            return self.cover_design(identity)
 
     def recover(self, relative, value, base, discard=False, client='legacy'):
         with self.writing():
@@ -272,6 +402,15 @@ class Workspace:
             doc = copy.deepcopy(value) if value else {'title': str(title)[:160], 'date': date, 'language': 'en', 'body': '', 'blocks': [],
                 'categories': [], 'translations': [], 'font': 'default', 'sharing_image': None, 'list_image': None, 'birthday': False, 'editor_version': 2}
             doc.update(slug=stem + '-' + key, published=False, highlight=False)
+            if value and isinstance(doc.get('og_designs'),dict):
+                forked = {}
+                for target, identity in doc['og_designs'].items():
+                    saved = self.cover_design(identity)
+                    if saved['design']:
+                        new_id = secrets.token_hex(12)
+                        self.save_design(new_id,saved['design'],None)
+                        forked[target] = new_id
+                doc['og_designs'] = forked
             self.document(doc)
             atomic(self.path(relative), encode(doc))
             return self.get(relative)
@@ -467,7 +606,7 @@ class Workspace:
             git(self.content, 'push', 'origin', 'HEAD:main')
             return {'revision': git_text(self.content, 'rev-parse', 'HEAD'), 'message': 'Synced privately. Nothing was published.'}
 
-    def publication(self, relative, base, action):
+    def publication(self, relative, base, action, trash_after=False):
         if action not in ('publish-note', 'withdraw-note'): raise Problem('Choose a publication action.')
         # Keep the selected content stable through sync and workflow dispatch.
         with self.writing():
@@ -492,7 +631,8 @@ class Workspace:
             url = match.group(0) if match else 'https://github.com/TGthms/about-notes/actions/workflows/publish.yml'
             index = self.content / '.published.json'
             record = {'run_url': url, 'run_id': match[1] if match else None, 'action': action, 'path': relative, 'created': stamp(),
-                      'revision': result['revision'], 'etag': refreshed['etag'], 'index_base': digest(index.read_bytes() if index.exists() else b'')}
+                      'revision': result['revision'], 'etag': refreshed['etag'], 'index_base': digest(index.read_bytes() if index.exists() else b''), 'trash_after':trash_after}
+            record['design_etags']={identity:self.cover_design(identity)['etag'] for identity in (selected.get('og_designs') or {}).values()}
             atomic(self.state / 'last-publication.json', encode(record))
             return record
 
@@ -507,10 +647,21 @@ class Workspace:
                 if str(record.get('run_id')) == str(identity):
                     record.update(status='completed', conclusion=data.get('conclusion'))
                     atomic(last, encode(record))
-        return {k: data.get(k) for k in ('status', 'conclusion', 'html_url', 'head_sha')}
+                    if record.get('conclusion') == 'success' and record.get('trash_after'):
+                        try:
+                            if any(self.cover_design(identity)['etag']!=etag for identity,etag in record.get('design_etags',{}).items()):
+                                raise Problem('The cover design has newer edits. Review it before moving this note to Trash.',409)
+                            deleted = self.trash(record['path'],record['etag'])
+                            record.update(trashed=True, trash_id=deleted['id'], trash_after=False)
+                        except Problem as error:
+                            record.update(trash_error=str(error),trash_after=False)
+                        atomic(last,encode(record))
+                    for key in ('trashed','trash_id','trash_error','path'):
+                        if key in record: data[key] = record[key]
+        return {k: data.get(k) for k in ('status', 'conclusion', 'html_url', 'head_sha','trashed','trash_id','trash_error','path')}
 
     def job(self, operation, data):
-        if operation not in ('preview', 'sync', 'publish', 'withdraw'): raise Problem('Unknown operation.')
+        if operation not in ('preview', 'sync', 'publish', 'withdraw','trash'): raise Problem('Unknown operation.')
         with self.lock:
             if sum(j['status'] == 'running' for j in self.jobs.values()) >= 6:
                 raise Problem('The workspace is busy. Wait for the current operation.', 429)
@@ -522,6 +673,7 @@ class Workspace:
             try:
                 if operation == 'preview': result = self.preview(data['path'], data['document'], data.get('language'), data.get('theme'))
                 elif operation == 'sync': result = self.sync(data.get('resolutions'), data.get('remote'))
+                elif operation == 'trash': result = self.delete_note(data['path'],data['etag'])
                 else: result = self.publication(data['path'], data['etag'], 'publish-note' if operation == 'publish' else 'withdraw-note')
                 value.update(status='done', result=result)
             except (ValueError, OSError, KeyError, subprocess.SubprocessError) as error:
@@ -561,8 +713,9 @@ class Handler(BaseHTTPRequestHandler):
             policy = "default-src 'none'; script-src " + (hashes or "'none'") + "; style-src 'unsafe-inline'; img-src " + self.server.origin + " data:; media-src " + self.server.origin + " data: https:; base-uri 'none'; form-action 'none'; frame-ancestors 'self'"
         else:
             policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
-        self.send_header('Content-Security-Policy', policy)
-        for key, value in (extra or {}).items(): self.send_header(key, value)
+        self.send_header('Content-Security-Policy', (extra or {}).get('Content-Security-Policy',policy))
+        for key, value in (extra or {}).items():
+            if key.lower()!='content-security-policy': self.send_header(key, value)
         self.end_headers()
         try: self.wfile.write(raw)
         except (BrokenPipeError, ConnectionResetError): pass
@@ -580,10 +733,13 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             url = urlsplit(self.path); query = parse_qs(url.query)
+            if self.headers.get('Host')=='localhost:'+str(self.server.server_port):
+                destination=self.server.origin+(url.path or '/')+('?' + url.query if url.query else '')
+                return self.respond(308,b'',extra={'Location':destination})
             if url.path == '/' and query.get('token'):
                 if self.headers.get('Host') != '127.0.0.1:' + str(self.server.server_port) or not secrets.compare_digest(query['token'][0], self.server.token):
                     raise Problem('Invalid launch link.', 403)
-                return self.respond(303, b'', extra={'Location': '/', 'Set-Cookie': 'notes_local=' + self.server.token + '; HttpOnly; SameSite=Strict; Path=/'})
+                return self.respond(303, b'', extra={'Location': '/', 'Set-Cookie': 'notes_local=' + self.server.token + '; HttpOnly; SameSite=Strict; Path=/' + ('; Secure' if self.server.origin.startswith('https:') else '')})
             if url.path.startswith('/preview-media/'):
                 # Opaque sandbox frames cannot rely on SameSite cookies. A random,
                 # per-preview capability grants read access only to that page's media.
@@ -610,6 +766,8 @@ class Handler(BaseHTTPRequestHandler):
                     'notes': self.app.library(), 'last_publication': json.loads(last.read_text()) if last.exists() else None})
             if url.path == '/api/notes': return self.json(self.app.library())
             if url.path == '/api/note': return self.json(self.app.get(query.get('path', [''])[0]))
+            if url.path == '/api/trash': return self.json(self.app.trash_list())
+            if url.path == '/api/design': return self.json(self.app.cover_design(query.get('id',[''])[0]))
             if url.path == '/api/history': return self.json(self.app.history(query.get('path', [''])[0]))
             if url.path == '/api/media': return self.json(self.app.media_list(query.get('kind', ['photographs'])[0]))
             if url.path == '/api/run': return self.json(self.app.run_status(query.get('id', [''])[0]))
@@ -629,6 +787,14 @@ class Handler(BaseHTTPRequestHandler):
                 if path.suffix.lower() not in {'.jpg','.jpeg','.png','.webp','.mp4','.webm','.mp3','.m4a','.ogg','.wav'}:
                     return self.respond(200, path.read_bytes(), kind, extra={'Content-Disposition': 'attachment'})
                 return self.respond(200, path.read_bytes(), kind)
+            if url.path.startswith('/studio/'):
+                relative = url.path.removeprefix('/studio/')
+                allowed = {'index.html','fonts/DMSans-Variable.ttf','fonts/OFL.txt'}
+                if relative not in allowed: raise Problem('Not found.',404)
+                path = HERE / 'vendor/og-studio' / relative
+                raw = path.read_bytes()
+                extra = {'Content-Security-Policy': "default-src 'self'; script-src 'sha256-" + __import__('base64').b64encode(hashlib.sha256(re.search(rb'<script>(.*?)</script>',raw,re.S)[1]).digest()).decode() + "'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; frame-ancestors 'self'"} if relative=='index.html' else None
+                return self.respond(200,raw,mimetypes.guess_type(path.name)[0] or 'application/octet-stream',extra=extra)
             assets = {'/': 'index.html', '/app.js': 'app.js', '/app.js.LEGAL.txt': 'app.js.LEGAL.txt', '/style.css': 'style.css'}
             if url.path not in assets: raise Problem('Not found.', 404)
             path = HERE / 'static' / assets[url.path]
@@ -653,32 +819,44 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/api/save': return self.json(self.app.save(data['path'], data['document'], data['etag']))
             if url.path == '/api/recovery': return self.json(self.app.recover(data['path'], data.get('document'), data.get('etag'), data.get('discard', False), data.get('client', 'legacy')))
             if url.path == '/api/create': return self.json(self.app.create(data.get('title', ''), data.get('date'), data.get('document')))
+            if url.path == '/api/discard': return self.json(self.app.discard(data['path'],data['etag'],data['revision'],data.get('design_etags')))
+            if url.path == '/api/trash/restore': return self.json(self.app.restore_trash(data['id']))
+            if url.path == '/api/design': return self.json(self.app.save_design(data['id'],data['design'],data.get('etag')))
             if url.path == '/api/jobs': return self.json(self.app.job(data['operation'], data))
             raise Problem('Not found.', 404)
         except (ValueError, OSError, KeyError, subprocess.SubprocessError) as error:
             self.json({'error': str(error), **getattr(error, 'details', {})}, getattr(error, 'status', 400))
 
 
-def serve(workspace, port=1222):
+def serve(workspace, port=1222, certificate=None, key=None):
     server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
     server.workspace, server.token = workspace, secrets.token_urlsafe(32)
-    server.origin = 'http://127.0.0.1:' + str(server.server_port)
+    server.origin = ('https' if certificate else 'http') + '://127.0.0.1:' + str(server.server_port)
+    if certificate:
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context.load_cert_chain(str(certificate),str(key))
+        server.socket = context.wrap_socket(server.socket,server_side=True)
     server.daemon_threads = True
     return server
 
 
-def reopen(workspace, port, no_open=False):
+def reopen(workspace, port, no_open=False, scheme='http'):
     """Reopening the launcher reuses this workspace, never an unrelated local app."""
     path = workspace.state / ('session-' + str(port) + '.json')
     connection = None
     try:
         session = json.loads(path.read_text())
+        if session.get('scheme','http') != scheme: return False
         if session.get('workspace') != workspace.repo_id or not re.fullmatch(r'[A-Za-z0-9_-]{32,100}', session.get('token','')): return False
-        connection = HTTPConnection('127.0.0.1',port,timeout=2)
+        if scheme == 'https':
+            context=ssl.create_default_context(cafile=str(workspace.state/'tls/rootCA.pem'))
+            connection=HTTPSConnection('127.0.0.1',port,timeout=2,context=context)
+        else: connection = HTTPConnection('127.0.0.1',port,timeout=2)
         connection.request('GET','/api/ping',headers={'Cookie':'notes_local='+session['token']})
         response=connection.getresponse();data=json.loads(response.read())
         if response.status != 200 or data != {'workspace':workspace.repo_id,'application':'notes-local'}: return False
-        url='http://127.0.0.1:'+str(port)+'/?token='+session['token']
+        url=scheme+'://127.0.0.1:'+str(port)+'/?token='+session['token']
         print('Your Notes workspace is already running.\n'+url,flush=True)
         if not no_open: webbrowser.open(url)
         return True
@@ -693,14 +871,19 @@ def main():
     parser.add_argument('--state', type=Path, default=ROOT / '.notes-manager')
     parser.add_argument('--port', type=int, default=1222)
     parser.add_argument('--no-open', action='store_true')
+    parser.add_argument('--http', action='store_true', help='Use loopback HTTP for isolated development tests.')
     args = parser.parse_args()
     if not (HERE / 'static/app.js').exists(): raise SystemExit('Build the manager first: cd tools/notes-manager && npm ci && npm run build')
     try:
         from PIL import Image  # Fail early with a useful setup message.
         workspace = Workspace(args.content, args.state)
-        try: server = serve(workspace, args.port)
+        certificate=key=None
+        if not args.http:
+            certificate=workspace.state/'tls/localhost.pem';key=workspace.state/'tls/localhost-key.pem'
+            if not certificate.is_file() or not key.is_file(): raise Problem('Set up trusted HTTPS first: open tools/notes-manager/Setup HTTPS.command. Use --http only for isolated development.')
+        try: server = serve(workspace, args.port,certificate,key)
         except OSError:
-            if reopen(workspace,args.port,args.no_open):
+            if reopen(workspace,args.port,args.no_open,scheme='http' if args.http else 'https'):
                 workspace.pool.shutdown(wait=False,cancel_futures=True)
                 return
             raise Problem('That local port is already in use. Choose another with --port, for example --port 1223.')
@@ -708,7 +891,7 @@ def main():
     except (Problem, OSError) as error: raise SystemExit(str(error))
     url = server.origin + '/?token=' + server.token
     session = workspace.state / ('session-' + str(server.server_port) + '.json')
-    atomic(session,encode({'workspace':workspace.repo_id,'token':server.token}))
+    atomic(session,encode({'workspace':workspace.repo_id,'token':server.token,'scheme':'https' if certificate else 'http'}))
     print('\nNotes · local workspace\n' + url + '\nKeep this launch link private. Stop with Control-C.\n', flush=True)
     if not args.no_open: webbrowser.open(url)
     try: server.serve_forever()

@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f6f6f3">
+<title>OG Studio — Link image maker</title>
+<meta name="description" content="Create polished Open Graph and social preview images with a live canvas editor.">
+<link rel="preload" href="./fonts/DMSans-Variable.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+@font-face{font-family:"DM Sans";src:url("./fonts/DMSans-Variable.ttf") format("truetype");font-style:normal;font-weight:100 1000;font-display:swap}
+:root{
+  --ink:#20211f;--muted:#797b77;--line:#e7e7e2;--paper:#fff;--wash:#f6f6f3;
+  --accent:#315bf4;--accent-soft:#edf0ff;--green:#3d8d65;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:var(--sans);color:var(--ink);background:var(--wash)}
+body{min-width:320px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8094ff88;outline-offset:2px}
+.topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 28px;gap:12px;position:relative;z-index:2}
+.brand-mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#ff9b60 4%,#197bf2 48%,#b78bff 100%);display:grid;place-items:center;box-shadow:inset 0 0 0 1px #ffffff65}
+.brand-mark svg{width:19px;height:19px}
+.brand-copy{display:flex;flex-direction:column;gap:2px}
+.brand-copy strong{font-size:14px;letter-spacing:-.03em;font-weight:700}
+.brand-copy span{font-size:9px;letter-spacing:.16em;font-weight:700;color:#999b96}
+.top-spacer{flex:1}
+.save-state{display:flex;align-items:center;gap:7px;color:#777a75;font-size:11px;margin-right:10px}
+.save-dot{width:7px;height:7px;border-radius:50%;background:#64ae7e}
+.top-button{border:1px solid var(--line);background:#fff;color:#5b5d59;border-radius:8px;font-size:11px;font-weight:600;padding:9px 12px;transition:.15s}
+.top-button:hover{background:#f8f8f6;color:var(--ink)}
+.top-button:disabled{opacity:.4;cursor:default}
+.top-actions{display:flex;align-items:center;gap:6px}
+.icon-button{width:31px;height:31px;display:grid;place-items:center;border:1px solid var(--line);border-radius:7px;background:#fff;color:#666;transition:.15s}
+.icon-button:hover:not(:disabled){background:#f5f6ff;color:#334dcc;border-color:#d7ddff}
+.icon-button svg{width:14px;height:14px}
+.design-select{max-width:150px;padding:7px 25px 7px 8px!important;font-size:10px!important}
+.workspace{min-height:calc(100vh - 68px);display:grid;grid-template-columns:360px minmax(0,1fr)}
+.editor{background:#fff;border-right:1px solid var(--line);height:calc(100vh - 68px);overflow:auto;scrollbar-width:thin;scrollbar-color:#d8d9d4 transparent}
+.editor-head{padding:22px 24px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.kicker{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#969891;font-weight:700}
+.editor-head h1{margin:4px 0 0;font-size:17px;letter-spacing:-.035em}
+.canvas-size-badge{border:1px solid #e5e7ee;background:#f9f9fb;color:#666975;padding:6px 8px;border-radius:7px;font:600 10px ui-monospace,SFMono-Regular,Menlo,monospace}
+.section{padding:19px 24px 20px;border-bottom:1px solid var(--line)}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.section-title h2{margin:0;font-size:12px;letter-spacing:-.01em}
+.section-title .hint{font-size:10px;color:#9a9b96}
+.field{display:block;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+.label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.field label,.field-label{font-size:10px;color:#5f615d;font-weight:600}
+.count{font-size:9px;color:#a1a39d}
+textarea,input[type=text],input[type=number],select{width:100%;border:1px solid #e5e6e1;background:#fff;border-radius:8px;color:var(--ink);padding:9px 10px;font-size:12px;transition:border-color .15s,box-shadow .15s}
+textarea:focus,input:focus,select:focus{border-color:#a6b4fb;box-shadow:0 0 0 3px #e8ecff;outline:none}
+textarea{height:62px;resize:vertical;line-height:1.4}
+input[type=text]::placeholder,textarea::placeholder{color:#b5b7b1}
+.help{font-size:9px;color:#999b95;margin-top:5px;line-height:1.4}
+.two-fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.control-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='m1 1 4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px!important}
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.preset{padding:5px;border:1px solid transparent;border-radius:9px;background:transparent;text-align:left;transition:.15s}
+.preset:hover{background:#f8f8f6}
+.preset.active{border-color:#aab7ff;background:#f8f9ff;box-shadow:0 0 0 2px #eef0ff}
+.preset-art{height:39px;border-radius:6px;margin-bottom:6px;position:relative;overflow:hidden;border:1px solid #0000000c}
+.preset-art:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 25% 20%,#ffffff5c,transparent 48%),radial-gradient(ellipse at 83% 80%,#ffbbad99,transparent 55%)}
+.preset span{display:block;font-size:9px;color:#6c6e69;font-weight:600;padding:0 2px}
+.randomize-button{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;border:1px solid #dfe4ff;background:#f7f8ff;color:#4358c5;border-radius:7px;padding:6px 8px;font-size:9px;font-weight:650;white-space:nowrap;transition:.15s}
+.randomize-button:hover{background:#edf0ff;border-color:#c7d0ff;color:#3348be}
+.randomize-button:active{transform:translateY(1px)}
+.randomize-button svg{width:13px;height:13px}
+.background-actions{display:flex;align-items:center;gap:6px}
+.small-action{border:1px solid #e5e6e1;background:white;color:#777;border-radius:7px;padding:6px 8px;font-size:9px;font-weight:600}
+.small-action:hover{background:#f7f7f4;color:#333}
+.gradient-styles{display:flex;gap:5px;overflow:auto;padding:1px 0 4px;scrollbar-width:thin}
+.gradient-style{flex:0 0 auto;border:1px solid #e5e6e1;background:#fff;border-radius:7px;padding:5px 8px;color:#777;font-size:9px;font-weight:600}
+.gradient-style.active{border-color:#b5c0ff;background:#f5f6ff;color:#4055bf}
+.style-hint{font-size:9px;color:#999;margin:6px 0 10px;line-height:1.45}
+.favorite-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.favorite-chip{border:1px solid #e8e8e3;background:#fff;border-radius:999px;padding:5px 9px;color:#676962;font-size:9px;display:flex;align-items:center;gap:5px}
+.favorite-chip:hover{border-color:#c5ccf8;background:#f7f8ff}
+.asset-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.asset-button{display:inline-flex;align-items:center;gap:6px;border:1px solid #e4e5df;background:#fff;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:600;color:#555}
+.asset-button:hover{background:#f8f8f6}
+.asset-button svg{width:13px;height:13px;color:#737770}
+.hidden-file{display:none}
+.asset-name{font-size:9px;color:#959791;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.asset-warning{font-size:9px;color:#b36e36;line-height:1.45;margin-top:6px}
+.color-controls{margin-top:12px}
+.layer-controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+.layer-controls .range-field{margin:0}
+.range-stack{margin-top:12px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#5f615d;font-weight:600;margin-top:11px}
+.toggle-row input{accent-color:#475ff2}
+.crop-hint{font-size:9px;color:#92948e}
+.crop-guide{position:absolute;inset:10%;border:1px dashed #ffffffaa;box-shadow:0 0 0 9999px #10162624;pointer-events:none;display:none}
+.crop-guide.visible{display:block}
+.preview-shell{display:flex;flex-direction:column;align-items:center;width:100%;max-width:100%}
+.preview-wrap{overflow:hidden}
+.preview-wrap canvas{position:absolute;display:block;max-width:none}
+.preview-label{display:inline-flex;align-items:center;gap:6px}
+.preview-label .dot{width:6px;height:6px;border-radius:50%;background:#8291ed}
+.position-cursor{cursor:grab;touch-action:none}
+.position-cursor.dragging{cursor:grabbing}
+.platform-card{display:none;max-width:100%;border:1px solid #e7e8e3;border-radius:12px;background:#fff;box-shadow:0 14px 40px #191a1f12;padding:10px}
+.platform-card.visible{display:block;width:fit-content;margin:0 auto}
+.platform-card-head{display:flex;align-items:center;gap:8px;padding:0 2px 9px;color:#696b65;font-size:9px}
+#previewShell:not(.platform-card) .platform-card-head,#previewShell:not(.platform-card) .platform-caption{display:none}
+.platform-avatar{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#ff8038,#0872f4,#d79dff)}
+.platform-preview-frame{position:relative;overflow:hidden;border-radius:7px;background:#f0f0ef}
+.platform-preview-frame canvas{position:absolute;max-width:none}
+.platform-caption{font-size:9px;color:#898b85;padding:8px 2px 0}
+.fit-warning{display:none;color:#b26b36;font-size:9px;font-weight:600}
+.fit-warning.visible{display:inline}
+.export-quality{display:none;width:132px}
+.export-quality.visible{display:block}
+.export-quality label{display:block;font-size:8px;color:#92948e;margin-bottom:3px}
+.export-quality input{width:100%;accent-color:#475ff2}
+.mobile-actions{display:none}
+.mode-switch,.segmented{display:flex;gap:3px;padding:3px;background:#f2f3f0;border-radius:8px}
+.mode-switch button,.segmented button{border:0;background:transparent;color:#777a74;border-radius:6px;padding:7px 10px;font-size:10px;font-weight:600;flex:1}
+.mode-switch button.active,.segmented button.active{background:white;color:#232420;box-shadow:0 1px 4px #22222212}
+.mode-switch{margin-bottom:12px}
+.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.color-control{display:flex;flex-direction:column;gap:5px;min-width:0}
+.color-control span{font-size:8px;color:#898b85}
+.color-control input[type=color]{width:100%;height:31px;border:1px solid #e2e3de;border-radius:7px;background:#fff;padding:3px;cursor:pointer}
+.range-row{display:grid;grid-template-columns:1fr 42px;align-items:center;gap:10px}
+input[type=range]{width:100%;accent-color:#475ff2;height:14px}
+.range-value{font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:#747671;text-align:right}
+.range-field{margin:14px 0 0}
+.range-field:first-child{margin-top:0}
+.range-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.range-label label{font-size:10px;color:#5f615d;font-weight:600}
+.font-row{display:grid;grid-template-columns:1.3fr .8fr;gap:8px}
+.font-row select{font-size:10px}
+.color-inline{display:flex;align-items:center;gap:8px}
+.color-inline input[type=color]{width:31px;height:30px;padding:3px;background:#fff;border:1px solid #e4e5e0;border-radius:7px}
+.text-color-value{font:9px ui-monospace,SFMono-Regular,Menlo,monospace;color:#888}
+.align-controls button{display:grid;place-items:center}
+.align-controls svg{width:16px;height:16px}
+.dimension-fields{display:none;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.dimension-fields.visible{display:grid}
+.dimension-label{font-size:9px;color:#888;margin-bottom:4px}
+.quality-control{display:none;margin-top:11px}
+.quality-control.visible{display:block}
+.tiny-note{border-top:1px solid var(--line);padding:13px 24px 18px;color:#999b95;font-size:9px;line-height:1.5}
+.tiny-note strong{color:#686a65;font-weight:600}
+.main{min-width:0;display:flex;flex-direction:column;height:calc(100vh - 68px)}
+.preview-toolbar{height:62px;display:flex;align-items:center;padding:0 30px;border-bottom:1px solid #e9e9e4;gap:10px;background:var(--wash)}
+.preview-heading{font-size:11px;font-weight:650;letter-spacing:-.01em}
+.preview-sub{font-size:10px;color:#92948e;margin-left:2px}
+.toolbar-spacer{flex:1}
+.view-select{border:1px solid #e0e1dc;border-radius:7px;color:#73756f;background:#fff;padding:7px 9px;font-size:10px}
+.preview-area{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 30px 13px;overflow:auto}
+.preview-wrap{position:relative;flex:0 0 auto;max-width:100%;box-shadow:0 18px 55px #191a1f20,0 2px 8px #191a1f0c;background:#fff;transition:width .2s,height .2s}
+#artCanvas{display:block;width:100%;height:100%}
+.preview-corner{position:absolute;right:12px;bottom:12px;border-radius:5px;background:#171a20a8;color:white;font:9px ui-monospace,SFMono-Regular,Menlo,monospace;padding:5px 7px;pointer-events:none}
+.canvas-meta{width:min(100%,1024px);display:flex;align-items:center;gap:10px;padding-top:17px;color:#8d8f89;font-size:10px}
+.meta-item{display:flex;align-items:center;gap:5px}
+.meta-label{color:#a4a69f}
+.meta-sep{height:12px;width:1px;background:#dedfd9}
+.meta-spacer{flex:1}
+.ready-label{display:flex;align-items:center;gap:6px;color:#747770;font-size:9px}
+.ready-label svg{width:13px;height:13px;color:#54916d}
+.exportbar{background:#fff;border-top:1px solid var(--line);padding:15px 30px;display:flex;align-items:center;gap:12px}
+.export-copy{display:flex;flex-direction:column;gap:3px}
+.export-copy strong{font-size:11px}
+.export-copy span{font-size:9px;color:#979993}
+.export-spacer{flex:1}
+.format-picker{width:116px;position:relative}
+.format-picker label{display:block;font-size:8px;color:#92948e;margin-bottom:4px}
+.format-picker select{padding:7px 9px;font-size:10px}
+.export-button{border:0;border-radius:8px;background:#242723;color:#fff;font-size:10px;font-weight:650;padding:11px 15px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 3px #1b1d191e;transition:.15s}
+.export-button:hover{background:#3b4039;transform:translateY(-1px)}
+.export-button svg{width:14px;height:14px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:#242723;color:#fff;padding:10px 14px;border-radius:8px;font-size:11px;box-shadow:0 7px 24px #1113;transition:.22s;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.mobile-export{display:none}
+@media(max-width:980px){
+  .workspace{grid-template-columns:320px minmax(0,1fr)}
+  .editor-head,.section{padding-left:19px;padding-right:19px}
+  .preview-toolbar{padding:0 20px}
+  .preview-area{padding-left:20px;padding-right:20px}
+  .exportbar{padding-left:20px;padding-right:20px}
+  .design-select{max-width:115px}
+}
+@media(max-width:720px){
+  .topbar{height:60px;padding:0 16px}
+  .top-actions{gap:4px}
+  .topbar .save-state{display:none}
+  .design-select{max-width:94px}
+  .top-button{font-size:10px}
+  .workspace{display:flex;flex-direction:column;min-height:calc(100vh - 60px)}
+  .main{order:0;height:auto;min-height:570px}
+  .preview-toolbar{height:53px;padding:0 16px}
+  .preview-area{min-height:390px;padding:20px 16px 12px}
+  #artCanvas{height:100%;object-fit:contain}
+  .canvas-meta{padding-top:11px;gap:7px;font-size:9px}
+  .exportbar{padding:13px 16px;position:sticky;bottom:0;z-index:1;box-shadow:0 -5px 15px #00000008}
+  .export-copy{display:none}
+  .format-picker{width:104px}
+  .export-quality{width:90px}
+  .editor{order:1;height:auto;overflow:visible;border-right:0}
+  .editor-head{padding:18px 18px}
+  .section{padding:17px 18px}
+  .tiny-note{padding:12px 18px 20px}
+  .save-state{font-size:0;margin-right:2px}
+  .save-dot{width:8px;height:8px}
+  .top-button{padding:8px 10px}
+}
+@media(max-width:420px){
+  .preview-area{min-height:320px}
+  .preview-sub{display:none}
+  .exportbar{gap:8px}
+  .export-button{padding:10px 11px}
+  .canvas-meta .meta-label{display:none}
+  .design-select{max-width:78px}
+  #copySettingsBtn{display:none}
+  #undoBtn,#redoBtn,#deleteDesignBtn,#importSettingsBtn{display:none}
+  .brand-copy span{display:none}
+  #resetBtn{padding:8px 7px;font-size:9px}
+  .background-actions{gap:4px}
+  .background-actions .small-action{font-size:8px;padding:6px 6px}
+}
+/* Layout refinements for the embedded workspace. */
+.preview-toolbar .view-select{width:auto;min-width:110px;max-width:190px;flex:0 0 auto}
+.preview-heading,.preview-sub{white-space:nowrap;flex-shrink:0}
+.top-actions .top-button{white-space:nowrap}
+.toggle-row{min-height:32px}.toggle-row input[type=checkbox]{width:17px;height:17px;min-width:17px}
+@media(max-width:950px){.preview-sub{display:none}.preview-toolbar .view-select{min-width:90px;max-width:145px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand-mark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 16.5 9 6l4 8 2.2-4.2L20 18" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="18" cy="6" r="2" fill="white"/></svg>
+  </div>
+  <div class="brand-copy"><strong>OG Studio</strong><span>IMAGE COMPOSER</span></div>
+  <div class="top-spacer"></div>
+  <div class="save-state" title="Your canvas is stored in this browser"><i class="save-dot"></i><span id="saveStatus">Saved on this device</span></div>
+  <div class="top-actions">
+    <button class="icon-button" id="undoBtn" type="button" aria-label="Undo" title="Undo" disabled><svg viewBox="0 0 20 20" fill="none"><path d="M7 5 3.5 8.5 7 12M4 8.5h7a5 5 0 0 1 5 5v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="icon-button" id="redoBtn" type="button" aria-label="Redo" title="Redo" disabled><svg viewBox="0 0 20 20" fill="none"><path d="m13 5 3.5 3.5L13 12m3-3.5h-7a5 5 0 0 0-5 5v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <select class="control-select design-select" id="designSelect" aria-label="Saved designs"><option value="">My designs</option></select>
+    <button class="top-button" id="saveDesignBtn" type="button">Save design</button>
+    <button class="top-button" id="deleteDesignBtn" type="button" disabled>Delete</button>
+    <button class="top-button" id="copySettingsBtn" type="button">Copy settings</button>
+    <button class="top-button" id="importSettingsBtn" type="button">Import</button>
+    <input class="hidden-file" id="settingsFile" type="file" accept="application/json,.json">
+  </div>
+  <button class="top-button" id="resetBtn" type="button">Reset canvas</button>
+</header>
+
+<div class="workspace">
+  <aside class="editor" aria-label="Image settings">
+    <div class="editor-head">
+      <div><div class="kicker">Canvas editor</div><h1>Your image</h1></div>
+      <div class="canvas-size-badge" id="sizeBadge">1200 × 630</div>
+    </div>
+
+    <section class="section">
+      <div class="section-title"><h2>Text</h2><span class="hint" id="charCount">0 / 100</span></div>
+      <div class="field">
+        <div class="label-row"><label for="titleInput">Headline</label><span class="count">Shift + Enter for a new line</span></div>
+        <textarea id="titleInput" maxlength="100" spellcheck="false">First note on my site</textarea>
+      </div>
+      <div class="field">
+        <div class="label-row"><label for="subtitleInput">Supporting line</label><span class="count">Optional</span></div>
+        <input type="text" id="subtitleInput" maxlength="100" placeholder="Add a little context">
+      </div>
+      <div class="layer-controls">
+        <div><div class="field-label" style="margin-bottom:6px">Selected layer</div><select id="layerSelect" class="control-select"><option value="title">Headline</option><option value="subtitle">Supporting line</option><option value="logo">Logo</option></select></div>
+        <div><div class="field-label" style="margin-bottom:6px">Position</div><span class="help" style="display:block;margin-top:0">Drag on canvas or set X / Y</span></div>
+      </div>
+      <div class="layer-controls">
+        <div class="range-field"><div class="range-label"><label for="positionX">Horizontal</label><output class="range-value" id="positionXValue">50%</output></div><div class="range-row"><input id="positionX" type="range" min="5" max="95" value="50"><span></span></div></div>
+        <div class="range-field"><div class="range-label"><label for="positionY">Vertical</label><output class="range-value" id="positionYValue">50%</output></div><div class="range-row"><input id="positionY" type="range" min="5" max="95" value="50"><span></span></div></div>
+      </div>
+      <div class="range-stack">
+        <div class="range-label"><label for="lineSpacing">Headline line spacing</label><output class="range-value" id="lineSpacingValue">1.16×</output></div>
+        <div class="range-row"><input id="lineSpacing" type="range" min="100" max="170" value="116"><span></span></div>
+      </div>
+      <div class="range-stack">
+        <div class="range-label"><label for="safeMargin">Text safe margin</label><output class="range-value" id="safeMarginValue">10%</output></div>
+        <div class="range-row"><input id="safeMargin" type="range" min="4" max="24" value="10"><span></span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><h2>Canvas size</h2><span class="hint" id="ratioLabel">1.90 : 1</span></div>
+      <label class="field-label" for="sizePreset">Format</label>
+      <select class="control-select" id="sizePreset" style="margin-top:6px">
+        <option value="og">Link preview · 1200 × 630</option>
+        <option value="wide">Wide · 1600 × 900</option>
+        <option value="square">Square · 1080 × 1080</option>
+        <option value="portrait">Portrait · 1080 × 1350</option>
+        <option value="story">Story · 1080 × 1920</option>
+        <option value="custom">Custom dimensions</option>
+      </select>
+      <div class="dimension-fields" id="dimensionFields">
+        <div><div class="dimension-label">Width · px</div><input type="number" id="widthInput" min="100" max="4000" step="10" value="1200"></div>
+        <div><div class="dimension-label">Height · px</div><input type="number" id="heightInput" min="100" max="4000" step="10" value="630"></div>
+      </div>
+      <div class="help">1200 × 630 is the familiar link preview size. Some platforms crop images differently.</div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <div><h2>Background</h2><span class="hint">Build a color atmosphere</span></div>
+        <div class="background-actions">
+        <button class="small-action" id="favoritePaletteBtn" type="button" title="Save this palette">☆ Save palette</button>
+        <button class="randomize-button" id="randomizeGradient" type="button" title="Generate a colorful gradient palette" aria-label="Randomize gradient colors">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" stroke="currentColor" stroke-width="1.6"/><circle cx="8.2" cy="8.2" r="1.3" fill="currentColor"/><circle cx="15.8" cy="8.2" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="8.2" cy="15.8" r="1.3" fill="currentColor"/><circle cx="15.8" cy="15.8" r="1.3" fill="currentColor"/></svg>
+          <span>Randomize</span>
+        </button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="label-row"><label for="randomMood">Palette mood</label><span class="count">Curated harmonies</span></div>
+        <select id="randomMood" class="control-select"><option value="any">Any mood</option><option value="warm">Warm</option><option value="cool">Cool</option><option value="muted">Muted</option><option value="vivid">Vivid</option></select>
+      </div>
+      <div class="gradient-styles" id="gradientStyles" role="group" aria-label="Gradient style">
+        <button class="gradient-style active" type="button" data-style="mesh">Soft mesh</button>
+        <button class="gradient-style" type="button" data-style="linear">Clean linear</button>
+        <button class="gradient-style" type="button" data-style="orbital">Orbit</button>
+        <button class="gradient-style" type="button" data-style="haze">Atmosphere</button>
+        <button class="gradient-style" type="button" data-style="prism">Prism</button>
+        <button class="gradient-style" type="button" data-style="velvet">Velvet</button>
+        <button class="gradient-style" type="button" data-style="bloom">Bloom</button>
+      </div>
+      <div class="style-hint" id="gradientHint">Soft mesh blends several diffuse color fields for a luminous finish.</div>
+      <div class="preset-grid" id="presetGrid">
+        <button class="preset active" type="button" data-preset="aurora" aria-label="Aurora gradient">
+          <div class="preset-art" style="background:linear-gradient(135deg,#ff8038,#0872f4 52%,#7be2f4)"></div><span>Aurora</span>
+        </button>
+        <button class="preset" type="button" data-preset="blue-hour" aria-label="Blue hour gradient">
+          <div class="preset-art" style="background:linear-gradient(135deg,#0b3cbd,#53c9ed 55%,#dca8f4)"></div><span>Blue hour</span>
+        </button>
+        <button class="preset" type="button" data-preset="ember" aria-label="Ember gradient">
+          <div class="preset-art" style="background:linear-gradient(135deg,#fa613f,#ef9657 54%,#f2b2c0)"></div><span>Ember</span>
+        </button>
+        <button class="preset" type="button" data-preset="orchid" aria-label="Orchid gradient">
+          <div class="preset-art" style="background:linear-gradient(135deg,#685af1,#d785e5 55%,#ffaf87)"></div><span>Orchid</span>
+        </button>
+        <button class="preset" type="button" data-preset="lime" aria-label="Lime gradient">
+          <div class="preset-art" style="background:linear-gradient(135deg,#c6d641,#f5e17d 52%,#54bd9e)"></div><span>Lime light</span>
+        </button>
+        <button class="preset" type="button" data-preset="solid" aria-label="Solid color">
+          <div class="preset-art" style="background:#252d3b"></div><span>Midnight</span>
+        </button>
+      </div>
+      <div style="height:15px"></div>
+      <div class="mode-switch" role="group" aria-label="Background style">
+        <button type="button" data-mode="gradient" class="active">Soft gradient</button>
+        <button type="button" data-mode="solid">Solid color</button>
+      </div>
+      <div class="color-grid color-controls">
+        <label class="color-control"><span id="colorName0">Warm</span><input type="color" data-color-index="0" value="#ff8958" aria-label="Warm color"></label>
+        <label class="color-control"><span id="colorName1">Blue</span><input type="color" data-color-index="1" value="#187cf2" aria-label="Blue color"></label>
+        <label class="color-control"><span id="colorName2">Glow</span><input type="color" data-color-index="2" value="#66d4ea" aria-label="Glow color"></label>
+        <label class="color-control"><span id="colorName3">Rose</span><input type="color" data-color-index="3" value="#f4a2d1" aria-label="Rose color"></label>
+      </div>
+      <div class="range-field" id="angleRow">
+        <div class="range-label"><label for="angleRange">Gradient direction</label><output class="range-value" id="angleValue">35°</output></div>
+        <div class="range-row"><input id="angleRange" type="range" min="0" max="360" value="35"><span></span></div>
+      </div>
+      <div class="favorite-list" id="favoriteList" aria-label="Favorite palettes"></div>
+      <div style="height:13px"></div>
+      <div class="section-title" style="margin-bottom:9px"><h2>Background image</h2><span class="hint">Optional</span></div>
+      <div class="asset-row">
+        <label class="asset-button" for="backgroundFile"><svg viewBox="0 0 20 20" fill="none"><path d="M10 13V4m0 0L6.5 7.5M10 4l3.5 3.5M4 12v3.5c0 .8.7 1.5 1.5 1.5h9c.8 0 1.5-.7 1.5-1.5V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Upload image</label>
+        <input class="hidden-file" id="backgroundFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <span class="asset-name" id="backgroundName">No image added</span>
+        <button class="small-action" id="clearBackgroundBtn" type="button">Clear</button>
+      </div>
+      <div class="asset-warning" id="assetWarning" role="status"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><h2>Logo</h2><span class="hint">Drag it into place</span></div>
+      <div class="asset-row">
+        <label class="asset-button" for="logoFile"><svg viewBox="0 0 20 20" fill="none"><path d="M10 13V4m0 0L6.5 7.5M10 4l3.5 3.5M4 12v3.5c0 .8.7 1.5 1.5 1.5h9c.8 0 1.5-.7 1.5-1.5V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Upload logo</label>
+        <input class="hidden-file" id="logoFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <span class="asset-name" id="logoName">No logo added</span>
+        <button class="small-action" id="clearLogoBtn" type="button">Remove</button>
+      </div>
+      <div class="range-stack">
+        <div class="range-label"><label for="logoSize">Logo size</label><output class="range-value" id="logoSizeValue">16%</output></div>
+        <div class="range-row"><input id="logoSize" type="range" min="5" max="40" value="16"><span></span></div>
+      </div>
+      <div class="range-stack">
+        <div class="range-label"><label for="logoOpacity">Opacity</label><output class="range-value" id="logoOpacityValue">100%</output></div>
+        <div class="range-row"><input id="logoOpacity" type="range" min="20" max="100" value="100"><span></span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><h2>Typography</h2><span class="hint">Reference style by default</span></div>
+      <div class="font-row">
+        <div><div class="field-label" style="margin-bottom:6px">Typeface</div>
+          <select class="control-select" id="fontSelect">
+            <option value="dm-sans">DM Sans · OpenAI-inspired</option>
+            <option value="system">Inter / System Sans</option>
+            <option value="arial">Arial</option>
+            <option value="helvetica">Helvetica Neue</option>
+            <option value="avenir">Avenir Next</option>
+            <option value="georgia">Georgia</option>
+            <option value="trebuchet">Trebuchet MS</option>
+            <option value="mono">SF Mono</option>
+          </select>
+        </div>
+        <div><div class="field-label" style="margin-bottom:6px">Weight</div>
+          <select class="control-select" id="weightSelect">
+            <option value="500">Medium</option><option value="600">Semibold</option><option value="700" selected>Bold</option><option value="800">Extra bold</option>
+          </select>
+        </div>
+      </div>
+      <div class="range-field">
+        <div class="range-label"><label for="fontSizeRange">Headline size</label><output class="range-value" id="fontSizeValue">68 px</output></div>
+        <div class="range-row"><input id="fontSizeRange" type="range" min="32" max="132" value="68"><span></span></div>
+      </div>
+      <div class="range-field">
+        <div class="range-label"><label>Alignment</label><span class="hint">Horizontal</span></div>
+        <div class="segmented align-controls" role="group" aria-label="Text alignment">
+          <button type="button" data-align="left" aria-label="Align left"><svg viewBox="0 0 20 20" fill="none"><path d="M4 5h12M4 8h8M4 11h12M4 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <button type="button" data-align="center" aria-label="Align center" class="active"><svg viewBox="0 0 20 20" fill="none"><path d="M3 5h14M5 8h10M3 11h14M5 14h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <button type="button" data-align="right" aria-label="Align right"><svg viewBox="0 0 20 20" fill="none"><path d="M4 5h12M8 8h8M4 11h12M8 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        </div>
+      </div>
+      <div class="range-field">
+        <div class="range-label"><label for="textColor">Text color</label><div class="color-inline"><input id="textColor" type="color" value="#ffffff" aria-label="Text color"><span class="text-color-value" id="textColorValue">#FFFFFF</span></div></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title"><h2>Finish</h2><span class="hint">Small details</span></div>
+      <div class="range-field">
+        <div class="range-label"><label for="softnessRange">Gradient softness</label><output class="range-value" id="softnessValue">72%</output></div>
+        <div class="range-row"><input id="softnessRange" type="range" min="15" max="100" value="72"><span></span></div>
+      </div>
+      <div class="range-field">
+        <div class="range-label"><label for="grainRange">Fine grain</label><output class="range-value" id="grainValue">12%</output></div>
+        <div class="range-row"><input id="grainRange" type="range" min="0" max="40" value="12"><span></span></div>
+      </div>
+    </section>
+
+    <div class="tiny-note"><strong>Made for link previews.</strong> Keep important text near the center so it stays visible when a platform crops the image.</div>
+  </aside>
+
+  <main class="main">
+    <div class="preview-toolbar">
+      <span class="preview-heading">Live preview</span><span class="preview-sub">Updates as you design</span>
+      <div class="toolbar-spacer"></div>
+      <select id="platformPreview" class="view-select" aria-label="Preview crop">
+        <option value="full">Full canvas</option><option value="wide">Wide link card</option><option value="square">Square feed</option><option value="portrait">Portrait feed</option><option value="story">Vertical story</option>
+      </select>
+      <label class="toggle-row" style="margin:0;gap:5px;white-space:nowrap"><input id="safeGuideToggle" type="checkbox" checked><span>Safe area</span></label>
+      <select id="zoomSelect" class="view-select" aria-label="Preview zoom">
+        <option value="fit">Fit to window</option><option value="75">75%</option><option value="100">100%</option>
+      </select>
+    </div>
+    <div class="preview-area" id="previewArea">
+      <div class="preview-shell" id="previewShell">
+        <div class="platform-card-head" id="platformCardHead"><span class="platform-avatar"></span><span id="platformCardTitle">Sample social card</span></div>
+        <div class="preview-wrap position-cursor" id="previewWrap" style="--ratio:1.9048">
+          <canvas id="artCanvas" width="1200" height="630" aria-label="Preview of your social share image"></canvas>
+          <div class="crop-guide visible" id="cropGuide"></div>
+          <div class="preview-corner" id="canvasCorner">1200 × 630</div>
+        </div>
+        <div class="platform-caption" id="platformCaption"></div>
+      </div>
+      <div class="canvas-meta">
+        <span class="meta-item"><span class="meta-label">Canvas</span><strong id="metaDimensions" style="font-weight:600;color:#666862">1200 × 630 px</strong></span>
+        <span class="meta-sep"></span>
+        <span class="meta-item"><span class="meta-label">Ratio</span><strong id="metaRatio" style="font-weight:600;color:#666862">1.90:1</strong></span>
+        <span class="meta-spacer"></span><span class="fit-warning" id="fitWarning">Text was reduced to fit</span>
+        <span class="ready-label"><svg viewBox="0 0 16 16" fill="none"><path d="m3.5 8.2 2.8 2.7 6.2-6.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="6.5" stroke="currentColor"/></svg>Ready to export</span>
+      </div>
+    </div>
+    <div class="exportbar">
+      <div class="export-copy"><strong>Export image</strong><span>Full resolution · saved to your device</span></div>
+      <div class="export-spacer"></div>
+      <div class="format-picker"><label for="formatSelect">FILE FORMAT</label>
+        <select class="control-select" id="formatSelect">
+          <option value="image/png">PNG · crisp</option>
+          <option value="image/jpeg">JPEG · smaller</option>
+          <option value="image/webp">WebP · compact</option>
+        </select>
+      </div>
+      <div class="export-quality" id="exportQuality"><label for="qualityRange">QUALITY · <output id="qualityValue">92%</output></label><input id="qualityRange" type="range" min="50" max="100" value="92"></div>
+      <button class="export-button" id="exportBtn" type="button"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2.5v7m0 0 2.6-2.6M8 9.5 5.4 6.9M3 10.5v2.2c0 .4.3.8.8.8h8.4c.5 0 .8-.4.8-.8v-2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="exportLabel">Download PNG</span></button>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  const defaultState={title:"First note on my site",subtitle:"",width:1200,height:630,sizePreset:"og",mode:"gradient",palette:"aurora",colors:["#ff8038","#0872f4","#3bd4f2","#d79dff"],gradientStyle:"mesh",angle:35,font:"dm-sans",fontMigrated:true,weight:700,fontSize:68,align:"center",textColor:"#ffffff",titleX:.5,titleY:.5,subtitleX:.5,subtitleY:.67,titleLineSpacing:1.16,safeMargin:.10,activeLayer:"title",logoData:"",logoName:"",logoX:.12,logoY:.15,logoSize:.16,logoOpacity:100,backgroundData:"",backgroundName:"",softness:72,grain:10,format:"image/png",quality:92,previewMode:"full"};
+  const palettePresets={
+    aurora:{colors:["#ff8038","#0872f4","#3bd4f2","#d79dff"],style:"mesh"},
+    "blue-hour":{colors:["#8db5ff","#0b42d8","#59d8f0","#c696ff"],style:"mesh"},
+    ember:{colors:["#fc6848","#d94f48","#ffad68","#f1a1ae"],style:"haze"},
+    orchid:{colors:["#6b58ed","#7557cb","#e78ad2","#ffae85"],style:"orbital"},
+    lime:{colors:["#d8df52","#bfcf4b","#62c49c","#ffe39a"],style:"prism"},
+    glacier:{colors:["#97e8ee","#16a6c4","#67d9c6","#e2f8ec"],style:"velvet"}
+  };
+  const gradientHints={mesh:"Soft mesh blends diffuse color fields into a luminous, layered finish.",linear:"Clean linear keeps the color transitions calm, smooth, and precise.",orbital:"Orbit uses overlapping radial fields for a dimensional, planet-like glow.",haze:"Atmosphere layers broad warm and cool color clouds with a soft editorial feel.",prism:"Prism layers softly refracted color planes for a clear, polished glow.",velvet:"Velvet adds a gentle central light and a richer, softly shaded edge.",bloom:"Bloom gathers the color into one luminous, diffused center."};
+  const fontStacks={"dm-sans":'"DM Sans", Arial, sans-serif',system:'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',arial:"Arial, Helvetica, sans-serif",helvetica:'"Helvetica Neue", Helvetica, Arial, sans-serif',avenir:'"Avenir Next", Avenir, Arial, sans-serif',georgia:'Georgia, "Times New Roman", serif',trebuchet:'"Trebuchet MS", Arial, sans-serif',mono:'"SFMono-Regular", Menlo, Monaco, monospace'};
+  const previewRatios={full:null,wide:1.91,square:1,portrait:4/5,story:9/16};
+  const previewNames={full:"Full canvas",wide:"Wide link card",square:"Square feed",portrait:"Portrait feed",story:"Vertical story"};
+  const moodPalettes={
+    any:[["#f47b55","#2659c9","#44d2dd","#d7a5ee"],["#147b85","#51cbbf","#f1a574","#f7d0a3"],["#5749bd","#7967e8","#ed90ca","#ffb883"],["#e05e43","#fc9c55","#f2c584","#d889a9"],["#103e77","#327abd","#58c5cf","#c4dbed"],["#bc4b63","#e27872","#f5b888","#f5d8c0"]],
+    warm:[["#f05b3e","#db454c","#f4a77c","#f5d6a8"],["#f37042","#f6a143","#e36f83","#f5c1ae"],["#902f47","#cf554c","#ec9877","#f2c6a3"]],
+    cool:[["#0f478e","#2878d2","#36c0ce","#b3e5e6"],["#343da9","#6974e8","#7bc7ee","#d8d0ff"],["#124f65","#168a9a","#58c9bd","#c5e5d8"]],
+    muted:[["#34495c","#526e80","#9baeb4","#e2c7b8"],["#504b68","#77758b","#c3a7ad","#ead5c6"],["#285b62","#53867f","#b7c5ac","#e4d5ba"]],
+    vivid:[["#f84d3d","#ff8e2f","#215bd6","#56c9f1"],["#672cdd","#ed44a5","#fd8650","#ffd14a"],["#076c94","#04b9b4","#9be343","#f6df48"]]
+  };
+  let managerNonce=null,managerPostTimer=null;
+  let state;
+  try{const saved=window.parent!==window?null:JSON.parse(localStorage.getItem("og-studio-canvas")||"null");if(saved&&saved.font==="system"&&!saved.fontMigrated)saved.font="dm-sans";state=Object.assign({},defaultState,saved||{});}catch(e){state=Object.assign({},defaultState);}
+  state.fontMigrated=true;
+  if(!Array.isArray(state.colors)||state.colors.length<4)state.colors=defaultState.colors.slice();
+  if(state.gradientStyle==="silk")state.gradientStyle="mesh";
+  if(!previewRatios[state.previewMode])state.previewMode="full";
+  const canvas=el("artCanvas"),ctx=canvas.getContext("2d"),previewArea=el("previewArea"),previewWrap=el("previewWrap"),toast=el("toast");
+  let toastTimer,zoom="fit",noiseCanvas=null,fitWasReduced=false,historyTimer=null,historyOpen=false,undoStack=[],redoStack=[],lastMetrics={},dragState=null,drawFrame=0;
+  const imageCache=new Map();
+  function el(id){return document.getElementById(id);}
+  function clone(value){return JSON.parse(JSON.stringify(value));}
+  function saveState(){if(managerNonce){clearTimeout(managerPostTimer);managerPostTimer=setTimeout(()=>parent.postMessage({type:"og-design-change",nonce:managerNonce,design:clone(state)},location.origin),150);}try{localStorage.setItem("og-studio-canvas",JSON.stringify(state));el("saveStatus").textContent=managerNonce?"Saving cover…":"Saved on this device";}catch(e){el("saveStatus").textContent="Storage is full";}}
+  function showToast(message){toast.textContent=message;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(function(){toast.classList.remove("show");},2400);}
+  function cleanHex(hex){return /^#[0-9a-f]{6}$/i.test(hex)?hex:"#ffffff";}
+  function rgba(hex,a){const h=cleanHex(hex).slice(1);return "rgba("+parseInt(h.slice(0,2),16)+","+parseInt(h.slice(2,4),16)+","+parseInt(h.slice(4,6),16)+","+a+")";}
+  function recordHistory(before){
+    if(!historyOpen){undoStack.push(before);if(undoStack.length>60)undoStack.shift();redoStack=[];historyOpen=true;updateHistoryButtons();}
+    clearTimeout(historyTimer);historyTimer=setTimeout(function(){historyOpen=false;historyTimer=null;},380);
+  }
+  function endHistoryGroup(){clearTimeout(historyTimer);historyTimer=null;historyOpen=false;updateHistoryButtons();}
+  function updateHistoryButtons(){el("undoBtn").disabled=!undoStack.length;el("redoBtn").disabled=!redoStack.length;}
+  function mutate(fn,record){const before=clone(state);fn();if(record!==false)recordHistory(before);saveState();sync();}
+  function undo(){if(!undoStack.length)return;endHistoryGroup();redoStack.push(clone(state));state=undoStack.pop();saveState();sync();updateHistoryButtons();}
+  function redo(){if(!redoStack.length)return;endHistoryGroup();undoStack.push(clone(state));state=redoStack.pop();saveState();sync();updateHistoryButtons();}
+  function addGlow(color,x,y,radius,opacity){const g=ctx.createRadialGradient(x,y,0,x,y,radius);g.addColorStop(0,rgba(color,opacity));g.addColorStop(.42,rgba(color,opacity*.72));g.addColorStop(1,rgba(color,0));ctx.fillStyle=g;ctx.fillRect(0,0,canvas.width,canvas.height);}
+  function linearFill(w,h,colors){const angle=Number(state.angle)*Math.PI/180,length=Math.sqrt(w*w+h*h)*.9,cx=w/2,cy=h/2,dx=Math.cos(angle)*length/2,dy=Math.sin(angle)*length/2,g=ctx.createLinearGradient(cx-dx,cy-dy,cx+dx,cy+dy);g.addColorStop(0,cleanHex(colors[0]));g.addColorStop(.34,cleanHex(colors[1]));g.addColorStop(.68,cleanHex(colors[2]));g.addColorStop(1,cleanHex(colors[3]));ctx.fillStyle=g;ctx.fillRect(0,0,w,h);}
+  function drawGradient(w,h){
+    const c=state.colors.map(cleanHex),soft=Number(state.softness)||70,spread=(.2+soft/100*.42)*Math.max(w,h),op=.4+soft/100*.42;
+    if(state.gradientStyle==="linear"){linearFill(w,h,c);return;}
+    if(state.gradientStyle==="orbital"){
+      ctx.fillStyle=c[1];ctx.fillRect(0,0,w,h);addGlow(c[0],w*.25,h*.25,spread*.9,op);addGlow(c[2],w*.78,h*.3,spread*.8,op*.9);addGlow(c[3],w*.72,h*.84,spread*.78,op);addGlow(c[1],w*.18,h*.8,spread*.72,op*.8);addGlow(c[2],w*.5,h*.52,spread*.48,op*.45);return;
+    }
+    if(state.gradientStyle==="bloom"){
+      ctx.fillStyle=c[1];ctx.fillRect(0,0,w,h);addGlow(c[2],w*.52,h*.46,spread*1.48,op*.86);addGlow(c[3],w*.42,h*.32,spread*.76,op*.58);addGlow(c[0],w*.72,h*.67,spread*.9,op*.46);return;
+    }
+    if(state.gradientStyle==="velvet"){
+      linearFill(w,h,[c[0],c[1],c[2],c[3]]);addGlow(c[2],w*.56,h*.4,spread*1.5,op*.62);addGlow(c[0],w*.12,h*.86,spread*.9,op*.32);
+      const edge=ctx.createRadialGradient(w*.5,h*.48,Math.min(w,h)*.16,w*.5,h*.48,Math.max(w,h)*.78);edge.addColorStop(0,"rgba(9,17,44,0)");edge.addColorStop(1,"rgba(9,17,44,.34)");ctx.fillStyle=edge;ctx.fillRect(0,0,w,h);return;
+    }
+    if(state.gradientStyle==="prism"){
+      linearFill(w,h,[c[0],c[1],c[2],c[3]]);ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.55;ctx.filter="blur("+Math.round(Math.min(w,h)*.045)+"px)";
+      const beam=ctx.createLinearGradient(0,h*.15,w,h*.8);beam.addColorStop(0,rgba(c[2],.04));beam.addColorStop(.42,rgba(c[3],.48));beam.addColorStop(.72,rgba(c[0],.3));beam.addColorStop(1,rgba(c[1],.02));ctx.fillStyle=beam;ctx.beginPath();ctx.moveTo(-w*.12,h*.48);ctx.lineTo(w*.32,-h*.12);ctx.lineTo(w*.73,-h*.12);ctx.lineTo(w*.2,h*1.12);ctx.closePath();ctx.fill();
+      const glow=ctx.createRadialGradient(w*.68,h*.36,0,w*.68,h*.36,spread*.9);glow.addColorStop(0,rgba(c[2],.38));glow.addColorStop(1,rgba(c[2],0));ctx.filter="none";ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);ctx.restore();return;
+    }
+    linearFill(w,h,[c[1],c[2],c[3],c[0]]);
+    if(state.gradientStyle==="haze"){
+      addGlow(c[0],w*.08,h*.1,spread*1.45,op*.92);addGlow(c[1],w*.47,h*.48,spread*1.34,op*.72);addGlow(c[2],w*.89,h*.18,spread*1.25,op*.75);addGlow(c[3],w*.85,h*.98,spread*1.5,op*.96);addGlow(c[0],w*.26,h*.98,spread*1.15,op*.6);return;
+    }
+    addGlow(c[0],w*.08,h*.04,spread,op);addGlow(c[1],w*.34,h*.49,spread*.78,op*.9);addGlow(c[2],w*.65,h*.45,spread*.8,op*.78);addGlow(c[0],w*.96,h*.96,spread*.82,op*.9);addGlow(c[3],w*.06,h*.98,spread*.58,op*.5);
+  }
+  function drawTexture(w,h){if(!state.grain)return;if(!noiseCanvas){noiseCanvas=document.createElement("canvas");noiseCanvas.width=160;noiseCanvas.height=160;const n=noiseCanvas.getContext("2d"),im=n.createImageData(160,160);let seed=4321;for(let i=0;i<im.data.length;i+=4){seed=(seed*1664525+1013904223)>>>0;const v=106+(seed%96);im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255;}n.putImageData(im,0,0);}ctx.save();ctx.globalCompositeOperation="soft-light";ctx.globalAlpha=(state.grain/100)*.5;ctx.fillStyle=ctx.createPattern(noiseCanvas,"repeat");ctx.fillRect(0,0,w,h);ctx.restore();}
+  function getImage(data){if(!data)return null;if(imageCache.has(data))return imageCache.get(data);const image=new Image();imageCache.set(data,image);image.onload=function(){draw();};image.src=data;return image;}
+  function drawCover(image,w,h){if(!image||!image.complete||!image.naturalWidth)return;const scale=Math.max(w/image.width,h/image.height),dw=image.width*scale,dh=image.height*scale;ctx.drawImage(image,(w-dw)/2,(h-dh)/2,dw,dh);}
+  function wrapText(text,maxWidth,font){const result=[];const paragraphs=String(text||"").split("\n");ctx.font=font;paragraphs.forEach(function(paragraph){if(!paragraph.trim()){result.push("");return;}const words=paragraph.trim().split(/\s+/);let line="";words.forEach(function(word){const candidate=line?line+" "+word:word;if(ctx.measureText(candidate).width<=maxWidth||!line){line=candidate;return;}result.push(line);line="";if(ctx.measureText(word).width<=maxWidth){line=word;return;}let part="";Array.from(word).forEach(function(ch){if(ctx.measureText(part+ch).width>maxWidth&&part){result.push(part);part=ch;}else{part+=ch;}});line=part;});if(line)result.push(line);});return result.length?result:[""];}
+  function drawTextLayer(text,xn,yn,size,weight,align,maxWidth,lineSpacing,subtitle){
+    if(!text)return null;const family=fontStacks[state.font]||fontStacks.system;let fontSize=size,lines,lineHeight,fitScale=false;
+    function measure(){ctx.font=weight+" "+fontSize+"px "+family;lines=wrapText(text,maxWidth,ctx.font);lineHeight=fontSize*lineSpacing;}
+    measure();while(fontSize>22&&(lines.length*lineHeight>canvas.height*.64||fontSize>canvas.height*.32)){fontSize-=2;fitScale=true;measure();}
+    const x=Math.max(0,Math.min(canvas.width,canvas.width*xn)),y=Math.max(0,Math.min(canvas.height,canvas.height*yn));
+    ctx.save();ctx.textAlign=align;ctx.textBaseline="middle";ctx.fillStyle=cleanHex(state.textColor);ctx.shadowColor="rgba(20,24,38,.27)";ctx.shadowBlur=fontSize*.16;ctx.shadowOffsetY=fontSize*.025;ctx.globalAlpha=subtitle?.91:1;ctx.font=weight+" "+fontSize+"px "+family;
+    const textWidth=Math.min(maxWidth,Math.max(1,lines.reduce(function(max,line){return Math.max(max,ctx.measureText(line).width);},0)));
+    lines.forEach(function(line,i){ctx.fillText(line,x,y+(i-(lines.length-1)/2)*lineHeight,maxWidth);});ctx.restore();
+    const blockH=lines.length*lineHeight,left=align==="left"?x:(align==="right"?x-textWidth:x-textWidth/2);
+    return {bounds:{left:left,top:y-blockH/2,width:textWidth,height:blockH},fontSize:fontSize,fit:fitScale,lines:lines};
+  }
+  function drawLogo(){if(!state.logoData)return null;const image=getImage(state.logoData);if(!image||!image.complete||!image.naturalWidth)return null;let dw=canvas.width*Number(state.logoSize||.16),dh=dw*image.naturalHeight/image.naturalWidth;if(dh>canvas.height*.32){dh=canvas.height*.32;dw=dh*image.naturalWidth/image.naturalHeight;}const x=canvas.width*state.logoX,y=canvas.height*state.logoY;ctx.save();ctx.globalAlpha=Number(state.logoOpacity||100)/100;ctx.drawImage(image,x-dw/2,y-dh/2,dw,dh);ctx.restore();return {left:x-dw/2,top:y-dh/2,width:dw,height:dh};}
+  function draw(){
+    const w=Math.max(100,Math.min(4000,Number(state.width)||1200)),h=Math.max(100,Math.min(4000,Number(state.height)||630));state.width=w;state.height=h;canvas.width=w;canvas.height=h;ctx.clearRect(0,0,w,h);ctx.save();
+    if(state.mode==="solid"){ctx.fillStyle=cleanHex(state.colors[0]);ctx.fillRect(0,0,w,h);}else drawGradient(w,h);
+    if(state.backgroundData){const bg=getImage(state.backgroundData);if(bg&&bg.complete&&bg.naturalWidth){ctx.save();ctx.globalAlpha=.86;drawCover(bg,w,h);ctx.restore();ctx.fillStyle=rgba(state.colors[1],.11);ctx.fillRect(0,0,w,h);}}
+    drawTexture(w,h);const logoBounds=drawLogo();const margin=w*Number(state.safeMargin||.1),availableW=Math.max(w*.36,w-margin*2);
+    const title=drawTextLayer(state.title,state.titleX,state.titleY,Number(state.fontSize),Number(state.weight),state.align,availableW,Number(state.titleLineSpacing),false);
+    const sub=drawTextLayer(state.subtitle,state.subtitleX,state.subtitleY,Math.max(18,Number(state.fontSize)*.36),500,state.align,availableW*.92,1.32,true);ctx.restore();
+    fitWasReduced=!!(title&&title.fit);lastMetrics={title:title?title.bounds:null,subtitle:sub?sub.bounds:null,logo:logoBounds};el("fitWarning").classList.toggle("visible",fitWasReduced);updatePositionControls();
+  }
+  function ratioText(w,h){return (w/h).toFixed(2)+":1";}
+  function getPreviewRatio(){return previewRatios[state.previewMode]||Number(state.width)/Number(state.height);}
+  function setPreviewSize(){
+    const w=Number(state.width),h=Number(state.height),ratio=getPreviewRatio();const availW=Math.max(200,previewArea.clientWidth-90),availH=Math.max(160,previewArea.clientHeight-(state.previewMode==="full"?112:172));let scale=Math.min(availW/w,availH/(w/ratio),1);if(zoom==="75")scale=Math.min(scale,.75);if(zoom==="100")scale=Math.min(scale,1);const frameW=Math.max(160,Math.round(w*scale)),frameH=Math.max(100,Math.round(frameW/ratio));previewWrap.style.width=frameW+"px";previewWrap.style.height=frameH+"px";previewWrap.style.setProperty("--ratio",ratio);const coverScale=Math.max(frameW/w,frameH/h),drawW=w*coverScale,drawH=h*coverScale;canvas.style.width=drawW+"px";canvas.style.height=drawH+"px";canvas.style.left=((frameW-drawW)/2)+"px";canvas.style.top=((frameH-drawH)/2)+"px";
+  }
+  function updatePositionControls(){const layer=state.activeLayer||"title",key=layer==="subtitle"?"subtitle":(layer==="logo"?"logo":"title"),x=state[key+"X"],y=state[key+"Y"];el("layerSelect").value=layer;el("positionX").value=Math.round(x*100);el("positionY").value=Math.round(y*100);el("positionXValue").textContent=Math.round(x*100)+"%";el("positionYValue").textContent=Math.round(y*100)+"%";el("logoSize").value=Math.round(state.logoSize*100);el("logoSizeValue").textContent=Math.round(state.logoSize*100)+"%";el("logoOpacity").value=state.logoOpacity;el("logoOpacityValue").textContent=state.logoOpacity+"%";el("logoSize").disabled=layer!=="logo";el("logoOpacity").disabled=layer!=="logo";}
+  function sync(){
+    if(el("titleInput").value!==state.title)el("titleInput").value=state.title;if(el("subtitleInput").value!==state.subtitle)el("subtitleInput").value=state.subtitle;el("sizePreset").value=state.sizePreset||"custom";el("widthInput").value=state.width;el("heightInput").value=state.height;el("dimensionFields").classList.toggle("visible",state.sizePreset==="custom");el("fontSelect").value=state.font;el("weightSelect").value=String(state.weight);el("fontSizeRange").value=state.fontSize;el("fontSizeValue").textContent=state.fontSize+" px";el("angleRange").value=state.angle;el("angleValue").textContent=state.angle+"°";el("softnessRange").value=state.softness;el("softnessValue").textContent=state.softness+"%";el("grainRange").value=state.grain;el("grainValue").textContent=state.grain+"%";el("textColor").value=cleanHex(state.textColor);el("textColorValue").textContent=cleanHex(state.textColor).toUpperCase();
+    el("positionX").value=Math.round(state[(state.activeLayer||"title")+"X"]*100);el("positionY").value=Math.round(state[(state.activeLayer||"title")+"Y"]*100);el("lineSpacing").value=Math.round(state.titleLineSpacing*100);el("lineSpacingValue").textContent=state.titleLineSpacing.toFixed(2)+"×";el("safeMargin").value=Math.round(state.safeMargin*100);el("safeMarginValue").textContent=Math.round(state.safeMargin*100)+"%";el("qualityRange").value=state.quality;el("qualityValue").textContent=state.quality+"%";el("exportQuality").classList.toggle("visible",state.format!=="image/png");el("logoName").textContent=state.logoName||"No logo added";el("backgroundName").textContent=state.backgroundName||"No image added";el("platformPreview").value=state.previewMode;el("safeGuideToggle").checked=el("safeGuideToggle").checked!==false;el("cropGuide").classList.toggle("visible",el("safeGuideToggle").checked);
+    document.querySelectorAll("[data-color-index]").forEach(function(input){input.value=cleanHex(state.colors[Number(input.dataset.colorIndex)]);});document.querySelectorAll("[data-mode]").forEach(function(button){button.classList.toggle("active",button.dataset.mode===state.mode);});document.querySelectorAll("[data-align]").forEach(function(button){button.classList.toggle("active",button.dataset.align===state.align);});document.querySelectorAll(".preset").forEach(function(button){button.classList.toggle("active",button.dataset.preset===state.palette);});document.querySelectorAll(".gradient-style").forEach(function(button){button.classList.toggle("active",button.dataset.style===state.gradientStyle);});
+    el("gradientHint").textContent=gradientHints[state.gradientStyle]||gradientHints.mesh;el("angleRow").style.display=state.mode==="gradient"&&state.gradientStyle==="linear"?"block":"none";el("colorName0").textContent=state.mode==="solid"?"Color":"Tone 1";el("colorName1").textContent=state.mode==="solid"?"—":"Tone 2";el("colorName2").textContent=state.mode==="solid"?"—":"Tone 3";el("colorName3").textContent=state.mode==="solid"?"—":"Tone 4";el("charCount").textContent=Array.from(state.title||"").length+" / 100";
+    el("sizeBadge").textContent=state.width+" × "+state.height;el("canvasCorner").textContent=state.width+" × "+state.height;el("metaDimensions").textContent=state.width+" × "+state.height+" px";el("metaRatio").textContent=ratioText(state.width,state.height);el("ratioLabel").textContent=(state.width/state.height).toFixed(2)+" : 1";el("formatSelect").value=state.format;const formatName=state.format==="image/jpeg"?"JPEG":(state.format==="image/webp"?"WebP":"PNG");el("exportLabel").textContent="Download "+formatName;
+    const platformMode=state.previewMode!=="full";el("previewShell").classList.toggle("platform-card",platformMode);el("previewShell").classList.toggle("visible",platformMode);el("platformCardTitle").textContent=previewNames[state.previewMode]||"Sample social card";el("platformCaption").textContent=platformMode?"Center crop preview · approximate social feed framing":"";el("cropGuide").classList.toggle("visible",el("safeGuideToggle").checked);el("previewWrap").style.setProperty("--ratio",getPreviewRatio());draw();setPreviewSize();renderFavorites();renderDesigns();updateHistoryButtons();
+  }
+  function applyPreset(name){if(name==="solid"){mutate(function(){state.mode="solid";state.palette="solid";state.colors=["#252d3b","#252d3b","#252d3b","#252d3b"];});return;}const p=palettePresets[name];if(!p)return;mutate(function(){state.palette=name;state.mode="gradient";state.colors=p.colors.slice();state.gradientStyle=p.style;});}
+  document.querySelectorAll(".preset").forEach(function(button){button.addEventListener("click",function(){applyPreset(button.dataset.preset);});});
+  document.querySelectorAll("[data-mode]").forEach(function(button){button.addEventListener("click",function(){mutate(function(){state.mode=button.dataset.mode;});});});
+  document.querySelectorAll("[data-color-index]").forEach(function(input){input.addEventListener("input",function(){const i=Number(input.dataset.colorIndex);mutate(function(){state.colors[i]=input.value;state.palette="custom";});});});
+  document.querySelectorAll(".gradient-style").forEach(function(button){button.addEventListener("click",function(){mutate(function(){state.gradientStyle=button.dataset.style;state.mode="gradient";state.palette="custom";});});});
+  function randomizeGradient(){const mood=el("randomMood").value,arr=moodPalettes[mood]||moodPalettes.any,p=arr[Math.floor(Math.random()*arr.length)];mutate(function(){state.colors=p.slice();state.mode="gradient";state.palette="custom";});showToast("A fresh "+mood+" gradient palette is ready.");}
+  el("randomizeGradient").addEventListener("click",randomizeGradient);
+  el("favoritePaletteBtn").addEventListener("click",function(){let favs=[];try{favs=JSON.parse(localStorage.getItem("og-studio-favorites")||"[]");}catch(e){}const name="Palette "+(favs.length+1);favs.unshift({id:Date.now().toString(36),name:name,colors:state.colors.slice(),style:state.gradientStyle,mode:state.mode});favs=favs.slice(0,12);try{localStorage.setItem("og-studio-favorites",JSON.stringify(favs));}catch(e){showToast("Could not save palette: browser storage is full.");return;}renderFavorites();showToast("Palette saved to favorites.");});
+  function renderFavorites(){const root=el("favoriteList");if(!root)return;root.replaceChildren();let favs=[];try{favs=JSON.parse(localStorage.getItem("og-studio-favorites")||"[]");}catch(e){}favs.forEach(function(item,index){const b=document.createElement("button");b.type="button";b.className="favorite-chip";b.title="Use favorite palette";const sw=document.createElement("span");sw.style.width="16px";sw.style.height="8px";sw.style.borderRadius="5px";sw.style.background="linear-gradient(90deg,"+item.colors.map(cleanHex).join(",")+")";const t=document.createElement("span");t.textContent=item.name||"Favorite";b.append(sw,t);b.addEventListener("click",function(){mutate(function(){state.colors=item.colors.slice();state.gradientStyle=item.style==="silk"?"prism":(item.style||"mesh");state.mode=item.mode||"gradient";state.palette="custom";});});root.append(b);});}
+  document.querySelectorAll("[data-align]").forEach(function(button){button.addEventListener("click",function(){mutate(function(){state.align=button.dataset.align;});});});
+  el("titleInput").addEventListener("input",function(){mutate(function(){state.title=el("titleInput").value;});});el("subtitleInput").addEventListener("input",function(){mutate(function(){state.subtitle=el("subtitleInput").value;});});
+  function loadActiveFont(){if(state.font==="dm-sans"&&document.fonts){document.fonts.load(Number(state.weight||700)+" "+Number(state.fontSize||68)+"px \"DM Sans\"").then(function(){draw();}).catch(function(){});}}
+  el("fontSelect").addEventListener("change",function(){const v=this.value;mutate(function(){state.font=v;});loadActiveFont();});el("weightSelect").addEventListener("change",function(){const v=this.value;mutate(function(){state.weight=Number(v);});loadActiveFont();});el("textColor").addEventListener("input",function(){const v=this.value;mutate(function(){state.textColor=v;});});el("fontSizeRange").addEventListener("input",function(){const v=this.value;mutate(function(){state.fontSize=Number(v);});});
+  el("angleRange").addEventListener("input",function(){const v=this.value;mutate(function(){state.angle=Number(v);state.palette="custom";});});el("softnessRange").addEventListener("input",function(){const v=this.value;mutate(function(){state.softness=Number(v);});});el("grainRange").addEventListener("input",function(){const v=this.value;mutate(function(){state.grain=Number(v);});});
+  el("lineSpacing").addEventListener("input",function(){const v=Number(this.value)/100;mutate(function(){state.titleLineSpacing=v;});});el("safeMargin").addEventListener("input",function(){const v=Number(this.value)/100;mutate(function(){state.safeMargin=v;});});
+  el("layerSelect").addEventListener("change",function(){state.activeLayer=this.value;saveState();updatePositionControls();});
+  el("positionX").addEventListener("input",function(){const key=(state.activeLayer||"title")+"X",v=Number(this.value)/100;mutate(function(){state[key]=v;});});el("positionY").addEventListener("input",function(){const key=(state.activeLayer||"title")+"Y",v=Number(this.value)/100;mutate(function(){state[key]=v;});});
+  el("logoSize").addEventListener("input",function(){const v=Number(this.value)/100;mutate(function(){state.logoSize=v;});});el("logoOpacity").addEventListener("input",function(){const v=Number(this.value);mutate(function(){state.logoOpacity=v;});});
+  el("sizePreset").addEventListener("change",function(){const val=this.value,sizes={og:[1200,630],wide:[1600,900],square:[1080,1080],portrait:[1080,1350],story:[1080,1920]};mutate(function(){state.sizePreset=val;if(sizes[val]){state.width=sizes[val][0];state.height=sizes[val][1];}});});
+  function customDimension(which){const value=Math.max(100,Math.min(4000,Math.round(Number(el(which+"Input").value)||100)));mutate(function(){state[which]=value;state.sizePreset="custom";});}
+  el("widthInput").addEventListener("change",function(){customDimension("width");});el("heightInput").addEventListener("change",function(){customDimension("height");});
+  el("formatSelect").addEventListener("change",function(){const v=this.value;mutate(function(){state.format=v;});});el("qualityRange").addEventListener("input",function(){const v=Number(this.value);mutate(function(){state.quality=v;});});
+  el("platformPreview").addEventListener("change",function(){state.previewMode=this.value;saveState();sync();});el("safeGuideToggle").addEventListener("change",function(){el("cropGuide").classList.toggle("visible",this.checked);});el("zoomSelect").addEventListener("change",function(){zoom=this.value;setPreviewSize();});window.addEventListener("resize",setPreviewSize);
+  function imageToDataURL(file,kind){return new Promise(function(resolve,reject){if(!file||!/^image\/(png|jpeg|webp)$/.test(file.type)){reject(new Error("Choose a PNG, JPEG, or WebP image."));return;}if(file.size>12*1024*1024){reject(new Error("Choose an image under 12 MB."));return;}const reader=new FileReader();reader.onerror=function(){reject(new Error("Could not read that image."));};reader.onload=function(){const img=new Image();img.onerror=function(){reject(new Error("That image could not be opened."));};img.onload=function(){const max=kind==="logo"?900:2200,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement("canvas");c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));const x=c.getContext("2d");x.drawImage(img,0,0,c.width,c.height);const data=c.toDataURL("image/webp",.84);if(data.length>2700000){reject(new Error("That image is too large after compression. Try a smaller file."));return;}resolve(data);};img.src=reader.result;};reader.readAsDataURL(file);});}
+  function bindImageInput(inputId,kind){el(inputId).addEventListener("change",async function(){const file=this.files&&this.files[0];if(!file)return;el("assetWarning").textContent="Preparing image…";try{const data=await imageToDataURL(file,kind);mutate(function(){if(kind==="background"){state.backgroundData=data;state.backgroundName=file.name;}else{state.logoData=data;state.logoName=file.name;state.activeLayer="logo";}});el("assetWarning").textContent=managerNonce?"Image added to this cover. The saved design stays with your note.":"Images are resized and saved only in this browser.";showToast(kind==="logo"?"Logo added to the canvas.":"Background image added.");}catch(e){el("assetWarning").textContent=e.message;showToast(e.message);}this.value="";});}
+  bindImageInput("backgroundFile","background");bindImageInput("logoFile","logo");
+  el("clearBackgroundBtn").addEventListener("click",function(){if(!state.backgroundData)return;mutate(function(){state.backgroundData="";state.backgroundName="";});});el("clearLogoBtn").addEventListener("click",function(){if(!state.logoData)return;mutate(function(){state.logoData="";state.logoName="";state.activeLayer="title";});});
+  let designs=[];function loadDesigns(){try{designs=JSON.parse(localStorage.getItem("og-studio-designs")||"[]");if(!Array.isArray(designs))designs=[];}catch(e){designs=[];}}
+  function renderDesigns(){loadDesigns();const select=el("designSelect"),prior=select.value;select.replaceChildren();const initial=document.createElement("option");initial.value="";initial.textContent="My designs";select.append(initial);designs.forEach(function(d){const o=document.createElement("option");o.value=d.id;o.textContent=d.name;select.append(o);});select.value=designs.some(function(d){return d.id===prior;})?prior:"";el("deleteDesignBtn").disabled=!select.value;}
+  el("saveDesignBtn").addEventListener("click",function(){const proposed=(state.title||"Untitled design").slice(0,48);const name=window.prompt("Name this design",proposed);if(!name)return;loadDesigns();const id=Date.now().toString(36);designs.unshift({id:id,name:name.slice(0,48),state:clone(state)});designs=designs.slice(0,12);try{localStorage.setItem("og-studio-designs",JSON.stringify(designs));renderDesigns();el("designSelect").value=id;showToast("Design saved on this device.");}catch(e){showToast("Could not save: browser storage is full.");}});
+  el("designSelect").addEventListener("change",function(){if(!this.value)return;loadDesigns();const found=designs.find(function(d){return d.id===this.value;},this);if(!found)return;mutate(function(){state=Object.assign({},defaultState,clone(found.state));if(state.gradientStyle==="silk")state.gradientStyle="mesh";});showToast("Design loaded.");});
+  el("deleteDesignBtn").addEventListener("click",function(){const id=el("designSelect").value;if(!id)return;if(!window.confirm("Delete this saved design from this device?"))return;loadDesigns();designs=designs.filter(function(d){return d.id!==id;});try{localStorage.setItem("og-studio-designs",JSON.stringify(designs));renderDesigns();showToast("Saved design deleted.");}catch(e){showToast("Could not update saved designs.");}});
+  el("copySettingsBtn").addEventListener("click",async function(){const payload={app:"OG Studio",version:2,state:state};try{await navigator.clipboard.writeText(JSON.stringify(payload,null,2));showToast("Design settings copied.");}catch(e){const area=document.createElement("textarea");area.value=JSON.stringify(payload,null,2);document.body.append(area);area.select();const ok=document.execCommand("copy");area.remove();showToast(ok?"Design settings copied.":"Clipboard access is unavailable.");}});
+  el("importSettingsBtn").addEventListener("click",function(){el("settingsFile").click();});el("settingsFile").addEventListener("change",function(){const file=this.files&&this.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(){try{const parsed=JSON.parse(reader.result),incoming=parsed.state||parsed;if(!incoming||typeof incoming!=="object"||!Array.isArray(incoming.colors))throw new Error("Invalid design settings");mutate(function(){state=Object.assign({},defaultState,incoming);if(state.gradientStyle==="silk")state.gradientStyle="mesh";state.width=Math.max(100,Math.min(4000,Number(state.width)||1200));state.height=Math.max(100,Math.min(4000,Number(state.height)||630));});showToast("Design settings imported.");}catch(e){showToast("Could not import that settings file.");}};reader.readAsText(file);this.value="";});
+  el("undoBtn").addEventListener("click",undo);el("redoBtn").addEventListener("click",redo);
+  el("resetBtn").addEventListener("click",function(){mutate(function(){state=clone(defaultState);});showToast("Canvas reset to the reference style.");});
+  function layerContains(bounds,x,y){return bounds&&x>=bounds.left&&x<=bounds.left+bounds.width&&y>=bounds.top&&y<=bounds.top+bounds.height;}
+  canvas.addEventListener("pointerdown",function(event){const rect=canvas.getBoundingClientRect();const x=(event.clientX-rect.left)/rect.width*canvas.width,y=(event.clientY-rect.top)/rect.height*canvas.height;let layer=null;if(layerContains(lastMetrics.logo,x,y))layer="logo";else if(layerContains(lastMetrics.subtitle,x,y))layer="subtitle";else if(layerContains(lastMetrics.title,x,y))layer="title";else layer=state.activeLayer||"title";if(layer==="logo"&&!state.logoData)layer="title";state.activeLayer=layer;dragState={pointerId:event.pointerId,layer:layer,before:clone(state),changed:false};canvas.setPointerCapture(event.pointerId);previewWrap.classList.add("dragging");updatePositionControls();});
+  canvas.addEventListener("pointermove",function(event){if(!dragState||dragState.pointerId!==event.pointerId)return;const rect=canvas.getBoundingClientRect(),layer=dragState.layer;state[layer+"X"]=Math.max(.03,Math.min(.97,(event.clientX-rect.left)/rect.width));state[layer+"Y"]=Math.max(.04,Math.min(.96,(event.clientY-rect.top)/rect.height));dragState.changed=true;if(!drawFrame)drawFrame=requestAnimationFrame(function(){drawFrame=0;draw();});});
+  function endDrag(event){if(!dragState||event.pointerId!==dragState.pointerId)return;const before=dragState.before,changed=dragState.changed;dragState=null;previewWrap.classList.remove("dragging");if(changed){endHistoryGroup();undoStack.push(before);if(undoStack.length>60)undoStack.shift();redoStack=[];saveState();sync();}else updateHistoryButtons();}
+  canvas.addEventListener("pointerup",endDrag);canvas.addEventListener("pointercancel",endDrag);
+  function exportCanvas(){const mime=state.format||"image/png";canvas.toBlob(function(blob){if(!blob){showToast("This format could not be created in this browser.");return;}let actualMime=blob.type||mime;if(actualMime==="image/png"&&mime!=="image/png")showToast("This browser exported PNG instead.");const ext=actualMime==="image/jpeg"?"jpg":(actualMime==="image/webp"?"webp":"png");const name=(state.title||"og-image").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,48)||"og-image";const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="og-"+name+"."+ext;document.body.append(link);link.click();link.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);showToast("Your full-bleed "+ext.toUpperCase()+" is ready.");},mime,Number(state.quality)/100);}
+  el("exportBtn").addEventListener("click",exportCanvas);
+  addEventListener("message",async function(event){
+    if(event.source!==parent||event.origin!==location.origin)return;
+    const data=event.data||{};
+    if(data.type==="og-manager-init"){
+      managerNonce=data.nonce;
+      const incoming=data.design||{title:data.title||"",subtitle:data.subtitle||""};
+      state=Object.assign({},defaultState,incoming);undoStack=[];redoStack=[];sync();loadActiveFont();
+    }
+    if(data.type==="og-manager-snapshot"&&data.nonce===managerNonce){parent.postMessage({type:"og-design-snapshot",nonce:managerNonce,design:clone(state)},location.origin);}
+    if(data.type==="og-manager-saved"&&data.nonce===managerNonce)el("saveStatus").textContent="Saved with this note";
+    if(data.type==="og-manager-export"&&data.nonce===managerNonce){
+      try{await document.fonts.ready;
+        await Promise.all([state.backgroundData,state.logoData].filter(Boolean).map(src=>new Promise((resolve,reject)=>{const image=getImage(src);if(image.complete&&image.naturalWidth)return resolve();image.addEventListener("load",resolve,{once:true});image.addEventListener("error",reject,{once:true});})));
+        draw();canvas.toBlob(blob=>{if(blob)parent.postMessage({type:"og-cover-export",nonce:managerNonce,blob,design:clone(state)},location.origin);else parent.postMessage({type:"og-cover-error",nonce:managerNonce,message:"The cover could not be created."},location.origin);},"image/webp",.92);
+      }catch(error){parent.postMessage({type:"og-cover-error",nonce:managerNonce,message:"An image or font could not be loaded. Check the design and retry."},location.origin);}
+    }
+  });
+  if(parent!==window)parent.postMessage({type:"og-studio-ready"},location.origin);
+  sync();loadActiveFont();
+})();
+</script>
+</body>
+</html>

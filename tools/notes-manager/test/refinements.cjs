@@ -1,0 +1,53 @@
+const {chromium,expect}=require('@playwright/test');
+const {spawn}=require('node:child_process');
+const path=require('node:path');
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+let fixture,browser,page;const errors=[];
+function start(){return new Promise((resolve,reject)=>{fixture=spawn(process.env.PYTHON||'python3',[path.join(__dirname,'fixture.py')]);let buffer='';fixture.stderr.on('data',data=>process.stderr.write(data));fixture.on('error',reject);fixture.stdout.on('data',data=>{buffer+=data;if(buffer.includes('\n'))resolve(JSON.parse(buffer.split('\n')[0]));});});}
+async function saved(){await expect(page.locator('#save-status')).toHaveText('Saved on this Mac',{timeout:20000});}
+async function rightNote(title){const note=page.locator('.note-item').filter({hasText:title});await note.click({button:'right'});await expect(page.getByRole('menu',{name:'Actions'})).toBeVisible();}
+(async()=>{
+  const cfg=await start();browser=await chromium.launch({headless:true,channel:process.env.NOTES_BROWSER_CHANNEL||'chrome'});
+  const context=await browser.newContext({viewport:{width:1600,height:1000},permissions:['clipboard-read','clipboard-write']});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(cfg.url);await page.locator('.note-item').filter({hasText:'An existing note'}).click();
+  const editor=page.locator('.main-text .tiptap');await editor.fill('Menu formatting example');await editor.press('Meta+a');
+  await editor.locator('p').click({button:'right',position:{x:20,y:12}});
+  await page.getByRole('menuitemcheckbox',{name:'Bold',exact:true}).click();await expect(editor.locator('strong')).toContainText('Menu formatting example');await saved();
+  await rightNote('An existing note');await page.getByRole('menuitem',{name:'Discard local edits…',exact:true}).click();
+  await expect(page.locator('#modal-title')).toHaveText('Discard local edits?');await page.getByRole('button',{name:'Discard local edits',exact:true}).click();
+  await expect(editor).toHaveText('Existing writing.');await expect(page.locator('#modal')).not.toBeVisible();
+  await page.locator('#note-more').click();await expect(page.getByRole('menu')).toBeVisible();await page.keyboard.press('ArrowDown');await page.keyboard.press('Escape');await expect(page.getByRole('menu')).toHaveCount(0);
+  await page.locator('#settings').click();const feature=page.getByRole('switch',{name:'Feature beneath About',exact:true});
+  assert.ok((await feature.boundingBox()).width>=42);await feature.check();await expect(feature).toBeChecked();await feature.uncheck();await expect(feature).not.toBeChecked();
+  await page.getByRole('button',{name:'Design a cover…',exact:true}).click();const studio=page.frameLocator('.studio-frame');
+  await expect(studio.locator('#titleInput')).toHaveValue('An existing note',{timeout:15000});
+  await studio.locator('#titleInput').fill('My cover design');await studio.locator('#subtitleInput').fill('Made inside Notes');
+  await studio.locator('#backgroundFile').setInputFiles(path.join(cfg.root,'content/media/images/sample.webp'));
+  await expect(studio.locator('#backgroundName')).toHaveText('sample.webp');
+  for(const id of ['saveDesignBtn','copySettingsBtn','importSettingsBtn','exportBtn','formatSelect','fontSelect'])await expect(studio.locator('#'+id)).toBeVisible();
+  await expect(page.getByRole('button',{name:'Use this cover',exact:true})).toBeEnabled();
+  await page.screenshot({path:'/tmp/notes-manager-cover-studio.png',fullPage:true});
+  await page.getByRole('button',{name:'Use this cover',exact:true}).click();await expect(page.locator('#modal-title')).toHaveText('Note settings',{timeout:20000});
+  await page.locator('#modal-close').click();await saved();
+  const note=await page.evaluate(()=>fetch('/api/note?path=notes/example.json').then(r=>r.json()));
+  assert.ok(note.document.sharing_image.image.startsWith('/media/images/'));assert.ok(note.document.sharing_image.alt.includes('My cover design'));
+  const designId=note.document.og_designs.sharing_image,designPath=path.join(cfg.root,'content/media/designs',designId+'.json');
+  const design=JSON.parse(fs.readFileSync(designPath));assert.equal(design.title,'My cover design');assert.ok(design.backgroundData.startsWith('/media/images/'));assert.ok(!JSON.stringify(design).includes('base64,'));
+  await page.locator('#settings').click();await page.getByRole('button',{name:'Design a cover…',exact:true}).click();
+  await expect(studio.locator('#titleInput')).toHaveValue('My cover design',{timeout:15000});
+  await studio.locator('html').evaluate(()=>{navigator.clipboard.writeText=async text=>{window.copiedDesign=text;};});await studio.locator('#copySettingsBtn').click();
+  await expect.poll(()=>studio.locator('html').evaluate(()=>Boolean(window.copiedDesign))).toBeTruthy();
+  assert.ok((await studio.locator('html').evaluate(()=>JSON.parse(window.copiedDesign).state.backgroundData)).startsWith('data:image/'));
+  await studio.locator('#subtitleInput').fill('Reopened and edited');await page.locator('#modal-close').click();await expect(page.locator('#modal-title')).toHaveText('Note settings',{timeout:15000});
+  assert.equal(JSON.parse(fs.readFileSync(designPath)).subtitle,'Reopened and edited');await page.locator('#modal-close').click();
+  await page.locator('#new-note').click();await page.getByRole('textbox',{name:'Title',exact:true}).fill('Throwaway');await page.getByRole('button',{name:'Start writing',exact:true}).click();
+  await expect(page.locator('.note-item[aria-current=true]')).toContainText('Throwaway');
+  await rightNote('Throwaway');await page.getByRole('menuitem',{name:'Move to Trash…',exact:true}).click();await page.getByRole('button',{name:'Move to Trash',exact:true}).click();
+  await expect(page.locator('.note-item').filter({hasText:'Throwaway'})).toHaveCount(0);await page.locator('#trash').click();
+  await expect(page.locator('.trash-row')).toContainText('Throwaway');await page.getByRole('button',{name:'Restore draft',exact:true}).click();await expect(page.locator('.note-item[aria-current=true]')).toContainText('Throwaway');
+  await page.locator('#workflow-help').click();await expect(page.locator('#modal-body')).toContainText('Autosaved on this Mac');await expect(page.locator('#modal-body')).toContainText('Back up drafts');await page.locator('#modal-close').click();
+  await page.screenshot({path:'/tmp/notes-manager-refined-desktop.png',fullPage:true});assert.deepEqual(errors,[]);
+  console.log('PASS: contextual formatting and keyboard menus; discard; large settings switches; full OG Studio, image export, reopening and persistence; Trash and restore; workflow guidance.');
+  await browser.close();fixture.kill();
+})().catch(async error=>{console.error(error);if(page)await page.screenshot({path:'/tmp/notes-manager-refinement-failure.png',fullPage:true}).catch(()=>{});if(browser)await browser.close();if(fixture)fixture.kill();process.exitCode=1;});

@@ -1,125 +1,154 @@
 # Notes · Local workspace
 
-A private Mac-first editor for this site's Notes. The writing page and live article
-preview sit side by side. All editing tools run locally. Visitors receive the same
-static website; no editor library is added to `public/`.
+Your private Mac-first editor: writing beside a live article preview, all 13 content
+formats, cover design, local recovery, backups, and explicit publication. Nothing
+from the manager is loaded by visitors to the public website.
 
 ## Open it
 
-Double-click **Open Notes.command** in this folder, or run from the website checkout:
+Double-click **Open Notes.command**, or run from the website checkout:
 
 ```sh
 python3 tools/notes-manager/server.py
 ```
 
-The launcher uses Python 3 and Pillow. If Pillow is missing, it creates an isolated
-Python environment in the ignored `.notes-manager/` folder and installs the pinned
-Notes requirements. The browser editor is already bundled: Node is needed only to
-develop or rebuild it, not for daily writing. Publishing and private synchronization
-also need Git and the GitHub CLI, signed in to the account with access to
-`TGthms/about-notes`. No GitHub token is placed in the browser or manager files.
+The manager opens at **https://127.0.0.1:1222** through a private launch link.
+Opening the launcher again returns to the running workspace. Keep its terminal
+running; Control-C stops the server.
 
-The default content checkout is `.private-notes/`. Use `--content PATH` for a
-different checkout, `--port NUMBER` for a different local port, or `--no-open` to
-print the private launch link without opening a browser. Keep the terminal running;
-Control-C stops the manager. Opening the launcher again returns to the running
-workspace. The editor binds only to `127.0.0.1`.
+HTTPS uses a locally trusted mkcert certificate. On a new Mac, install mkcert
+(`brew install mkcert`), then open **Setup HTTPS.command** once. It explains the
+persistent trust change and asks before creating/installing the local authority.
+Certificates, server keys, and the public CA certificate stay in ignored
+`.notes-manager/tls/`. The authority's private key stays in mkcert's own folder;
+it is never copied into this project. The manager binds only to loopback.
 
-## Daily flow
+Python 3 and Pillow are needed. The launcher creates an isolated Python environment
+if Pillow is missing. The editor is bundled, so daily use does not require Node.
+Backups and publishing use Git and the GitHub CLI, authenticated for
+`TGthms/about-notes`; no account token is sent to the browser.
 
-1. Choose a note, or **New note**. Write in the main text area. Select text to format
-   it, use keyboard shortcuts, or type `/` in an empty paragraph to find a content
-   format. **Add content** offers all 13 reusable formats with short explanations.
-2. Writing is recovered automatically in this browser and on disk. After a short
-   typing pause it is saved to the local private content file. **Save locally** and
-   Command-S save immediately. Missing descriptions and incomplete blocks can be
-   saved as drafts; preview and publication checks explain what still needs work.
-3. The preview uses the site's actual renderer and styles. It updates after a typing
-   pause; image processing is cached. Desktop, Phone, and Watch select preview widths;
-   they are layout checks, not emulations of those devices' browser engines.
-4. Use **Settings** for categories, fonts, original language, sharing/on-site images,
-   homepage featuring, and Birthday behavior. Conditional options appear only when
-   relevant. The language selector switches between the original and optional
-   translations. Each translation has its own inclusion switch in Settings.
-5. **Sync privately** commits local note/upload changes and synchronizes the private
-   repository. It never releases a post. If a note changed in both places, review
-   the two versions and choose Local, Online, or Keep both. The histories remain
-   available. Unrelated repository settings edits must be resolved separately.
-6. **Publish…** asks for confirmation, checks the saved content, syncs it privately,
-   then sends that exact saved revision to the existing publication workflow.
-   Other drafts stay private. Its result is reported only when the workflow has
-   finished waiting for both Cloudflare Pages and GitHub Pages. If the run URL is
-   unavailable, the editor links to Actions and asks you to verify there.
-7. **Withdraw from website** in Settings removes a live article through that same
-   workflow while retaining the private original and release history. Saving or
-   turning an editing flag off never silently withdraws an article.
+Use `--content PATH` for another private checkout, `--port NUMBER` for another port,
+or `--no-open` to print the launch link. `--http` is available for isolated development
+tests; normal daily launches use HTTPS.
 
-You can continue writing while offline. Synchronization and publication need the
-internet. Browser recovery cannot replace a backup of your Mac. Local saves,
-private Git synchronization, and public publication are separate states.
+## Three clear states
 
-## Recovery and preservation
+- **Autosaved on this Mac:** typing updates the local draft after a short pause.
+  Command-S saves immediately. Browser and disk recovery also preserve writing.
+  None of these actions changes the live article.
+- **Back up drafts:** synchronizes your drafts, media, and cover designs to the
+  private GitHub repository. It checks online changes and presents conflicts for
+  review. Nothing is published.
+- **Publish…:** checks the current note, backs up the saved revision, and sends that
+  exact revision to the publication workflow. Other drafts stay private. The result
+  is reported after both Cloudflare Pages and GitHub Pages finish deploying.
 
-- Existing JSON, unknown metadata, translations, immutable article addresses, and
-  the original article-specific SAME experiment are retained. Posts need no migration
-  to a proprietary editor document format.
-- Unedited rich text is saved exactly as loaded. Rich text containing unsupported
-  HTML opens in source mode rather than being silently simplified. New visual text
-  can be added in a separate Text block. Published HTML remains sanitized by the
-  shared renderer.
-- Each local save checks the version you opened. A second window or external edit
-  cannot be overwritten silently. Conflicting writing remains in recovery and can
-  be made into a separate draft.
-- **History** shows up to 50 local saved/recovered versions per note, retained outside
-  the content repository. Restoring one changes a private draft, not the live article.
-- New uploads use unique names. Media is never deleted automatically. Only referenced
-  files from explicitly released revisions reach the public website.
-- The manager does not require Pages CMS, its API, or its configuration to run. It
-  continues using compatible Notes files and the established publication workflows.
-  The existing online editor can remain available during the transition without
-  becoming a dependency of the local application.
+The sidebar's **How saving works** control explains these states inside the editor.
+The displayed Date is not a publication schedule.
 
-Recovery, backups, preview caches, and workflow status live in ignored
-`.notes-manager/`, outside both the private repository and the deployment directory.
-The launch cookie is HttpOnly and SameSite=Strict. Requests require the loopback
-host, same origin, and a custom mutation header. Drafts and preview assets are
-authenticated, uncached, and excluded from indexing. Sandboxed media uses random
-per-preview read capabilities scoped to that preview's files, with download and
-audio/video range support. Preview scripts are restricted
-to hashes of the repository's trusted components, inside a sandboxed iframe.
+## Comfortable editing
 
-## Development
+Write in the main text area; choose **Add content**, or type `/` in an empty paragraph,
+for text, photographs, galleries, video, audio, tables, asides, expandable sections,
+link cards, downloads, quotes, code, and image comparisons. Blocks can be collapsed,
+duplicated, dragged, or moved using accessible arrow controls. Explanations in the
+chooser are for the author and do not appear automatically in the article.
 
-The UI uses Tiptap for writing and CodeMirror for code snippets, bundled locally
-with esbuild. Code blocks have line numbers, syntax coloring for common languages,
-search, and their own undo history. Dependencies
-are pinned in `package-lock.json`; no editor CDN or paid service is required.
-`schema.json` is the local manager's field catalog. It shares Notes' established file
-format, but has no runtime dependency on `.pages.yml` or PyYAML. Backend validation
-and article rendering reuse `scripts/notes/authoring.py` and `build.py`.
+Right-click writing for undo, redo, cut, copy, paste, selection, and contextual
+formatting. Menus support arrow keys, Home/End, Enter, and Escape. Use **Shift +
+right-click** when you want the browser's own menu, including spelling suggestions.
+Clipboard access remains subject to the browser's permission rules; Command-V is
+always available as the native alternative.
+
+Material Symbols are bundled as a small set of SVGs. They do not request an icon
+font or contact Google at runtime. Settings use larger switches and connected labels.
+Conditional controls appear only when they apply.
+
+The preview uses the actual site renderer, keeps its reading position across edits,
+and supports image opening, downloads, language links, and interactive components.
+Desktop, Phone, and Watch select widths; they are layout checks rather than device
+browser emulation. Empty drafts invite writing without showing a publication error.
+
+## Note actions and Trash
+
+Right-click a note in the sidebar, use its **…** button, or open the active note's
+**…** menu:
+
+- **Duplicate as draft** creates a new address, preserves the original, and forks
+  cover designs so editing the copy cannot change the original design.
+- **Discard local edits** restores the last private backup (or last committed
+  version when no remote is configured). It is disabled when there is no backup or
+  no local change. It does not restore the public revision or change the website.
+  A local recovery copy of discarded writing remains in History. Cover sources are
+  restored too; their discarded copies stay in `.notes-manager/discarded-designs/`.
+- **Move to Trash** removes a draft from the library while retaining a recoverable
+  local copy. Uploaded media is kept, protecting references from other notes.
+- For a live note, deletion first withdraws the article. Only verified successful
+  completion on both hosts allows the private original to enter Trash. Failed
+  withdrawal, newer writing, or a changed cover design keeps the original safe.
+- **Trash → Restore draft** restores privately, never republishes, and creates a
+  separate draft if the original filename is occupied. Trash is local to this Mac;
+  private Git history also retains previously backed-up content.
+
+Local deletion reaches the private Git repository on the next backup. Public copies
+already saved by visitors, feed readers, or caches cannot be recalled.
+
+**History** keeps up to 50 local saved/recovered versions per note. Each editing
+window has separate recovery. Saves check the opened file version, preventing silent
+replacement of another window's changes. Existing article addresses, unknown
+metadata, translations, and the one-off SAME experiment are preserved. Unsupported
+rich HTML opens in source mode, and unedited HTML is retained exactly.
+
+## Cover Studio and custom images
+
+Settings → Images offers **Design a cover…** and **Design on-site image…**.
+These open the integrated copy of your full OG Studio: palettes, backgrounds, logos,
+text placement, fonts, canvas sizes, saved designs, import/export, and downloads.
+Its original standalone project is unchanged.
+
+The note's title and introduction seed a new design. **Use this cover** exports an
+optimized WebP, requires an editable image description, and assigns it to the selected
+image setting. Reopening that setting restores its own editable design. Sharing and
+on-site designs remain separate. Existing **Choose or upload** controls remain
+available for any image you prefer.
+
+Editable design JSON lives in private `media/designs/`; its background/logo images
+stay in the private media library. Notes retain design identifiers rather than large
+embedded images. **Back up drafts** includes these sources. Only the explicitly
+selected raster cover is published; the design files are not exported to the website.
+OG Studio's additional named designs and favorite palettes remain browser features,
+as in the standalone tool; settings can also be exported/imported.
+
+## Privacy and development
+
+Recovery, Trash, previews, session data, and certificates stay in ignored
+`.notes-manager/`, outside the deployment directory. The launch cookie is Secure,
+HttpOnly, and SameSite=Strict. Writes require the loopback host, the correct origin,
+and a custom header. Private responses are uncached and excluded from indexing.
+Sandboxed article media uses scoped random read capabilities. Trusted bundled OG
+Studio shares the application origin and has a strict script-hash policy; arbitrary
+external tools cannot be framed inside the manager.
+
+Tiptap handles writing, CodeMirror handles code, and backend validation/rendering
+reuse the site's Notes modules. The manager has its own field catalog and does not
+require Pages CMS or its API. Licensing and source provenance are included under
+`vendor/` and in `THIRD_PARTY_NOTICES.md`.
 
 ```sh
 cd tools/notes-manager
 npm ci
 npm run build
 npm test
+npm run test:browser
 ```
 
-From the website checkout, run the privacy, concurrency, upload, release-pinning,
-and isolated Git synchronization checks:
+Browser checks use a disposable synthetic repository and local Git remote; they
+never publish or change real notes. They default to installed Google Chrome; set
+`PYTHON` or `NOTES_BROWSER_CHANNEL` when needed. The Python checks, from the website
+checkout, cover private content, concurrency, deletion ordering, verified TLS,
+cover-source isolation, and publishing:
 
 ```sh
 python3 tests/notes_manager_test.py
 ```
-
-The end-to-end browser check uses a synthetic private repository and disposable
-local Git remote. It never opens the real content checkout or dispatches publication:
-
-```sh
-cd tools/notes-manager
-npm run test:browser
-```
-
-This defaults to installed Google Chrome. Set `PYTHON` to a Python with Pillow and
-`NOTES_BROWSER_CHANNEL` to a supported installed Playwright channel if needed.
-Browser screenshots are written to the system temporary directory.

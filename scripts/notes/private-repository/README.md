@@ -11,7 +11,7 @@ It does not require Pages CMS.
 
 - Writing is recovered as you type and saved locally after a short pause. Command-S
   saves immediately.
-- **Sync privately** synchronizes drafts and uploads to this private repository;
+- **Back up drafts** synchronizes drafts and uploads to this private repository;
   it never publishes them.
 - **Publish…** checks and synchronizes the saved note, asks for confirmation, and
   releases that revision through the existing workflow. Wait for both website
@@ -20,6 +20,11 @@ It does not require Pages CMS.
   controls are in **Settings**. Conditional fields appear only when relevant.
 - **History** restores local saved revisions without changing the published article.
   If two versions conflict, compare them and keep one or both.
+
+Right-click a note or use its **…** menu for duplication, Discard local edits,
+and recoverable Trash. Live notes are withdrawn before their originals enter Trash.
+Settings → Images includes the full Cover Studio as well as ordinary uploads.
+Daily launches use trusted local HTTPS; the manager guide covers one-time setup.
 
 The unpublished **Reference — Notes workspace and content** draft contains examples
 plus a daily editing checklist. The [local workspace guide](https://github.com/TGthms/about/tree/main/tools/notes-manager)

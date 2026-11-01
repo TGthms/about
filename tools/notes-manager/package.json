@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node build.mjs",
     "test": "node --test test/*.test.js",
-    "test:browser": "node test/browser.cjs"
+    "test:browser": "node test/browser.cjs && node test/refinements.cjs"
   },
   "dependencies": {
     "@codemirror/lang-css": "6.3.1",
@@ -22,7 +22,8 @@
     "@tiptap/starter-kit": "3.32.2",
     "codemirror": "6.0.2",
     "@codemirror/language": "6.13.1",
-    "@lezer/highlight": "1.2.5"
+    "@lezer/highlight": "1.2.5",
+    "@codemirror/commands": "6.11.1"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",

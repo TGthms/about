@@ -3,6 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.dirname(fileURLToPath(import.meta.url));
+const symbols={};
+for(const name of fs.readdirSync(path.join(root,'vendor/material-symbols')).filter(name=>name.endsWith('.svg')).sort()){
+  const svg=fs.readFileSync(path.join(root,'vendor/material-symbols',name),'utf8');
+  if(/<script|foreignobject|<image|href=/i.test(svg))throw new Error('Only local vector paths are allowed in Material symbols.');
+  symbols[name.replace(/\.svg$/,'')]={viewBox:svg.match(/viewBox="([^"]+)"/)[1],body:svg.replace(/^<svg[^>]*>|<\/svg>\s*$/g,'').replace(/fill="[^"]*"/g,'fill="currentColor"')};
+}
+fs.writeFileSync(path.join(root,'src/material-icons.json'),JSON.stringify(symbols)+'\n');
 await build({entryPoints:[path.join(root,'src/app.js')],bundle:true,format:'esm',target:'safari16',outfile:path.join(root,'static/app.js'),minify:true,legalComments:'linked',logLevel:'info'});
 const lock=JSON.parse(fs.readFileSync(path.join(root,'package-lock.json'),'utf8')),groups=new Map();
 for(const [relative,pkg]of Object.entries(lock.packages)){

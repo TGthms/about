@@ -68,7 +68,7 @@ jobs:
         run: |
           npm ci --ignore-scripts
           npm run build
-          git diff --exit-code -- static/app.js static/app.js.LEGAL.txt THIRD_PARTY_NOTICES.md
+          git diff --exit-code -- static/app.js static/app.js.LEGAL.txt THIRD_PARTY_NOTICES.md src/material-icons.json
 
       - name: Check Gallery Manager sync
         run: python3 tests/gallery_sync_test.py

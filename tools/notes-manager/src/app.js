@@ -12,6 +12,9 @@ import {html as htmlLanguage} from '@codemirror/lang-html';
 import {css} from '@codemirror/lang-css';
 import {HighlightStyle,syntaxHighlighting} from '@codemirror/language';
 import {tags} from '@lezer/highlight';
+import {undo as undoCode,redo as redoCode,selectAll as selectAllCode} from '@codemirror/commands';
+import {icon,setIcon} from './icons.js';
+import {contextMenu,closeContextMenu} from './context-menu.js';
 import {copy,getAt,setAt,moveItem,fieldSpec,emptyValue,newBlock,needsSource} from './model.js';
 
 const $ = selector => document.querySelector(selector);
@@ -26,7 +29,8 @@ const el = (tag, attrs = {}, children = []) => {
   }
   node.append(...children); return node;
 };
-const button = (text, fn, cls = '') => el('button',{type:'button',text,class:cls,onclick:fn});
+const button = (text, fn, cls = '') => {const node=el('button',{type:'button',class:cls,onclick:fn});if(text.startsWith('＋ '))node.append(icon('add'),document.createTextNode(text.slice(2)));else node.textContent=text;return node;};
+const iconButton=(name,label,fn,cls='quiet')=>{const node=button('',fn,cls);node.append(icon(name));node.title=label;node.setAttribute('aria-label',label);return node;};
 const sleep = ms => new Promise(resolve=>setTimeout(resolve,ms));
 const languages = {en:'English',zh:'简体中文','zh-Hant':'繁體中文',ja:'日本語',ko:'한국어',es:'Español'};
 const blockHelp = {
@@ -73,13 +77,16 @@ function modal(title, children, wide=false, nested=false) {
   dialog.style.maxWidth=wide?'1050px':'700px'; if(!dialog.open)dialog.showModal();return dialog;
 }
 function closeModal(){
+  if(state.closingStudio)return;
+  if(state.closeStudioGuard){const guard=state.closeStudioGuard;state.closeStudioGuard=null;state.closingStudio=true;guard().then(()=>{state.closingStudio=false;closeModal();}).catch(error=>{state.closingStudio=false;state.closeStudioGuard=guard;errorNotice(error);});return;}
+  $('#modal').classList.remove('studio-modal');
   const previous=modalStack.pop();
   if(previous){$('#modal-title').textContent=previous.title;$('#modal-body').replaceChildren(...previous.children);$('#modal').style.maxWidth=previous.width;previous.focus?.focus();}
   else $('#modal').close();
 }
 function closeAllModals(){modalStack.length=0;$('#modal').close();}
 $('#modal-close').onclick=closeModal;
-$('#modal').addEventListener('cancel',event=>{if(modalStack.length){event.preventDefault();closeModal();}});
+$('#modal').addEventListener('cancel',event=>{if(modalStack.length||state.closeStudioGuard||state.closingStudio){event.preventDefault();closeModal();}});
 $('#modal').addEventListener('click',event=>{if(event.target===$('#modal')){const r=event.target.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeModal();}});
 function confirmDialog(title, text, label, action) {
   const error=el('p',{role:'alert'}),proceed=button(label,async()=>{
@@ -103,6 +110,7 @@ function remember(){
 }
 function changed(){
   state.epoch++;remember();$('#save-status').textContent='Saving on this Mac…';
+  $('#sync-status').textContent='Local changes waiting for private backup';
   clearTimeout(saveTimer);if(!state.blocked)saveTimer=setTimeout(()=>save().catch(errorNotice),1400);
   requestPreview();wordCount();
 }
@@ -141,23 +149,30 @@ function renderLibrary(){
   const items=state.items.filter(item=>(!filter||item.status===filter)&&[item.title,item.search||'',...(item.categories||[])].join(' ').toLocaleLowerCase().includes(query));
   $('#note-list').replaceChildren(...items.map(item=>{
     const node=button('',()=>openNote(item.path).catch(errorNotice),'note-item');node.setAttribute('aria-current',String(item.path===state.opened?.path));
-    node.append(el('strong',{text:item.title}),el('small',{text:item.date+' · '+item.status}));return node;
+    node.dataset.path=item.path;node.append(el('strong',{text:item.title}),el('small',{text:item.date+' · '+item.status}));
+    node.oncontextmenu=event=>{if(event.shiftKey)return;event.preventDefault();noteMenu(item.path,event.clientX,event.clientY,node);};
+    node.onkeydown=event=>{if(event.key==='ContextMenu'||event.shiftKey&&event.key==='F10'){event.preventDefault();const r=node.getBoundingClientRect();noteMenu(item.path,r.left+15,r.bottom,node);}};
+    const more=iconButton('more_horiz','Actions for '+item.title,event=>{const r=event.currentTarget.getBoundingClientRect();noteMenu(item.path,r.right,r.bottom,event.currentTarget);});more.setAttribute('aria-haspopup','menu');
+    return el('div',{class:'note-row'},[node,more]);
   }));
   if(!items.length)$('#note-list').append(el('p',{text:'No matching notes.',class:'help'}));
 }
 async function openNote(path, force=false){
   if(state.opening)return;
-  state.opening=true;$('#workspace').inert=true;
+  state.opening=true;$('#workspace').inert=true;$('#sync').disabled=true;$('#new-note').disabled=true;
   try{
   if(!force&&state.doc&&!(await save())){toast('Choose how to handle recovered writing first.');return;}
   clearTimeout(saveTimer);clearTimeout(recoveryTimer);clearTimeout(previewTimer);
   const opened=await api('/api/note?path='+encodeURIComponent(path));
   closeAllModals();
   destroyEditors();state.opened=opened;state.doc=copy(opened.document);state.version=-1;state.epoch=0;state.saved=0;state.blocked=false;
+  const row={path,title:opened.title||opened.document.title||'Untitled',date:opened.document.date||'',language:opened.document.language,categories:opened.document.categories||[],status:opened.status};
+  const index=state.items.findIndex(item=>item.path===path);if(index>=0)state.items[index]={...state.items[index],...row};else state.items.push(row);
+  state.items.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.path.localeCompare(a.path));
   state.previewEpoch++;state.previewWanted=false;
   state.previewFrameId=null;$('#preview').removeAttribute('src');$('#preview-placeholder').hidden=false;
   $('#empty').hidden=true;$('#workspace').hidden=false;$('#notice').hidden=true;
-  for(const id of ['save','settings','publish','history'])$('#'+id).disabled=false;
+  for(const id of ['save','settings','publish','history','note-more'])$('#'+id).disabled=false;
   const browser=[];try{for(const key of store.keys())if(key.startsWith(storagePrefix()))browser.push(JSON.parse(store.get(key)));}catch{}
   const recovery=[opened.recovery,...browser].filter(Boolean).sort((a,b)=>String(b.updated).localeCompare(String(a.updated)))[0];
   state.recovery=recovery&&JSON.stringify(recovery.document)!==JSON.stringify(state.doc)?recovery:null;
@@ -167,7 +182,7 @@ async function openNote(path, force=false){
   store.set('notes:last:'+state.repository,path);
   $('.library').classList.remove('is-open');
   libraryAccessibility();
-  }finally{state.opening=false;$('#workspace').inert=false;}
+  }finally{state.opening=false;$('#workspace').inert=false;$('#sync').disabled=false;$('#new-note').disabled=false;}
 }
 $('#restore-recovery').onclick=()=>{state.doc=copy(state.recovery.document);state.doc.slug=state.opened.document.slug;state.recovery=null;state.blocked=false;$('#recovery').hidden=true;renderDocument();changed();};
 $('#discard-recovery').onclick=async()=>{try{const client=state.recovery?.client||'legacy';await api('/api/recovery',{path:state.opened.path,discard:true,client});store.remove(storagePrefix()+client);state.recovery=null;state.blocked=false;$('#recovery').hidden=true;$('#save-status').textContent='Saved on this Mac';}catch(e){errorNotice(e);}};
@@ -228,7 +243,8 @@ function richField(path, main=false){
       ['1.','Numbered list',()=>editor.chain().focus().toggleOrderedList().run(),'orderedList'],['“”','Quote',()=>editor.chain().focus().toggleBlockquote().run(),'blockquote'],
       ['↗','Link',()=>editLink(editor)],['⌘','Inline code',()=>editor.chain().focus().toggleCode().run(),'code'],
       ['↶','Undo',()=>editor.chain().focus().undo().run()],['↷','Redo',()=>editor.chain().focus().redo().run()]];
-    for(const [text,label,fn,active]of tools){const node=button(text,fn);node.title=label;node.setAttribute('aria-label',label);if(active)node.dataset.active=active;
+    const toolIcons={Bold:'format_bold',Italic:'format_italic',Underline:'format_underlined','Section heading':'format_h2',Subheading:'format_h3','Bullet list':'format_list_bulleted','Numbered list':'format_list_numbered',Quote:'format_quote',Link:'link','Inline code':'code',Undo:'undo',Redo:'redo'};
+    for(const [text,label,fn,active]of tools){const node=iconButton(toolIcons[label],label,fn,'');if(active)node.dataset.active=active;
       node.addEventListener('mousedown',event=>event.preventDefault());toolbar.append(node);}
     toolbar.append(sourceButton);refreshButtons();
   }
@@ -263,19 +279,19 @@ function renderDocument(){
   blocks.forEach((block,index)=>{
     const spec=state.schema.components.blocks.blocks.find(b=>b.name===block.type),blockPath=[...path,'blocks',index];
     const card=el('section',{class:'block','aria-label':(spec?.label||block.type)+' block'}),head=el('div',{class:'block-head'});
-    const handle=el('span',{text:'⠿',class:'drag-handle',draggable:true,title:'Drag to reorder','aria-hidden':'true'});
+    const handle=el('span',{class:'drag-handle',draggable:true,title:'Drag to reorder','aria-hidden':'true'},[icon('drag_indicator')]);
     handle.addEventListener('dragstart',event=>{state.drag=index;event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',String(index));});
     handle.addEventListener('dragend',()=>{state.drag=null;document.querySelectorAll('.drag-over').forEach(n=>n.classList.remove('drag-over'));});
     card.addEventListener('dragover',event=>{if(state.drag!==null){event.preventDefault();card.classList.add('drag-over');}});
     card.addEventListener('dragleave',()=>card.classList.remove('drag-over'));
     card.addEventListener('drop',event=>{if(state.drag!==null){event.preventDefault();moveItem(blocks,state.drag,index);state.drag=null;renderDocument();changed();}});
-    const up=button('↑',()=>reorder(index,-1),'quiet');up.title='Move block up';up.disabled=index===0;
-    const down=button('↓',()=>reorder(index,1),'quiet');down.title='Move block down';down.disabled=index===blocks.length-1;
-    const duplicate=button('⧉',()=>{blocks.splice(index+1,0,copy(block));renderDocument();changed();},'quiet');duplicate.title='Duplicate block';
-    const remove=button('✕',()=>{const previous=copy(blocks);blocks.splice(index,1);renderDocument();changed();toast('Block removed.',()=>{currentVersion().blocks=previous;renderDocument();changed();});},'quiet');remove.title='Remove block';
+    const up=iconButton('arrow_upward','Move block up',()=>reorder(index,-1));up.disabled=index===0;
+    const down=iconButton('arrow_downward','Move block down',()=>reorder(index,1));down.disabled=index===blocks.length-1;
+    const duplicate=iconButton('content_copy','Duplicate block',()=>{blocks.splice(index+1,0,copy(block));renderDocument();changed();});
+    const remove=iconButton('delete','Remove block',()=>{const previous=copy(blocks);blocks.splice(index,1);renderDocument();changed();toast('Block removed.',()=>{currentVersion().blocks=previous;renderDocument();changed();});});
     head.append(handle,el('strong',{text:spec?.label?.split(' — ')[0]||block.type}),up,down,duplicate,remove);
     const content=el('div',{class:'block-content'});if(blockHelp[block.type])content.append(el('p',{class:'help',text:blockHelp[block.type]}));
-    const collapse=button('⌃',()=>{content.hidden=!content.hidden;collapse.textContent=content.hidden?'⌄':'⌃';collapse.setAttribute('aria-expanded',String(!content.hidden));},'quiet');
+    const collapse=iconButton('expand_less','Collapse or expand block',()=>{content.hidden=!content.hidden;setIcon(collapse,content.hidden?'expand_more':'expand_less');collapse.setAttribute('aria-expanded',String(!content.hidden));});
     collapse.title='Collapse or expand block';collapse.setAttribute('aria-expanded','true');head.insertBefore(collapse,up);
     if(block.type==='table')content.append(tableEditor(blockPath));
     else if(spec)for(const field of spec.fields||[])renderField(content,field,blockPath);
@@ -353,8 +369,8 @@ function renderField(parent,raw,base,override){
     };draw();return;
   }
   if(field.type==='boolean'){
-    wrapper.classList.add('toggle');const input=el('input',{type:'checkbox',checked:value===true,'aria-label':field.label||field.name,onchange:e=>{update(path,e.target.checked);if(['birthday','highlight'].includes(field.name))settings();}});
-    const text=el('div');text.append(label);if(field.description)text.append(wrapper.querySelector('.help'));wrapper.replaceChildren(input,text);return;
+    wrapper.classList.add('toggle');const id='switch-'+crypto.randomUUID(),input=el('input',{type:'checkbox',role:'switch',id,checked:value===true,'aria-label':field.label||field.name,onchange:e=>{update(path,e.target.checked);if(['birthday','highlight'].includes(field.name))settings();}});
+    const text=el('label',{htmlFor:id,class:'switch-copy'},[el('span',{class:'field-label',text:field.label||field.name})]);if(field.description)text.append(wrapper.querySelector('.help'));wrapper.replaceChildren(input,text);return;
   }
   let input;
   if(field.type==='select'){
@@ -388,16 +404,16 @@ function blockMenu(){
   const draw=()=>{grid.replaceChildren(...state.schema.components.blocks.blocks.filter(spec=>(spec.label+' '+blockHelp[spec.name]).toLowerCase().includes(search.value.toLowerCase())).map(spec=>{
     const b=button('',()=>{const block=newBlock(spec,state.schema.components);if(spec.name==='table'){block.columns=['',''];block.rows=[{cells:['','']}];}
       (currentVersion().blocks||=[]).push(block);closeModal();renderDocument();changed();requestAnimationFrame(()=>$('#document .block:last-child')?.scrollIntoView({behavior:'smooth',block:'center'}));});
-    b.append(el('strong',{text:spec.label.split(' — ')[0]}),el('small',{text:blockHelp[spec.name]||''}));return b;}));};
+    const names={text:'draft',photo:'image',gallery:'view_carousel',video:'video_library',audio:'audio_file',table:'table_chart',aside:'info',details:'expand_more',link:'link',download:'download',quote:'format_quote',code:'code',comparison:'compare'};b.classList.add('block-option');b.append(icon(names[spec.name]),el('div',{},[el('strong',{text:spec.label.split(' — ')[0]}),el('small',{text:blockHelp[spec.name]||''})]));return b;}));};
   search.oninput=draw;modal('Add content',[search,grid]);draw();search.focus();
 }
 function settings(){
-  if(!state.doc)return;const root=el('div');
+  if(!state.doc)return;const retained=$('#modal').open&&$('#modal-title').textContent==='Note settings',scroll=$('#modal').scrollTop,focus=document.activeElement?.getAttribute('aria-label');const root=el('div');
   const groups=[['This note',['date','language','summary','categories','font']],['Images',['sharing_image','list_image']],['Homepage',['highlight','highlight_until']],['Birthday',['birthday','birthday_visibility']]];
   for(const [title,names]of groups){const section=el('section',{class:'settings-section'},[el('h3',{text:title})]);for(const name of names){
     if(name==='highlight_until'&&!state.doc.highlight||name==='birthday_visibility'&&!state.doc.birthday)continue;
     const spec=state.schema.fields.find(f=>f.name===name);renderField(section,spec,[]);
-  }root.append(section);}
+  }if(title==='Images')section.append(el('div',{class:'cover-actions'},[button('Design a cover…',()=>openStudio('sharing_image')),button('Design on-site image…',()=>openStudio('list_image'),'quiet')]));root.append(section);}
   if(state.version>=0){const section=el('section',{class:'settings-section'},[el('h3',{text:'This translation'})]);
     renderField(section,{name:'published',label:'Include this language when publishing',type:'boolean',description:'This only takes effect when you explicitly publish the note.'},versionPath());
     renderField(section,{name:'summary',label:'Short introduction',type:'text'},versionPath());root.prepend(section);}
@@ -407,6 +423,7 @@ function settings(){
   })));
   if(state.opened.status!=='Draft'&&state.opened.status!=='Withdrawn')section.append(button('Withdraw from website…',()=>publicationDialog(true),'quiet'));
   modal('Note settings',[root]);
+  if(retained){$('#modal').scrollTop=scroll;if(focus)$('#modal').querySelector('[aria-label="'+CSS.escape(focus)+'"]')?.focus({preventScroll:true});}
 }
 function addLanguage(){
   const existing=new Set([state.doc.language,...(state.doc.translations||[]).map(t=>t.language)]),select=el('select',{'aria-label':'Translation language'},Object.entries(languages).filter(([code])=>!existing.has(code)).map(([code,label])=>el('option',{value:code,text:label})));
@@ -415,7 +432,207 @@ function addLanguage(){
     el('div',{class:'dialog-actions'},[button('Add version',()=>{(state.doc.translations||=[]).push({language:select.value,title:'',summary:'',body:'',blocks:[],published:false});state.version=state.doc.translations.length-1;closeModal();renderDocument();changed();},'primary')])]);
 }
 
+function clearOpened(){
+  clearTimeout(saveTimer);clearTimeout(recoveryTimer);clearTimeout(previewTimer);destroyEditors();
+  state.doc=null;state.opened=null;state.epoch=state.saved=0;state.previewFrameId=null;state.previewEpoch++;
+  $('#workspace').hidden=true;$('#empty').hidden=false;$('#preview').removeAttribute('src');
+  for(const id of ['save','settings','publish','history','note-more'])$('#'+id).disabled=true;
+  $('#save-status').textContent='Changes save automatically on this Mac';
+}
+function clearNoteRecovery(path){
+  for(const key of store.keys())if(key.startsWith('notes-local:'+state.repository+':'+path+':'))store.remove(key);
+}
+let noteMenuTicket=0;
+async function noteMenu(path,x,y,anchor){
+  const ticket=++noteMenuTicket;
+  try{
+  const metadata=await api('/api/note?path='+encodeURIComponent(path));if(ticket!==noteMenuTicket)return;
+  const active=path===state.opened?.path,canDiscard=Boolean(metadata.baseline)&&(metadata.local_changes||active&&state.epoch!==state.saved);
+  const items=[{label:'Open note',icon:'draft',run:()=>openNote(path)},{label:'Duplicate as draft',icon:'content_copy',run:async()=>{
+    if(state.doc)await save();const original=await api('/api/note?path='+encodeURIComponent(path));const created=await api('/api/create',{document:original.document});await refreshLibrary();await openNote(created.path,true);
+  }},{label:'Design a cover…',icon:'palette',run:async()=>{if(state.opened?.path!==path)await openNote(path);await openStudio();}},{separator:true},{label:'Discard local edits…',icon:'undo',disabled:!canDiscard,run:()=>discardNote(path)},
+  {label:'Move to Trash…',icon:'delete',danger:true,run:()=>deleteNote(path)},{separator:true},
+  {label:'Open Trash',icon:'restore_from_trash',run:showTrash}];
+  contextMenu(items.map(item=>({...item,onError:errorNotice})),{x,y,restore:()=>{const node=anchor?.isConnected?anchor:[...document.querySelectorAll('.note-item')].find(node=>node.dataset.path===path);node?.focus();}});
+  }catch(error){errorNotice(error);}
+}
+async function discardNote(path){
+  try{
+    if(state.opened?.path===path){await save();clearTimeout(recoveryTimer);}
+    const current=await api('/api/note?path='+encodeURIComponent(path));
+    if(!current.baseline){toast('This draft has no backed-up version yet. You can move it to Trash instead.');return;}
+    confirmDialog('Discard local edits?','Restore “'+(current.document.title||'Untitled')+'” and its saved cover designs to the '+current.baseline.label+'. The published article will stay unchanged. A local recovery copy will be kept.','Discard local edits',async()=>{
+      await api('/api/discard',{path,etag:current.etag,revision:current.baseline.revision,design_etags:current.design_etags});clearNoteRecovery(path);
+      if(state.opened?.path===path)await openNote(path,true);await refreshLibrary();toast('Local edits discarded. The backed-up version is restored.');
+    });
+  }catch(error){errorNotice(error);}
+}
+async function deleteNote(path){
+  try{
+    if(state.opened?.path===path){await save();clearTimeout(recoveryTimer);}
+    const current=await api('/api/note?path='+encodeURIComponent(path)),live=!['Draft','Withdrawn'].includes(current.status);
+    confirmDialog(live?'Withdraw and move to Trash?':'Move this draft to Trash?',
+      live?'The manager will withdraw “'+(current.document.title||'Untitled')+'” from both website hosts, then move its private original to recoverable Trash. Uploads will be kept.':
+      '“'+(current.document.title||'Untitled')+'” will leave your Notes library. You can restore it from Trash. Uploads will be kept.',live?'Withdraw and move to Trash':'Move to Trash',async()=>{
+        const result=await job('trash',{path,etag:current.etag});
+        if(result.trashed){afterTrash(path,result.id);await refreshLibrary();}
+        else{notice('Withdrawing the article. It will move to Trash only after both deployments succeed.',{label:'View progress',run:()=>window.open(result.run_url,'_blank','noopener')});if(result.run_id)watchRun(result);}
+    });
+  }catch(error){errorNotice(error);}
+}
+function afterTrash(path,id){
+  clearNoteRecovery(path);if(state.opened?.path===path)clearOpened();
+  toast('Moved to Trash.',async()=>{const restored=await api('/api/trash/restore',{id});await refreshLibrary();await openNote(restored.path,true);});
+}
+async function showTrash(){
+  try{
+    const items=await api('/api/trash'),list=el('div');
+    for(const item of items){const row=el('div',{class:'trash-row'},[el('div',{},[el('strong',{text:item.title}),el('small',{text:new Date(item.created).toLocaleString()})]),button('Restore draft',async()=>{
+      try{const restored=await api('/api/trash/restore',{id:item.id});closeAllModals();await refreshLibrary();await openNote(restored.path,true);toast('Restored as a private draft.');}catch(error){errorNotice(error);}
+    })]);list.append(row);}
+    if(!items.length)list.append(el('p',{text:'Trash is empty.'}));
+    modal('Trash',[el('p',{text:'Notes remain recoverable on this Mac. Restoring a note does not publish it.'}),list]);
+  }catch(error){errorNotice(error);}
+}
+function workflowHelp(){modal('Saving, backups, and publishing',[
+  el('div',{class:'workflow-step'},[icon('save'),el('div',{},[el('h3',{text:'Autosaved on this Mac'}),el('p',{text:'Typing saves your working draft automatically. Command-S saves immediately. The live website stays unchanged.'})])]),
+  el('div',{class:'workflow-step'},[icon('cloud_upload'),el('div',{},[el('h3',{text:'Back up drafts'}),el('p',{text:'Copies your drafts, uploads, and cover designs to your private GitHub repository. Nothing is published. This also checks for changes made elsewhere.'})])]),
+  el('div',{class:'workflow-step'},[icon('publish'),el('div',{},[el('h3',{text:'Publish'}),el('p',{text:'Checks the current note, backs it up, and updates its public article and selected translations. Your other drafts remain private.'})])])]);}
+
+function editorContext(event){
+  if(event.shiftKey||$('#modal').open)return;
+  const target=event.target.closest('textarea,input:not([type=file]):not([type=checkbox]),[contenteditable=true]');
+  if(!target||!target.closest('.writing-pane'))return;
+  event.preventDefault();
+  const selected=getSelection(),range=selected?.rangeCount?selected.getRangeAt(0).cloneRange():null;
+  const inputSelection=typeof target.selectionStart==='number'?[target.selectionStart,target.selectionEnd]:null;
+  const editor=state.editors.find(editor=>editor instanceof EditorView?editor.dom.contains(target):editor.view.dom.contains(target));
+  const rich=editor&&!(editor instanceof EditorView),code=editor instanceof EditorView;
+  const restore=()=>{
+    if(code)editor.focus();else if(rich)editor.view.focus();else target.focus({preventScroll:true});
+    if(inputSelection)target.setSelectionRange(...inputSelection);
+    else if(range){const selection=getSelection();selection.removeAllRanges();selection.addRange(range);}
+  };
+  const native=command=>{restore();return document.execCommand(command);};
+  const copyOrCut=async cut=>{
+    if(native(cut?'cut':'copy'))return;
+    const text=inputSelection?target.value.slice(...inputSelection):code?editor.state.sliceDoc(editor.state.selection.main.from,editor.state.selection.main.to):String(getSelection()||'');
+    if(!text){toast('Select some text first.');return;}
+    try{await navigator.clipboard.writeText(text);if(cut){if(rich)editor.chain().focus().deleteSelection().run();else if(code)editor.dispatch({changes:{from:editor.state.selection.main.from,to:editor.state.selection.main.to,insert:''}});else{target.setRangeText('',...inputSelection,'end');target.dispatchEvent(new Event('input',{bubbles:true}));}}}
+    catch{toast('Use '+(cut?'⌘X':'⌘C')+' to '+(cut?'cut':'copy')+' the selection.');}
+  };
+  const items=[{label:'Undo',icon:'undo',shortcut:'⌘Z',run:()=>code?undoCode(editor):rich?editor.chain().focus().undo().run():native('undo')},
+    {label:'Redo',icon:'redo',shortcut:'⇧⌘Z',run:()=>code?redoCode(editor):rich?editor.chain().focus().redo().run():native('redo')},{separator:true},
+    {label:'Cut',icon:'content_cut',shortcut:'⌘X',run:()=>copyOrCut(true)},{label:'Copy',icon:'content_copy',shortcut:'⌘C',run:()=>copyOrCut(false)},
+    {label:'Paste',icon:'content_paste',shortcut:'⌘V',run:async()=>{restore();try{
+      let text='',html='';
+      if(rich&&navigator.clipboard.read){const items=await navigator.clipboard.read();for(const item of items){if(item.types.includes('text/html'))html=await(await item.getType('text/html')).text();if(item.types.includes('text/plain'))text=await(await item.getType('text/plain')).text();if(!html&&!text&&item.types.includes('image/png')){await uploadInline(new File([await item.getType('image/png')],'pasted-image.png',{type:'image/png'}),editor);return;}}}
+      else text=await navigator.clipboard.readText();
+      if(rich)editor.commands.insertContent(html||text.split('\n').map(line=>({type:'paragraph',content:line?[{type:'text',text:line}]:[]})));else if(code)editor.dispatch(editor.state.replaceSelection(text));else{target.setRangeText(text,target.selectionStart,target.selectionEnd,'end');target.dispatchEvent(new Event('input',{bubbles:true}));}
+    }catch{toast('Press ⌘V to paste. Your browser keeps clipboard access under your control.');}}},
+    {label:'Select all',icon:'select_all',shortcut:'⌘A',run:()=>code?selectAllCode(editor):rich?editor.commands.selectAll():target.select()}];
+  if(rich)items.push({separator:true},...[
+    ['Bold','format_bold','bold',()=>editor.chain().focus().toggleBold().run(),'⌘B'],['Italic','format_italic','italic',()=>editor.chain().focus().toggleItalic().run(),'⌘I'],
+    ['Underline','format_underlined','underline',()=>editor.chain().focus().toggleUnderline().run(),'⌘U'],['Inline code','code','code',()=>editor.chain().focus().toggleCode().run()],
+  ].map(([label,icon,mark,run,shortcut])=>({label,icon,checked:editor.isActive(mark),run,shortcut})),{label:'Link…',icon:'link',run:()=>editLink(editor)},
+    {label:'Clear formatting',icon:'format_clear',run:()=>editor.chain().focus().unsetAllMarks().clearNodes().run()});
+  items.push({separator:true},{label:'Browser menu: Shift + right-click',disabled:true});
+  contextMenu(items.map(item=>({...item,onError:errorNotice})),{x:event.clientX,y:event.clientY,restore});
+}
+document.addEventListener('contextmenu',editorContext);
+
 async function uploadFile(file,kind){return api('/api/upload?kind='+encodeURIComponent(kind)+'&name='+encodeURIComponent(file.name),file,true);}
+let studio=null;
+async function openStudio(target='sharing_image'){
+  if(!state.doc)return;
+  try{
+    const path=state.opened.path;state.doc.og_designs||={};
+    const identity=state.doc.og_designs[target]||crypto.randomUUID().replaceAll('-','').slice(0,24);
+    const saved=await api('/api/design?id='+identity);
+    const hydrated=copy(saved.design),assets=new Map();
+    if(hydrated)for(const key of ['backgroundData','logoData']){
+      const reference=hydrated[key];if(!reference?.startsWith('/media/images/'))continue;
+      const response=await fetch(reference);if(!response.ok)throw new Error('A cover image could not be loaded from the private library.');
+      const blob=await response.blob(),data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob);});
+      hydrated[key]=data;assets.set(data,reference);
+    }
+    if(!state.doc.og_designs[target]){state.doc.og_designs[target]=identity;changed();}
+    const frame=el('iframe',{src:'/studio/index.html',title:'OG Studio cover designer',class:'studio-frame',sandbox:'allow-scripts allow-same-origin allow-downloads allow-modals',allow:'clipboard-read; clipboard-write'});
+    const choice=el('span',{class:'studio-target',text:target==='sharing_image'?'Sharing image':'On-site image'});
+    const description=el('input',{type:'text',value:'Cover reading “'+(state.doc.title||'Untitled')+'”.',placeholder:'Describe the cover for people who cannot see it','aria-label':'Cover image description',required:true});
+    description.oninput=()=>{description.dataset.edited='true';description.setCustomValidity('');};
+    const message=el('span',{class:'studio-message',role:'status',text:'Opening your cover designer…'});
+    const use=button('Use this cover',async()=>{
+      if(!description.value.trim()){description.setCustomValidity('Add a short image description.');description.focus();description.reportValidity();return;}
+      use.disabled=true;message.textContent='Preparing the cover…';
+      try{await snapshotStudio();await flushStudio(studio);frame.contentWindow.postMessage({type:'og-manager-export',nonce:studio.nonce},location.origin);}
+      catch(error){message.textContent=error.message;use.disabled=false;}
+    },'primary');use.disabled=true;
+    studio={frame,path,identity,target,etag:saved.etag,latest:hydrated,saved:hydrated,nonce:crypto.randomUUID(),assets,use,description,message,saving:null,pending:false};
+    const footer=el('div',{class:'studio-footer'},[choice,el('label',{class:'studio-description'},[el('span',{text:'Image description'}),description]),use,message]);
+    const dialog=modal('Cover Studio',[frame,footer],true,true);dialog.classList.add('studio-modal');
+    state.closeStudioGuard=async()=>{if(!studio?.ready){studio=null;return;}await snapshotStudio();const session=studio;await flushStudio(session);studio=null;};
+  }catch(error){errorNotice(error);}
+}
+async function designAssets(session,design){
+  const result=copy(design);
+  for(const key of ['backgroundData','logoData']){
+    const value=result[key];if(!value?.startsWith('data:'))continue;
+    if(!session.assets.has(value)){
+      const match=value.match(/^data:(image\/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$/);if(!match)throw new Error('Use a PNG, JPEG, or WebP image in the design.');
+      const raw=Uint8Array.from(atob(match[2]),c=>c.charCodeAt(0));
+      const uploaded=await uploadFile(new File([raw],'cover-'+key+'.'+({['image/png']:'png',['image/jpeg']:'jpg',['image/webp']:'webp'}[match[1]]),{type:match[1]}),'photographs');
+      session.assets.set(value,uploaded.path);
+    }result[key]=session.assets.get(value);
+  }return result;
+}
+async function flushStudio(session){
+  if(!session)return;
+  if(session.saving){await session.saving;if(session.pending)return flushStudio(session);return;}
+  if(!session.latest)return;
+  session.pending=false;const latest=copy(session.latest);
+  session.saving=(async()=>{
+    const design=await designAssets(session,latest),saved=await api('/api/design',{id:session.identity,design,etag:session.etag});if(session.etag!==saved.etag)$('#sync-status').textContent='Local changes waiting for private backup';session.etag=saved.etag;session.saved=copy(latest);
+    session.message.textContent='Cover draft saved on this Mac';
+    session.frame.contentWindow?.postMessage({type:'og-manager-saved',nonce:session.nonce},location.origin);
+  })();
+  try{await session.saving;}finally{session.saving=null;}
+  if(session.pending)return flushStudio(session);
+}
+function snapshotStudio(){
+  const session=studio;if(!session)return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>{session.snapshot=null;reject(new Error('The designer is still loading. Try again in a moment.'));},5000);
+    session.snapshot=()=>{clearTimeout(timer);resolve();};session.frame.contentWindow?.postMessage({type:'og-manager-snapshot',nonce:session.nonce},location.origin);
+  });
+}
+window.addEventListener('message',async event=>{
+  const session=studio;if(!session||event.source!==session.frame.contentWindow||event.origin!==location.origin)return;
+  const data=event.data||{};
+  if(data.type==='og-studio-ready'){
+    session.ready=true;
+    session.frame.contentWindow.postMessage({type:'og-manager-init',nonce:session.nonce,design:session.saved,title:state.doc.title||'',subtitle:state.doc.summary||''},location.origin);
+    session.message.textContent='Design your cover, then use it in this note';session.use.disabled=false;return;
+  }
+  if(data.nonce!==session.nonce)return;
+  if(data.type==='og-design-change'||data.type==='og-design-snapshot'){
+    session.latest=data.design;session.pending=true;
+    if(session.description.dataset.edited!=='true')session.description.value='Cover reading “'+(data.design.title||state.doc.title||'Untitled')+'”.';
+    if(data.type==='og-design-snapshot')session.snapshot?.();
+    else{clearTimeout(session.timer);session.timer=setTimeout(()=>flushStudio(session).catch(error=>session.message.textContent=error.message),800);}
+  }
+  if(data.type==='og-cover-error'){session.message.textContent=data.message;session.use.disabled=false;}
+  if(data.type==='og-cover-export'){
+    try{
+      session.latest=data.design;await flushStudio(session);
+      const uploaded=await uploadFile(new File([data.blob],'cover-'+state.doc.slug+'.webp',{type:'image/webp'}),'photographs');
+      if(state.opened?.path!==session.path)throw new Error('The open note changed. The generated image remains in your media library.');
+      if(studio!==session)return;
+      const target=session.target;state.doc.og_designs[target]=session.identity;update([target],{type:'custom',image:uploaded.path,alt:session.description.value.trim()});
+      state.closeStudioGuard=null;studio=null;closeModal();if($('#modal').open)settings();toast('Cover added to this note.');
+    }catch(error){session.message.textContent=error.message;session.use.disabled=false;}
+  }
+});
 async function mediaPicker(kind,choose){
   const error=el('p',{role:'alert'}),input=el('input',{type:'file','aria-label':'Upload a file'}),upload=el('label',{class:'upload-zone',text:'Upload a file · up to 20 MB'},[input]),search=el('input',{type:'search',placeholder:'Find an upload…','aria-label':'Search uploads'}),grid=el('div',{class:'media-grid'});
   input.accept={photographs:'.jpg,.jpeg,.png,.webp',videos:'.mp4,.webm',audio:'.mp3,.m4a,.ogg,.wav',downloads:'.pdf,.zip,.txt,.csv,.json'}[kind];
@@ -448,7 +665,13 @@ async function job(operation,data={}){
   for(;;){await sleep(operation==='preview'?180:500);const result=await api('/api/jobs/'+created.job);if(result.status==='done')return result.result;if(result.status==='error'){const error=new Error(result.error);Object.assign(error,result);throw error;}}
 }
 async function refreshPreview(){
-  if(!state.doc||state.previewRunning)return;state.previewRunning=true;state.previewWanted=false;
+  if(!state.doc||state.previewRunning)return;
+  const version=currentVersion(),template=document.createElement('template');template.innerHTML=version.body||'';
+  if(!(template.content.textContent||'').trim()&&!(version.blocks||[]).length&&!template.content.querySelector('img')){
+    state.previewWanted=false;state.previewFrameId=null;$('#preview').removeAttribute('src');$('#preview-placeholder').hidden=false;
+    $('#checks').classList.remove('has-errors');$('#checks-summary').textContent='Start writing to see your article';$('#check-list').replaceChildren();return;
+  }
+  state.previewRunning=true;state.previewWanted=false;
   const epoch=state.previewEpoch,path=state.opened.path;
   $('#checks-summary').textContent='Updating preview…';
   try{
@@ -469,12 +692,12 @@ function showChecks(errors,warnings){
 
 async function sync(resolutions,remote){
   if(state.doc&&!(await save())){toast('Choose a recovered version before syncing.');return false;}
-  const b=$('#sync');b.disabled=true;$('#sync-status').textContent='Syncing with your private repository…';
+  const b=$('#sync');b.disabled=true;$('#sync-status').textContent='Backing up drafts and checking online changes…';
   const startedPath=state.opened?.path,startedEpoch=state.epoch;
-  try{const result=await job('sync',{resolutions,remote});$('#sync-status').textContent=result.message;
+  try{const result=await job('sync',{resolutions,remote});$('#sync-status').textContent='Private backup up to date · '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
     if(state.opened&&state.opened.path===startedPath&&state.epoch===startedEpoch)await openNote(startedPath,true);
-    await refreshLibrary();toast('Synced privately. Nothing was published.');return true;
-  }catch(e){$('#sync-status').textContent='Local writing retained · sync needs attention';if(e.conflicts)syncConflicts(e);else errorNotice(e);return false;}finally{b.disabled=false;}
+    await refreshLibrary();toast('Drafts backed up privately. The website is unchanged.');return true;
+  }catch(e){$('#sync-status').textContent='Saved on this Mac · backup needs attention';if(e.conflicts)syncConflicts(e);else errorNotice(e);return false;}finally{b.disabled=false;}
 }
 function syncConflicts(error){
   const choices={},entries=error.conflicts.map(conflict=>{
@@ -494,7 +717,7 @@ function publicationDialog(withdraw=false){
   if(state.blocked){toast('Choose your recovered or saved version first.');return;}
   const title=state.doc.title||'Untitled note',translations=(state.doc.translations||[]).filter(t=>t.published).map(t=>languages[t.language]);
   const explanation=withdraw?'Remove this article from the website while keeping its private original and history. Previously public copies cannot be recalled.':
-    'Publish “'+title+'”'+(translations.length?' with '+translations.join(', '):'')+'. Your other drafts remain private. This waits for both website deployments.';
+    'Publish “'+title+'”'+(translations.length?' with '+translations.join(', '):'')+'. The manager automatically backs up this revision first. Your other drafts remain private. Wait for both website deployments to finish.';
   confirmDialog(withdraw?'Withdraw this note?':'Publish this note?',explanation,withdraw?'Withdraw article':'Publish now',async()=>{
     if(!withdraw){state.doc.published=true;changed();}await save();
     $('#save-status').textContent=withdraw?'Requesting withdrawal…':'Checking and publishing…';
@@ -509,6 +732,8 @@ async function watchRun(record){
   try{const result=await api('/api/run?id='+record.run_id);
     if(result.status==='completed'){
       const good=result.conclusion==='success';$('#save-status').textContent=good?'Both website deployments finished':'Publication needs attention · see workflow';
+      if(result.trashed){afterTrash(result.path,result.trash_id);await refreshLibrary();notice('The article was withdrawn and its private original is in Trash.');return;}
+      if(result.trash_error){notice('The article was withdrawn. '+result.trash_error);await refreshLibrary();return;}
       notice(good?(record.action==='withdraw-note'?'The article was withdrawn.':'Your article is published on both website hosts.'):'The workflow did not finish successfully. It may have updated one host; check the run before retrying.',{label:'View run',run:()=>window.open(record.run_url,'_blank','noopener')});
       await refreshLibrary();if(state.opened){const saved=await api('/api/note?path='+encodeURIComponent(state.opened.path));state.opened.status=saved.status;$('#release-state').textContent=state.epoch===state.saved?saved.status:'Unpublished changes';}return;
     }$('#save-status').textContent='Website deployment '+(result.status==='queued'?'queued':'in progress')+'…';
@@ -531,6 +756,8 @@ async function history(){
 $('#search').oninput=renderLibrary;$('#filter').onchange=renderLibrary;
 $('#new-note').onclick=$('#empty-new').onclick=createNote;$('#add-block').onclick=blockMenu;
 $('#media-library').onclick=mediaLibrary;
+$('#trash').onclick=showTrash;$('#workflow-help').onclick=workflowHelp;
+$('#note-more').onclick=event=>{const r=event.currentTarget.getBoundingClientRect();noteMenu(state.opened.path,r.right,r.bottom,event.currentTarget);};
 $('#settings').onclick=settings;$('#history').onclick=history;
 $('#save').onclick=()=>save().then(ok=>{if(ok)toast('Saved on this Mac.');}).catch(errorNotice);
 $('#sync').onclick=()=>sync();$('#publish').onclick=()=>publicationDialog();
@@ -555,9 +782,9 @@ for(const b of document.querySelectorAll('[data-width]'))b.onclick=()=>{
   document.querySelectorAll('[data-width]').forEach(n=>n.setAttribute('aria-pressed',String(n===b)));
   $('#preview').style.width={desktop:'100%',phone:'390px',watch:'205px'}[b.dataset.width];
 };
-function applyTheme(){document.documentElement.dataset.theme=state.theme;}
+function applyTheme(){document.documentElement.dataset.theme=state.theme;setIcon($('#app-theme'),state.theme==='dark'?'light_mode':'dark_mode');}
 $('#app-theme').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';store.set('notes:theme',state.theme);applyTheme();};
-$('#preview-theme').onclick=()=>{state.previewTheme=state.previewTheme==='dark'?'light':'dark';requestPreview(true);};
+$('#preview-theme').onclick=()=>{state.previewTheme=state.previewTheme==='dark'?'light':'dark';setIcon($('#preview-theme'),state.previewTheme==='dark'?'light_mode':'dark_mode');requestPreview(true);};
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&$('.library').classList.contains('is-open'))closeLibrary();if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save().catch(errorNotice);}});
 window.addEventListener('beforeunload',event=>{if(state.doc&&state.epoch!==state.saved){remember();event.preventDefault();event.returnValue='';}});
 async function boot(){
@@ -565,7 +792,11 @@ async function boot(){
     const session=await api('/api/session');Object.assign(state,{schema:session.schema,items:session.notes,repository:session.repository});renderLibrary();
     $('#save-status').textContent='Local workspace ready';const last=store.get('notes:last:'+state.repository);
     if(last&&state.items.some(i=>i.path===last))await openNote(last,true);
-    if(session.last_publication?.run_id)watchRun(session.last_publication);
+    if(session.last_publication?.run_id&&session.last_publication.status!=='completed')watchRun(session.last_publication);
   }catch(e){$('#save-status').textContent='Workspace needs attention';errorNotice(e);}
 }
 boot();
+
+for(const [id,name,label]of [["new-note","add","New note"],["empty-new","draft","Write a note"],["media-library","image","Media library"],["trash","delete","Trash"],["sync","cloud_upload","Back up drafts"],["workflow-help","info","How saving works"],["history","history","History"],["settings","settings","Settings"],["publish","publish","Publish…"],["note-more","more_horiz"],["modal-close","close"],["library-toggle","menu"],["library-close","close"],["add-language","add"],["refresh-preview","refresh"],["app-theme","dark_mode"],["preview-theme","dark_mode"]])setIcon($("#"+id),name,label);
+
+applyTheme();

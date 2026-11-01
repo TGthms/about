@@ -1,6 +1,6 @@
 """Local editing must never overwrite another version or publish implicitly."""
 import copy
-from http.client import HTTPConnection
+from http.client import HTTPConnection, HTTPSConnection
 import importlib.util
 from io import BytesIO
 import json
@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import threading
+import ssl
 import unittest
 from unittest.mock import patch
 from PIL import Image
@@ -237,6 +238,106 @@ class ManagerTests(unittest.TestCase):
             self.assertEqual(request('/preview/'+key)[0].status,401)
             response,_=request('/preview/'+key,{'Cookie':'notes_local='+server.token})
             self.assertIn(server.origin,response.getheader('Content-Security-Policy'));self.assertIn('sha256-',response.getheader('Content-Security-Policy'))
+        finally:connection.close();server.shutdown();server.server_close();thread.join()
+
+
+    def test_discard_restores_backup_and_keeps_recovery_without_changing_release(self):
+        self.remote();opened=self.app.get(self.path);baseline=opened['baseline'];pin=(self.content/'.published.json').read_bytes()
+        edited={**opened['document'],'body':'<p>Local testing.</p>'};saved=self.app.save(self.path,edited,opened['etag'])
+        self.app.recover(self.path,edited,saved['etag'],client='testing')
+        restored=self.app.discard(self.path,saved['etag'],baseline['revision'])
+        self.assertEqual(restored['document']['body'],self.value['body']);self.assertFalse(restored['local_changes'])
+        self.assertEqual(pin,(self.content/'.published.json').read_bytes());self.assertFalse(restored['recovery'])
+        self.assertTrue(any('Local testing' in row['document'].get('body','') for row in self.app.history(self.path)))
+        with self.assertRaises(manager.Problem):self.app.discard(self.path,saved['etag'],baseline['revision'])
+
+    def test_trash_preserves_uploads_and_can_restore_without_overwriting_an_existing_note(self):
+        with self.assertRaises(manager.Problem):self.app.trash(self.path,self.app.get(self.path)['etag'])
+        created=self.app.create('Throwaway');pin=(self.content/'.published.json').read_bytes()
+        deleted=self.app.delete_note(created['path'],created['etag']);self.assertTrue(deleted['trashed'])
+        self.assertFalse(self.app.path(created['path']).exists());self.assertEqual(len(self.app.trash_list()),1)
+        self.app.path(created['path']).write_bytes(manager.encode({**created['document'],'title':'Another version'}))
+        restored=self.app.restore_trash(deleted['id']);self.assertNotEqual(restored['path'],created['path'])
+        self.assertEqual(self.app.get(created['path'])['document']['title'],'Another version')
+        self.assertFalse(restored['document']['published']);self.assertFalse(self.app.trash_list())
+        self.assertTrue((self.content/'media/images/example.png').exists());self.assertEqual(pin,(self.content/'.published.json').read_bytes())
+
+    def _pending_withdrawal(self,etag):
+        record={'run_id':'123','path':self.path,'action':'withdraw-note','revision':self.git('rev-parse','HEAD'),
+                'index_base':manager.digest((self.content/'.published.json').read_bytes()),'etag':etag,'trash_after':True}
+        manager.atomic(self.app.state/'last-publication.json',manager.encode(record))
+
+    def _finish_withdrawal(self,conclusion):
+        real=manager.run
+        def run(*args,**kwargs):
+            if args[0]=='gh':return subprocess.CompletedProcess(args,0,json.dumps({'status':'completed','conclusion':conclusion}).encode(),b'')
+            return real(*args,**kwargs)
+        with patch.object(manager,'run',run):return self.app.run_status('123')
+
+    def test_live_delete_waits_for_verified_withdrawal_success(self):
+        opened=self.app.get(self.path)
+        with patch.object(self.app,'publication',return_value={'run_id':'123'}) as dispatch:self.app.delete_note(self.path,opened['etag'])
+        dispatch.assert_called_once_with(self.path,opened['etag'],'withdraw-note',trash_after=True)
+        self.assertTrue(self.app.path(self.path).exists());self._pending_withdrawal(opened['etag'])
+        self._finish_withdrawal('failure');self.assertTrue(self.app.path(self.path).exists());self.assertFalse(self.app.trash_list())
+        self._pending_withdrawal(opened['etag']);result=self._finish_withdrawal('success')
+        self.assertTrue(result['trashed']);self.assertFalse(self.app.path(self.path).exists())
+
+    def test_newer_edits_stop_automatic_trash_after_withdrawal(self):
+        opened=self.app.get(self.path);self._pending_withdrawal(opened['etag'])
+        self.app.save(self.path,{**opened['document'],'title':'New writing'},opened['etag'])
+        result=self._finish_withdrawal('success');self.assertIn('newer edits',result['trash_error'])
+        self.assertEqual(self.app.get(self.path)['document']['title'],'New writing')
+
+    def test_cover_designs_are_private_and_duplicates_are_independent(self):
+        identity='a'*24;design=json.loads((ROOT/'tools/notes-manager/vendor/og-studio/defaults.json').read_text())
+        design.update(title='A cover',backgroundData='/media/images/example.png')
+        saved=self.app.save_design(identity,design,None);self.assertEqual(saved['design']['title'],'A cover')
+        with self.assertRaises(manager.Problem):self.app.save_design(identity,design,None)
+        with self.assertRaises(manager.Problem):self.app.save_design('b'*24,{**design,'logoData':'https://example.com/image.png'},None)
+        created=self.app.create(value={**self.value,'og_designs':{'sharing_image':identity}})
+        forked=created['document']['og_designs']['sharing_image'];self.assertNotEqual(forked,identity)
+        self.app.save_design(forked,{**design,'title':'Independent'},self.app.cover_design(forked)['etag'])
+        self.assertEqual(self.app.cover_design(identity)['design']['title'],'A cover')
+        document=created['document'];document['published']=True;self.app.save(created['path'],document,created['etag'])
+        self.git('add','.');self.git('commit','-m','Private design test');manager.releases.select(self.content,created['path'])
+        out=self.root/'released';manager.releases.materialize(self.content,out)
+        self.assertFalse((out/'media/designs').exists());self.assertTrue((self.content/'media/designs'/f'{identity}.json').exists())
+        self.assertFalse((out/'media/images/example.png').exists())
+
+    def test_discard_includes_private_cover_source_edits(self):
+        identity='c'*24;design=json.loads((ROOT/'tools/notes-manager/vendor/og-studio/defaults.json').read_text())
+        self.app.save_design(identity,design,None)
+        opened=self.app.get(self.path);self.app.save(self.path,{**opened['document'],'og_designs':{'sharing_image':identity}},opened['etag'])
+        self.git('add','.');self.git('commit','-m','Backed-up cover')
+        opened=self.app.get(self.path);self.app.save_design(identity,{**design,'title':'Only the source changed'},self.app.cover_design(identity)['etag'])
+        self.assertTrue(self.app.get(self.path)['local_changes'])
+        with self.assertRaises(manager.Problem):self.app.discard(self.path,opened['etag'],opened['baseline']['revision'],opened['design_etags'])
+        self.app.discard(self.path,opened['etag'],opened['baseline']['revision'])
+        self.assertEqual(self.app.cover_design(identity)['design']['title'],design['title'])
+        self.assertFalse(self.app.get(self.path)['local_changes'])
+        self.assertTrue(list((self.app.state/'discarded-designs').glob('*/*.json')))
+
+    def test_verified_https_secure_cookie_studio_policy_and_reopen(self):
+        folder=self.app.state/'tls';folder.mkdir();cert=folder/'localhost.pem';key=folder/'localhost-key.pem'
+        subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1','-subj','/CN=localhost',
+                        '-addext','subjectAltName=IP:127.0.0.1,DNS:localhost','-keyout',str(key),'-out',str(cert)],check=True,capture_output=True)
+        shutil.copyfile(cert,folder/'rootCA.pem');server=manager.serve(self.app,0,cert,key)
+        thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+        connection=HTTPSConnection('127.0.0.1',server.server_port,context=ssl.create_default_context(cafile=str(cert)))
+        try:
+            connection.request('GET','/?token='+server.token);response=connection.getresponse();response.read()
+            self.assertEqual(response.status,303);self.assertIn('; Secure',response.getheader('Set-Cookie'))
+            connection.request('GET','/',headers={'Host':'localhost:'+str(server.server_port)})
+            response=connection.getresponse();response.read();self.assertEqual(response.status,308);self.assertEqual(response.getheader('Location'),server.origin+'/')
+            manager.atomic(self.app.state/('session-'+str(server.server_port)+'.json'),manager.encode({'workspace':self.app.repo_id,'token':server.token,'scheme':'https'}))
+            with patch('builtins.print'):self.assertTrue(manager.reopen(self.app,server.server_port,True,'https'))
+            headers={'Cookie':'notes_local='+server.token};connection.request('GET','/studio/index.html',headers=headers)
+            response=connection.getresponse();page=response.read();self.assertEqual(response.status,200)
+            self.assertIn('sha256-',response.getheader('Content-Security-Policy'));self.assertIn(b'og-manager-export',page)
+            self.assertEqual(len([v for k,v in response.getheaders() if k.lower()=='content-security-policy']),1)
+            self.assertIn("frame-ancestors 'self'",response.getheader('Content-Security-Policy'))
+            connection.request('GET','/studio/../../server.py',headers=headers);response=connection.getresponse();response.read();self.assertEqual(response.status,404)
         finally:connection.close();server.shutdown();server.server_close();thread.join()
 
 
