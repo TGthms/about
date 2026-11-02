@@ -251,6 +251,31 @@ class ManagerTests(unittest.TestCase):
         self.assertTrue(any('Local testing' in row['document'].get('body','') for row in self.app.history(self.path)))
         with self.assertRaises(manager.Problem):self.app.discard(self.path,saved['etag'],baseline['revision'])
 
+    def test_empty_trash_requires_current_selection_and_preserves_other_data(self):
+        first = self.app.create(title='First disposable draft')
+        a = self.app.delete_note(first['path'], first['etag'])
+        second = self.app.create(title='Second disposable draft')
+        b = self.app.delete_note(second['path'], second['etag'])
+        for selection in (None, ['../notes'], [a['id']], [a['id'], a['id']]):
+            with self.assertRaises(manager.Problem): self.app.empty_trash(selection)
+        self.assertEqual(len(self.app.trash_list()), 2)
+        original = self.app.path(self.path).read_bytes()
+        upload = (self.content / 'media/images/example.png').read_bytes()
+        self.assertEqual(self.app.empty_trash([a['id'], b['id']]), {'removed': 2})
+        self.assertFalse(self.app.trash_list())
+        self.assertFalse((self.app.state/'trash'/a['id']).exists())
+        self.assertFalse((self.app.state/'trash'/b['id']).exists())
+        self.assertEqual(self.app.path(self.path).read_bytes(), original)
+        self.assertEqual((self.content / 'media/images/example.png').read_bytes(), upload)
+        self.assertEqual(self.app.empty_trash([]), {'removed': 0})
+
+    def test_empty_trash_will_not_delete_a_restored_note(self):
+        draft = self.app.create(title='Restored draft')
+        deleted = self.app.delete_note(draft['path'], draft['etag'])
+        restored = self.app.restore_trash(deleted['id'])
+        with self.assertRaises(manager.Problem): self.app.empty_trash([deleted['id']])
+        self.assertTrue(self.app.path(restored['path']).exists())
+
     def test_trash_preserves_uploads_and_can_restore_without_overwriting_an_existing_note(self):
         with self.assertRaises(manager.Problem):self.app.trash(self.path,self.app.get(self.path)['etag'])
         created=self.app.create('Throwaway');pin=(self.content/'.published.json').read_bytes()

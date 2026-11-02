@@ -290,6 +290,21 @@ class Workspace:
             if not value.get('restored'): values.append(value)
         return sorted(values, key=lambda v:v['created'], reverse=True)
 
+    def empty_trash(self, identities):
+        if not isinstance(identities, list) or any(not isinstance(i, str) or not re.fullmatch(r'[a-f0-9]{24}', i) for i in identities):
+            raise Problem('Review Trash before emptying it.')
+        with self.writing():
+            current = self.trash_list()
+            if len(set(identities)) != len(identities) or set(identities) != {item['id'] for item in current}:
+                raise Problem('Trash changed in another window. Close and reopen Trash to review it again.', 409)
+            root = self.state / 'trash'
+            folders = [root / identity for identity in identities]
+            if root.is_symlink() or any(folder.is_symlink() or not folder.resolve().is_relative_to(self.state) for folder in folders):
+                raise Problem('Trash contains an unexpected symbolic link. No items were removed.')
+            for folder in folders:
+                shutil.rmtree(folder)
+            return {'removed': len(folders)}
+
     def restore_trash(self, identity):
         if not re.fullmatch(r'[a-f0-9]{24}', str(identity)): raise Problem('Choose an item from Trash.')
         with self.writing():
@@ -820,6 +835,7 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/api/recovery': return self.json(self.app.recover(data['path'], data.get('document'), data.get('etag'), data.get('discard', False), data.get('client', 'legacy')))
             if url.path == '/api/create': return self.json(self.app.create(data.get('title', ''), data.get('date'), data.get('document')))
             if url.path == '/api/discard': return self.json(self.app.discard(data['path'],data['etag'],data['revision'],data.get('design_etags')))
+            if url.path == '/api/trash/empty': return self.json(self.app.empty_trash(data.get('ids')))
             if url.path == '/api/trash/restore': return self.json(self.app.restore_trash(data['id']))
             if url.path == '/api/design': return self.json(self.app.save_design(data['id'],data['design'],data.get('etag')))
             if url.path == '/api/jobs': return self.json(self.app.job(data['operation'], data))

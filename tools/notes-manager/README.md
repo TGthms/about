@@ -106,6 +106,11 @@ Right-click a note in the sidebar, use its **…** button, or open the active no
   separate draft if the original filename is occupied. Trash is local to this Mac;
   private Git history also retains previously backed-up content.
 
+**Trash → Empty Trash…** asks for confirmation before permanently deleting the
+currently listed Trash entries and their recovery copies. Cancel leaves everything
+intact. Uploads, other local History, and private Git backups are retained. If Trash
+changes in another window, reopen it to review the new contents before trying again.
+
 Local deletion reaches the private Git repository on the next backup. Public copies
 already saved by visitors, feed readers, or caches cannot be recalled.
 

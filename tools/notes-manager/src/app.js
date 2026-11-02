@@ -491,7 +491,18 @@ async function showTrash(){
       try{const restored=await api('/api/trash/restore',{id:item.id});closeAllModals();await refreshLibrary();await openNote(restored.path,true);toast('Restored as a private draft.');}catch(error){errorNotice(error);}
     })]);list.append(row);}
     if(!items.length)list.append(el('p',{text:'Trash is empty.'}));
-    modal('Trash',[el('p',{text:'Notes remain recoverable on this Mac. Restoring a note does not publish it.'}),list]);
+    const empty=button('Empty Trash…',()=>{
+      confirmDialog('Empty Trash permanently?',
+        'Permanently remove '+items.length+' '+(items.length===1?'note':'notes')+' and their recovery copies from Trash on this Mac? You cannot undo this or restore them from Trash. Uploaded media, other local History, and existing private Git backups will be kept.',
+        'Empty Trash',async()=>{
+          const result=await api('/api/trash/empty',{ids:items.map(item=>item.id)});
+          list.replaceChildren(el('p',{text:'Trash is empty.'}));empty.disabled=true;
+          toast(result.removed+' '+(result.removed===1?'note removed':'notes removed')+' from Trash.');
+        });
+      $('#modal-body .primary').classList.add('danger-action');
+      $('#modal-body .quiet').focus();
+    },'quiet');empty.disabled=!items.length;
+    modal('Trash',[el('p',{text:'Notes remain recoverable on this Mac. Restoring a note does not publish it.'}),list,el('div',{class:'dialog-actions'},[empty])]);
   }catch(error){errorNotice(error);}
 }
 function workflowHelp(){modal('Saving, backups, and publishing',[

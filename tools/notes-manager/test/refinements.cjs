@@ -46,6 +46,14 @@ async function rightNote(title){const note=page.locator('.note-item').filter({ha
   await rightNote('Throwaway');await page.getByRole('menuitem',{name:'Move to Trash…',exact:true}).click();await page.getByRole('button',{name:'Move to Trash',exact:true}).click();
   await expect(page.locator('.note-item').filter({hasText:'Throwaway'})).toHaveCount(0);await page.locator('#trash').click();
   await expect(page.locator('.trash-row')).toContainText('Throwaway');await page.getByRole('button',{name:'Restore draft',exact:true}).click();await expect(page.locator('.note-item[aria-current=true]')).toContainText('Throwaway');
+  await rightNote('Throwaway');await page.getByRole('menuitem',{name:'Move to Trash…',exact:true}).click();await page.getByRole('button',{name:'Move to Trash',exact:true}).click();
+  await expect(page.locator('.note-item').filter({hasText:'Throwaway'})).toHaveCount(0);await page.locator('#trash').click();
+  await page.getByRole('button',{name:'Empty Trash…',exact:true}).click();await expect(page.locator('#modal-title')).toHaveText('Empty Trash permanently?');
+  await expect(page.getByRole('button',{name:'Cancel',exact:true})).toBeFocused();
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page.locator('.trash-row')).toContainText('Throwaway');
+  await page.getByRole('button',{name:'Empty Trash…',exact:true}).click();await page.getByRole('button',{name:'Empty Trash',exact:true}).click();
+  await expect(page.locator('#modal-title')).toHaveText('Trash');await expect(page.locator('#modal-body')).toContainText('Trash is empty.');
+  await expect(page.getByRole('button',{name:'Empty Trash…',exact:true})).toBeDisabled();await page.locator('#modal-close').click();
   await page.locator('#workflow-help').click();await expect(page.locator('#modal-body')).toContainText('Autosaved on this Mac');await expect(page.locator('#modal-body')).toContainText('Back up drafts');await page.locator('#modal-close').click();
   await page.screenshot({path:'/tmp/notes-manager-refined-desktop.png',fullPage:true});assert.deepEqual(errors,[]);
   console.log('PASS: contextual formatting and keyboard menus; discard; large settings switches; full OG Studio, image export, reopening and persistence; Trash and restore; workflow guidance.');
