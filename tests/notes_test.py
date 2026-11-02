@@ -528,6 +528,27 @@ class NotesTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.build()
         self.assertNotIn('비공개 번역', self.sinks())
 
+    def test_search_and_year_groups_include_only_public_versions(self):
+        for i in range(8):self.post('search-'+str(i),date='2025-10-28' if i<4 else '2026-10-28',body='<p>Searchable public content</p>')
+        self.post('secret-search',published=False,body='<p>SECRET SEARCH TEXT</p>')
+        self.build()
+        page=(self.public/'notes.html').read_text()
+        self.assertIn('data-note-search',page);self.assertIn('notes-search.js',page)
+        self.assertIn('<h2>2025</h2>',page);self.assertIn('<h2>2026</h2>',page)
+        index=json.loads((self.public/'notes/search-index.json').read_text())
+        self.assertEqual(len(index),8)
+        self.assertNotIn('SECRET SEARCH TEXT',json.dumps(index))
+        self.assertIn('Searchable public content',index[0]['versions'][0]['text'])
+
+    def test_focal_points_apply_to_on_site_images_without_changing_original(self):
+        image=self.image()
+        self.post(cover=image,cover_alt='Blue landscape',highlight=True,thumbnail_focal={'x':75,'y':30})
+        self.build()
+        self.assertIn('object-position:75% 30%',(self.public/'notes.html').read_text())
+        self.assertIn('notes-spotlight__image--crop',(self.public/'index.html').read_text())
+        self.assertNotIn('object-position:',(self.public/'notes/example.html').read_text())
+        with self.assertRaises(ValueError):notes.focal_style({'thumbnail_focal':{'x':'red','y':20}})
+
     def test_follow_link_opens_plain_html_with_copyable_rss_address(self):
         self.post(); self.build()
         archive = (self.public / 'notes.html').read_text()

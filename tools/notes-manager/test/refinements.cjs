@@ -9,7 +9,7 @@ async function saved(){await expect(page.locator('#save-status')).toHaveText('Sa
 async function rightNote(title){const note=page.locator('.note-item').filter({hasText:title});await note.click({button:'right'});await expect(page.getByRole('menu',{name:'Actions'})).toBeVisible();}
 (async()=>{
   const cfg=await start();browser=await chromium.launch({headless:true,channel:process.env.NOTES_BROWSER_CHANNEL||'chrome'});
-  const context=await browser.newContext({viewport:{width:1600,height:1000},permissions:['clipboard-read','clipboard-write']});page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+  const context=await browser.newContext({viewport:{width:1600,height:1000},permissions:['clipboard-read','clipboard-write']});page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>errors.push(e.message));
   await page.goto(cfg.url);await page.locator('.note-item').filter({hasText:'An existing note'}).click();
   const editor=page.locator('.main-text .tiptap');await editor.fill('Menu formatting example');await editor.press('Meta+a');
   await editor.locator('p').click({button:'right',position:{x:20,y:12}});

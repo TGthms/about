@@ -1580,3 +1580,15 @@ const NOTES_BLOCK_COPY = {
 Object.keys(NOTES_BLOCK_COPY).forEach(function (lang) {
   ["openImage", "openAudio", "downloadFile", "copyCode", "codeCopied", "codeCopyFailed", "beforeImage", "afterImage", "compareImages", "comparisonPosition"].forEach(function (key, i) { TRANSLATIONS[lang].notes[key] = NOTES_BLOCK_COPY[lang][i]; });
 });
+
+var NOTES_SEARCH_COPY = {
+  en: ['Find a note', 'Search all notes', '{count} notes found', 'No matching notes.', 'Searching…', 'Search is unavailable. Browse the notes below.'],
+  zh: ['查找随记', '搜索所有随记', '找到 {count} 篇随记', '没有找到相关随记。', '搜索中…', '暂时无法搜索，请浏览下方随记。'],
+  'zh-Hant': ['尋找隨記', '搜尋所有隨記', '找到 {count} 篇隨記', '沒有找到相關隨記。', '搜尋中…', '暫時無法搜尋，請瀏覽下方隨記。'],
+  ja: ['ノートを探す', 'すべてのノートを検索', '{count} 件のノートが見つかりました', '該当するノートはありません。', '検索中…', '検索を利用できません。下の一覧をご覧ください。'],
+  ko: ['노트 찾기', '모든 노트 검색', '노트 {count}개를 찾았어요', '일치하는 노트가 없어요.', '검색 중…', '검색을 사용할 수 없어요. 아래 목록을 둘러보세요.'],
+  es: ['Buscar una nota', 'Buscar en todas las notas', '{count} notas encontradas', 'No hay notas coincidentes.', 'Buscando…', 'La búsqueda no está disponible. Consulta las notas de abajo.']
+};
+Object.keys(NOTES_SEARCH_COPY).forEach(function (lang) {
+  ['searchTitle','searchLabel','searchCount','searchEmpty','searchLoading','searchFailed'].forEach(function (key,i) { TRANSLATIONS[lang].notes[key] = NOTES_SEARCH_COPY[lang][i]; });
+});

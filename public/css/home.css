@@ -1303,3 +1303,8 @@ html .home-page .project-host--section .host-option {
 .notes-spotlight__date .note-availability { margin: 0; }
 
 @media (min-width: 768px) { .home-page [data-interest="tt"] > .interest-card__learn { grid-column: 1 / -1; margin-top: 8px; } }
+
+/* Opt-in photo framing; text-based covers retain their full composition. */
+.notes-spotlight__image--crop{padding:0;overflow:hidden;height:310px}.notes-spotlight__image--crop picture{height:100%}.notes-spotlight__image--crop img{width:100%;height:100%;max-height:none;object-fit:cover;border-radius:0}
+@media(max-width:767px){.notes-spotlight__image--crop{height:240px}}
+html[data-lightweight] .notes-spotlight__image--crop{height:160px;padding:0}html[data-lightweight] .notes-spotlight__image--crop img{max-height:none}

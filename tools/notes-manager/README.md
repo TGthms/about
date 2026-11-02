@@ -62,6 +62,47 @@ certificate authority's private key.
 The sidebar's **How saving works** control explains these states inside the editor.
 The displayed Date is not a publication schedule.
 
+## Review and publish
+
+**Review changes** compares your saved draft with the exact revision pinned for the
+public website, even when you have made newer private commits. It refreshes the
+online release record without merging or pushing your drafts; when offline, it
+clearly labels the comparison as using the last locally known record. It covers text,
+settings, translations, and added/replaced/removed uploads. Article text appears as
+readable text, with HTML changes available separately. The same review appears
+before **Publish now**. Nothing is published by opening the comparison.
+
+The publication panel tracks validation, private backup, export/build, and verified
+completion on both website hosts. Host readiness is confirmed by the existing
+publication workflow, rather than inferred from the newest public commit. On success,
+**Open published note** uses the stable Pages domain. On failure, the failed step
+and workflow link remain available. The panel can be hidden without stopping the run.
+
+## Complete private backups and restore
+
+**Workspace backup** creates a downloadable ZIP containing working drafts, uploads,
+editable cover sources, private Git history, local History, recovery, and Trash.
+These ZIPs are private but **not encrypted**; store them in your private backup
+location. Session tokens, HTTPS keys, disposable caches, and browser-only preferences
+are excluded. The current limit is 2 GB of expanded data. GitHub draft backups and
+complete local ZIPs are separate operations.
+
+Choose a ZIP or a saved local backup to inspect its date, integrity, and changed
+files. Choose at restore time:
+
+- **Open a separate workspace:** preserves the current workspace and restores an
+  independent copy with publishing and GitHub synchronization disconnected. Open it
+  alongside the original, or use its generated `Open restored Notes.command` later.
+- **Restore drafts into this workspace:** creates a full safety ZIP first, then
+  replaces local drafts, media, History, recovery, and Trash. Current Git settings,
+  live publication records, and Birthday publication clocks stay intact. A stale
+  restore preview is rejected if local files change before confirmation.
+
+Neither choice publishes or withdraws an article. Keep other editing windows idle
+while restoring; changed file versions still protect against later stale saves.
+Archives validate paths, hashes, size, duplicate entries, and symbolic links before
+restoration; they never import Git hooks, credentials, or an old session cookie.
+
 ## Comfortable editing
 
 Write in the main text area; choose **Add content**, or type `/` in an empty paragraph,
@@ -79,6 +120,17 @@ always available as the native alternative.
 Material Symbols are bundled as a small set of SVGs. They do not request an icon
 font or contact Google at runtime. Settings use larger switches and connected labels.
 Conditional controls appear only when they apply.
+
+**Writing mode** hides the library and preview for uninterrupted writing; Escape
+returns to the split view. The desktop divider supports dragging, Left/Right arrows,
+and Home/End, and remembers your preferred widths. Phone layouts keep the panels
+stacked.
+
+The media library shows dimensions, file sizes, draft usage, and existing descriptions.
+Choosing a photograph lets you reuse a description only when the destination's
+existing description is empty. **Settings → Images → Adjust image framing…** offers
+optional crop-to-fill and focal points for the homepage carousel and archive. Sharing
+covers and original files are unchanged; the default continues to show the full image.
 
 The preview uses the actual site renderer, keeps its reading position across edits,
 and supports image opening, downloads, language links, and interactive components.

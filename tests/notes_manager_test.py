@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import zipfile
 import threading
 import ssl
 import unittest
@@ -236,7 +237,7 @@ class ManagerTests(unittest.TestCase):
             self.assertEqual(request('/preview-media/not-the-preview/'+csv)[0].status,404)
             self.assertEqual(request('/preview-media/'+key+'/../../secret')[0].status,404)
             self.assertEqual(request('/preview/'+key)[0].status,401)
-            response,_=request('/preview/'+key,{'Cookie':'notes_local='+server.token})
+            response,_=request('/preview/'+key,{'Cookie':'notes_local_'+str(server.server_port)+'='+server.token})
             self.assertIn(server.origin,response.getheader('Content-Security-Policy'));self.assertIn('sha256-',response.getheader('Content-Security-Policy'))
         finally:connection.close();server.shutdown();server.server_close();thread.join()
 
@@ -250,6 +251,82 @@ class ManagerTests(unittest.TestCase):
         self.assertEqual(pin,(self.content/'.published.json').read_bytes());self.assertFalse(restored['recovery'])
         self.assertTrue(any('Local testing' in row['document'].get('body','') for row in self.app.history(self.path)))
         with self.assertRaises(manager.Problem):self.app.discard(self.path,saved['etag'],baseline['revision'])
+
+    def test_comparison_uses_published_revision_and_reports_upload_changes(self):
+        opened=self.app.get(self.path)
+        changed=copy.deepcopy(opened['document']);changed['title']='A revised title';changed['blocks']=[{'type':'photo','image':'/media/images/example.png','alt':'Blue'}]
+        self.app.save(self.path,changed,opened['etag'])
+        comparison=self.app.comparison(self.path)
+        self.assertTrue(comparison['published'])
+        self.assertIn('title',[row['field'] for row in comparison['changes']])
+        self.assertIn({'path':'/media/images/example.png','change':'Added'},comparison['media'])
+        self.assertEqual(comparison['url'],'https://t-g.pages.dev/notes/example.html')
+        # A private commit does not change the published comparison baseline.
+        self.git('add','.');self.git('commit','-m','Private revision')
+        self.assertIn('title',[row['field'] for row in self.app.comparison(self.path)['changes']])
+
+    def test_comparison_refreshes_remote_release_records_without_merging_local_drafts(self):
+        online=self.remote()
+        revised=copy.deepcopy(self.value);revised['title']='Published from another editor'
+        (online/self.path).write_bytes(manager.encode(revised));self.git('add','.',cwd=online);self.git('commit','-m','Online revision',cwd=online)
+        pin=json.loads((online/'.published.json').read_text());pin['entries'][self.path]['revision']=self.git('rev-parse','HEAD',cwd=online)
+        (online/'.published.json').write_bytes(manager.encode(pin));self.git('add','.',cwd=online);self.git('commit','-m','Select published revision',cwd=online);self.git('push','origin','main',cwd=online)
+        original=(self.content/self.path).read_bytes();head=self.git('rev-parse','HEAD');index=(self.content/'.published.json').read_bytes()
+        review=self.app.comparison(self.path)
+        title=next(row for row in review['changes'] if row['field']=='title')
+        self.assertEqual(title['before'],'Published from another editor')
+        self.assertEqual((self.content/self.path).read_bytes(),original)
+        self.assertEqual((self.content/'.published.json').read_bytes(),index)
+        self.assertEqual(self.git('rev-parse','HEAD'),head)
+
+    def test_media_metadata_lists_usage_descriptions_and_dimensions(self):
+        opened=self.app.get(self.path);doc=opened['document'];doc['blocks']=[{'type':'photo','image':'/media/images/example.png','alt':'A blue view'}]
+        self.app.save(self.path,doc,opened['etag'])
+        item=self.app.media_list('photographs')[0]
+        self.assertEqual((item['width'],item['height']),(120,80))
+        self.assertEqual(item['used_by'][0]['path'],self.path)
+        self.assertEqual(item['descriptions'],['A blue view'])
+
+    def test_complete_backup_restores_separately_and_never_copies_credentials(self):
+        manager.atomic(self.app.state/'recovery/example/session.json',manager.encode({'document':self.value}))
+        manager.atomic(self.app.state/'tls/localhost-key.pem',b'PRIVATE_TLS_KEY')
+        manager.atomic(self.app.state/'session-1222.json',b'PRIVATE_SESSION_TOKEN')
+        backup=self.app.archives.create();manifest=self.app.archives.validate(backup['id'])
+        self.assertIn('history.bundle',manifest['files'])
+        self.assertIn('local/recovery/example/session.json',manifest['files'])
+        with zipfile.ZipFile(self.app.archives.path(backup['id'])) as archive:
+            self.assertFalse(any('tls/' in name or 'session-1222' in name for name in archive.namelist()))
+        original=(self.content/self.path).read_bytes();review=self.app.archives.preview(backup['id'])
+        result=self.app.archives.restore(backup['id'],'separate',review['marker'],review['archive_hash'])
+        restored=Path(result['content'])
+        self.assertEqual((restored/self.path).read_bytes(),original)
+        self.assertEqual((self.content/self.path).read_bytes(),original)
+        self.assertFalse(self.git('remote',cwd=restored))
+        self.assertTrue((Path(result['state'])/'recovery/example/session.json').is_file())
+        self.assertTrue(Path(result['launcher']).is_file())
+
+    def test_restore_here_requires_fresh_review_creates_safety_and_keeps_release_index(self):
+        backup=self.app.archives.create();original=(self.content/self.path).read_bytes()
+        review=self.app.archives.preview(backup['id'])
+        opened=self.app.get(self.path);doc=opened['document'];doc['title']='New local writing'
+        self.app.save(self.path,doc,opened['etag'])
+        with self.assertRaises(manager.Problem):self.app.archives.restore(backup['id'],'replace',review['marker'],review['archive_hash'])
+        changed=(self.content/self.path).read_bytes();pins=(self.content/'.published.json').read_bytes();head=self.git('rev-parse','HEAD')
+        review=self.app.archives.preview(backup['id'])
+        result=self.app.archives.restore(backup['id'],'replace',review['marker'],review['archive_hash'])
+        self.assertEqual((self.content/self.path).read_bytes(),original)
+        self.assertEqual((self.content/'.published.json').read_bytes(),pins)
+        self.assertEqual(self.git('rev-parse','HEAD'),head)
+        with zipfile.ZipFile(self.app.archives.path(result['safety']['id'])) as archive:
+            self.assertEqual(archive.read('content/'+self.path),changed)
+
+    def test_backup_rejects_traversal_tampering_and_symbolic_links(self):
+        backup=self.app.archives.create()
+        with zipfile.ZipFile(self.app.archives.path(backup['id']),'a') as archive:archive.writestr('../outside.txt','escape')
+        with self.assertRaises(ValueError):self.app.archives.validate(backup['id'])
+        (self.app.state/'recovery').mkdir(exist_ok=True)
+        (self.app.state/'recovery/link').symlink_to(self.content/self.path)
+        with self.assertRaises(manager.Problem):self.app.archives.create()
 
     def test_empty_trash_requires_current_selection_and_preserves_other_data(self):
         first = self.app.create(title='First disposable draft')
@@ -357,7 +434,7 @@ class ManagerTests(unittest.TestCase):
             response=connection.getresponse();response.read();self.assertEqual(response.status,308);self.assertEqual(response.getheader('Location'),server.origin+'/')
             manager.atomic(self.app.state/('session-'+str(server.server_port)+'.json'),manager.encode({'workspace':self.app.repo_id,'token':server.token,'scheme':'https'}))
             with patch('builtins.print'):self.assertTrue(manager.reopen(self.app,server.server_port,True,'https'))
-            headers={'Cookie':'notes_local='+server.token};connection.request('GET','/studio/index.html',headers=headers)
+            headers={'Cookie':'notes_local_'+str(server.server_port)+'='+server.token};connection.request('GET','/studio/index.html',headers=headers)
             response=connection.getresponse();page=response.read();self.assertEqual(response.status,200)
             self.assertIn('sha256-',response.getheader('Content-Security-Policy'));self.assertIn(b'og-manager-export',page)
             self.assertEqual(len([v for k,v in response.getheaders() if k.lower()=='content-security-policy']),1)

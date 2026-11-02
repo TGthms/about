@@ -17,12 +17,13 @@
     <select id="filter"><option value="">All notes</option><option>Draft</option><option>Unpublished changes</option><option>Published</option><option>Withdrawn</option></select>
     <nav id="note-list" aria-label="Choose a note"></nav>
     <div class="library-tools"><button id="media-library" class="quiet">Media library</button><button id="trash" class="quiet">Trash</button></div>
-    <footer><button id="sync">Back up drafts</button><button id="app-theme" aria-label="Switch workspace theme">◐</button><small id="sync-status">Autosaved on this Mac. Backups stay private.</small><button id="workflow-help" class="quiet">How saving works</button></footer>
+    <footer><button id="sync">Back up drafts</button><button id="app-theme" aria-label="Switch workspace theme">◐</button><small id="sync-status">Autosaved on this Mac. Backups stay private.</small><button id="workspace-backup" class="quiet">Workspace backup</button><button id="workflow-help" class="quiet">How saving works</button></footer>
   </aside>
   <button id="library-backdrop" aria-label="Close library" hidden></button>
   <main>
-    <header class="workspace-bar"><button id="library-toggle" class="quiet mobile-only" aria-label="Toggle library">☰</button><div id="save-status" role="status">Opening your workspace…</div><div class="bar-actions"><button id="history" class="quiet" disabled>History</button><button id="settings" class="quiet" disabled>Settings</button><button id="save" disabled hidden>Save now</button><button id="note-more" class="quiet" disabled aria-label="More note actions" aria-haspopup="menu">More</button><button id="publish" class="primary" disabled>Publish…</button></div></header>
+    <header class="workspace-bar"><button id="library-toggle" class="quiet mobile-only" aria-label="Toggle library">☰</button><div id="save-status" role="status">Opening your workspace…</div><div class="bar-actions"><button id="writing-mode" class="quiet" aria-pressed="false">Writing mode</button><button id="compare-published" class="quiet" disabled>Review changes</button><button id="history" class="quiet" disabled>History</button><button id="settings" class="quiet" disabled>Settings</button><button id="save" disabled hidden>Save now</button><button id="note-more" class="quiet" disabled aria-label="More note actions" aria-haspopup="menu">More</button><button id="publish" class="primary" disabled>Publish…</button></div></header>
     <div id="notice" role="status" hidden></div>
+    <section id="publication-progress" aria-label="Publication progress" hidden></section>
     <section id="empty" class="empty"><span class="eyebrow">A place to write</span><h1>What’s on your mind?</h1><p>Choose a note, or start with a blank page.</p><button id="empty-new" class="primary">Write a note →</button></section>
     <div id="workspace" class="workspace" hidden>
       <section class="writing-pane" aria-label="Article editor">
@@ -32,6 +33,7 @@
         <button id="add-block" class="add-block">＋ Add content <span>Text, photographs, audio, and more</span></button>
         <div class="writing-foot"><span id="word-count"></span><span>Edits stay private until published</span></div>
       </section>
+      <div id="workspace-divider" role="separator" tabindex="0" aria-label="Editor width" aria-orientation="vertical" aria-valuemin="35" aria-valuemax="65" aria-valuenow="51"></div>
       <section class="preview-pane" aria-label="Live article preview">
         <div class="preview-bar"><strong>Preview</strong><div class="segmented" role="group" aria-label="Preview width"><button data-width="desktop" aria-pressed="true">Desktop</button><button data-width="phone" aria-pressed="false">Phone</button><button data-width="watch" aria-pressed="false">Watch</button></div><button id="preview-theme" class="quiet" aria-label="Switch preview theme">◐</button><button id="refresh-preview" class="quiet" aria-label="Refresh preview">↻</button></div>
         <div class="preview-canvas"><iframe id="preview" title="Private live article preview" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads" referrerpolicy="no-referrer"></iframe><div id="preview-placeholder">Your article will appear here.</div></div>

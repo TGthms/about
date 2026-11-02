@@ -573,12 +573,19 @@ def variant_data(post, prefix, from_about=False):
     variants = [{'language': v['language'], 'title': title(v), 'summary': summary(v), 'href': prefix + post_filename(v, post) + ('?from=about' if from_about else '')} for v in post['_versions']]
     return 'data-note-versions="' + esc(json.dumps(variants, ensure_ascii=False, separators=(',', ':'))) + '"'
 
+def focal_style(post):
+    focal = post.get('thumbnail_focal')
+    if focal is None: return ''
+    if not isinstance(focal, dict) or any(type(focal.get(axis)) not in (float, int) or not 0 <= focal[axis] <= 100 for axis in ('x', 'y')):
+        raise ValueError('Image focal points must be numbers between 0 and 100.')
+    return f'style="object-position:{focal["x"]:g}% {focal["y"]:g}%" '
+
 def card(post, media, prefix):
     photo, alt = thumbnail(post)
     image = ''
     if photo:
         markup, _ = media.image(photo, alt, prefix, sizes='(max-width: 480px) 96px, (max-width: 767px) 144px, 208px')
-        image = markup.replace('<img ', '<img class="note-card__image" ', 1)
+        image = markup.replace('<img ', '<img class="note-card__image' + (' note-card__image--crop' if post.get('thumbnail_focal') else '') + '" ' + focal_style(post), 1)
     heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
     text = summary(post)
     return (f'<li class="note-card" lang="{esc(post["language"])}"{expiry_attr(post)}><div class="note-card__date"><time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' + availability(post) + '</div>'
@@ -629,6 +636,8 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         markup = markup.replace('</head>', resource_versions(f'<link rel="stylesheet" href="{prefix}css/note-blocks.css" />', public) + '\n</head>')
     if 'data-note-code' in content or 'data-note-compare' in content:
         markup = markup.replace('</body>', resource_versions(f'<script src="{prefix}js/note-blocks.js" defer></script>', public) + '\n</body>')
+    if 'data-note-search ' in content:
+        markup = markup.replace('</body>', resource_versions(f'<script src="{prefix}js/notes-search.js" defer></script>', public) + '\n</body>')
     return markup
 
 def entrance(posts, media):
@@ -640,7 +649,8 @@ def entrance(posts, media):
         image = ''
         if photo:
             markup, _ = media.image(photo, alt, prefix='')
-            image = '<span class="notes-spotlight__image">' + markup + '</span>'
+            if post.get('thumbnail_focal'): markup = markup.replace('<img ', '<img ' + focal_style(post), 1)
+            image = '<span class="notes-spotlight__image' + (' notes-spotlight__image--crop' if post.get('thumbnail_focal') else '') + '">' + markup + '</span>'
         expiry = f' data-note-highlight-until="{esc(post.get("highlight_until"))}"' if featured else ''
         return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="{str(featured).lower()}"{expiry}{expiry_attr(post)}{" hidden" if hidden else ""}>'
                 f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {variant_data(post, "", from_about=True)} href="{post_filename(post, post)}?from=about">' + image +
@@ -676,6 +686,34 @@ def category_nav(posts, prefix, current=''):
         expiry = expiry_attr({'_expires': max(p['_expires'] for p in matches)}) if all(p.get('_expires') for p in matches) else ''
         links += f'<a href="{prefix}notes/topics/{key}.html" data-note-category="{key}"{active}{expiry}>{esc(label)}</a>'
     return '<nav class="notes-topics" aria-label="Categories" data-i18n-aria="notes.categories">' + links + '</nav>'
+
+
+def archive_entries(posts, media, prefix):
+    if not posts: return ''
+    if len(posts) < 8 and len({p['date'][:4] for p in posts}) == 1:
+        return '<ol class="notes-list" role="list">' + ''.join(card(p, media, prefix) for p in posts) + '</ol>'
+    years = {}
+    for post in posts: years.setdefault(post['date'][:4], []).append(post)
+    return ''.join('<section class="notes-year"><h2>' + year + '</h2><ol class="notes-list" role="list">' +
+                   ''.join(card(p, media, prefix) for p in entries) + '</ol></section>' for year, entries in years.items())
+
+def search_control(posts, prefix):
+    if len([p for p in posts if not is_birthday(p)]) < 6: return ''
+    return (f'<details class="notes-search" data-note-search data-search-index="{prefix}notes/search-index.json" data-search-prefix="{prefix}" hidden>'
+            '<summary data-i18n="notes.searchTitle">Find a note</summary>'
+            '<label><span class="visually-hidden" data-i18n="notes.searchLabel">Search all notes</span><input type="search" autocomplete="off" maxlength="160" /></label>'
+            '<p class="notes-search__status" role="status" aria-live="polite"></p><ol class="notes-search__results"></ol></details>')
+
+def search_text(version):
+    # Index rendered writing, never arbitrary author metadata or media paths.
+    fields = {'body', 'text', 'caption', 'title', 'quote', 'code', 'transcript', 'author',
+              'source', 'columns', 'rows', 'cells', 'images', 'alt', 'before_label', 'after_label'}
+    def collect(value, field=''):
+        if isinstance(value, dict): return ' '.join(collect(v, k) for k, v in value.items() if k in fields)
+        if isinstance(value, list): return ' '.join(collect(v, field) for v in value)
+        if not isinstance(value, str): return ''
+        return plain(value) if field in ('body', 'transcript') else value
+    return ' '.join([plain(version.get('body', ''))] + [collect(b) for b in version.get('blocks', [])])[:30000]
 
 
 def follow_page(public):
@@ -767,16 +805,15 @@ def build(private, public, preview_path=None, preview_output=None):
             prefix = '' if index == 0 else '../'
             filename = 'notes.html' if index == 0 else f'notes/page-{index + 1}.html'
             hero = '<header class="notes-hero"><div><h1 data-i18n="notes.title">Notes</h1></div>' + f'<a class="notes-feed-link" href="{prefix}subscribe.html">{RSS_ICON}<span data-i18n="notes.followTitle">Follow updates</span></a></header>'
-            entries = ''.join(card(p, media, prefix) for p in posts[index * 20:(index + 1) * 20])
+            entries = archive_entries(posts[index * 20:(index + 1) * 20], media, prefix)
             if not entries: entries = '<div class="notes-empty"><span class="notes-empty__mark">' + RSS_ICON + '</span><h2 data-i18n="notes.emptyTitle">Nothing here just yet.</h2><p data-i18n="notes.emptyText">A place for photographs, stories, and little updates.</p></div>'
-            else: entries = '<ol class="notes-list" role="list">' + entries + '</ol>'
             pagination = ''
             if page_count > 1:
                 pagination = '<nav class="notes-pagination" aria-label="Notes pages" data-i18n-aria="notes.pages">'
                 if index: pagination += f'<a href="{prefix}{"notes.html" if index == 1 else "notes/page-" + str(index) + ".html"}"><span data-i18n="notes.newer">Newer notes</span> →</a>'
                 if index + 1 < page_count: pagination += f'<a href="{prefix}notes/page-{index + 2}.html"><span data-i18n="notes.older">Older notes</span> →</a>'
                 pagination += '</nav>'
-            markup = page(public, f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>' + hero + category_nav(posts, prefix) + entries + pagination, prefix=prefix)
+            markup = page(public, f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>' + hero + search_control(posts, prefix) + category_nav(posts, prefix) + entries + pagination, prefix=prefix)
             markup = markup.replace(ORIGIN + '/notes/page-1.html', ORIGIN + '/' + filename)
             (stage / filename).write_text(markup)
             urls.append((ORIGIN + '/' + filename, ''))
@@ -789,17 +826,26 @@ def build(private, public, preview_path=None, preview_output=None):
             for index in range(count):
                 filename = f'notes/topics/{key}{"-page-" + str(index + 1) if index else ""}.html'
                 prefix = '../../'
-                entries = '<ol class="notes-list" role="list">' + ''.join(card(p, media, prefix) for p in matches[index * 20:(index + 1) * 20]) + '</ol>'
+                entries = archive_entries(matches[index * 20:(index + 1) * 20], media, prefix)
                 pagination = '<nav class="notes-pagination" aria-label="Notes pages" data-i18n-aria="notes.pages">'
                 if index: pagination += f'<a href="{key}{"-page-" + str(index) if index > 1 else ""}.html"><span data-i18n="notes.newer">Newer notes</span> →</a>'
                 if index + 1 < count: pagination += f'<a href="{key}-page-{index + 2}.html"><span data-i18n="notes.older">Older notes</span> →</a>'
                 pagination += '</nav>'
                 content = (f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>'
-                           f'<header class="notes-hero"><h1 data-note-category="{key}">{esc(label)}</h1></header>' + category_nav(posts, prefix, key) + entries + (pagination if count > 1 else ''))
+                           f'<header class="notes-hero"><h1 data-note-category="{key}">{esc(label)}</h1></header>' + search_control(posts, prefix) + category_nav(posts, prefix, key) + entries + (pagination if count > 1 else ''))
                 markup = page(public, content, prefix=prefix, kind='topic').replace(ORIGIN + '/notes/page-1.html', ORIGIN + '/' + filename)
                 markup = markup.replace('<title>Notes — Tim G</title>', f'<title>{esc(label)} — Notes — Tim G</title>')
                 (stage / filename).write_text(markup)
                 urls.append((ORIGIN + '/' + filename, ''))
+        search = []
+        for post in posts:
+            if is_birthday(post): continue
+            versions = []
+            for version in post['_versions']:
+                versions.append({'language':version['language'], 'title':title(version), 'summary':summary(version),
+                                 'text':search_text(version), 'url':post_filename(version, post)})
+            search.append({'date':post['date'], 'versions':versions})
+        if search: (stage/'notes/search-index.json').write_text(json.dumps(search, ensure_ascii=False, separators=(',', ':')) + '\n')
         atom = 'http://www.w3.org/2005/Atom'; ET.register_namespace('atom', atom)
         rss = ET.Element('rss', {'version': '2.0'}); channel = ET.SubElement(rss, 'channel')
         for key, value in [('title', 'Tim G — Notes'), ('link', FEED_ORIGIN + '/notes.html'), ('description', 'Notes by Tim G.')]: ET.SubElement(channel, key).text = value

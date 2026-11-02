@@ -1,3 +1,4 @@
+import {setupLayout} from './layout.js';
 import {Editor} from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -77,7 +78,7 @@ function modal(title, children, wide=false, nested=false) {
   dialog.style.maxWidth=wide?'1050px':'700px'; if(!dialog.open)dialog.showModal();return dialog;
 }
 function closeModal(){
-  if(state.closingStudio)return;
+  if(state.closingStudio||state.restoring)return;
   if(state.closeStudioGuard){const guard=state.closeStudioGuard;state.closeStudioGuard=null;state.closingStudio=true;guard().then(()=>{state.closingStudio=false;closeModal();}).catch(error=>{state.closingStudio=false;state.closeStudioGuard=guard;errorNotice(error);});return;}
   $('#modal').classList.remove('studio-modal');
   const previous=modalStack.pop();
@@ -86,12 +87,12 @@ function closeModal(){
 }
 function closeAllModals(){modalStack.length=0;$('#modal').close();}
 $('#modal-close').onclick=closeModal;
-$('#modal').addEventListener('cancel',event=>{if(modalStack.length||state.closeStudioGuard||state.closingStudio){event.preventDefault();closeModal();}});
+$('#modal').addEventListener('cancel',event=>{if(modalStack.length||state.closeStudioGuard||state.closingStudio||state.restoring){event.preventDefault();closeModal();}});
 $('#modal').addEventListener('click',event=>{if(event.target===$('#modal')){const r=event.target.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeModal();}});
 function confirmDialog(title, text, label, action) {
   const error=el('p',{role:'alert'}),proceed=button(label,async()=>{
     proceed.disabled=true;
-    try{await action();closeModal();}catch(e){error.textContent=e.message;proceed.disabled=false;}
+    try{await action();if($('#modal-body').contains(proceed))closeModal();}catch(e){error.textContent=e.message;proceed.disabled=false;}
   },'primary');
   modal(title,[el('p',{text}),error,el('div',{class:'dialog-actions'},[button('Cancel',closeModal,'quiet'),proceed])],false,true);
 }
@@ -158,7 +159,7 @@ function renderLibrary(){
   if(!items.length)$('#note-list').append(el('p',{text:'No matching notes.',class:'help'}));
 }
 async function openNote(path, force=false){
-  if(state.opening)return;
+  if(state.opening||state.restoring)return;
   state.opening=true;$('#workspace').inert=true;$('#sync').disabled=true;$('#new-note').disabled=true;
   try{
   if(!force&&state.doc&&!(await save())){toast('Choose how to handle recovered writing first.');return;}
@@ -172,17 +173,17 @@ async function openNote(path, force=false){
   state.previewEpoch++;state.previewWanted=false;
   state.previewFrameId=null;$('#preview').removeAttribute('src');$('#preview-placeholder').hidden=false;
   $('#empty').hidden=true;$('#workspace').hidden=false;$('#notice').hidden=true;
-  for(const id of ['save','settings','publish','history','note-more'])$('#'+id).disabled=false;
+  for(const id of ['save','settings','publish','history','note-more','compare-published'])$('#'+id).disabled=false;
   const browser=[];try{for(const key of store.keys())if(key.startsWith(storagePrefix()))browser.push(JSON.parse(store.get(key)));}catch{}
   const recovery=[opened.recovery,...browser].filter(Boolean).sort((a,b)=>String(b.updated).localeCompare(String(a.updated)))[0];
   state.recovery=recovery&&JSON.stringify(recovery.document)!==JSON.stringify(state.doc)?recovery:null;
   state.blocked=Boolean(state.recovery);$('#recovery').hidden=!state.recovery;
   $('#save-status').textContent=state.recovery?'Choose a recovered or saved version':'Saved on this Mac';
-  $('#release-state').textContent=opened.status;renderDocument();renderLibrary();requestPreview(true);
+  $('#release-state').textContent=opened.status;if(state.connected===false){$('#publish').disabled=true;notice('Restored workspace · GitHub backup and publication are disconnected. You can write, preview, and create local backups.');}renderDocument();renderLibrary();requestPreview(true);
   store.set('notes:last:'+state.repository,path);
   $('.library').classList.remove('is-open');
   libraryAccessibility();
-  }finally{state.opening=false;$('#workspace').inert=false;$('#sync').disabled=false;$('#new-note').disabled=false;}
+  }finally{state.opening=false;$('#workspace').inert=false;$('#sync').disabled=state.connected===false;$('#new-note').disabled=false;}
 }
 $('#restore-recovery').onclick=()=>{state.doc=copy(state.recovery.document);state.doc.slug=state.opened.document.slug;state.recovery=null;state.blocked=false;$('#recovery').hidden=true;renderDocument();changed();};
 $('#discard-recovery').onclick=async()=>{try{const client=state.recovery?.client||'legacy';await api('/api/recovery',{path:state.opened.path,discard:true,client});store.remove(storagePrefix()+client);state.recovery=null;state.blocked=false;$('#recovery').hidden=true;$('#save-status').textContent='Saved on this Mac';}catch(e){errorNotice(e);}};
@@ -364,7 +365,7 @@ function renderField(parent,raw,base,override){
     const draw=()=>{control.replaceChildren();const selected=getAt(state.doc,path);
       if(selected&&field.type==='image')control.append(el('img',{src:selected,alt:'Selected upload',class:'file-thumb',loading:'lazy'}));
       const row=el('div',{class:'file-choice'});
-      row.append(button(selected?'Replace…':'Choose or upload…',()=>mediaPicker(field.options?.media||'photographs',result=>{update(path,result.path);draw();})));
+      row.append(button(selected?'Replace…':'Choose or upload…',()=>mediaPicker(field.options?.media||'photographs',result=>{update(path,result.path);const altPath=[...path.slice(0,-1),'alt'];if(result.description&&!getAt(state.doc,altPath)){update(altPath,result.description);const input=parent.querySelector('input[aria-label="Image description"]');if(input)input.value=result.description;}draw();})));
       if(selected)row.append(button('Clear',()=>{update(path,'');draw();},'quiet'),el('code',{text:selected.split('/').at(-1)}));control.append(row);
     };draw();return;
   }
@@ -413,7 +414,7 @@ function settings(){
   for(const [title,names]of groups){const section=el('section',{class:'settings-section'},[el('h3',{text:title})]);for(const name of names){
     if(name==='highlight_until'&&!state.doc.highlight||name==='birthday_visibility'&&!state.doc.birthday)continue;
     const spec=state.schema.fields.find(f=>f.name===name);renderField(section,spec,[]);
-  }if(title==='Images')section.append(el('div',{class:'cover-actions'},[button('Design a cover…',()=>openStudio('sharing_image')),button('Design on-site image…',()=>openStudio('list_image'),'quiet')]));root.append(section);}
+  }if(title==='Images')section.append(el('div',{class:'cover-actions'},[button('Design a cover…',()=>openStudio('sharing_image')),button('Design on-site image…',()=>openStudio('list_image'),'quiet'),button('Adjust image framing…',imageFraming,'quiet')]));root.append(section);}
   if(state.version>=0){const section=el('section',{class:'settings-section'},[el('h3',{text:'This translation'})]);
     renderField(section,{name:'published',label:'Include this language when publishing',type:'boolean',description:'This only takes effect when you explicitly publish the note.'},versionPath());
     renderField(section,{name:'summary',label:'Short introduction',type:'text'},versionPath());root.prepend(section);}
@@ -436,7 +437,7 @@ function clearOpened(){
   clearTimeout(saveTimer);clearTimeout(recoveryTimer);clearTimeout(previewTimer);destroyEditors();
   state.doc=null;state.opened=null;state.epoch=state.saved=0;state.previewFrameId=null;state.previewEpoch++;
   $('#workspace').hidden=true;$('#empty').hidden=false;$('#preview').removeAttribute('src');
-  for(const id of ['save','settings','publish','history','note-more'])$('#'+id).disabled=true;
+  for(const id of ['save','settings','publish','history','note-more','compare-published'])$('#'+id).disabled=true;
   $('#save-status').textContent='Changes save automatically on this Mac';
 }
 function clearNoteRecovery(path){
@@ -503,6 +504,58 @@ async function showTrash(){
       $('#modal-body .quiet').focus();
     },'quiet');empty.disabled=!items.length;
     modal('Trash',[el('p',{text:'Notes remain recoverable on this Mac. Restoring a note does not publish it.'}),list,el('div',{class:'dialog-actions'},[empty])]);
+  }catch(error){errorNotice(error);}
+}
+async function workspaceBackup(){
+  try{
+    if(state.doc&&!(await save())){toast('Resolve recovered writing before creating or restoring a backup.');return;}
+    const message=el('p',{role:'status',class:'help'}),saved=el('div'),error=el('p',{role:'alert'});
+    const refresh=async()=>{const rows=await api('/api/backups');saved.replaceChildren(...rows.map(row=>el('div',{class:'backup-row'},[
+      el('span',{text:new Date(row.created).toLocaleString()+' · '+(row.size/1024/1024).toFixed(1)+' MB'}),
+      el('a',{href:row.url,download:'',text:'Download'}),button('Review restore…',()=>restorePreview(row.id),'quiet')])));};
+    const create=button('Create private backup',async()=>{
+      create.disabled=true;error.textContent='';message.textContent='Saving drafts and building your private archive…';
+      try{if(state.doc&&!(await save()))return;const result=await job('backup');message.textContent='Backup ready. Download it to your private backup location.';await refresh();}
+      catch(e){error.textContent=e.message;}finally{create.disabled=false;}
+    },'primary');
+    const file=el('input',{type:'file',accept:'.zip','aria-label':'Choose a Notes backup'});
+    file.onchange=async()=>{if(!file.files[0])return;file.disabled=true;error.textContent='';message.textContent='Checking the selected archive…';
+      try{const uploaded=await api('/api/backups/upload',file.files[0],true);await restorePreview(uploaded.id);}
+      catch(e){error.textContent=e.message;}finally{file.disabled=false;}
+    };
+    modal('Workspace backups',[el('p',{text:'A private ZIP containing drafts, uploads, editable cover sources, Git history, local History, recovery, and Trash. It is not encrypted. Session tokens, browser data, caches, and HTTPS keys are excluded.'}),
+      create,message,error,el('h3',{text:'Saved on this Mac'}),saved,el('h3',{text:'Restore from a backup'}),el('p',{class:'help',text:'Choose a ZIP to inspect its contents and choose where to restore it. Nothing changes during the preview.'}),file],true);
+    await refresh();
+  }catch(error){errorNotice(error);}
+}
+async function restorePreview(id){
+  try{
+    const review=await job('restore-preview',{id});
+    const mode=el('select',{'aria-label':'Restore destination'},[el('option',{value:'separate',text:'Open a separate workspace'}),el('option',{value:'replace',text:'Restore drafts into this workspace'})]);
+    const list=el('ul',{class:'restore-files'},review.changes.slice(0,100).map(row=>el('li',{text:row.change+' · '+row.path})));
+    if(review.changes.length>100)list.append(el('li',{text:'…and '+(review.changes.length-100)+' more changes.'}));
+    modal('Review backup restore',[el('p',{text:'Backup created '+new Date(review.created).toLocaleString()+'. '+review.files+' files checked. '+review.changes.length+' differences from this workspace.'}),
+      el('label',{class:'field'},[el('span',{class:'field-label',text:'Where to restore'}),mode]),
+      el('p',{class:'help',text:'A separate workspace leaves this one untouched and has publishing disconnected. Restoring here replaces drafts, uploads, History, recovery, and Trash after a safety backup; current Git settings and live publication records are preserved.'}),
+      el('details',{},[el('summary',{text:'Review changed files'}),list]),
+      el('div',{class:'dialog-actions'},[button('Restore…',()=>confirmDialog('Restore this backup?',mode.value==='replace'?'Replace local drafts and media with this backup? A complete safety backup will be created first. Nothing will be published.':'Create a separate local workspace from this backup? Your current workspace stays unchanged and nothing will be published.',
+        mode.value==='replace'?'Back up and restore drafts':'Create restored workspace',async()=>{
+          if(state.doc&&!(await save()))throw new Error('Resolve recovered writing first.');
+          state.restoring=true;$('#modal-close').disabled=true;$('#workspace').inert=true;
+          let result;
+          try{result=await job('restore',{id,mode:mode.value,marker:review.marker,archive_hash:review.archive_hash});}
+          finally{state.restoring=false;$('#modal-close').disabled=false;$('#workspace').inert=false;}
+          closeAllModals();
+          if(result.mode==='replace'){
+            for(const key of store.keys())if(key.startsWith('notes-local:'+state.repository+':'))store.remove(key);
+            clearOpened();await refreshLibrary();
+            modal('Drafts restored',[el('p',{text:'Your drafts, media, and local history were restored. Live publication records were kept. Open a note to review it before publishing.'}),el('a',{href:result.safety.url,download:'',text:'Download the safety backup'})]);
+          }else{
+            modal('Separate workspace restored',[el('p',{text:'Your current workspace is unchanged. The restored copy has its own drafts and local history, with publishing disconnected.'}),el('code',{text:result.content}),
+              button('Open restored workspace',async()=>{try{const opened=await api('/api/backups/open',{id:result.id});window.open(opened.url,'_blank','noopener');}catch(e){errorNotice(e);}},'primary'),
+              el('p',{class:'help',text:'To reopen it later, double-click '+result.launcher})]);
+          }
+        }),'primary')])],true);
   }catch(error){errorNotice(error);}
 }
 function workflowHelp(){modal('Saving, backups, and publishing',[
@@ -647,20 +700,42 @@ window.addEventListener('message',async event=>{
 async function mediaPicker(kind,choose){
   const error=el('p',{role:'alert'}),input=el('input',{type:'file','aria-label':'Upload a file'}),upload=el('label',{class:'upload-zone',text:'Upload a file · up to 20 MB'},[input]),search=el('input',{type:'search',placeholder:'Find an upload…','aria-label':'Search uploads'}),grid=el('div',{class:'media-grid'});
   input.accept={photographs:'.jpg,.jpeg,.png,.webp',videos:'.mp4,.webm',audio:'.mp3,.m4a,.ogg,.wav',downloads:'.pdf,.zip,.txt,.csv,.json'}[kind];
-  const select=result=>{if(choose){closeModal();choose(result);}else mediaDetails(result,kind);};
+  const select=result=>{if(choose&&kind!=='photographs'){closeModal();choose(result);}else mediaDetails(result,kind,choose);};
   input.onchange=async()=>{if(!input.files[0])return;input.disabled=true;error.textContent='Uploading to your private local library…';try{const result=await uploadFile(input.files[0],kind);select(result);if(!choose){input.disabled=false;error.textContent='Uploaded privately.';}}catch(e){error.textContent=e.message;input.disabled=false;}};
   modal((choose?'Choose ':'Browse ')+({photographs:'photographs',videos:'videos',audio:'audio',downloads:'downloads'}[kind]||'files'),[upload,error,el('p'),search,grid],false,true);
   try{const items=await api('/api/media?kind='+kind);const draw=()=>grid.replaceChildren(...items.filter(i=>i.name.toLowerCase().includes(search.value.toLowerCase())).map(item=>{
     const b=button('',()=>select(item));if(kind==='photographs')b.append(el('img',{src:item.path,alt:'',loading:'lazy'}));
-    b.append(el('small',{text:item.name}),el('small',{text:(item.size/1024/1024).toFixed(2)+' MB'}));return b;}));search.oninput=draw;draw();}catch(e){error.textContent=e.message;}
+    b.append(el('small',{text:item.name}),el('small',{text:(item.width?item.width+' × '+item.height+' · ':'')+(item.size/1024/1024).toFixed(2)+' MB'}),el('small',{text:item.used_by.length?'Used in '+item.used_by.length+' '+(item.used_by.length===1?'note':'notes'):'Not used in a draft'}));return b;}));search.oninput=draw;draw();}catch(e){error.textContent=e.message;}
 }
-function mediaDetails(item,kind){
+function mediaDetails(item,kind,choose){
   const content=[el('p',{text:item.name||item.path.split('/').at(-1)})];
   if(kind==='photographs')content.push(el('img',{src:item.path,alt:'Private library photograph',class:'media-detail-image'}));
   if(kind==='audio'||kind==='videos')content.push(el(kind==='audio'?'audio':'video',{src:item.path,controls:true,preload:'none',class:'media-detail-image'}));
+  if(item.width)content.push(el('p',{class:'help',text:item.width+' × '+item.height+' pixels · '+(item.size/1024/1024).toFixed(2)+' MB'}));
+  if(item.used_by?.length)content.push(el('h3',{text:'Used in drafts'}),el('ul',{},item.used_by.map(note=>el('li',{},[button(note.title,()=>openNote(note.path).catch(errorNotice),'quiet')]))));
+  if(item.descriptions?.length)content.push(el('h3',{text:'Existing image descriptions'}),el('ul',{},item.descriptions.map(text=>el('li',{text}))));
+  if(choose){
+    const description=el('input',{'aria-label':'Description to reuse',value:item.descriptions?.[0]||'',placeholder:'Describe what is in this image'});
+    content.push(el('label',{class:'field'},[el('span',{class:'field-label',text:'Description to reuse'}),description]),el('p',{class:'help',text:'Used only if the destination description is empty. Review it for this article.'}),
+      button('Use this image',()=>{closeModal();closeModal();choose({...item,description:description.value.trim()});},'primary'));
+  }
   content.push(el('p',{class:'help',text:'Original uploads stay private. Their optimized public versions are created only when a referenced note is published.'}),el('code',{text:item.path}));
   const a=el('a',{href:item.path,target:'_blank',rel:'noopener noreferrer',text:'Open original ↗'});content.push(el('p',{},[a]));
   modal('Private upload',content,false,true);
+}
+function imageFraming(){
+  const doc=state.doc,image=doc.list_image?.image||doc.sharing_image?.image||(doc.blocks||[]).find(b=>b.type==='photo')?.image;
+  if(!image){toast('Choose an on-site or sharing image first.');return;}
+  const initial=doc.thumbnail_focal||{x:50,y:50},photo=el('img',{src:image,alt:'Image framing preview'}),preview=el('div',{class:'focal-preview'},[photo]);
+  const enabled=el('input',{type:'checkbox',role:'switch','aria-label':'Crop image to fill',checked:Boolean(doc.thumbnail_focal)});
+  const x=el('input',{type:'range',min:0,max:100,value:initial.x,'aria-label':'Horizontal focal point'}),y=el('input',{type:'range',min:0,max:100,value:initial.y,'aria-label':'Vertical focal point'});
+  const feedback=el('output');
+  const draw=()=>{photo.style.objectFit=enabled.checked?'cover':'contain';photo.style.objectPosition=x.value+'% '+y.value+'%';x.disabled=y.disabled=!enabled.checked;feedback.textContent='Horizontal '+x.value+'% · Vertical '+y.value+'%';};
+  x.oninput=y.oninput=enabled.onchange=draw;
+  modal('On-site image framing',[el('p',{text:'Applies to the homepage Notes carousel and archive thumbnail. Your sharing image and original file stay unchanged.'}),preview,
+    el('label',{class:'field toggle'},[enabled,el('span',{text:'Crop image to fill'})]),
+    el('label',{class:'field'},[el('span',{text:'Horizontal focal point'}),x]),el('label',{class:'field'},[el('span',{text:'Vertical focal point'}),y]),feedback,
+    el('div',{class:'dialog-actions'},[button('Save framing',()=>{if(enabled.checked)update(['thumbnail_focal'],{x:Number(x.value),y:Number(y.value)});else{delete state.doc.thumbnail_focal;changed();}closeModal();},'primary')])],false,true);draw();
 }
 function mediaLibrary(){
   modal('Media library',[el('p',{text:'Browse or upload private files. Add them to a note using its image, audio, video, or download controls.'}),
@@ -673,7 +748,7 @@ function requestPreview(immediate=false){
 }
 async function job(operation,data={}){
   const created=await api('/api/jobs',{operation,...data});
-  for(;;){await sleep(operation==='preview'?180:500);const result=await api('/api/jobs/'+created.job);if(result.status==='done')return result.result;if(result.status==='error'){const error=new Error(result.error);Object.assign(error,result);throw error;}}
+  for(;;){await sleep(operation==='preview'?180:500);const result=await api('/api/jobs/'+created.job);if(['publish','withdraw'].includes(operation)&&result.phase)publicationProgress({phase:result.phase,action:operation==='withdraw'?'withdraw-note':'publish-note'});if(result.status==='done')return result.result;if(result.status==='error'){const error=new Error(result.error);Object.assign(error,result);throw error;}}
 }
 async function refreshPreview(){
   if(!state.doc||state.previewRunning)return;
@@ -724,28 +799,79 @@ function syncConflicts(error){
   modal('Review changes before syncing',[el('p',{text:'Both versions are retained in private history. Choosing one never publishes it.'}),...entries,errorNode,
     el('div',{class:'dialog-actions'},[button('Sync these choices',async()=>{if(error.conflicts.some(c=>!choices[c.path])){errorNode.textContent='Choose an option for each note.';return;}closeModal();await sync(choices,error.remote);},'primary')])],true);
 }
-function publicationDialog(withdraw=false){
+function comparisonContent(review){
+  const host=el('div',{class:'publication-review'});
+  if(review.warning)host.append(el('p',{class:'review-warning',text:review.warning}));
+  host.append(el('p',{class:'help',text:!review.published?'This note has not been published. All content below is new.':review.withdrawn?'This article is currently withdrawn. The comparison uses its last published revision.':'Compared with the exact saved revision selected for the public website.'}));
+  for(const change of review.changes){
+    const title=({cover:'Sharing image',cover_alt:'Sharing image description',thumbnail:'On-site image',thumbnail_alt:'On-site image description',thumbnail_focal:'Image framing',highlight:'Feature beneath About',body:'Article text'})[change.field]||change.field.replaceAll('_',' ').replace(/^./,c=>c.toUpperCase());
+    const display=value=>{if(change.field!=='body')return value||'—';const template=document.createElement('template');template.innerHTML=value;return [...template.content.childNodes].map(n=>n.textContent).join('\n\n')||'—';};
+    const details=el('details',{class:'change-entry'},[el('summary',{text:title}),el('div',{class:'comparison-fields'},[
+      el('section',{},[el('h4',{text:'Published'}),el('pre',{text:display(change.before)})]),
+      el('section',{},[el('h4',{text:'Your draft'}),el('pre',{text:display(change.after)})])])]);
+    details.open=['title','summary','body'].includes(change.field);
+    details.append(el('details',{},[el('summary',{text:change.field==='body'?'Show HTML changes':'Show line changes'}),el('pre',{text:change.diff})]));host.append(details);
+  }
+  if(review.media.length)host.append(el('h3',{text:'Uploads'}),el('ul',{},review.media.map(item=>el('li',{text:item.change+' · '+item.path.split('/').at(-1)}))));
+  if(!review.changes.length&&!review.media.length)host.append(el('p',{text:'Your saved draft matches the published content.'}));
+  return host;
+}
+async function reviewChanges(){
+  if(!state.doc||state.reviewing)return;state.reviewing=true;
+  try{if(!(await save()))return;const path=state.opened.path;modal('Loading publication review',[el('p',{role:'status',text:'Checking the latest publication record. Your local drafts stay unchanged.'})]);const review=await api('/api/comparison?path='+encodeURIComponent(path));if(!$('#modal').open||$('#modal-title').textContent!=='Loading publication review'||state.opened.path!==path)return;modal('Review unpublished changes',[comparisonContent(review)],true);}
+  catch(error){if($('#modal-title').textContent==='Loading publication review')closeAllModals();errorNotice(error);}finally{state.reviewing=false;}
+}
+let publicationRecord=null;
+function publicationProgress(record,result={}){
+  publicationRecord=record;const panel=$('#publication-progress');panel.hidden=false;
+  const steps=result.steps||[],step=name=>steps.find(s=>s.name===name),exported=step('Export, validate, and publish notes'),verified=step('Confirm both website deployments');
+  const success=result.status==='completed'&&result.conclusion==='success';
+  const failed=result.status==='completed'&&!success;
+  const stages=[['Checking',record.phase==='checking'?'active':'done'],['Backed up',record.phase==='checking'?'waiting':record.phase==='backup'?'active':'done'],
+    ['Building',success||exported?.conclusion==='success'?'done':record.run_id||record.phase==='building'?'active':'waiting'],
+    ['Cloudflare ready',success?'done':verified?.status==='in_progress'?'active':'waiting'],['GitHub Pages ready',success?'done':verified?.status==='in_progress'?'active':'waiting']];
+  const list=el('ol',{class:'publication-stages'},stages.map(([label,status])=>el('li',{'data-state':status,text:label})));
+  const heading=el('strong',{text:success?(record.action==='withdraw-note'?'Withdrawal complete':'Published'):failed?'Publication needs attention':'Publishing your saved revision'});
+  const controls=el('div',{class:'publication-controls'});
+  if(record.run_url)controls.append(el('a',{href:record.run_url,target:'_blank',rel:'noopener noreferrer',text:'Workflow details ↗'}));
+  if(success&&record.action!=='withdraw-note'&&record.article_url)controls.append(el('a',{href:record.article_url,target:'_blank',rel:'noopener noreferrer',class:'open-published',text:'Open published note ↗'}));
+  controls.append(button('Hide',()=>panel.hidden=true,'quiet'));
+  const failure=steps.find(s=>s.status==='completed'&&!['success','skipped','neutral'].includes(s.conclusion));
+  panel.replaceChildren(heading,list,...(failed?[el('p',{text:failure?'Check “'+failure.name+'”. Your private writing is retained.':'The workflow did not complete successfully. Check its details before retrying; one host may already have updated.'})]:[]),controls);
+}
+async function publicationDialog(withdraw=false){
   if(state.blocked){toast('Choose your recovered or saved version first.');return;}
-  const title=state.doc.title||'Untitled note',translations=(state.doc.translations||[]).filter(t=>t.published).map(t=>languages[t.language]);
-  const explanation=withdraw?'Remove this article from the website while keeping its private original and history. Previously public copies cannot be recalled.':
-    'Publish “'+title+'”'+(translations.length?' with '+translations.join(', '):'')+'. The manager automatically backs up this revision first. Your other drafts remain private. Wait for both website deployments to finish.';
-  confirmDialog(withdraw?'Withdraw this note?':'Publish this note?',explanation,withdraw?'Withdraw article':'Publish now',async()=>{
-    if(!withdraw){state.doc.published=true;changed();}await save();
-    $('#save-status').textContent=withdraw?'Requesting withdrawal…':'Checking and publishing…';
-    try{const result=await job(withdraw?'withdraw':'publish',{path:state.opened.path,etag:state.opened.etag});
-      notice('Publication workflow started. The live site changes only through the deployment workflow.',{label:'View run',run:()=>window.open(result.run_url,'_blank','noopener')});
-      if(result.run_id)watchRun(result);else $('#save-status').textContent='Check the workflow run for the publication result';
-    }catch(e){errorNotice(e);if(e.conflicts){closeModal();syncConflicts(e);}throw e;}
-  });
+  if(!state.doc||state.reviewing)return;state.reviewing=true;
+  try{
+    if(!(await save()))return;
+    const path=state.opened.path;if(!withdraw)modal('Loading publication review',[el('p',{role:'status',text:'Checking the latest publication record. Your local drafts stay unchanged.'})]);
+    const review=withdraw?null:await api('/api/comparison?path='+encodeURIComponent(path));
+    if(state.opened.path!==path||!withdraw&&(!$('#modal').open||$('#modal-title').textContent!=='Loading publication review'))return;
+    if(!withdraw)closeAllModals();
+    const title=state.doc.title||'Untitled note',translations=(state.doc.translations||[]).filter(t=>t.published).map(t=>languages[t.language]);
+    const explanation=withdraw?'Remove this article from the website while keeping its private original and history. Previously public copies cannot be recalled.':
+      'Publish “'+title+'”'+(translations.length?' with '+translations.join(', '):'')+'. The manager backs up this revision first. Your other drafts remain private.';
+    confirmDialog(withdraw?'Withdraw this note?':'Review and publish',explanation,withdraw?'Withdraw article':'Publish now',async()=>{
+      if(state.opened.path!==path)throw new Error('The open note changed. Review it again.');
+      if(!withdraw){state.doc.published=true;changed();}await save();
+      const progress={phase:'checking',action:withdraw?'withdraw-note':'publish-note'};publicationProgress(progress);
+      $('#save-status').textContent=withdraw?'Requesting withdrawal…':'Checking and publishing…';
+      try{const result=await job(withdraw?'withdraw':'publish',{path:state.opened.path,etag:state.opened.etag});
+        publicationProgress({...result,phase:'building'});
+        if(result.run_id)watchRun(result);else $('#save-status').textContent='Check the workflow run for the publication result';
+      }catch(e){progress.phase='checking';publicationProgress(progress,{status:'completed',conclusion:'failure'});errorNotice(e);if(e.conflicts){closeModal();syncConflicts(e);}throw e;}
+    });
+    if(review)$('#modal-body').insertBefore(comparisonContent(review),$('#modal-body .dialog-actions'));
+  }catch(error){if($('#modal-title').textContent==='Loading publication review')closeAllModals();errorNotice(error);}finally{state.reviewing=false;}
 }
 async function watchRun(record){
   clearTimeout(runTimer);
-  try{const result=await api('/api/run?id='+record.run_id);
+  try{const result=await api('/api/run?id='+record.run_id);publicationProgress({...record,phase:'building'},result);
     if(result.status==='completed'){
       const good=result.conclusion==='success';$('#save-status').textContent=good?'Both website deployments finished':'Publication needs attention · see workflow';
       if(result.trashed){afterTrash(result.path,result.trash_id);await refreshLibrary();notice('The article was withdrawn and its private original is in Trash.');return;}
       if(result.trash_error){notice('The article was withdrawn. '+result.trash_error);await refreshLibrary();return;}
-      notice(good?(record.action==='withdraw-note'?'The article was withdrawn.':'Your article is published on both website hosts.'):'The workflow did not finish successfully. It may have updated one host; check the run before retrying.',{label:'View run',run:()=>window.open(record.run_url,'_blank','noopener')});
+      if(good)$('#notice').hidden=true;else notice('The workflow did not finish successfully. It may have updated one host; check the failed step before retrying.',{label:'View run',run:()=>window.open(record.run_url,'_blank','noopener')});
       await refreshLibrary();if(state.opened){const saved=await api('/api/note?path='+encodeURIComponent(state.opened.path));state.opened.status=saved.status;$('#release-state').textContent=state.epoch===state.saved?saved.status:'Unpublished changes';}return;
     }$('#save-status').textContent='Website deployment '+(result.status==='queued'?'queued':'in progress')+'…';
   }catch{$('#save-status').textContent='Publication status unavailable · your saved writing is retained';}
@@ -769,6 +895,7 @@ $('#new-note').onclick=$('#empty-new').onclick=createNote;$('#add-block').onclic
 $('#media-library').onclick=mediaLibrary;
 $('#trash').onclick=showTrash;$('#workflow-help').onclick=workflowHelp;
 $('#note-more').onclick=event=>{const r=event.currentTarget.getBoundingClientRect();noteMenu(state.opened.path,r.right,r.bottom,event.currentTarget);};
+$('#compare-published').onclick=reviewChanges;$('#workspace-backup').onclick=workspaceBackup;
 $('#settings').onclick=settings;$('#history').onclick=history;
 $('#save').onclick=()=>save().then(ok=>{if(ok)toast('Saved on this Mac.');}).catch(errorNotice);
 $('#sync').onclick=()=>sync();$('#publish').onclick=()=>publicationDialog();
@@ -782,7 +909,7 @@ window.addEventListener('message',event=>{
 });
 function libraryAccessibility(){
   const narrow=matchMedia('(max-width:650px)').matches,open=$('.library').classList.contains('is-open');
-  $('.library').inert=narrow&&!open;$('main').inert=narrow&&open;$('#library-backdrop').hidden=!(narrow&&open);
+  $('.library').inert=document.documentElement.classList.contains('writing-only')||narrow&&!open;$('main').inert=narrow&&open;$('#library-backdrop').hidden=!(narrow&&open);
   $('#library-toggle').setAttribute('aria-expanded',String(narrow&&open));
 }
 $('#library-toggle').onclick=()=>{$('.library').classList.toggle('is-open');libraryAccessibility();if($('.library').classList.contains('is-open'))$('#library-close').focus();};
@@ -800,12 +927,14 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&$('.library
 window.addEventListener('beforeunload',event=>{if(state.doc&&state.epoch!==state.saved){remember();event.preventDefault();event.returnValue='';}});
 async function boot(){
   try{state.theme=store.get('notes:theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');applyTheme();
-    const session=await api('/api/session');Object.assign(state,{schema:session.schema,items:session.notes,repository:session.repository});renderLibrary();
+    const session=await api('/api/session');Object.assign(state,{schema:session.schema,items:session.notes,repository:session.repository,connected:session.connected});renderLibrary();$('#sync').disabled=state.connected===false;
     $('#save-status').textContent='Local workspace ready';const last=store.get('notes:last:'+state.repository);
     if(last&&state.items.some(i=>i.path===last))await openNote(last,true);
+    if(state.connected===false)notice('Restored workspace · GitHub backup and publication are disconnected. You can write, preview, and create local backups.');
     if(session.last_publication?.run_id&&session.last_publication.status!=='completed')watchRun(session.last_publication);
   }catch(e){$('#save-status').textContent='Workspace needs attention';errorNotice(e);}
 }
+setupLayout({store,onPreview:()=>requestPreview(true)});
 boot();
 
 for(const [id,name,label]of [["new-note","add","New note"],["empty-new","draft","Write a note"],["media-library","image","Media library"],["trash","delete","Trash"],["sync","cloud_upload","Back up drafts"],["workflow-help","info","How saving works"],["history","history","History"],["settings","settings","Settings"],["publish","publish","Publish…"],["note-more","more_horiz"],["modal-close","close"],["library-toggle","menu"],["library-close","close"],["add-language","add"],["refresh-preview","refresh"],["app-theme","dark_mode"],["preview-theme","dark_mode"]])setIcon($("#"+id),name,label);

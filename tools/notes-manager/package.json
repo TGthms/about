@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node build.mjs",
     "test": "node --test test/*.test.js",
-    "test:browser": "node test/browser.cjs && node test/refinements.cjs"
+    "test:browser": "node test/browser.cjs && node test/refinements.cjs && node test/workspace.cjs && node test/search.cjs"
   },
   "dependencies": {
     "@codemirror/lang-css": "6.3.1",

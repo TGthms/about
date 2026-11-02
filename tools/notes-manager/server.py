@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 import copy
 import datetime as dt
+import difflib
 import fcntl
 import hashlib
 import html
@@ -45,6 +46,9 @@ def module(name):
 notes = module('build')
 releases = module('releases')
 preview_bundle = module('preview_upload')
+_archive_spec = importlib.util.spec_from_file_location('manager_archives', HERE / 'archives.py')
+archives = importlib.util.module_from_spec(_archive_spec)
+_archive_spec.loader.exec_module(archives)
 
 
 class Problem(ValueError):
@@ -79,9 +83,9 @@ def atomic(path, raw):
         if os.path.exists(name): os.unlink(name)
 
 
-def run(*args, cwd=None, input=None, okay=False):
+def run(*args, cwd=None, input=None, okay=False, timeout=120):
     env = {**os.environ, 'GIT_TERMINAL_PROMPT': '0', 'GH_PROMPT_DISABLED': '1'}
-    result = subprocess.run(args, cwd=cwd, input=input, capture_output=True, env=env, timeout=120)
+    result = subprocess.run(args, cwd=cwd, input=input, capture_output=True, env=env, timeout=timeout)
     if result.returncode and not okay:
         # Git/gh errors may contain credential-bearing URLs; do not surface their stderr.
         raise Problem('The ' + Path(args[0]).name + ' operation could not finish. Your local writing is retained. Check your connection and GitHub sign-in.', 503)
@@ -120,6 +124,8 @@ class Workspace:
         (self.media.output / 'assets/notes').mkdir(parents=True, exist_ok=True)
         self.media_times = {}
         self.repo_id = digest(str(self.content).encode())[:16]
+        self.archives = archives.Archives(self, git, atomic, encode, Problem)
+        self.restored_servers = {}
 
     @contextmanager
     def writing(self):
@@ -158,9 +164,9 @@ class Workspace:
         if len(encode(value)) > MAX_JSON: raise Problem('The note is too large. Upload media as files, not pasted data.')
         return value
 
-    def release_index(self):
+    def release_index(self, saved=None):
         path = self.content / '.published.json'
-        raw = path.read_bytes() if path.exists() else b''
+        raw = saved if saved is not None else (path.read_bytes() if path.exists() else b'')
         entries = json.loads(raw).get('entries', {}) if raw else {}
         last = self.state / 'last-publication.json'
         if last.exists():
@@ -240,6 +246,48 @@ class Workspace:
             source=git(self.content,'show',revision+':media/designs/'+identity+'.json',okay=True)
             designs[identity]=digest(source.stdout) if source.returncode==0 else None
         return {'revision': revision, 'etag': digest(saved.stdout), 'design_etags':designs,'label': 'last GitHub backup' if remote.returncode == 0 else 'last committed version'}
+
+    def comparison(self, relative):
+        """Compare the saved draft against the pinned public revision, never HEAD."""
+        saved, warning = None, ''
+        # Fetch objects/refs only: never merge, commit, or push the working draft.
+        with self.writing():
+            if git(self.content, 'remote', 'get-url', 'origin', okay=True).returncode == 0:
+                try:
+                    git(self.content, 'fetch', 'origin', 'main', timeout=8)
+                    online = git(self.content, 'show', 'refs/remotes/origin/main:.published.json', okay=True)
+                    if online.returncode == 0: saved = online.stdout
+                except (Problem, subprocess.SubprocessError):
+                    warning = 'The online publication record could not be refreshed. This comparison uses the last locally known record; reconnect and review again before publishing.'
+        current = self.get(relative)
+        entry = self.release_index(saved).get(relative)
+        published = releases.read_note(self.content, entry['revision'], relative) if entry else None
+        before = notes.authoring.normalize(published) if published else {}
+        after = notes.authoring.normalize(current['document'])
+        for doc in (before, after):
+            for key in ('sharing_image', 'list_image', 'same_study'): doc.pop(key, None)
+        changes = []
+        for key in sorted(set(before) | set(after)):
+            if key in {'editor_version', 'published', 'og_designs'} or before.get(key) == after.get(key): continue
+            def display(value):
+                return value if isinstance(value, str) else json.dumps(value, ensure_ascii=False, indent=2)
+            old, new = display(before.get(key, '')), display(after.get(key, ''))
+            changes.append({'field': key, 'before': old, 'after': new,
+                            'diff': '\n'.join(difflib.unified_diff(old.splitlines(), new.splitlines(), fromfile='Published', tofile='Draft', lineterm=''))})
+        media = []
+        def references(value):
+            return set(re.findall(r'/media/[\w./-]+', json.dumps(value, ensure_ascii=False)))
+        for reference in sorted(references(before) | references(after)):
+            path = self.path(reference, media=True)
+            old = git(self.content, 'show', entry['revision'] + ':' + reference.lstrip('/'), okay=True) if entry and reference in references(before) else None
+            old_hash = digest(old.stdout) if old and not old.returncode else None
+            new_hash = digest(path.read_bytes()) if path.is_file() and reference in references(after) else None
+            if old_hash != new_hash:
+                media.append({'path': reference, 'change': 'Added' if not old_hash else 'Removed' if not new_hash else 'Replaced'})
+        slug = current['document'].get('slug') or Path(relative).stem
+        return {'changes': changes, 'media': media, 'published': published is not None,
+                'withdrawn': bool(entry and entry.get('withdrawn')), 'etag': current['etag'],
+                'url': notes.FEED_ORIGIN + '/notes/' + slug + '.html', 'warning':warning}
 
     def discard(self, relative, etag, revision, design_etags=None):
         with self.writing():
@@ -449,11 +497,45 @@ class Workspace:
         if kind not in choices: raise Problem('Choose a media library.')
         folder, extensions = choices[kind]
         files = []
+        usage = {}
+        def scan(value, owner):
+            if isinstance(value, dict):
+                for field, description in (('cover', 'cover_alt'), ('thumbnail', 'thumbnail_alt')):
+                    reference, text = value.get(field), value.get(description)
+                    if isinstance(reference, str) and isinstance(text, str) and text.strip():
+                        usage.setdefault(reference, {'notes': {}, 'descriptions': set()})['descriptions'].add(text.strip())
+                image = value.get('image')
+                if isinstance(image, str) and image.startswith('/media/'):
+                    row = usage.setdefault(image, {'notes': {}, 'descriptions': set()})
+                    if isinstance(value.get('alt'), str) and value['alt'].strip(): row['descriptions'].add(value['alt'].strip())
+                for child in value.values(): scan(child, owner)
+            elif isinstance(value, list):
+                for child in value: scan(child, owner)
+            elif isinstance(value, str):
+                for reference in re.findall(r'/media/[\w./-]+', value):
+                    row = usage.setdefault(reference, {'notes': {}, 'descriptions': set()})
+                    row['notes'][owner['path']] = owner
+        for source in (self.content / 'notes').glob('*.json'):
+            if source.is_symlink(): continue
+            try:
+                doc = json.loads(source.read_text())
+                scan(doc, {'path': 'notes/' + source.name, 'title': notes.title(doc)})
+            except (ValueError, OSError): continue
         for p in (self.content / 'media' / folder).glob('*'):
             if p.suffix.lower().lstrip('.') not in extensions or not p.is_file() or p.is_symlink(): continue
             relative = p.relative_to(self.content).as_posix()
             self.path(relative, media=True)
-            files.append({'path': '/' + relative, 'name': p.name, 'size': p.stat().st_size, 'modified': p.stat().st_mtime})
+            row = {'path': '/' + relative, 'name': p.name, 'size': p.stat().st_size, 'modified': p.stat().st_mtime}
+            info = usage.get('/' + relative, {})
+            row.update(used_by=list(info.get('notes', {}).values()), descriptions=sorted(info.get('descriptions', [])))
+            if folder == 'images':
+                from PIL import Image
+                try:
+                    with Image.open(p) as image:
+                        size = image.size
+                        row['width'], row['height'] = size[::-1] if image.getexif().get(274) in (5, 6, 7, 8) else size
+                except (OSError, ValueError): row['unreadable'] = True
+            files.append(row)
         return sorted(files, key=lambda f: f['modified'], reverse=True)
 
     def upload(self, kind, filename, raw):
@@ -557,6 +639,8 @@ class Workspace:
 
     def sync(self, resolutions=None, expected_remote=None):
         with self.writing():
+            if git(self.content, 'remote', 'get-url', 'origin', okay=True).returncode:
+                raise Problem('This workspace is disconnected from GitHub. Review it locally, or restore its drafts into your original workspace before backing up to GitHub.')
             if resolutions and not expected_remote: raise Problem('Compare the current online version before resolving changes.', 409)
             if git_text(self.content, 'rev-parse', '--show-toplevel') != str(self.content) or git_text(self.content, 'branch', '--show-current') != 'main':
                 raise Problem('Open the main branch of the private content repository before syncing.')
@@ -621,25 +705,30 @@ class Workspace:
             git(self.content, 'push', 'origin', 'HEAD:main')
             return {'revision': git_text(self.content, 'rev-parse', 'HEAD'), 'message': 'Synced privately. Nothing was published.'}
 
-    def publication(self, relative, base, action, trash_after=False):
+    def publication(self, relative, base, action, trash_after=False, progress=None):
         if action not in ('publish-note', 'withdraw-note'): raise Problem('Choose a publication action.')
         # Keep the selected content stable through sync and workflow dispatch.
         with self.writing():
+            if progress: progress('checking')
             opened = self.get(relative)
             if opened['etag'] != base: raise Problem('The saved note changed. Reopen and review it before publishing.', 409)
             if action == 'publish-note':
                 errors, _ = notes.authoring.issues(opened['document'], self.content, strict=True)
                 if errors: raise Problem('Check these fields before publishing.', errors=errors)
                 if opened['document'].get('published') is not True: raise Problem('Confirm publication from the editor first.')
-            origin = git_text(self.content, 'remote', 'get-url', 'origin').rstrip('/')
+            remote = git(self.content, 'remote', 'get-url', 'origin', okay=True)
+            if remote.returncode: raise Problem('Publishing is disconnected in this restored workspace. Use your original workspace to publish.')
+            origin = remote.stdout.decode().strip().rstrip('/')
             if origin.lower().removesuffix('.git') not in ('git@github.com:tgthms/about-notes', 'https://github.com/tgthms/about-notes'):
                 raise Problem('Publishing is available only from the TGthms/about-notes private repository. This copy can be edited and previewed locally.')
             selected = copy.deepcopy(opened['document'])
+            if progress: progress('backup')
             result = self.sync()
             refreshed = self.get(relative)
             if refreshed['document'] != selected:
                 raise Problem('Sync brought a newer version of this note. Review it before publishing.', 409)
             payload = {'action': {'name': action}, 'context': {'path': relative}, 'repository': {'sha': result['revision']}}
+            if progress: progress('building')
             request = json.dumps({'payload': json.dumps(payload)})
             reply = run('gh', 'workflow', 'run', 'publish.yml', '--repo', 'TGthms/about-notes', '--ref', 'main', '--json', input=request.encode())
             match = re.search(r'https://github\.com/TGthms/about-notes/actions/runs/(\d+)', (reply.stdout + reply.stderr).decode())
@@ -648,6 +737,7 @@ class Workspace:
             record = {'run_url': url, 'run_id': match[1] if match else None, 'action': action, 'path': relative, 'created': stamp(),
                       'revision': result['revision'], 'etag': refreshed['etag'], 'index_base': digest(index.read_bytes() if index.exists() else b''), 'trash_after':trash_after}
             record['design_etags']={identity:self.cover_design(identity)['etag'] for identity in (selected.get('og_designs') or {}).values()}
+            record['article_url'] = notes.FEED_ORIGIN + '/notes/' + (selected.get('slug') or Path(relative).stem) + '.html'
             atomic(self.state / 'last-publication.json', encode(record))
             return record
 
@@ -655,6 +745,13 @@ class Workspace:
         if not re.fullmatch(r'\d{1,20}', str(identity)): raise Problem('Invalid workflow run.')
         reply = run('gh', 'api', 'repos/TGthms/about-notes/actions/runs/' + str(identity))
         data = json.loads(reply.stdout)
+        # Read step names/status only; logs and credentials never reach the editor.
+        steps = []
+        try:
+            jobs = json.loads(run('gh', 'api', 'repos/TGthms/about-notes/actions/runs/' + str(identity) + '/jobs?per_page=20').stdout)
+            for job in jobs.get('jobs', []): steps.extend(job.get('steps', []))
+        except (Problem, ValueError): pass
+        data['steps'] = [{k: step.get(k) for k in ('name', 'status', 'conclusion')} for step in steps]
         last = self.state / 'last-publication.json'
         if data.get('status') == 'completed' and last.exists():
             with self.writing():
@@ -673,10 +770,10 @@ class Workspace:
                         atomic(last,encode(record))
                     for key in ('trashed','trash_id','trash_error','path'):
                         if key in record: data[key] = record[key]
-        return {k: data.get(k) for k in ('status', 'conclusion', 'html_url', 'head_sha','trashed','trash_id','trash_error','path')}
+        return {k: data.get(k) for k in ('status', 'conclusion', 'html_url', 'head_sha','trashed','trash_id','trash_error','path','steps')}
 
     def job(self, operation, data):
-        if operation not in ('preview', 'sync', 'publish', 'withdraw','trash'): raise Problem('Unknown operation.')
+        if operation not in ('preview', 'sync', 'publish', 'withdraw','trash','backup','restore-preview','restore'): raise Problem('Unknown operation.')
         with self.lock:
             if sum(j['status'] == 'running' for j in self.jobs.values()) >= 6:
                 raise Problem('The workspace is busy. Wait for the current operation.', 429)
@@ -689,7 +786,10 @@ class Workspace:
                 if operation == 'preview': result = self.preview(data['path'], data['document'], data.get('language'), data.get('theme'))
                 elif operation == 'sync': result = self.sync(data.get('resolutions'), data.get('remote'))
                 elif operation == 'trash': result = self.delete_note(data['path'],data['etag'])
-                else: result = self.publication(data['path'], data['etag'], 'publish-note' if operation == 'publish' else 'withdraw-note')
+                elif operation == 'backup': result = self.archives.create()
+                elif operation == 'restore-preview': result = self.archives.preview(data['id'])
+                elif operation == 'restore': result = self.archives.restore(data['id'], data['mode'], data.get('marker'), data.get('archive_hash'))
+                else: result = self.publication(data['path'], data['etag'], 'publish-note' if operation == 'publish' else 'withdraw-note', progress=lambda phase:value.update(phase=phase))
                 value.update(status='done', result=result)
             except (ValueError, OSError, KeyError, subprocess.SubprocessError) as error:
                 value.update(status='error', error=str(error), code=getattr(error, 'status', 400), **getattr(error, 'details', {}))
@@ -709,7 +809,7 @@ class Handler(BaseHTTPRequestHandler):
     def authenticated(self):
         try:
             jar = cookies.SimpleCookie(self.headers.get('Cookie', ''))
-            value = jar.get('notes_local')
+            value = jar.get('notes_local_'+str(self.server.server_port))
             return bool(value and secrets.compare_digest(value.value, self.server.token))
         except cookies.CookieError: return False
 
@@ -754,7 +854,7 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/' and query.get('token'):
                 if self.headers.get('Host') != '127.0.0.1:' + str(self.server.server_port) or not secrets.compare_digest(query['token'][0], self.server.token):
                     raise Problem('Invalid launch link.', 403)
-                return self.respond(303, b'', extra={'Location': '/', 'Set-Cookie': 'notes_local=' + self.server.token + '; HttpOnly; SameSite=Strict; Path=/' + ('; Secure' if self.server.origin.startswith('https:') else '')})
+                return self.respond(303, b'', extra={'Location': '/', 'Set-Cookie': 'notes_local_'+str(self.server.server_port)+'=' + self.server.token + '; HttpOnly; SameSite=Strict; Path=/' + ('; Secure' if self.server.origin.startswith('https:') else '')})
             if url.path.startswith('/preview-media/'):
                 # Opaque sandbox frames cannot rely on SameSite cookies. A random,
                 # per-preview capability grants read access only to that page's media.
@@ -778,9 +878,22 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/api/session':
                 last = self.app.state / 'last-publication.json'
                 return self.json({'repository': self.app.repo_id, 'schema': json.loads((HERE / 'schema.json').read_text()),
-                    'notes': self.app.library(), 'last_publication': json.loads(last.read_text()) if last.exists() else None})
+                    'notes': self.app.library(), 'connected':git(self.app.content,'remote','get-url','origin',okay=True).returncode==0,
+                    'last_publication': json.loads(last.read_text()) if last.exists() else None})
             if url.path == '/api/notes': return self.json(self.app.library())
             if url.path == '/api/note': return self.json(self.app.get(query.get('path', [''])[0]))
+            if url.path == '/api/comparison': return self.json(self.app.comparison(query.get('path', [''])[0]))
+            if url.path == '/api/backups': return self.json(self.app.archives.list())
+            if url.path == '/api/backups/download':
+                identity = query.get('id', [''])[0]
+                path = self.app.archives.path(identity)
+                self.send_response(200)
+                for key, value in {'Content-Type':'application/zip', 'Content-Length':str(path.stat().st_size),
+                    'Content-Disposition':'attachment; filename="notes-private-backup-'+identity[:8]+'.zip"',
+                    'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff', 'X-Robots-Tag':'noindex'}.items(): self.send_header(key,value)
+                self.end_headers()
+                with path.open('rb') as source: shutil.copyfileobj(source, self.wfile, 1024*1024)
+                return
             if url.path == '/api/trash': return self.json(self.app.trash_list())
             if url.path == '/api/design': return self.json(self.app.cover_design(query.get('id',[''])[0]))
             if url.path == '/api/history': return self.json(self.app.history(query.get('path', [''])[0]))
@@ -822,6 +935,7 @@ class Handler(BaseHTTPRequestHandler):
             self.guard(mutation=True)
             url = urlsplit(self.path)
             length = int(self.headers.get('Content-Length', '0'))
+            if url.path == '/api/backups/upload': return self.json(self.app.archives.receive(self.rfile, length))
             limit = MAX_UPLOAD if url.path == '/api/upload' else MAX_JSON
             if not 0 < length <= limit: raise Problem('The request is empty or too large.', 413)
             raw = self.rfile.read(length)
@@ -836,6 +950,21 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/api/create': return self.json(self.app.create(data.get('title', ''), data.get('date'), data.get('document')))
             if url.path == '/api/discard': return self.json(self.app.discard(data['path'],data['etag'],data['revision'],data.get('design_etags')))
             if url.path == '/api/trash/empty': return self.json(self.app.empty_trash(data.get('ids')))
+            if url.path == '/api/backups/open':
+                identity = data.get('id', '')
+                if not re.fullmatch(r'[a-f0-9]{24}', str(identity)): raise Problem('Choose a restored workspace.')
+                with self.app.writing():
+                    restored = self.app.state / 'restored' / identity
+                    if not (restored/'repository/notes').is_dir(): raise Problem('This restored workspace is unavailable.',404)
+                    if identity not in self.app.restored_servers:
+                        child = Workspace(restored/'repository', restored/'local', self.app.public)
+                        tls = self.app.state/'tls'
+                        secure = self.server.origin.startswith('https:')
+                        server = serve(child, 0, tls/'localhost.pem' if secure else None, tls/'localhost-key.pem' if secure else None)
+                        self.app.restored_servers[identity] = server
+                        threading.Thread(target=server.serve_forever, daemon=True).start()
+                    server = self.app.restored_servers[identity]
+                    return self.json({'url':server.origin+'/?token='+server.token})
             if url.path == '/api/trash/restore': return self.json(self.app.restore_trash(data['id']))
             if url.path == '/api/design': return self.json(self.app.save_design(data['id'],data['design'],data.get('etag')))
             if url.path == '/api/jobs': return self.json(self.app.job(data['operation'], data))
@@ -845,7 +974,9 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def serve(workspace, port=1222, certificate=None, key=None):
-    server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
+    class LocalServer(ThreadingHTTPServer):
+        request_queue_size = 64
+    server = LocalServer(('127.0.0.1', port), Handler)
     server.workspace, server.token = workspace, secrets.token_urlsafe(32)
     server.origin = ('https' if certificate else 'http') + '://127.0.0.1:' + str(server.server_port)
     if certificate:
@@ -869,7 +1000,7 @@ def reopen(workspace, port, no_open=False, scheme='http'):
             context=ssl.create_default_context(cafile=str(workspace.state/'tls/rootCA.pem'))
             connection=HTTPSConnection('127.0.0.1',port,timeout=2,context=context)
         else: connection = HTTPConnection('127.0.0.1',port,timeout=2)
-        connection.request('GET','/api/ping',headers={'Cookie':'notes_local='+session['token']})
+        connection.request('GET','/api/ping',headers={'Cookie':'notes_local_'+str(port)+'='+session['token']})
         response=connection.getresponse();data=json.loads(response.read())
         if response.status != 200 or data != {'workspace':workspace.repo_id,'application':'notes-local'}: return False
         url=scheme+'://127.0.0.1:'+str(port)+'/?token='+session['token']
@@ -914,6 +1045,8 @@ def main():
     except KeyboardInterrupt: pass
     finally:
         server.server_close()
+        for child in workspace.restored_servers.values():
+            child.shutdown(); child.server_close(); child.workspace.pool.shutdown(wait=False, cancel_futures=True)
         workspace.pool.shutdown(wait=False, cancel_futures=True)
         if session.exists() and json.loads(session.read_text()).get('token') == server.token: session.unlink()
 
