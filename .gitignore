@@ -30,3 +30,7 @@ __pycache__/
 
 # Local Notes manager recovery and backups contain private writing.
 .notes-manager/
+
+# Local Worker secrets must never be committed.
+.dev.vars
+.dev.vars.*

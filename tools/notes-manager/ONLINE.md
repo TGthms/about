@@ -1,6 +1,8 @@
 # Online Notes manager: migration design
 
-Status: design, not a deployed service. Updated November 2, 2026.
+Status: separate online trial implemented; real-note migration remains gated. Updated November 2, 2026.
+
+See [the trial implementation](../notes-online/README.md) and its [usage assessment](../notes-online/USAGE.md). The Mac manager remains the reliable editor while the trial is tested.
 
 ## Decisions
 
@@ -15,7 +17,7 @@ Status: design, not a deployed service. Updated November 2, 2026.
 
 Use the existing bundled browser editor behind an authenticated Worker. Store note
 revisions, metadata, Trash, and pending operations in a SQLite-backed Durable Object.
-Store immutable uploads and cover design files in a private R2 bucket. Keep the
+The trial stores bounded uploads and cover designs in the same private SQLite database, avoiding an R2 dependency. Consider private R2 storage later if actual media growth justifies it. Keep the
 private GitHub repository as an independent backup and the input to the existing
 publication pipeline. The public website remains static.
 
@@ -59,8 +61,9 @@ need durable storage. They are not the preferred route under the free-plan choic
 
 ### Preview and publishing
 
-The free-plan backend needs an adapted preview renderer. This is the main parity
-risk: it cannot quietly become an approximation with missing blocks or typography.
+The trial runs the existing Python preview renderer on the author’s device through
+a dedicated browser Worker. This avoids maintaining an approximate second renderer;
+device startup, memory, and image-color behavior remain explicit parity checks.
 Reuse public templates, CSS, scripts, sanitization rules, and field conventions;
 compare output against the existing Python renderer using real and synthetic posts.
 Keep previews isolated from the manager and all draft media authenticated.

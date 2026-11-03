@@ -1,3 +1,4 @@
+import {browserPreview} from './browser-preview.js';
 import {setupLayout} from './layout.js';
 import {Editor} from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -18,6 +19,9 @@ import {icon,setIcon} from './icons.js';
 import {contextMenu,closeContextMenu} from './context-menu.js';
 import {copy,getAt,setAt,moveItem,fieldSpec,emptyValue,newBlock,needsSource} from './model.js';
 
+const onlineTest=document.documentElement.dataset.workspace==='online-test';
+const savedLabel=()=>onlineTest?'Saved in private test workspace':'Saved on this Mac';
+const disconnectedMessage=()=>onlineTest?'Separate online test workspace. Publishing, GitHub backup, and complete restore are disconnected; keep using the Mac manager for real notes.':'Restored workspace · GitHub backup and publication are disconnected. You can write, preview, and create local backups.';
 const $ = selector => document.querySelector(selector);
 const el = (tag, attrs = {}, children = []) => {
   const node = document.createElement(tag);
@@ -57,8 +61,9 @@ const store={
 };
 
 async function api(path, data, raw) {
+  if(onlineTest&&path.startsWith('/api/note?'))path+='&client='+encodeURIComponent(state.client);
   const response = await fetch(path, data === undefined ? {} : {method:'POST',headers:{'X-Notes-Manager':'1',...(raw?{}:{'Content-Type':'application/json'})},body:raw?data:JSON.stringify(data)});
-  let value; try {value=await response.json();} catch {throw new Error('The local manager did not respond. Your recovered writing remains in this browser.');}
+  let value; try {value=await response.json();} catch {throw new Error(onlineTest?'The online manager did not respond. Check your connection or reopen it to sign in again. Your recovered writing remains in this browser.':'The local manager did not respond. Your recovered writing remains in this browser.');}
   if(!response.ok){const error=new Error(value.error||'The operation could not finish.');Object.assign(error,value,{code:response.status});throw error;} return value;
 }
 function toast(message, action) {
@@ -107,19 +112,19 @@ function update(path,value){setAt(state.doc,path,value);if(path.length===1&&path
 function remember(){
   if(!state.doc)return;
   const record={document:state.doc,etag:state.opened.etag,updated:new Date().toISOString(),client:state.client};
-  if(!store.set(storageKey(),JSON.stringify(record)))notice('Browser recovery storage is unavailable. Local disk recovery and saving remain active.');
+  if(!store.set(storageKey(),JSON.stringify(record)))notice(onlineTest?'Browser recovery storage is unavailable. Keep this tab open until cloud saving succeeds.':'Browser recovery storage is unavailable. Local disk recovery and saving remain active.');
   clearTimeout(recoveryTimer);
   const path=state.opened.path,document=copy(state.doc),etag=state.opened.etag;
   recoveryTimer=setTimeout(()=>api('/api/recovery',{path,document,etag,client:state.client}).catch(()=>{}),250);
 }
 function changed(){
-  state.epoch++;remember();$('#save-status').textContent='Saving on this Mac…';
-  $('#sync-status').textContent='Local changes waiting for private backup';
+  state.epoch++;remember();$('#save-status').textContent=onlineTest?'Saving privately…':'Saving on this Mac…';
+  $('#sync-status').textContent=onlineTest?'Private autosave · publication disconnected':'Local changes waiting for private backup';
   clearTimeout(saveTimer);if(!state.blocked)saveTimer=setTimeout(()=>save().catch(errorNotice),1400);
   requestPreview();wordCount();
 }
 async function save(){
-  clearTimeout(saveTimer);
+  clearTimeout(saveTimer);if(onlineTest)clearTimeout(recoveryTimer);
   if(!state.doc||state.blocked)return false;
   if(state.savePromise){await state.savePromise;if(state.saved!==state.epoch)return save();return true;}
   if(state.saved===state.epoch)return true;
@@ -129,7 +134,7 @@ async function save(){
       const result=await api('/api/save',{path,document:value,etag});
       state.opened.etag=result.etag;state.opened.status=result.status;state.saved=epoch;
       $('#release-state').textContent=result.status;
-      if(state.epoch===epoch){$('#save-status').textContent='Saved on this Mac';store.remove(storageKey());}
+      if(state.epoch===epoch){$('#save-status').textContent=savedLabel();store.remove(storageKey());}
       refreshLibrary().catch(()=>{});return true;
     }catch(error){
       if(error.conflict){state.blocked=true;showFileConflict(error.conflict);}
@@ -141,7 +146,7 @@ async function save(){
 function showFileConflict(conflict){
   const fields=el('div',{class:'comparison-fields'},[
     el('section',{},[el('h3',{text:'Your current writing'}),versionPanel(conflict.local)]),
-    el('section',{},[el('h3',{text:'Saved file on this Mac'}),versionPanel(conflict.online)])]);
+    el('section',{},[el('h3',{text:onlineTest?'Saved version in the test workspace':'Saved file on this Mac'}),versionPanel(conflict.online)])]);
   modal('Another version was saved',[el('p',{text:'Your writing is preserved. Keep it as a new private draft, or review the saved version. Nothing will be published.'}),fields,
     el('div',{class:'dialog-actions'},[
       button('Review saved version',async()=>{state.blocked=false;closeModal();await openNote(conflict.path,true);}),
@@ -177,19 +182,19 @@ async function openNote(path, force=false){
   state.previewFrameId=null;$('#preview').removeAttribute('src');$('#preview-placeholder').hidden=false;
   $('#empty').hidden=true;$('#workspace').hidden=false;$('#notice').hidden=true;
   for(const id of ['save','settings','publish','history','note-more','compare-published'])$('#'+id).disabled=false;
-  const browser=[];try{for(const key of store.keys())if(key.startsWith(storagePrefix()))browser.push(JSON.parse(store.get(key)));}catch{}
+  const browser=[];try{for(const key of store.keys())if(key.startsWith(storagePrefix())&&(!onlineTest||key===storageKey()))browser.push(JSON.parse(store.get(key)));}catch{}
   const recovery=[opened.recovery,...browser].filter(Boolean).sort((a,b)=>String(b.updated).localeCompare(String(a.updated)))[0];
   state.recovery=recovery&&JSON.stringify(recovery.document)!==JSON.stringify(state.doc)?recovery:null;
   state.blocked=Boolean(state.recovery);$('#recovery').hidden=!state.recovery;
-  $('#save-status').textContent=state.recovery?'Choose a recovered or saved version':'Saved on this Mac';
-  $('#release-state').textContent=opened.status;if(state.connected===false){$('#publish').disabled=true;notice('Restored workspace · GitHub backup and publication are disconnected. You can write, preview, and create local backups.');}renderDocument();renderLibrary();requestPreview(true);
+  $('#save-status').textContent=state.recovery?'Choose a recovered or saved version':savedLabel();
+  $('#release-state').textContent=opened.status;if(state.connected===false){$('#publish').disabled=true;notice(disconnectedMessage());}renderDocument();renderLibrary();requestPreview(true);
   store.set('notes:last:'+state.repository,path);
   $('.library').classList.remove('is-open');
   libraryAccessibility();
   }finally{state.opening=false;$('#workspace').inert=false;$('#sync').disabled=state.connected===false;$('#new-note').disabled=false;}
 }
 $('#restore-recovery').onclick=()=>{state.doc=copy(state.recovery.document);state.doc.slug=state.opened.document.slug;state.recovery=null;state.blocked=false;$('#recovery').hidden=true;renderDocument();changed();};
-$('#discard-recovery').onclick=async()=>{try{const client=state.recovery?.client||'legacy';await api('/api/recovery',{path:state.opened.path,discard:true,client});store.remove(storagePrefix()+client);state.recovery=null;state.blocked=false;$('#recovery').hidden=true;$('#save-status').textContent='Saved on this Mac';}catch(e){errorNotice(e);}};
+$('#discard-recovery').onclick=async()=>{try{const client=state.recovery?.client||'legacy';await api('/api/recovery',{path:state.opened.path,discard:true,client});store.remove(storagePrefix()+client);state.recovery=null;state.blocked=false;$('#recovery').hidden=true;$('#save-status').textContent=savedLabel();}catch(e){errorNotice(e);}};
 function createNote(){
   const input=el('input',{placeholder:'Title (you can leave this empty)',maxLength:160,'aria-label':'Title'});
   const today=new Date(),date=el('input',{type:'date',value:[today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-'),'aria-label':'Date'});
@@ -659,8 +664,8 @@ async function flushStudio(session){
   if(!session.latest)return;
   session.pending=false;const latest=copy(session.latest);
   session.saving=(async()=>{
-    const design=await designAssets(session,latest),saved=await api('/api/design',{id:session.identity,design,etag:session.etag});if(session.etag!==saved.etag)$('#sync-status').textContent='Local changes waiting for private backup';session.etag=saved.etag;session.saved=copy(latest);
-    session.message.textContent='Cover draft saved on this Mac';
+    const design=await designAssets(session,latest),saved=await api('/api/design',{id:session.identity,design,etag:session.etag});if(session.etag!==saved.etag)$('#sync-status').textContent=onlineTest?'Private autosave · publication disconnected':'Local changes waiting for private backup';session.etag=saved.etag;session.saved=copy(latest);
+    session.message.textContent=onlineTest?'Cover draft saved privately in the test workspace':'Cover draft saved on this Mac';
     session.frame.contentWindow?.postMessage({type:'og-manager-saved',nonce:session.nonce},location.origin);
   })();
   try{await session.saving;}finally{session.saving=null;}
@@ -704,7 +709,7 @@ async function mediaPicker(kind,choose){
   const error=el('p',{role:'alert'}),input=el('input',{type:'file','aria-label':'Upload a file'}),upload=el('label',{class:'upload-zone',text:'Upload a file · up to 20 MB'},[input]),search=el('input',{type:'search',placeholder:'Find an upload…','aria-label':'Search uploads'}),grid=el('div',{class:'media-grid'});
   input.accept={photographs:'.jpg,.jpeg,.png,.webp',videos:'.mp4,.webm',audio:'.mp3,.m4a,.ogg,.wav',downloads:'.pdf,.zip,.txt,.csv,.json'}[kind];
   const select=result=>{if(choose&&kind!=='photographs'){closeModal();choose(result);}else mediaDetails(result,kind,choose);};
-  input.onchange=async()=>{if(!input.files[0])return;input.disabled=true;error.textContent='Uploading to your private local library…';try{const result=await uploadFile(input.files[0],kind);select(result);if(!choose){input.disabled=false;error.textContent='Uploaded privately.';}}catch(e){error.textContent=e.message;input.disabled=false;}};
+  input.onchange=async()=>{if(!input.files[0])return;input.disabled=true;error.textContent=onlineTest?'Uploading to your private test library…':'Uploading to your private local library…';try{const result=await uploadFile(input.files[0],kind);select(result);if(!choose){input.disabled=false;error.textContent='Uploaded privately.';}}catch(e){error.textContent=e.message;input.disabled=false;}};
   modal((choose?'Choose ':'Browse ')+({photographs:'photographs',videos:'videos',audio:'audio',downloads:'downloads'}[kind]||'files'),[upload,error,el('p'),search,grid],false,true);
   try{const items=await api('/api/media?kind='+kind);const draw=()=>grid.replaceChildren(...items.filter(i=>i.name.toLowerCase().includes(search.value.toLowerCase())).map(item=>{
     const b=button('',()=>select(item));if(kind==='photographs')b.append(el('img',{src:item.path,alt:'',loading:'lazy'}));
@@ -750,6 +755,7 @@ function requestPreview(immediate=false){
   previewTimer=setTimeout(refreshPreview,immediate?0:800);
 }
 async function job(operation,data={}){
+  if(onlineTest&&operation==='preview')return browserPreview(data,status=>$('#checks-summary').textContent=status);
   const created=await api('/api/jobs',{operation,...data});
   for(;;){await sleep(operation==='preview'?180:500);const result=await api('/api/jobs/'+created.job);if(['publish','withdraw'].includes(operation)&&result.phase)publicationProgress({phase:result.phase,action:operation==='withdraw'?'withdraw-note':'publish-note'});if(result.status==='done')return result.result;if(result.status==='error'){const error=new Error(result.error);Object.assign(error,result);throw error;}}
 }
@@ -766,9 +772,10 @@ async function refreshPreview(){
   try{
     const result=await job('preview',{path,document:copy(state.doc),language:currentVersion().language,theme:state.previewTheme==='auto'?state.theme:state.previewTheme});
     if(epoch===state.previewEpoch&&path===state.opened.path){
-      state.previewFrameKey=path+':'+currentVersion().language;state.previewFrameId=result.url.split('/').at(-1);
+      state.previewFrameKey=path+':'+currentVersion().language;state.previewFrameId=result.id||result.url.split('/').at(-1);
       state.previewRestore=state.previewScroll.get(state.previewFrameKey)||0;
-      $('#preview').src=result.url;$('#preview-placeholder').hidden=true;showChecks([],result.warnings||[]);
+      if(onlineTest){$('#preview').dataset.renderMs=String(result.elapsed_ms);$('#preview').dataset.engineMemory=String(result.memory_bytes);}
+      $('#preview').src=result.url;$('#preview-placeholder').hidden=true;showChecks([],result.warnings||[]);if(onlineTest)$('#checks-summary').textContent='Opening preview…';
     }
   }catch(e){if(epoch===state.previewEpoch)showChecks(e.errors||[e.message],e.warnings||[]);}
   finally{state.previewRunning=false;if(state.previewWanted)refreshPreview();}
@@ -888,8 +895,8 @@ async function history(){
       modal('Saved revision',[el('p',{text:'Restoring changes your private draft only. The published article stays unchanged until you publish again.'}),text,
         el('div',{class:'dialog-actions'},[button('Restore this writing',()=>{state.doc=copy(row.document);state.doc.slug=state.opened.document.slug;state.blocked=false;state.version=-1;closeAllModals();renderDocument();changed();},'primary')])],false,true);
     },'history-item');b.append(el('strong',{text:new Date(row.time).toLocaleString()}),el('small',{text:row.kind}));list.append(b);}
-    if(!rows.length)list.append(el('p',{text:'Local revisions appear here after edits are saved. Your private Git history also retains synced revisions.'}));
-    modal('Local revision history',[el('p',{text:'The latest 50 saved versions are kept on this Mac for each note.'}),list]);
+    if(!rows.length)list.append(el('p',{text:onlineTest?'Saved revisions and recovered browser sessions appear here.':'Local revisions appear here after edits are saved. Your private Git history also retains synced revisions.'}));
+    modal(onlineTest?'Private revision history':'Local revision history',[el('p',{text:onlineTest?'The latest 50 saved versions are kept in this separate test workspace for each note.':'The latest 50 saved versions are kept on this Mac for each note.'}),list]);
   }catch(e){errorNotice(e);}
 }
 
@@ -900,7 +907,7 @@ $('#trash').onclick=showTrash;$('#workflow-help').onclick=workflowHelp;
 $('#note-more').onclick=event=>{const r=event.currentTarget.getBoundingClientRect();noteMenu(state.opened.path,r.right,r.bottom,event.currentTarget);};
 $('#compare-published').onclick=reviewChanges;$('#workspace-backup').onclick=workspaceBackup;
 $('#settings').onclick=settings;$('#history').onclick=history;
-$('#save').onclick=()=>save().then(ok=>{if(ok)toast('Saved on this Mac.');}).catch(errorNotice);
+$('#save').onclick=()=>save().then(ok=>{if(ok)toast(onlineTest?'Saved in private test workspace.':'Saved on this Mac.');}).catch(errorNotice);
 $('#sync').onclick=()=>sync();$('#publish').onclick=()=>publicationDialog();
 $('#language-version').onchange=event=>{state.version=Number(event.target.value);renderDocument();requestPreview(true);};$('#add-language').onclick=addLanguage;
 $('#refresh-preview').onclick=()=>requestPreview(true);
@@ -939,12 +946,23 @@ async function boot(){
   try{state.previewTheme=['light','dark'].includes(store.get('notes:preview-theme'))?store.get('notes:preview-theme'):'auto';$('#preview-theme').value=state.previewTheme;
     state.theme=store.get('notes:theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');applyTheme();
     const session=await api('/api/session');Object.assign(state,{schema:session.schema,items:session.notes,repository:session.repository,connected:session.connected});renderLibrary();$('#sync').disabled=state.connected===false;
-    $('#save-status').textContent='Local workspace ready';const last=store.get('notes:last:'+state.repository);
+    $('#save-status').textContent=onlineTest?'Private test workspace ready':'Local workspace ready';
+    if(onlineTest){$('.library-brand small').textContent='Separate online test';$('#sync-status').textContent='Cloud autosave · test notes only';$('#workspace-backup').disabled=true;$('#workspace-backup').title='Complete backup/restore is not connected in this test version';$('#compare-published').hidden=true;$('#workflow-help').hidden=true;}const last=store.get('notes:last:'+state.repository);
     if(last&&state.items.some(i=>i.path===last))await openNote(last,true);
-    if(state.connected===false)notice('Restored workspace · GitHub backup and publication are disconnected. You can write, preview, and create local backups.');
+    if(state.connected===false)notice(disconnectedMessage());
     if(session.last_publication?.run_id&&session.last_publication.status!=='completed')watchRun(session.last_publication);
   }catch(e){$('#save-status').textContent='Workspace needs attention';errorNotice(e);}
 }
+let checkingRemote=false;
+async function continueCloudDraft(){
+  if(!onlineTest||checkingRemote||document.hidden)return;
+  checkingRemote=true;const path=state.opened?.path,epoch=state.epoch;
+  try{await refreshLibrary();if(!path||state.opening||state.blocked||state.epoch!==state.saved||$('#modal').open)return;const latest=await api('/api/note?path='+encodeURIComponent(path));
+    if(state.opened?.path===path&&state.epoch===epoch&&state.epoch===state.saved&&latest.etag!==state.opened.etag){await openNote(path,true);toast('Loaded your latest saved writing.');}
+  }catch(error){if(error.code!==404)errorNotice(error);}finally{checkingRemote=false;}
+}
+window.addEventListener('focus',continueCloudDraft);
+document.addEventListener('visibilitychange',()=>{if(!onlineTest)return;if(document.hidden){if(state.doc&&state.epoch!==state.saved)save().catch(errorNotice);}else continueCloudDraft();});
 setupLayout({store,onPreview:()=>requestPreview(true)});
 boot();
 

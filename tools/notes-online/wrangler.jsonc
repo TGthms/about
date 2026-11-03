@@ -1,0 +1,12 @@
+{
+  "name": "notes-manager",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-13",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": { "directory": "dist", "binding": "ASSETS", "run_worker_first": true },
+  "durable_objects": { "bindings": [{ "name": "WORKSPACE", "class_name": "NotesWorkspace" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["NotesWorkspace"] }],
+  "vars": { "MANAGER_ORIGIN": "https://notes-manager.tgthms.workers.dev" },
+  "observability": { "enabled": false }
+}

@@ -20,6 +20,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node for SQLite-backed Notes checks
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+
       - name: Refresh resource versions
         run: python3 scripts/version-assets.py
 
@@ -69,6 +74,9 @@ jobs:
           npm ci --ignore-scripts
           npm run build
           git diff --exit-code -- static/app.js static/app.js.LEGAL.txt THIRD_PARTY_NOTICES.md src/material-icons.json
+
+      - name: Check online Notes document storage
+        run: node --test tools/notes-online/test/store.test.mjs
 
       - name: Check Gallery Manager sync
         run: python3 tests/gallery_sync_test.py
