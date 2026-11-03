@@ -26,7 +26,7 @@ def build(runtime):
         shutil.copyfile(manager/'static'/name,output/name)
     shutil.copyfile(manager/'THIRD_PARTY_NOTICES.md',output/'editor-notices.txt')
     markup=(output/'index.html').read_text().replace('<html lang="en">','<html lang="en" data-workspace="online-test">')
-    markup=markup.replace('Your local workspace','Separate online test').replace('Autosaved on this Mac. Backups stay private.','Cloud autosave · test notes only').replace('<button id="sync">','<button id="sync" disabled>').replace('<button id="workspace-backup" class="quiet">','<button id="workspace-backup" class="quiet" disabled>').replace('<button id="workflow-help" class="quiet">','<button id="workflow-help" class="quiet" hidden>')
+    markup=markup.replace('Your local workspace','Separate online test').replace('Edits save locally. Sync drafts to exchange changes with GitHub.','Cloud autosave · test notes only').replace('<button id="sync"','<button id="sync" disabled').replace('<button id="workspace-backup" class="quiet">','<button id="workspace-backup" class="quiet" disabled>').replace('<button id="workflow-help" class="quiet">','<button id="workflow-help" class="quiet" hidden>')
     markup=markup.replace('</title>','</title><link rel="icon" href="data:,">')
     markup=markup.replace('<body>','<body><div class="online-test-banner" role="status">Online test workspace · separate from your Mac · no publishing or GitHub backup</div>')
     (output/'index.html').write_text(markup)

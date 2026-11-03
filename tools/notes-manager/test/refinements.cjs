@@ -73,7 +73,7 @@ async function rightNote(title){const note=page.locator('.note-item').filter({ha
   await page.getByRole('button',{name:'Empty Trash…',exact:true}).click();await page.getByRole('button',{name:'Empty Trash',exact:true}).click();
   await expect(page.locator('#modal-title')).toHaveText('Trash');await expect(page.locator('#modal-body')).toContainText('Trash is empty.');
   await expect(page.getByRole('button',{name:'Empty Trash…',exact:true})).toBeDisabled();await page.locator('#modal-close').click();
-  await page.locator('#workflow-help').click();await expect(page.locator('#modal-body')).toContainText('Autosaved on this Mac');await expect(page.locator('#modal-body')).toContainText('Back up drafts');await page.locator('#modal-close').click();
+  await page.locator('#workflow-help').click();await expect(page.locator('#modal-body')).toContainText('Autosaved on this Mac');await expect(page.locator('#modal-body')).toContainText('Sync drafts');await page.locator('#modal-close').click();
   await page.screenshot({path:'/tmp/notes-manager-refined-desktop.png',fullPage:true});assert.deepEqual(errors,[]);
   console.log('PASS: contextual formatting and keyboard menus; discard; large settings switches; full OG Studio, image export, reopening and persistence; Trash and restore; workflow guidance.');
   await browser.close();fixture.kill();

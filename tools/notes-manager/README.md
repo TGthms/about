@@ -36,7 +36,7 @@ tests; normal daily launches use HTTPS.
 
 By default, `.private-notes/` inside the About folder is a separate Git clone of
 `TGthms/about-notes`. It contains notes, uploads, editable cover sources, and private
-publication records. Autosave writes there. **Back up drafts** synchronizes that
+publication records. Autosave writes there. **Sync drafts** synchronizes that
 clone with the private GitHub repository; pushing the public About repository does
 not include it.
 
@@ -47,19 +47,23 @@ Keep that backup private. For the freshest copy, save and stop the manager befor
 copying. On a different Mac, set up HTTPS there rather than transferring the local
 certificate authority's private key.
 
-## Three clear states
+## Saving, syncing, and backups
 
 - **Autosaved on this Mac:** typing updates the local draft after a short pause.
   Command-S saves immediately. Browser and disk recovery also preserve writing.
   None of these actions changes the live article.
-- **Back up drafts:** synchronizes your drafts, media, and cover designs to the
-  private GitHub repository. It checks online changes and presents conflicts for
-  review. Nothing is published.
+- **Sync drafts:** exchanges your drafts, media, and cover designs with the
+  private GitHub repository. It sends Mac edits, retrieves changes from Pages CMS,
+  and presents conflicting edits for review. Nothing is published.
 - **Publish…:** checks the current note, backs up the saved revision, and sends that
   exact revision to the publication workflow. Other drafts stay private. The result
   is reported after both Cloudflare Pages and GitHub Pages finish deploying.
 
-The sidebar's **How saving works** control explains these states inside the editor.
+**Workspace backup** creates a separate downloadable ZIP for complete backup and
+restore, including local History and Trash. Use **Sync drafts** before switching
+to Pages CMS and again when returning to the Mac.
+
+The sidebar's **How saving works** control explains these actions inside the editor.
 The displayed Date is not a publication schedule.
 
 ## Review and publish
@@ -153,8 +157,8 @@ Right-click a note in the sidebar, use its **…** button, or open the active no
 
 - **Duplicate as draft** creates a new address, preserves the original, and forks
   cover designs so editing the copy cannot change the original design.
-- **Discard local edits** restores the last private backup (or last committed
-  version when no remote is configured). It is disabled when there is no backup or
+- **Discard local edits** restores the fetched GitHub version (or last committed
+  version when no remote is configured). It is disabled when there is no saved version or
   no local change. It does not restore the public revision or change the website.
   A local recovery copy of discarded writing remains in History. Cover sources are
   restored too; their discarded copies stay in `.notes-manager/discarded-designs/`.
@@ -196,7 +200,7 @@ available for any image you prefer.
 
 Editable design JSON lives in private `media/designs/`; its background/logo images
 stay in the private media library. Notes retain design identifiers rather than large
-embedded images. **Back up drafts** includes these sources. Only the explicitly
+embedded images. **Sync drafts** includes these sources. Only the explicitly
 selected raster cover is published; the design files are not exported to the website.
 OG Studio's additional named designs and favorite palettes remain browser features,
 as in the standalone tool; settings can also be exported/imported.

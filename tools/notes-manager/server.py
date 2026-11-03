@@ -245,7 +245,7 @@ class Workspace:
             if not isinstance(identity,str) or not re.fullmatch(r'[a-f0-9]{24}',identity): continue
             source=git(self.content,'show',revision+':media/designs/'+identity+'.json',okay=True)
             designs[identity]=digest(source.stdout) if source.returncode==0 else None
-        return {'revision': revision, 'etag': digest(saved.stdout), 'design_etags':designs,'label': 'last GitHub backup' if remote.returncode == 0 else 'last committed version'}
+        return {'revision': revision, 'etag': digest(saved.stdout), 'design_etags':designs,'label': 'fetched GitHub version' if remote.returncode == 0 else 'last committed version'}
 
     def comparison(self, relative):
         """Compare the saved draft against the pinned public revision, never HEAD."""
@@ -640,7 +640,7 @@ class Workspace:
     def sync(self, resolutions=None, expected_remote=None):
         with self.writing():
             if git(self.content, 'remote', 'get-url', 'origin', okay=True).returncode:
-                raise Problem('This workspace is disconnected from GitHub. Review it locally, or restore its drafts into your original workspace before backing up to GitHub.')
+                raise Problem('This workspace is disconnected from GitHub. Review it locally, or restore its drafts into your original workspace before syncing with GitHub.')
             if resolutions and not expected_remote: raise Problem('Compare the current online version before resolving changes.', 409)
             if git_text(self.content, 'rev-parse', '--show-toplevel') != str(self.content) or git_text(self.content, 'branch', '--show-current') != 'main':
                 raise Problem('Open the main branch of the private content repository before syncing.')

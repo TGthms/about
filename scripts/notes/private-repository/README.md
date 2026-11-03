@@ -11,8 +11,8 @@ It does not require Pages CMS.
 
 - Writing is recovered as you type and saved locally after a short pause. Command-S
   saves immediately.
-- **Back up drafts** synchronizes drafts and uploads to this private repository;
-  it never publishes them.
+- **Sync drafts** sends Mac edits and uploads to this private repository and
+  retrieves changes made through Pages CMS. It never publishes them.
 - **Publish…** checks and synchronizes the saved note, asks for confirmation, and
   releases that revision through the existing workflow. Wait for both website
   deployments to finish.

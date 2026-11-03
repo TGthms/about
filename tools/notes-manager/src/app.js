@@ -119,7 +119,7 @@ function remember(){
 }
 function changed(){
   state.epoch++;remember();$('#save-status').textContent=onlineTest?'Saving privately…':'Saving on this Mac…';
-  $('#sync-status').textContent=onlineTest?'Private autosave · publication disconnected':'Local changes waiting for private backup';
+  $('#sync-status').textContent=onlineTest?'Private autosave · publication disconnected':'Local changes waiting to sync';
   clearTimeout(saveTimer);if(!state.blocked)saveTimer=setTimeout(()=>save().catch(errorNotice),1400);
   requestPreview();wordCount();
 }
@@ -469,7 +469,7 @@ async function discardNote(path){
   try{
     if(state.opened?.path===path){await save();clearTimeout(recoveryTimer);}
     const current=await api('/api/note?path='+encodeURIComponent(path));
-    if(!current.baseline){toast('This draft has no backed-up version yet. You can move it to Trash instead.');return;}
+    if(!current.baseline){toast('This draft has no saved GitHub or committed version yet. You can move it to Trash instead.');return;}
     confirmDialog('Discard local edits?','Restore “'+(current.document.title||'Untitled')+'” and its saved cover designs to the '+current.baseline.label+'. The published article will stay unchanged. A local recovery copy will be kept.','Discard local edits',async()=>{
       await api('/api/discard',{path,etag:current.etag,revision:current.baseline.revision,design_etags:current.design_etags});clearNoteRecovery(path);
       if(state.opened?.path===path)await openNote(path,true);await refreshLibrary();toast('Local edits discarded. The backed-up version is restored.');
@@ -566,10 +566,11 @@ async function restorePreview(id){
         }),'primary')])],true);
   }catch(error){errorNotice(error);}
 }
-function workflowHelp(){modal('Saving, backups, and publishing',[
+function workflowHelp(){modal('Saving, syncing, and backups',[
   el('div',{class:'workflow-step'},[icon('save'),el('div',{},[el('h3',{text:'Autosaved on this Mac'}),el('p',{text:'Typing saves your working draft automatically. Command-S saves immediately. The live website stays unchanged.'})])]),
-  el('div',{class:'workflow-step'},[icon('cloud_upload'),el('div',{},[el('h3',{text:'Back up drafts'}),el('p',{text:'Copies your drafts, uploads, and cover designs to your private GitHub repository. Nothing is published. This also checks for changes made elsewhere.'})])]),
-  el('div',{class:'workflow-step'},[icon('publish'),el('div',{},[el('h3',{text:'Publish'}),el('p',{text:'Checks the current note, backs it up, and updates its public article and selected translations. Your other drafts remain private.'})])])]);}
+  el('div',{class:'workflow-step'},[icon('refresh'),el('div',{},[el('h3',{text:'Sync drafts'}),el('p',{text:'Sends your Mac edits, uploads, and cover designs to private GitHub, and retrieves changes made through Pages CMS or another Mac. You can review conflicting edits before resolving them. Nothing is published.'})])]),
+  el('div',{class:'workflow-step'},[icon('download'),el('div',{},[el('h3',{text:'Workspace backup'}),el('p',{text:'Creates a downloadable ZIP with drafts, uploads, Git history, local History, recovery, and Trash. Use it to keep a complete backup or restore a workspace.'})])]),
+  el('div',{class:'workflow-step'},[icon('publish'),el('div',{},[el('h3',{text:'Publish'}),el('p',{text:'Checks the current note, syncs its saved revision with GitHub, and updates its public article and selected translations. Your other drafts remain private.'})])])]);}
 
 function editorContext(event){
   if(event.shiftKey||$('#modal').open)return;
@@ -664,7 +665,7 @@ async function flushStudio(session){
   if(!session.latest)return;
   session.pending=false;const latest=copy(session.latest);
   session.saving=(async()=>{
-    const design=await designAssets(session,latest),saved=await api('/api/design',{id:session.identity,design,etag:session.etag});if(session.etag!==saved.etag)$('#sync-status').textContent=onlineTest?'Private autosave · publication disconnected':'Local changes waiting for private backup';session.etag=saved.etag;session.saved=copy(latest);
+    const design=await designAssets(session,latest),saved=await api('/api/design',{id:session.identity,design,etag:session.etag});if(session.etag!==saved.etag)$('#sync-status').textContent=onlineTest?'Private autosave · publication disconnected':'Local changes waiting to sync';session.etag=saved.etag;session.saved=copy(latest);
     session.message.textContent=onlineTest?'Cover draft saved privately in the test workspace':'Cover draft saved on this Mac';
     session.frame.contentWindow?.postMessage({type:'og-manager-saved',nonce:session.nonce},location.origin);
   })();
@@ -788,12 +789,12 @@ function showChecks(errors,warnings){
 
 async function sync(resolutions,remote){
   if(state.doc&&!(await save())){toast('Choose a recovered version before syncing.');return false;}
-  const b=$('#sync');b.disabled=true;$('#sync-status').textContent='Backing up drafts and checking online changes…';
+  const b=$('#sync');b.disabled=true;$('#sync-status').textContent='Syncing drafts with GitHub…';
   const startedPath=state.opened?.path,startedEpoch=state.epoch;
-  try{const result=await job('sync',{resolutions,remote});$('#sync-status').textContent='Private backup up to date · '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  try{const result=await job('sync',{resolutions,remote});$('#sync-status').textContent='Last synced · '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
     if(state.opened&&state.opened.path===startedPath&&state.epoch===startedEpoch)await openNote(startedPath,true);
-    await refreshLibrary();toast('Drafts backed up privately. The website is unchanged.');return true;
-  }catch(e){$('#sync-status').textContent='Saved on this Mac · backup needs attention';if(e.conflicts)syncConflicts(e);else errorNotice(e);return false;}finally{b.disabled=false;}
+    await refreshLibrary();toast('Drafts synced with GitHub. Nothing was published.');return true;
+  }catch(e){$('#sync-status').textContent='Saved on this Mac · sync needs attention';if(e.conflicts)syncConflicts(e);else errorNotice(e);return false;}finally{b.disabled=false;}
 }
 function syncConflicts(error){
   const choices={},entries=error.conflicts.map(conflict=>{
@@ -966,6 +967,6 @@ document.addEventListener('visibilitychange',()=>{if(!onlineTest)return;if(docum
 setupLayout({store,onPreview:()=>requestPreview(true)});
 boot();
 
-for(const [id,name,label]of [["new-note","add","New note"],["empty-new","draft","Write a note"],["media-library","image","Media library"],["trash","delete","Trash"],["sync","cloud_upload","Back up drafts"],["workflow-help","info","How saving works"],["history","history","History"],["settings","settings","Settings"],["publish","publish","Publish…"],["note-more","more_horiz"],["modal-close","close"],["library-toggle","menu"],["library-close","close"],["add-language","add"],["refresh-preview","refresh"],["app-theme","dark_mode"]])setIcon($("#"+id),name,label);
+for(const [id,name,label]of [["new-note","add","New note"],["empty-new","draft","Write a note"],["media-library","image","Media library"],["trash","delete","Trash"],["sync","refresh","Sync drafts"],["workflow-help","info","How saving works"],["history","history","History"],["settings","settings","Settings"],["publish","publish","Publish…"],["note-more","more_horiz"],["modal-close","close"],["library-toggle","menu"],["library-close","close"],["add-language","add"],["refresh-preview","refresh"],["app-theme","dark_mode"]])setIcon($("#"+id),name,label);
 
 applyTheme();
