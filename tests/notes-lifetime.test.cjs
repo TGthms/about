@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness({expired = false, loading = false, article = true} = {}) {
+function harness({expired = false, loading = false, article = true, labelDate = null, labelsOnly = false} = {}) {
   let now = Date.parse('2026-10-29T12:00:00Z'), serial = 0, refreshed = 0;
   const end = now + (expired ? -1 : 10000), events = {}, windows = {}, timers = new Map(), attrs = {};
   const video = {paused:0, released:0, pause(){this.paused++;}, removeAttribute(){}, load(){this.released++;}};
@@ -12,11 +12,12 @@ function harness({expired = false, loading = false, article = true} = {}) {
     getAttribute:()=>new Date(end).toISOString(), querySelectorAll:()=>[video], remove(){this.removed=true;},
   };
   const message = {hidden:true};
+  const label = {getAttribute:()=>labelDate,textContent:'Fallback'};
   const document = {
     hidden:false, readyState:loading ? 'loading' : 'complete',
     documentElement:{setAttribute(key,value){attrs[key]=value;}},
-    currentScript:{getAttribute:()=>article ? new Date(end).toISOString() : null},
-    querySelectorAll:selector=>selector === '[data-note-expires]:not(script)' && !node.removed ? [node] : [],
+    currentScript:{getAttribute:key=>key === 'data-note-labels-only' ? (labelsOnly ? 'true' : null) : article ? new Date(end).toISOString() : null},
+    querySelectorAll:selector=>selector === '[data-note-expiry-label]' && labelDate ? [label] : selector === '[data-note-expires]:not(script)' && !node.removed ? [node] : [],
     querySelector:()=>message,
     dispatchEvent(event){if(events[event.type]) events[event.type](event);},
     addEventListener(name,callback){events[name]=callback;},
@@ -31,7 +32,7 @@ function harness({expired = false, loading = false, article = true} = {}) {
   vm.runInNewContext(fs.readFileSync('public/js/notes-lifetime.js','utf8'),{
     window,document,Event:class {constructor(type){this.type=type;}},Date:class extends Date {static now(){return now;}},
   });
-  return {node,video,message,document,events,windows,timers,attrs,get refreshed(){return refreshed;},get expiredEvents(){return expiredEvents;},advance(ms){now+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);now+=t.delay;t.fn();}};
+  return {node,video,message,label,document,events,windows,timers,attrs,get refreshed(){return refreshed;},get expiredEvents(){return expiredEvents;},advance(ms){now+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);now+=t.delay;t.fn();}};
 }
 test('an active article uses one deadline timer and releases content, video and balloons at expiry',()=>{
   const h=harness();assert.equal(h.node.removed,false);assert.equal(h.message.hidden,true);
@@ -53,4 +54,19 @@ test('expired list entries trigger carousel refresh without marking ordinary pag
   const h=harness({article:false});h.fire();assert.equal(h.node.removed,true);
   assert.equal(h.expiredEvents,0);assert.equal(Object.hasOwn(h.attrs,'data-note-expired'),false);
   assert.ok(h.refreshed>=2);
+});
+
+test('Birthday availability shows month, day and minute in the visitor timezone, without seconds',()=>{
+  const timestamp='2026-11-04T08:15:01.925614Z',h=harness({labelDate:timestamp}),end=new Date(timestamp);
+  const date=end.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+  const time=end.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  assert.equal(h.label.textContent,'Until '+date+' at '+time);
+  assert.ok(h.label.title.startsWith('Your local time · '));assert.ok(!h.label.textContent.includes('2026'));
+  assert.equal(harness({labelDate:'invalid'}).label.textContent,'Fallback');
+});
+
+test('author previews format dates without hiding expired drafts or starting timers',()=>{
+  const h=harness({expired:true,labelsOnly:true,labelDate:'2026-11-04T08:15:01.925614Z'});
+  assert.ok(h.label.textContent.startsWith('Until November'));assert.equal(h.node.removed,false);
+  assert.equal(h.timers.size,0);assert.equal(h.expiredEvents,0);assert.deepEqual(h.attrs,{});
 });

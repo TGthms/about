@@ -64,6 +64,15 @@ The displayed Date is not a publication schedule.
 
 ## Review and publish
 
+The article preview follows the workspace theme by default. Use its **Preview
+theme** menu to choose Light or Dark independently, or return to **Follow
+workspace**. That choice is remembered in this browser. Birthday availability
+labels use the viewer's local month, day, and time; private previews keep the draft
+visible even after its public availability would have ended.
+
+The proposed independent online manager is documented in [ONLINE.md](ONLINE.md).
+It has not replaced this local workspace yet.
+
 **Review changes** compares your saved draft with the exact revision pinned for the
 public website, even when you have made newer private commits. It refreshes the
 online release record without merging or pushing your drafts; when offline, it

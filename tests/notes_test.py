@@ -158,6 +158,19 @@ class NotesTests(unittest.TestCase):
         self.assertEqual(active[0]['_expires'], '2026-10-30T09:00:00Z')
         self.assertEqual(notes.read_posts(self.private, now=dt.datetime.fromisoformat('2026-10-30T09:00:00+00:00')), [])
 
+    def test_birthday_labels_are_readable_without_script_and_localized_in_private_preview(self):
+        stamp = '2026-11-04T00:15:01.925614Z'
+        label = notes.expiry_time(stamp)
+        self.assertIn('Until November 4 at 00:15 UTC', label)
+        self.assertNotIn('Until 2026-', label)
+        self.assertIn('datetime="' + stamp + '"', label)
+        path = self.post(birthday=True)
+        output = self.root / 'preview'
+        notes.build(self.private, self.public, path, output)
+        markup = next(output.glob('*.html')).read_text()
+        self.assertIn('<script data-note-labels-only="true">', markup)
+        self.assertNotIn('src="../js/notes-lifetime.js', markup)
+
     def test_birthday_export_and_cleanup_cover_all_public_surfaces_and_preserve_shared_media(self):
         shared = self.image('shared.png', (100, 60)); birthday_only = self.image('birthday.png', (120, 70))
         self.post('ordinary', cover=shared, cover_alt='Shared photograph', highlight=True)

@@ -10,7 +10,19 @@ async function rightNote(title){const note=page.locator('.note-item').filter({ha
 (async()=>{
   const cfg=await start();browser=await chromium.launch({headless:true,channel:process.env.NOTES_BROWSER_CHANNEL||'chrome'});
   const context=await browser.newContext({viewport:{width:1600,height:1000},permissions:['clipboard-read','clipboard-write']});page=await context.newPage();page.setDefaultTimeout(15000);page.on('pageerror',e=>errors.push(e.message));
+  await page.emulateMedia({colorScheme:'dark'});
   await page.goto(cfg.url);await page.locator('.note-item').filter({hasText:'An existing note'}).click();
+  const previewTheme=page.locator('#preview-theme'),preview=()=>page.frameLocator('#preview').locator('html');
+  await expect(previewTheme).toHaveValue('auto');await expect(preview()).toHaveAttribute('data-theme','dark',{timeout:20000});
+  await page.locator('#app-theme').click();await expect(preview()).toHaveAttribute('data-theme','light');
+  await previewTheme.selectOption('dark');await expect(preview()).toHaveAttribute('data-theme','dark');
+  await page.locator('#app-theme').click();await page.locator('#app-theme').click();await expect(preview()).toHaveAttribute('data-theme','dark');
+  await page.reload();await expect(previewTheme).toHaveValue('dark');await expect(preview()).toHaveAttribute('data-theme','dark');
+  await previewTheme.selectOption('auto');await expect(preview()).toHaveAttribute('data-theme','light');
+  await page.locator('#app-theme').click();await expect(preview()).toHaveAttribute('data-theme','dark');
+  await page.locator('#settings').click();await page.getByRole('switch',{name:'Birthday',exact:true}).check();await page.locator('#modal-close').click();
+  const expiry=page.frameLocator('#preview').locator('[data-note-expiry-label]');await expect(expiry).toHaveText(/^Until [A-Z][a-z]+ \d{1,2} at \d{2}:\d{2}$/,{timeout:20000});await expect(expiry).toHaveAttribute('title',/^Your local time/);
+  await page.locator('#settings').click();await page.getByRole('switch',{name:'Birthday',exact:true}).uncheck();await page.locator('#modal-close').click();
   const editor=page.locator('.main-text .tiptap');await editor.fill('Menu formatting example');await editor.press('Meta+a');
   await editor.locator('p').click({button:'right',position:{x:20,y:12}});
   await page.getByRole('menuitemcheckbox',{name:'Bold',exact:true}).click();await expect(editor.locator('strong')).toContainText('Menu formatting example');await saved();
@@ -44,7 +56,14 @@ async function rightNote(title){const note=page.locator('.note-item').filter({ha
   await page.locator('#new-note').click();await page.getByRole('textbox',{name:'Title',exact:true}).fill('Throwaway');await page.getByRole('button',{name:'Start writing',exact:true}).click();
   await expect(page.locator('.note-item[aria-current=true]')).toContainText('Throwaway');
   await rightNote('Throwaway');await page.getByRole('menuitem',{name:'Move to Trash…',exact:true}).click();await page.getByRole('button',{name:'Move to Trash',exact:true}).click();
-  await expect(page.locator('.note-item').filter({hasText:'Throwaway'})).toHaveCount(0);await page.locator('#trash').click();
+  await expect(page.locator('.note-item').filter({hasText:'Throwaway'})).toHaveCount(0);
+  await expect(page.locator('#toast button')).toHaveText('Undo');
+  const contrast=await page.locator('#toast button').evaluate(control=>{
+    const style=getComputedStyle(control),parent=getComputedStyle(control.parentElement);
+    const luminance=color=>{const parts=color.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return parts[0]*.2126+parts[1]*.7152+parts[2]*.0722;};
+    const a=luminance(style.color),b=luminance(parent.backgroundColor);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+  });assert.ok(contrast>=4.5,'Undo must remain readable against the dark-mode toast surface');
+  await page.locator('#trash').click();
   await expect(page.locator('.trash-row')).toContainText('Throwaway');await page.getByRole('button',{name:'Restore draft',exact:true}).click();await expect(page.locator('.note-item[aria-current=true]')).toContainText('Throwaway');
   await rightNote('Throwaway');await page.getByRole('menuitem',{name:'Move to Trash…',exact:true}).click();await page.getByRole('button',{name:'Move to Trash',exact:true}).click();
   await expect(page.locator('.note-item').filter({hasText:'Throwaway'})).toHaveCount(0);await page.locator('#trash').click();

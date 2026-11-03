@@ -3,6 +3,17 @@
   'use strict';
   var root = document.documentElement;
   var source = document.currentScript;
+  function localizeLabels() {
+    document.querySelectorAll('[data-note-expiry-label]').forEach(function (label) {
+      var end = new Date(label.getAttribute('datetime'));
+      if (!isFinite(end.getTime())) return;
+      label.textContent = 'Until ' + end.toLocaleDateString('en-US', {month: 'long', day: 'numeric'}) + ' at ' +
+        end.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit', hourCycle: 'h23'});
+      label.title = 'Your local time · ' + end.toLocaleString('en-US', {year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'});
+    });
+  }
+  // Author previews format dates without expiring the writing being reviewed.
+  if (source && source.getAttribute('data-note-labels-only') === 'true') { localizeLabels(); return; }
   var deadline = source && Date.parse(source.getAttribute('data-note-expires'));
   var timer = 0;
   // This script runs in the head on articles, before their content can paint.
@@ -25,11 +36,7 @@
       if (message) message.hidden = false;
       document.dispatchEvent(new Event('noteexpired'));
     }
-    document.querySelectorAll('[data-note-expiry-label]').forEach(function (label) {
-      var end = new Date(label.getAttribute('datetime'));
-      label.textContent = 'Until ' + end.toLocaleTimeString('en', {hour: 'numeric', minute: '2-digit'});
-      label.title = 'Expires ' + end.toLocaleString('en');
-    });
+    localizeLabels();
     document.querySelectorAll('.notes-list').forEach(function (list) {
       if (list.querySelector('.note-card')) return;
       list.hidden = true;

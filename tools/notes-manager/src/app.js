@@ -44,7 +44,7 @@ const blockHelp = {
   comparison:'Two images with a before-and-after slider, and a simple fallback.'
 };
 const state = {schema:null,items:[],opened:null,doc:null,version:-1,editors:[],epoch:0,saved:0,savePromise:null,
-  previewEpoch:0,previewRunning:false,previewWanted:false,blocked:false,recovery:null,theme:'light',previewTheme:'light',drag:null};
+  previewEpoch:0,previewRunning:false,previewWanted:false,blocked:false,recovery:null,theme:'light',previewTheme:'auto',drag:null};
 let saveTimer, recoveryTimer, previewTimer, toastTimer, runTimer;
 const modalStack=[];
 state.previewScroll=new Map();
@@ -63,7 +63,10 @@ async function api(path, data, raw) {
 }
 function toast(message, action) {
   clearTimeout(toastTimer); const node=$('#toast');node.replaceChildren(document.createTextNode(message));
-  if(action)node.append(button('Undo',()=>{action();node.hidden=true;}));node.hidden=false;
+  if(action)node.append(button('Undo',async event=>{
+    clearTimeout(toastTimer);const control=event.currentTarget;control.disabled=true;control.textContent='Undoing…';
+    try{await action();node.hidden=true;}catch(error){control.disabled=false;control.textContent='Undo';errorNotice(error);}
+  }));node.hidden=false;
   toastTimer=setTimeout(()=>node.hidden=true,action?12000:5000);
 }
 function notice(message, action) {
@@ -761,7 +764,7 @@ async function refreshPreview(){
   const epoch=state.previewEpoch,path=state.opened.path;
   $('#checks-summary').textContent='Updating preview…';
   try{
-    const result=await job('preview',{path,document:copy(state.doc),language:currentVersion().language,theme:state.previewTheme});
+    const result=await job('preview',{path,document:copy(state.doc),language:currentVersion().language,theme:state.previewTheme==='auto'?state.theme:state.previewTheme});
     if(epoch===state.previewEpoch&&path===state.opened.path){
       state.previewFrameKey=path+':'+currentVersion().language;state.previewFrameId=result.url.split('/').at(-1);
       state.previewRestore=state.previewScroll.get(state.previewFrameKey)||0;
@@ -920,13 +923,21 @@ for(const b of document.querySelectorAll('[data-width]'))b.onclick=()=>{
   document.querySelectorAll('[data-width]').forEach(n=>n.setAttribute('aria-pressed',String(n===b)));
   $('#preview').style.width={desktop:'100%',phone:'390px',watch:'205px'}[b.dataset.width];
 };
-function applyTheme(){document.documentElement.dataset.theme=state.theme;setIcon($('#app-theme'),state.theme==='dark'?'light_mode':'dark_mode');}
+function applyTheme(){
+  const changed=document.documentElement.dataset.theme!==state.theme;
+  document.documentElement.dataset.theme=state.theme;setIcon($('#app-theme'),state.theme==='dark'?'light_mode':'dark_mode');
+  $('#app-theme').title=state.theme==='dark'?'Switch workspace to light mode':'Switch workspace to dark mode';
+  $('#app-theme').setAttribute('aria-label',$('#app-theme').title);
+  if(changed&&state.previewTheme==='auto')requestPreview(true);
+}
 $('#app-theme').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';store.set('notes:theme',state.theme);applyTheme();};
-$('#preview-theme').onclick=()=>{state.previewTheme=state.previewTheme==='dark'?'light':'dark';setIcon($('#preview-theme'),state.previewTheme==='dark'?'light_mode':'dark_mode');requestPreview(true);};
+$('#preview-theme').onchange=event=>{state.previewTheme=event.target.value;store.set('notes:preview-theme',state.previewTheme);requestPreview(true);};
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',event=>{if(!store.get('notes:theme')){state.theme=event.matches?'dark':'light';applyTheme();}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&$('.library').classList.contains('is-open'))closeLibrary();if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save().catch(errorNotice);}});
 window.addEventListener('beforeunload',event=>{if(state.doc&&state.epoch!==state.saved){remember();event.preventDefault();event.returnValue='';}});
 async function boot(){
-  try{state.theme=store.get('notes:theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');applyTheme();
+  try{state.previewTheme=['light','dark'].includes(store.get('notes:preview-theme'))?store.get('notes:preview-theme'):'auto';$('#preview-theme').value=state.previewTheme;
+    state.theme=store.get('notes:theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');applyTheme();
     const session=await api('/api/session');Object.assign(state,{schema:session.schema,items:session.notes,repository:session.repository,connected:session.connected});renderLibrary();$('#sync').disabled=state.connected===false;
     $('#save-status').textContent='Local workspace ready';const last=store.get('notes:last:'+state.repository);
     if(last&&state.items.some(i=>i.path===last))await openNote(last,true);
@@ -937,6 +948,6 @@ async function boot(){
 setupLayout({store,onPreview:()=>requestPreview(true)});
 boot();
 
-for(const [id,name,label]of [["new-note","add","New note"],["empty-new","draft","Write a note"],["media-library","image","Media library"],["trash","delete","Trash"],["sync","cloud_upload","Back up drafts"],["workflow-help","info","How saving works"],["history","history","History"],["settings","settings","Settings"],["publish","publish","Publish…"],["note-more","more_horiz"],["modal-close","close"],["library-toggle","menu"],["library-close","close"],["add-language","add"],["refresh-preview","refresh"],["app-theme","dark_mode"],["preview-theme","dark_mode"]])setIcon($("#"+id),name,label);
+for(const [id,name,label]of [["new-note","add","New note"],["empty-new","draft","Write a note"],["media-library","image","Media library"],["trash","delete","Trash"],["sync","cloud_upload","Back up drafts"],["workflow-help","info","How saving works"],["history","history","History"],["settings","settings","Settings"],["publish","publish","Publish…"],["note-more","more_horiz"],["modal-close","close"],["library-toggle","menu"],["library-close","close"],["add-language","add"],["refresh-preview","refresh"],["app-theme","dark_mode"]])setIcon($("#"+id),name,label);
 
 applyTheme();

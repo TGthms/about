@@ -125,7 +125,13 @@ def expiry_attr(post):
 
 def availability(post):
     if not post.get('_expires'): return ''
-    return '<span class="note-availability"><time datetime="' + esc(post['_expires']) + '" data-note-expiry-label>Until ' + esc(post['_expires'].replace('T', ' ').replace('Z', ' UTC')) + '</time></span>'
+    return '<span class="note-availability">' + expiry_time(post['_expires']) + '</span>'
+
+def expiry_time(value):
+    # The browser replaces this concise UTC fallback with the visitor's local time.
+    end = dt.datetime.fromisoformat(value.replace('Z', '+00:00')).astimezone(dt.timezone.utc)
+    label = end.strftime('%B') + ' ' + str(end.day) + end.strftime(' at %H:%M UTC')
+    return '<time datetime="' + esc(value) + '" data-note-expiry-label>Until ' + esc(label) + '</time>'
 
 def category_labels(post, prefix, links=True):
     result = []
@@ -554,7 +560,7 @@ def render_post(version, original, media, prefix='../'):
     if not content.startswith('<div class="note-reading-layout">'): content = '<div class="note-body">' + content + '</div>'
     keep_link = original.get('birthday_visibility') == 'keep-link'
     lifetime = 'Shown in Notes for 24 hours; this link stays available.' if keep_link else 'Available for 24 hours'
-    notice = '<p class="note-lifetime">' + lifetime + ' <span aria-hidden="true">·</span> <time datetime="' + esc(original['_expires']) + '" data-note-expiry-label>Until ' + esc(original['_expires'].replace('T', ' ').replace('Z', ' UTC')) + '</time></p>' if original.get('_expires') else ''
+    notice = '<p class="note-lifetime">' + lifetime + ' <span aria-hidden="true">·</span> ' + expiry_time(original['_expires']) + '</p>' if original.get('_expires') else ''
     expired = ('<section class="note-expired" hidden tabindex="-1"><a class="notes-back" href="../notes.html">← All notes</a><h1>This birthday note has ended.</h1><p>It was here for 24 hours.</p></section>' if original.get('_expires') and not keep_link else '')
     return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{ "" if keep_link else expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
@@ -771,6 +777,9 @@ def build(private, public, preview_path=None, preview_output=None):
                     markup = re.sub(r'<script\b[^>]*>.*?</script>', '', markup, flags=re.S)
                     css = re.sub(r'url\([^)]*\)', 'none', css)
                     markup = markup.replace('</head>', '<style>' + css.replace('</style', '<\\/style') + '</style></head>')
+                    if 'data-note-expiry-label' in rendered:
+                        script = (public / 'js/notes-lifetime.js').read_text().replace('</script', '<\\/script')
+                        markup = markup.replace('</body>', '<script data-note-labels-only="true">' + script + '</script></body>')
                     if interactive:
                         # Only this repository-owned component may execute in a preview.
                         script = (public / 'js/same-study.js').read_text().replace('</script', '<\\/script')
