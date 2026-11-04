@@ -128,6 +128,12 @@ The supplied RSS icon is Google's Material Symbols icon, distributed under Apach
 
 Run `node --test tests/*.test.cjs` and `python3 tests/html-integrity.py` for image-error/timeout recovery, clipboard language-switch races, section navigation, preferences keyboard focus/return, match physics and opponent behavior, clipboard failures, and complete Korean translation/placeholder coverage. The deployment workflow runs these alongside JavaScript syntax and HTML integrity checks.
 
+After installing the manager's existing browser-test dependencies, run
+`node tests/legal-browser.cjs` for all six legal languages, light/dark layouts
+at desktop/phone/Watch widths, no-JavaScript fallback, self-hosted language fonts,
+and the first-party GitHub calendar. `python3 tests/github_snapshot_test.py`
+checks rejection of incomplete or inconsistent upstream calendar data.
+
 Season previews use `?occasion=christmas`, `good-friday`, `easter`, `palm-sunday`, `thanksgiving`, or `new-year`. `?occasion=countdown` runs a 75-second preview (15 seconds compact, 50 seconds in-page, then ten seconds full-screen); `?occasion=final-minute` starts at 60 seconds; `?occasion=final-seconds` starts at the immersive ten-second stage. Both continue into the midnight photo and 30-second celebration. `?occasion=fireworks` starts the midnight celebration immediately; `?occasion=new-year` previews the five-second arrival welcome. Reload to replay. Previews never change stored preferences or the system clock.
 
 Good Friday, Easter, and Palm Sunday follow the Western Gregorian calendar. All six holiday photos use individual responsive framing. Good Friday, Easter, Palm Sunday, and Thanksgiving display attributed verse text with their references. Seasonal photos and copy revert at the next local midnight, including on an already-open page. The ordinary page has one timer to the next date boundary; it fetches no seasonal text, images, or animation libraries. The countdown uses the wall clock, updates once a second while visible, and catches up after a background tab resumes. Visitors who watch the countdown receive fireworks until midnight plus 30 seconds. New arrivals anywhere on January 1 receive five seconds, once per visit, including a restored back/forward-cache visit. Effects stop when hidden and do not replay on ordinary focus. The final ten seconds use a native modal dialog, defers to an already-open site dialog, traps focus, and releases scroll/focus resources on exit. Escape returns to the compact timer without suppressing the midnight celebration. There are no visible return or fireworks-close buttons. Finishing the countdown preserves the visitor’s scroll position and does not focus the site heading. The hero keeps its short introduction; the student/location biography lives in About. Dark mode is the temporary default throughout the countdown and celebration; visitors can override it with the theme control, and their manual choice stays active through every stage. Without a manual change, the saved preference returns afterward. The New Year image is decoded during the final minute and crossfaded at midnight; the old decoded photograph is released afterward.
@@ -138,7 +144,30 @@ The full-size hero remains available alongside responsive landscape and portrait
 
 Pong uses a seeded random source for varied serves, bounded opponent reactions, and reproducible physics checks. Longer rallies gradually increase aiming uncertainty. Contact feedback respects reduced motion, and a completed match reports its longest rally. Short landscape screens place the court alongside the controls. Reading, archive, and QR dialogs use fixed headers and independent scrolling content; a small header blur is available when supported, and dialog exits retain focus and scroll containment until finished.
 
-The custom-domain host injects Cloudflare’s Web Analytics / RUM beacon. The privacy policy discloses its performance and usage reporting, with a link to Cloudflare’s documentation, in all six languages.
+Cloudflare Web Analytics / RUM can be enabled by the host, including on
+`t-g.pages.dev`; beacon injection can differ between addresses and configurations.
+The privacy policy describes this separately from hosting security logs, with
+all six languages and the English no-JavaScript fallback kept aligned. Public
+browsing is distinct from the owner's private editing and preview tools. The
+policy also covers RSS, browser-local search, sharing, temporary Birthday Notes,
+and the limitations of withdrawing already-published material.
+
+Language-specific Noto display fonts are self-hosted under `public/assets/fonts/noto/`.
+The original variable weights, Unicode subsets, and SIL licenses are retained;
+only necessary subsets load, and lightweight browsers still use system fonts.
+Public original writing (including Notes) and original creative media use
+CC BY-NC-ND 4.0 unless marked otherwise. Implementation code remains MIT;
+third-party material and rights retain their own terms and credits.
+
+The GitHub card reads `public/assets/github/contributions.json` and a local avatar.
+`scripts/github_snapshot.py` refreshes public data directly from GitHub, validates
+complete dates, tooltips, levels, and totals, and only then replaces the snapshot.
+The **Refresh public GitHub card** workflow runs daily and can be dispatched
+manually. It commits only those two public files and requests the normal site
+deployment; Cloudflare's Git-connected deployment also receives the commit. If
+refreshing fails, the last good snapshot stays available with its visible update
+date. Visitors make no GitHub API, avatar, or contribution-service requests merely
+by opening the preview. GitHub data can lag until the next successful refresh.
 
 The curated timeline ends at v16; its summary includes seasonal celebrations. The instrument dialog pairs a museum photograph with a single prose column on desktop and stacks them on phones. The performance dialog contains the player, its attribution, and a link to the instrument. Both bottom Close controls share the same delegated close handling as their header controls.
 

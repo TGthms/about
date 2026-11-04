@@ -167,3 +167,6 @@ html[data-lightweight] .note-end { margin-top: 24px; }
 .notes-recovery-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 
 .note-card__image--crop{aspect-ratio:3/2;object-fit:cover}.notes-year{margin-top:32px}.notes-year>h2{font:400 1.15rem/1.5 var(--font-display);color:var(--mute);margin-bottom:12px}.notes-search{margin:0 0 24px;border-bottom:1px solid var(--rule);padding-bottom:14px}.notes-search>summary{cursor:pointer;color:var(--accent-text);font-size:.875rem;min-height:44px;align-content:center}.notes-search input{width:min(100%,480px);background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:8px;padding:12px;font:inherit;margin-top:12px}.notes-search input:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}.notes-search__status{font-size:.8125rem;color:var(--mute);margin-top:12px}.notes-search__results{list-style:none;padding:0}.notes-search__results li{border-top:1px solid var(--rule);padding:16px 0}.notes-search__results a{color:var(--accent-text);text-decoration:underline;text-underline-offset:4px}.notes-search__results p{font-size:.875rem;line-height:1.6;color:var(--mute);margin-top:6px}
+
+.note-license { margin-top: 16px; color: var(--mute); font-size: .6875rem; line-height: 1.6; }
+.note-license a { text-underline-offset: 3px; }

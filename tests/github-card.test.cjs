@@ -64,7 +64,7 @@ test('stalled requests time out and do not leave permanent loading text', async 
 });
 
 test('successful contributions distinguish a real zero from a failed response', async () => {
-  const h = harness(() => Promise.resolve({ok: true, json: () => Promise.resolve({contributions: [], total: {[new Date().getFullYear()]: 0}})}));
+  const h = harness(() => Promise.resolve({ok: true, json: () => Promise.resolve({days: [], total: 0, year: new Date().getFullYear(), updatedAt: '2026-11-03T12:00:00Z'})}));
   h.open(); await h.flush();
   assert.match(h.get('github-popover__meta').textContent, /^0 contributions in /);
   assert.equal(h.get('github-cal').hidden, false);

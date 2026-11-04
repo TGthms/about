@@ -1,0 +1,41 @@
+name: Refresh public GitHub card
+
+on:
+  schedule:
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: public-github-snapshot
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Prepare public image conversion
+        run: python3 -m pip install --disable-pip-version-check -r scripts/notes/requirements.txt
+      - name: Fetch and validate public GitHub data
+        run: python3 scripts/github_snapshot.py
+      - name: Save refreshed public snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add -- public/assets/github/contributions.json public/assets/github/avatar.webp
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Refresh public GitHub contribution snapshot'
+          git push origin HEAD:main
+          # Token-created pushes do not trigger other GitHub workflows.
+          gh workflow run static.yml --ref main

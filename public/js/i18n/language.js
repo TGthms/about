@@ -315,8 +315,11 @@ function applyLanguage(lang) {
       var fontLink = document.createElement("link");
       fontLink.id = fontId;
       fontLink.rel = "stylesheet";
-      fontLink.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+" + suffix + ":wght@400;500;700&family=Noto+Serif+" + suffix + ":wght@400;600;700&display=swap";
-      document.head.appendChild(fontLink);
+      var languageScript = document.querySelector('script[src*="js/i18n/language.js"]');
+      if (languageScript && languageScript.src) {
+        fontLink.href = new URL("../../assets/fonts/noto/" + suffix.toLowerCase() + ".css", languageScript.src).href;
+        document.head.appendChild(fontLink);
+      }
     }
   }
 

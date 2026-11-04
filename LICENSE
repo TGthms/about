@@ -26,3 +26,7 @@ and JavaScript under `public/`, excluding `public/assets/`). Photographs,
 video, and other media under `public/assets/`, `public/og-image.png`,
 `public/og-image.svg`, and `public/favicon.svg` are licensed separately — see
 LICENSE-CONTENT.md.
+
+Original editorial writing, including Notes text embedded in HTML, is excluded
+from this software license and uses the creative-content license described in
+LICENSE-CONTENT.md. Third-party materials retain their own notices and licenses.

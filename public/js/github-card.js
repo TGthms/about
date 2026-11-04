@@ -3,14 +3,15 @@
  * Adapted from Great UI GithubCard (MIT) by Saurabh Sharma —
  * https://github.com/Saurabh-2607/GreatUI
  *
- * Public contribution counts come from github-contributions-api.jogruber.de.
+ * Public contribution counts and avatar are served by this Site. A scheduled
+ * maintainer job refreshes the snapshot from GitHub's public calendar.
  */
 (function () {
   "use strict";
 
   var USERNAME = "TGthms";
   var PROFILE_URL = "https://github.com/" + USERNAME;
-  var CACHE_KEY = "timg-gh-card-v1";
+  var CACHE_KEY = "timg-gh-card-v2";
   var CACHE_MS = 60 * 60 * 1000;
   var EMPTY_DAYS = 119;
   var MAX_TILT = 5;
@@ -21,6 +22,7 @@
   var cal = null;
   var tip = null;
   var meta = null;
+  var snapshot = null;
   var nameEl = null;
   var avatarEl = null;
   var open = false;
@@ -31,10 +33,11 @@
   var remoteFailed = false;
   var data = {
     name: "Tim G",
-    avatarUrl: PROFILE_URL + ".png?size=96",
+    avatarUrl: "assets/github/avatar.webp",
     days: [],
     total: 0,
     year: new Date().getFullYear(),
+    updatedAt: "",
   };
 
   var tiltX = 0;
@@ -80,6 +83,7 @@
       day: "{count} on {date}",
       loading: "Loading contributions…",
       unavailable: "Contributions unavailable. Visit my GitHub profile.",
+      snapshot: "Updated {date}",
     };
     return fallback[key] || "";
   }
@@ -101,7 +105,7 @@
   function formatDate(iso) {
     if (!iso) return "";
     try {
-      var d = new Date(iso + "T00:00:00");
+      var d = new Date(iso.indexOf("T") === -1 ? iso + "T00:00:00" : iso);
       return d.toLocaleDateString(locale(), {
         month: "short",
         day: "numeric",
@@ -156,6 +160,7 @@
           days: payload.days,
           total: payload.total,
           year: payload.year,
+          updatedAt: payload.updatedAt,
         })
       );
     } catch (_) {
@@ -203,10 +208,12 @@
     meta = el("span", "github-popover__meta");
     meta.setAttribute("role", "status");
     meta.textContent = copy("loading");
+    snapshot = el("span", "github-popover__snapshot");
 
     card.appendChild(head);
     card.appendChild(cal);
     card.appendChild(meta);
+    card.appendChild(snapshot);
     popover.appendChild(card);
     wrap.appendChild(popover);
   }
@@ -244,6 +251,9 @@
       });
     }
     if (nameEl) nameEl.textContent = data.name;
+    if (snapshot) {
+      snapshot.textContent = remoteReady && data.updatedAt ? fill(copy("snapshot"), { date: formatDate(data.updatedAt) }) : "";
+    }
     if (remoteStarted && avatarEl && data.avatarUrl && avatarEl.getAttribute("src") !== data.avatarUrl) {
       avatarEl.src = data.avatarUrl;
     }
@@ -403,10 +413,11 @@
   function applyPayload(payload) {
     if (!payload) return;
     if (payload.name) data.name = payload.name;
-    if (payload.avatarUrl) data.avatarUrl = payload.avatarUrl;
-    if (payload.days && payload.days.length) data.days = payload.days;
+    data.avatarUrl = "assets/github/avatar.webp";
+    if (payload.days) data.days = payload.days;
     if (typeof payload.total === "number") data.total = payload.total;
     if (payload.year) data.year = payload.year;
+    if (payload.updatedAt) data.updatedAt = payload.updatedAt;
     remoteReady = true;
     remoteFailed = false;
     paintDays();
@@ -442,45 +453,16 @@
       return;
     }
 
-    fetchJson("https://api.github.com/users/" + USERNAME)
+    fetchJson("assets/github/contributions.json")
       .then(function (json) {
-        data.name = json.name || json.login || data.name;
-        data.avatarUrl = json.avatar_url || data.avatarUrl;
-        refreshGithubCardCopy();
-      })
-      .catch(function () {
-        /* keep fallbacks */
-      });
-
-    fetchJson("https://github-contributions-api.jogruber.de/v4/" + USERNAME)
-      .then(function (json) {
-        if (!json || !Array.isArray(json.contributions)) throw new Error("Invalid contributions");
-        var list = json.contributions;
-        var today = new Date();
-        today.setHours(23, 59, 59, 999);
-        var past = list.filter(function (item) {
-          return item && item.date && new Date(item.date) <= today;
-        });
-        past.sort(function (a, b) {
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
-        });
-        data.days = past.slice(-EMPTY_DAYS).map(function (item) {
-          return {
-            date: item.date,
-            count: Number(item.count) || 0,
-            level: clampLevel(item.level),
-          };
-        });
-        var yearKey = String(data.year);
-        if (json.total && typeof json.total[yearKey] === "number") {
-          data.total = json.total[yearKey];
-        } else {
-          data.total = data.days.reduce(function (sum, day) {
-            return sum + day.count;
-          }, 0);
+        if (!json || !Array.isArray(json.days) || json.days.length > EMPTY_DAYS ||
+            !Number.isInteger(json.total) || json.total < 0 || !Number.isInteger(json.year) ||
+            !/^\d{4}-\d{2}-\d{2}T/.test(json.updatedAt || "") ||
+            json.days.some(function (day) { return !day || !/^\d{4}-\d{2}-\d{2}$/.test(day.date || "") ||
+              !Number.isInteger(day.count) || day.count < 0 || !Number.isInteger(day.level) || day.level < 0 || day.level > 4; })) {
+          throw new Error("Invalid contribution snapshot");
         }
-        remoteReady = true;
-        paintDays();
+        applyPayload(json);
         writeCache(data);
       })
       .catch(function () {

@@ -1,16 +1,25 @@
 # Content License: Attribution-NonCommercial-NoDerivatives 4.0 International
 
-**Scope:** this license applies to the photographs, video, and other media
-in this repository — specifically `public/assets/`, `media-masters/`, `public/og-image.png`,
-`public/og-image.svg` (original artwork), and `public/favicon.svg`. It does
-**not** apply to the source code (HTML, CSS, JavaScript), which is licensed
-separately under the MIT License — see LICENSE.
+**Scope:** unless an item is marked otherwise, this license applies to Tim G’s
+original public writing (including Notes and their translations), photographs,
+and other original creative content on this site. It includes original media in
+`public/assets/`, `media-masters/`, `public/og-image.png`, `public/og-image.svg`,
+and `public/favicon.svg`. Attribution should name Tim G, link to the source page,
+and link to this license. Existing license grants remain in effect when their
+conditions are met; removing a post does not withdraw those grants.
 
-Third-party materials retain their own terms. Public Sans and Fraunces in
-`public/assets/fonts/` uses the accompanying SIL Open Font License; the erhu
-instrument photograph is credited as CC0. Scripture excerpts are excluded from
-both site licenses; see [SCRIPTURE_CREDITS.md](SCRIPTURE_CREDITS.md) and the
-credits shown with each passage.
+The site’s implementation code (HTML, CSS, JavaScript) is separately licensed
+under MIT — see LICENSE. Original editorial text does not become MIT-licensed
+merely because it appears inside HTML. Code examples with their own license
+notices retain those notices.
+
+Third-party materials retain their own terms. Public Sans, Fraunces, and Noto
+fonts in `public/assets/fonts/` use their accompanying SIL Open Font Licenses;
+the erhu instrument photograph is credited as CC0. Quotations, Scripture,
+third-party music, and rights held by other performers or people shown in media
+are not granted under this license. Scripture excerpts are excluded from both
+site licenses; see [SCRIPTURE_CREDITS.md](SCRIPTURE_CREDITS.md) and the credits
+shown with each passage. Only rights held by Tim G are licensed here.
 
 
 > *Creative Commons Corporation (“Creative Commons”) is not a law firm and does not provide legal services or legal advice. Distribution of Creative Commons public licenses does not create a lawyer-client or other relationship. Creative Commons makes its licenses and related information available on an “as-is” basis. Creative Commons gives no warranties regarding its licenses, any material licensed under their terms and conditions, or any related information. Creative Commons disclaims all liability for damages resulting from their use to the fullest extent possible.*

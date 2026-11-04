@@ -1891,6 +1891,8 @@ html[data-theme="dark"] .github-hover {
 }
 .github-cal__tip.is-on { opacity: 1; }
 
+.github-popover__snapshot { display: block; color: var(--mute); font-size: .6875rem; margin-top: 5px; }
+.github-popover__snapshot:empty { display: none; }
 .github-popover__meta {
   display: block;
   margin-top: 12px;

@@ -2,6 +2,15 @@
    Legal pages — shared, quiet surfaces
    ========================================================================== */
 
+.legal-storage { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 24px; font-size: .8125rem; line-height: 1.6; }
+.legal-storage caption { text-align: start; font-weight: 600; padding-bottom: 12px; }
+.legal-storage :is(th, td) { text-align: start; vertical-align: top; overflow-wrap: anywhere; padding: 12px 10px; border-bottom: 1px solid var(--rule); }
+.legal-storage thead th { color: var(--mute); font-weight: 600; }
+.legal-storage tbody th { font-weight: 500; }
+.legal-storage :is(th, td):first-child { padding-inline-start: 0; }
+.legal-storage :is(th, td):last-child { padding-inline-end: 0; }
+@media (max-width: 360px) { .legal-storage { font-size: .75rem; }.legal-storage :is(th, td) { padding: 10px 5px; } }
+
 .legal-page {
   min-height: 100vh;
   min-height: 100svh;

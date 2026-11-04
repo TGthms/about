@@ -1592,3 +1592,8 @@ var NOTES_SEARCH_COPY = {
 Object.keys(NOTES_SEARCH_COPY).forEach(function (lang) {
   ['searchTitle','searchLabel','searchCount','searchEmpty','searchLoading','searchFailed'].forEach(function (key,i) { TRANSLATIONS[lang].notes[key] = NOTES_SEARCH_COPY[lang][i]; });
 });
+
+/* Public GitHub snapshots show their refresh date in the visitor’s language. */
+Object.entries({en: "Updated {date}", es: "Actualizado: {date}", zh: "更新于 {date}", "zh-Hant": "更新於 {date}", ja: "更新：{date}", ko: "업데이트: {date}"}).forEach(function (entry) {
+  TRANSLATIONS[entry[0]].links.githubCard.snapshot = entry[1];
+});

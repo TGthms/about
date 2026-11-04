@@ -573,7 +573,7 @@ def render_post(version, original, media, prefix='../'):
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
             content +
             '<footer class="note-end">' + f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>' +
-            '</footer></article>' + expired)
+            '</footer><p class="note-license"><a href="' + prefix + 'terms.html#content">© Tim G · CC BY-NC-ND 4.0</a></p></article>' + expired)
 
 def variant_data(post, prefix, from_about=False):
     variants = [{'language': v['language'], 'title': title(v), 'summary': summary(v), 'href': prefix + post_filename(v, post) + ('?from=about' if from_about else '')} for v in post['_versions']]

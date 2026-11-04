@@ -128,6 +128,37 @@
           article.appendChild(paragraph);
         });
 
+        if (section.table) {
+          var table = document.createElement("table");
+          table.className = "legal-storage";
+          var caption = document.createElement("caption");
+          caption.textContent = section.table.caption;
+          table.appendChild(caption);
+          var head = document.createElement("thead");
+          var headings = document.createElement("tr");
+          section.table.headers.forEach(function (text) {
+            var cell = document.createElement("th");
+            cell.scope = "col";
+            cell.textContent = text;
+            headings.appendChild(cell);
+          });
+          head.appendChild(headings);
+          table.appendChild(head);
+          var rows = document.createElement("tbody");
+          section.table.rows.forEach(function (values) {
+            var row = document.createElement("tr");
+            values.forEach(function (text, index) {
+              var cell = document.createElement(index === 0 ? "th" : "td");
+              if (index === 0) cell.scope = "row";
+              cell.textContent = text;
+              row.appendChild(cell);
+            });
+            rows.appendChild(row);
+          });
+          table.appendChild(rows);
+          article.appendChild(table);
+        }
+
         body.appendChild(article);
       }
     });

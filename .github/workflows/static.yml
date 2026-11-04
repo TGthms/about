@@ -81,6 +81,9 @@ jobs:
       - name: Check Gallery Manager sync
         run: python3 tests/gallery_sync_test.py
 
+      - name: Check public GitHub snapshot validation
+        run: python3 tests/github_snapshot_test.py
+
   deploy:
     name: Deploy to GitHub Pages
     needs: validate
