@@ -34,6 +34,7 @@ const assert = require('node:assert/strict');
       await expect(page.locator('html')).toHaveAttribute('data-language',language);
       await expect(page.locator('html')).toHaveAttribute('data-theme',theme);
       assert.equal(await page.locator('.legal-storage tbody tr').count(),5);
+      await expect(page.locator('.legal-storage tbody td').first()).toHaveCSS('border-bottom-width','1px');
       assert.equal(await page.locator('#legal-body #notes').count(),1);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${language}/${theme}/${width} overflows`);
       if (width===390 && language==='en' && theme==='dark') await page.screenshot({path:'/tmp/about-privacy-phone.png'});

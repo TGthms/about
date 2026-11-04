@@ -4,7 +4,7 @@
 
 .legal-storage { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 24px; font-size: .8125rem; line-height: 1.6; }
 .legal-storage caption { text-align: start; font-weight: 600; padding-bottom: 12px; }
-.legal-storage :is(th, td) { text-align: start; vertical-align: top; overflow-wrap: anywhere; padding: 12px 10px; border-bottom: 1px solid var(--rule); }
+.legal-storage :is(th, td) { text-align: start; vertical-align: top; overflow-wrap: anywhere; padding: 12px 10px; border-bottom: 1px solid var(--line); }
 .legal-storage thead th { color: var(--mute); font-weight: 600; }
 .legal-storage tbody th { font-weight: 500; }
 .legal-storage :is(th, td):first-child { padding-inline-start: 0; }
