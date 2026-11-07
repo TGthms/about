@@ -2,7 +2,7 @@
    meaningful changes; they are not a list of Git tags or every commit.
    Append a new milestone for a substantial update; keep old labels stable. */
 var PERSONAL_HUB = {
-  "currentVersion": 16,
+  "currentVersion": 17,
   "copy": {
     "en": {
       "title": "Personal Hub",
@@ -610,6 +610,36 @@ PERSONAL_HUB.milestones.push({
     "ko": {
       "title": "작은 재미, 새로운 언어",
       "description": "짧게 즐기는 탁구 게임과 여섯 가지 언어, 생일 풍선과 새해 카운트다운, 계절을 담은 사진과 성경 말씀으로 만나는 작은 축하."
+    }
+  }
+}, {
+  "version": 17,
+  "date": "2026-10-28",
+  "commit": "b12e890",
+  "copy": {
+    "en": {
+      "title": "A place to write",
+      "description": "I started writing Notes here, from quick updates to what I learned about emergency alert tones while building Signal Lab. You can follow new posts by RSS."
+    },
+    "es": {
+      "title": "Un lugar para escribir",
+      "description": "Empecé a publicar notas aquí: desde novedades breves hasta lo que aprendí sobre los tonos de alerta de emergencia al crear Signal Lab. Puedes seguir las nuevas publicaciones por RSS."
+    },
+    "zh": {
+      "title": "有了写东西的地方",
+      "description": "我开始在这里写笔记，记下近况，也分享做 Signal Lab 时了解到的紧急警报音知识。新文章可以通过 RSS 订阅。"
+    },
+    "zh-Hant": {
+      "title": "有了寫東西的地方",
+      "description": "我開始在這裡寫筆記，記下近況，也分享做 Signal Lab 時學到的緊急警報音知識。新文章可以透過 RSS 訂閱。"
+    },
+    "ja": {
+      "title": "書く場所ができました",
+      "description": "ここでノートを書き始めました。ちょっとした近況から、Signal Lab を作る中で知った緊急警報の音の仕組みまで。新しい記事は RSS で購読できます。"
+    },
+    "ko": {
+      "title": "글을 쓸 곳이 생겼어요",
+      "description": "이곳에 노트를 쓰기 시작했어요. 짧은 근황도 남기고, Signal Lab을 만들면서 알게 된 긴급 경보음 이야기도 적었습니다. 새 글은 RSS로 받아볼 수 있어요."
     }
   }
 });
