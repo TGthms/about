@@ -100,8 +100,9 @@ class ManagerTests(unittest.TestCase):
 
     def test_new_and_duplicated_notes_are_drafts_with_unique_urls(self):
         first = self.app.create('A very clear title')
-        second = self.app.create(value=first['document'])
-        self.assertFalse(first['document']['published']); self.assertFalse(second['document']['highlight'])
+        second = self.app.create(value={**first['document'], 'highlight': False})
+        self.assertFalse(first['document']['published']); self.assertFalse(second['document']['published'])
+        self.assertTrue(first['document']['highlight']); self.assertFalse(second['document']['highlight'])
         self.assertNotEqual(first['document']['slug'], second['document']['slug'])
         self.assertEqual(len(self.app.library()), 3)
 

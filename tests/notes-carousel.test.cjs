@@ -43,6 +43,15 @@ test('expired birthday slides leave the rotation; an empty carousel releases its
   assert.equal(h.frame.hidden,true); assert.equal(h.timers.size,0);
   h.next.listeners.click(); assert.equal(h.timers.size,0);
 });
+test('expired features never expose an old unfeatured fallback',()=>{
+  const h=harness();
+  h.slides[0].setAttribute('data-note-highlight-until','2000-01-01');
+  h.slides[1].setAttribute('data-note-featured','false');
+  h.refresh();
+  assert.equal(h.frame.hidden,true);
+  assert.ok(h.slides.every(slide=>slide.hidden));
+  assert.equal(h.timers.size,0);
+});
 test('autoplay advances every five seconds and keeps only the active article focusable',()=>{
   const h=harness(); assert.equal(h.timers.values().next().value.delay,5000);
   assert.equal(h.slides[1].inert,true); h.fire();

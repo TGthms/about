@@ -81,7 +81,7 @@ The existing Signal Lab article keeps its interactive SAME experiment as hidden,
 
 ## Homepage feature
 
-The homepage has a Notes entrance beneath About. Turn on **Feature beneath About** for each post you want in its carousel. Featured posts rotate every five seconds; readers can use the dots, arrows, or swipe. Hover does not pause rotation; keyboard focus holds the current post. Reduced-motion and lightweight browsing use manual navigation. An optional end date removes a post from the carousel while keeping it in Notes. With no active featured posts, the latest published note appears. The carousel includes at most six eligible featured posts, newest first by the post’s Date. If more than six are featured, older notes leave the carousel but remain in All notes and keep their article links. Their Feature switch stays on, so they can return if newer features are removed.
+The homepage Notes carousel beneath About is on by default for published notes. Turn off **Feature beneath About** to exclude an individual note, or set **Feature until** to give it an end date. The carousel shows up to six eligible notes, newest first by the post’s Date. Readers can use the dots, arrows, or swipe. Slides rotate every five seconds and hold while keyboard focus is inside the carousel. Reduced-motion and lightweight browsing use manual navigation. If no notes are eligible, the homepage shows the Notes entrance by itself.
 
 ## Categories
 

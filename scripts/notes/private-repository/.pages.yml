@@ -576,10 +576,9 @@ content:
   - name: highlight
     label: Feature beneath About
     type: boolean
-    default: false
-    description: Show this published post in the homepage Notes carousel. Only the six newest eligible featured
-      posts appear, ordered by Date, rotating every five seconds. Older featured posts remain in All notes. With
-      none selected, the latest published post appears.
+    default: true
+    description: On by default. Turn it off to keep this note out of the homepage carousel. The six newest eligible
+      notes rotate every five seconds. This setting only affects the homepage carousel.
   - name: highlight_until
     label: Feature until (optional)
     type: date

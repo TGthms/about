@@ -66,6 +66,9 @@ to Pages CMS and again when returning to the Mac.
 The sidebar's **How saving works** control explains these actions inside the editor.
 The displayed Date is not a publication schedule.
 
+**Feature beneath About** is on by default for published notes. Turn it off in
+**Note settings → Homepage** to keep an individual note out of the carousel.
+
 ## Review and publish
 
 The article preview follows the workspace theme by default. Use its **Preview

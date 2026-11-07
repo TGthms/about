@@ -376,7 +376,7 @@ class NotesTests(unittest.TestCase):
         self.assertIn('js/a-new-file.js. A CSS value is url(example).', markup)
         self.assertIn('src="../js/notes.js?v=', markup)
 
-    def test_featured_latest_is_one_card_and_other_highlights_have_hidden_fallback(self):
+    def test_featured_notes_include_public_translations(self):
         photo = self.image(size=(100, 60))
         self.post(cover=photo, cover_alt='A cover', highlight=True, translations=[{'language':'ja', 'title':'お知らせ', 'body':'<p>こんにちは。</p>', 'published':True}, {'language':'ko', 'body':'PRIVATE_KOREAN', 'published':False}])
         self.build()
@@ -386,10 +386,6 @@ class NotesTests(unittest.TestCase):
         self.assertIn('data-note-versions=', home)
         self.assertIn('お知らせ', home)
         self.assertNotIn('PRIVATE_KOREAN', home)
-        self.post('newer', date='2026-10-29')
-        self.build()
-        home = (self.public / 'index.html').read_text()
-        self.assertIn('data-note-featured="false" hidden', home)
         self.assertIn('.notes-spotlight[hidden] { display: none;', (self.public / 'css/home.css').read_text())
 
     def test_fonts_are_bounded_and_reach_translations_and_preview(self):
@@ -461,23 +457,34 @@ class NotesTests(unittest.TestCase):
         self.post(body='<p>A short update.</p>'); self.build()
         self.assertNotIn('note-reading-layout', (self.public / 'notes/example.html').read_text())
 
-    def test_carousel_uses_all_active_features_and_preserves_a_latest_fallback(self):
+    def test_carousel_features_by_default_and_honors_opt_out_and_end_dates(self):
         self.post('old-feature', highlight=True, date='2026-10-20')
         self.post('other-feature', highlight=True, date='2026-10-21')
         self.post('expired', highlight=True, highlight_until='2000-01-01')
         self.post('latest', date='2026-10-29')
+        self.post('excluded', highlight=False, date='2026-10-30')
         self.post('draft', published=False, highlight=True, title='PRIVATE_FEATURE')
         self.build()
         home = (self.public / 'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
-        self.assertEqual(home.count('data-note-featured="true"'), 2)
-        self.assertEqual(home.count('data-note-featured="false" hidden'), 1)
+        self.assertEqual(home.count('data-note-featured="true"'), 3)
+        self.assertIn('notes/latest.html?from=about', home)
+        self.assertNotIn('notes/excluded.html', home)
+        self.assertIn('notes/excluded.html', (self.public / 'notes.html').read_text())
         self.assertNotIn('PRIVATE_FEATURE', home)
         self.assertNotIn('notes/expired.html', home)
         self.assertNotIn('Small updates, photographs, and things along the way.', home)
 
+    def test_carousel_keeps_only_the_entrance_when_no_notes_are_eligible(self):
+        self.post('excluded', highlight=False)
+        self.post('expired', highlight_until='2000-01-01')
+        self.build()
+        home = (self.public / 'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
+        self.assertIn('href="notes.html"', home)
+        self.assertNotIn('data-notes-carousel', home)
+
     def test_carousel_keeps_six_newest_features_without_removing_older_articles(self):
         for day in range(10,18):
-            self.post(f'feature-{day}',highlight=True,date=f'2026-10-{day}')
+            self.post(f'feature-{day}',date=f'2026-10-{day}')
         self.post('expired-feature',highlight=True,highlight_until='2000-01-01',date='2026-10-30')
         self.post('private-feature',highlight=True,published=False,date='2026-10-31')
         self.build()
@@ -487,7 +494,7 @@ class NotesTests(unittest.TestCase):
         self.assertEqual(positions,sorted(positions))
         for name in ('feature-10','feature-11','private-feature'):
             self.assertNotIn(f'notes/{name}.html',home)
-        self.assertNotIn('notes/expired-feature.html',home.split('data-note-featured="false" hidden')[0])
+        self.assertNotIn('notes/expired-feature.html',home)
         for name in ('feature-10','feature-11'):
             self.assertTrue((self.public/f'notes/{name}.html').exists())
             self.assertIn(f'notes/{name}.html',(self.public/'notes.html').read_text())

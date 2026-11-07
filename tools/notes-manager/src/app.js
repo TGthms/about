@@ -378,7 +378,7 @@ function renderField(parent,raw,base,override){
     };draw();return;
   }
   if(field.type==='boolean'){
-    wrapper.classList.add('toggle');const id='switch-'+crypto.randomUUID(),input=el('input',{type:'checkbox',role:'switch',id,checked:value===true,'aria-label':field.label||field.name,onchange:e=>{update(path,e.target.checked);if(['birthday','highlight'].includes(field.name))settings();}});
+    wrapper.classList.add('toggle');const id='switch-'+crypto.randomUUID(),input=el('input',{type:'checkbox',role:'switch',id,checked:(value??field.default)===true,'aria-label':field.label||field.name,onchange:e=>{update(path,e.target.checked);if(['birthday','highlight'].includes(field.name))settings();}});
     const text=el('label',{htmlFor:id,class:'switch-copy'},[el('span',{class:'field-label',text:field.label||field.name})]);if(field.description)text.append(wrapper.querySelector('.help'));wrapper.replaceChildren(input,text);return;
   }
   let input;
@@ -420,7 +420,7 @@ function settings(){
   if(!state.doc)return;const retained=$('#modal').open&&$('#modal-title').textContent==='Note settings',scroll=$('#modal').scrollTop,focus=document.activeElement?.getAttribute('aria-label');const root=el('div');
   const groups=[['This note',['date','language','summary','categories','font']],['Images',['sharing_image','list_image']],['Homepage',['highlight','highlight_until']],['Birthday',['birthday','birthday_visibility']]];
   for(const [title,names]of groups){const section=el('section',{class:'settings-section'},[el('h3',{text:title})]);for(const name of names){
-    if(name==='highlight_until'&&!state.doc.highlight||name==='birthday_visibility'&&!state.doc.birthday)continue;
+    if(name==='highlight_until'&&state.doc.highlight===false||name==='birthday_visibility'&&!state.doc.birthday)continue;
     const spec=state.schema.fields.find(f=>f.name===name);renderField(section,spec,[]);
   }if(title==='Images')section.append(el('div',{class:'cover-actions'},[button('Design a cover…',()=>openStudio('sharing_image')),button('Design on-site image…',()=>openStudio('list_image'),'quiet'),button('Adjust image framing…',imageFraming,'quiet')]));root.append(section);}
   if(state.version>=0){const section=el('section',{class:'settings-section'},[el('h3',{text:'This translation'})]);

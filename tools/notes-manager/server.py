@@ -362,7 +362,7 @@ class Workspace:
             if metadata.get('restored'): raise Problem('This item was already restored.', 409)
             value = json.loads((folder / 'note.json').read_text())
             target = self.path(metadata['path'])
-            value.update(published=False, highlight=False)
+            value['published'] = False
             if target.exists(): result = self.create(title=value.get('title',''), value=value)
             else:
                 atomic(target, encode(value))
@@ -464,7 +464,8 @@ class Workspace:
             relative = 'notes/' + date + '-' + key + '.json'
             doc = copy.deepcopy(value) if value else {'title': str(title)[:160], 'date': date, 'language': 'en', 'body': '', 'blocks': [],
                 'categories': [], 'translations': [], 'font': 'default', 'sharing_image': None, 'list_image': None, 'birthday': False, 'editor_version': 2}
-            doc.update(slug=stem + '-' + key, published=False, highlight=False)
+            doc.update(slug=stem + '-' + key, published=False)
+            doc.setdefault('highlight', True)
             if value and isinstance(doc.get('og_designs'),dict):
                 forked = {}
                 for target, identity in doc['og_designs'].items():
@@ -694,7 +695,7 @@ class Workspace:
                         if choice == 'both':
                             value = json.loads(ours)
                             key = secrets.token_hex(4)
-                            value.update(slug=(value.get('slug') or 'note') + '-local-' + key, published=False, highlight=False)
+                            value.update(slug=(value.get('slug') or 'note') + '-local-' + key, published=False)
                             value['title'] = (value.get('title') or 'Untitled') + ' — local copy'
                             (checkout / 'notes' / ('local-copy-' + key + '.json')).write_bytes(encode(value))
                     for p in (checkout / 'notes').glob('*.json'): json.loads(p.read_text())

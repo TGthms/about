@@ -31,7 +31,7 @@ async function rightNote(title){const note=page.locator('.note-item').filter({ha
   await expect(editor).toHaveText('Existing writing.');await expect(page.locator('#modal')).not.toBeVisible();
   await page.locator('#note-more').click();await expect(page.getByRole('menu')).toBeVisible();await page.keyboard.press('ArrowDown');await page.keyboard.press('Escape');await expect(page.getByRole('menu')).toHaveCount(0);
   await page.locator('#settings').click();const feature=page.getByRole('switch',{name:'Feature beneath About',exact:true});
-  assert.ok((await feature.boundingBox()).width>=42);await feature.check();await expect(feature).toBeChecked();await feature.uncheck();await expect(feature).not.toBeChecked();
+  assert.ok((await feature.boundingBox()).width>=42);await expect(feature).toBeChecked();await feature.uncheck();await expect(feature).not.toBeChecked();
   await page.getByRole('button',{name:'Design a cover…',exact:true}).click();const studio=page.frameLocator('.studio-frame');
   await expect(studio.locator('#titleInput')).toHaveValue('An existing note',{timeout:15000});
   await studio.locator('#titleInput').fill('My cover design');await studio.locator('#subtitleInput').fill('Made inside Notes');
