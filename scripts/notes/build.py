@@ -528,7 +528,6 @@ def read_posts(private, preview_path=None, now=None):
         released = private / '.release-metadata.json'
         value['_aliases'] = json.loads(released.read_text()).get(path.name, {}).get('aliases', []) if released.exists() else []
         categories(value)
-        if value.get('highlight_until'): date(value['highlight_until'])
         if value.get('font', 'default') not in FONTS: raise ValueError('Choose one of the available reading fonts.')
         versions = [value]
         seen = {value['language']}
@@ -657,18 +656,16 @@ def entrance(posts, media):
             markup, _ = media.image(photo, alt, prefix='')
             if post.get('thumbnail_focal'): markup = markup.replace('<img ', '<img ' + focal_style(post), 1)
             image = '<span class="notes-spotlight__image' + (' notes-spotlight__image--crop' if post.get('thumbnail_focal') else '') + '">' + markup + '</span>'
-        expiry = f' data-note-highlight-until="{esc(post.get("highlight_until"))}"'
-        return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="true"{expiry}{expiry_attr(post)}>'
+        return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="true"{expiry_attr(post)}>'
                 f'<a class="notes-spotlight{ " notes-spotlight--photo" if image else ""}" {variant_data(post, "", from_about=True)} href="{post_filename(post, post)}?from=about">' + image +
                 '<span class="notes-spotlight__copy">' + category_labels(post, '', links=False) +
                 f'<span class="notes-spotlight__title" lang="{esc(post["language"])}" data-note-title>{esc(title(post))}</span>' +
                 f'<span class="notes-spotlight__summary" lang="{esc(post["language"])}" data-note-summary>{esc(summary(post))}</span>' +
                 '<span class="notes-spotlight__date">' + f'<time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' + availability(post) + '</span>' +
                 '<span class="notes-spotlight__action"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span></span></a></div>')
-    today = dt.datetime.now(dt.timezone.utc).date()
-    highlights = [p for p in posts if p.get('highlight') is not False and (not p.get('highlight_until') or date(p['highlight_until']) >= today)]
+    highlights = [p for p in posts if p.get('highlight') is not False][:8]
     if highlights:
-        slides = ''.join(slide(p) for p in highlights[:6])
+        slides = ''.join(slide(p) for p in highlights)
         intro += ('<div class="notes-carousel" data-notes-carousel role="region" aria-label="Featured notes" data-i18n-aria="notes.featuredNotes">'
                   '<div class="notes-carousel__viewport"><div class="notes-carousel__track">' + slides + '</div></div>'
                   '<div class="notes-carousel__controls" hidden><button type="button" data-note-prev aria-label="Previous note" data-i18n-aria="notes.previousSlide">←</button>'

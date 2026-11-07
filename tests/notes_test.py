@@ -457,44 +457,44 @@ class NotesTests(unittest.TestCase):
         self.post(body='<p>A short update.</p>'); self.build()
         self.assertNotIn('note-reading-layout', (self.public / 'notes/example.html').read_text())
 
-    def test_carousel_features_by_default_and_honors_opt_out_and_end_dates(self):
+    def test_carousel_features_by_default_and_honors_opt_out_without_feature_deadlines(self):
         self.post('old-feature', highlight=True, date='2026-10-20')
         self.post('other-feature', highlight=True, date='2026-10-21')
-        self.post('expired', highlight=True, highlight_until='2000-01-01')
+        self.post('formerly-expired', highlight=True, highlight_until='2000-01-01')
         self.post('latest', date='2026-10-29')
         self.post('excluded', highlight=False, date='2026-10-30')
         self.post('draft', published=False, highlight=True, title='PRIVATE_FEATURE')
         self.build()
         home = (self.public / 'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
-        self.assertEqual(home.count('data-note-featured="true"'), 3)
+        self.assertEqual(home.count('data-note-featured="true"'), 4)
         self.assertIn('notes/latest.html?from=about', home)
         self.assertNotIn('notes/excluded.html', home)
         self.assertIn('notes/excluded.html', (self.public / 'notes.html').read_text())
         self.assertNotIn('PRIVATE_FEATURE', home)
-        self.assertNotIn('notes/expired.html', home)
+        self.assertIn('notes/formerly-expired.html?from=about', home)
+        self.assertNotIn('data-note-highlight-until', home)
         self.assertNotIn('Small updates, photographs, and things along the way.', home)
 
     def test_carousel_keeps_only_the_entrance_when_no_notes_are_eligible(self):
         self.post('excluded', highlight=False)
-        self.post('expired', highlight_until='2000-01-01')
         self.build()
         home = (self.public / 'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
         self.assertIn('href="notes.html"', home)
         self.assertNotIn('data-notes-carousel', home)
 
-    def test_carousel_keeps_six_newest_features_without_removing_older_articles(self):
-        for day in range(10,18):
+    def test_carousel_keeps_eight_newest_features_without_removing_older_articles(self):
+        for day in range(10,20):
             self.post(f'feature-{day}',date=f'2026-10-{day}')
-        self.post('expired-feature',highlight=True,highlight_until='2000-01-01',date='2026-10-30')
+        self.post('excluded',highlight=False,date='2026-10-30')
         self.post('private-feature',highlight=True,published=False,date='2026-10-31')
         self.build()
         home=(self.public/'index.html').read_text().split('<!-- notes-entrance:start -->')[1].split('<!-- notes-entrance:end -->')[0]
-        self.assertEqual(home.count('data-note-featured="true"'),6)
-        positions=[home.index(f'notes/feature-{day}.html?from=about') for day in range(17,11,-1)]
+        self.assertEqual(home.count('data-note-featured="true"'),8)
+        positions=[home.index(f'notes/feature-{day}.html?from=about') for day in range(19,11,-1)]
         self.assertEqual(positions,sorted(positions))
         for name in ('feature-10','feature-11','private-feature'):
             self.assertNotIn(f'notes/{name}.html',home)
-        self.assertNotIn('notes/expired-feature.html',home)
+        self.assertNotIn('notes/excluded.html',home)
         for name in ('feature-10','feature-11'):
             self.assertTrue((self.public/f'notes/{name}.html').exists())
             self.assertIn(f'notes/{name}.html',(self.public/'notes.html').read_text())

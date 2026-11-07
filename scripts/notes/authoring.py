@@ -17,6 +17,7 @@ DOWNLOAD_TYPES = {'pdf':'application/pdf', 'zip':'application/zip', 'txt':'text/
 def normalize(value):
     """Read both original flat fields and the grouped editor schema."""
     result = copy.deepcopy(value)
+    result.pop('highlight_until', None)
     for group, image, alt in (('sharing_image', 'cover', 'cover_alt'), ('list_image', 'thumbnail', 'thumbnail_alt')):
         if group in result:
             selected = result.get(group) or {}
@@ -105,11 +106,6 @@ def issues(value, private, strict=True):
         problem('Categories', 'each name must contain 1–48 characters.')
     if post.get('birthday') is True and post.get('birthday_visibility', '24-hours') not in ('24-hours', 'keep-link'):
         problem('Birthday · after 24 hours', 'choose one of the available options.')
-    if post.get('highlight_until'):
-        try:
-            dt.date.fromisoformat(str(post['highlight_until']))
-        except ValueError:
-            problem('Feature until', 'choose a valid date.')
 
     def local(reference, label, extensions):
         decoded = unquote(str(reference or '')).lstrip('/')

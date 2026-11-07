@@ -81,7 +81,7 @@ The existing Signal Lab article keeps its interactive SAME experiment as hidden,
 
 ## Homepage feature
 
-The homepage Notes carousel beneath About is on by default for published notes. Turn off **Feature beneath About** to exclude an individual note, or set **Feature until** to give it an end date. The carousel shows up to six eligible notes, newest first by the post’s Date. Readers can use the dots, arrows, or swipe. Slides rotate every five seconds and hold while keyboard focus is inside the carousel. Reduced-motion and lightweight browsing use manual navigation. If no notes are eligible, the homepage shows the Notes entrance by itself.
+The homepage Notes carousel beneath About is on by default for published notes. Turn off **Feature beneath About** to exclude an individual note. The carousel shows up to eight eligible notes, newest first by the post’s Date. Older notes make room as newer ones arrive. Readers can use the dots, arrows, or swipe. Slides rotate every five seconds and hold while keyboard focus is inside the carousel. Reduced-motion and lightweight browsing use manual navigation. If no notes are eligible, the homepage shows the Notes entrance by itself.
 
 ## Categories
 

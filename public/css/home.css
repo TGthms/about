@@ -119,6 +119,11 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
   html:not([data-lightweight]) .notes-carousel__dot { transition: width 240ms ease; }
 }
 html[data-lightweight] .notes-carousel__controls { gap: 4px; }
+@media (max-width: 420px) {
+  .notes-carousel__controls:has(.notes-carousel__dot:nth-child(7)) { gap: 4px; }
+  .notes-carousel__dots:has(.notes-carousel__dot:nth-child(7)) .notes-carousel__dot { min-width: 24px; width: 24px; padding-inline: 8px; }
+  .notes-carousel__dots:has(.notes-carousel__dot:nth-child(7)) .notes-carousel__dot[aria-current] { width: 44px; }
+}
 @media (max-width: 767px) {
   .notes-spotlight--photo { grid-template-columns: minmax(0, 1fr); }
   .notes-spotlight__image { padding: 20px; }

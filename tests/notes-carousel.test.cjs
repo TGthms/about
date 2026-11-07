@@ -26,11 +26,11 @@ function harness({lite=false,reduced=false,count=2}={}) {
   vm.runInNewContext(fs.readFileSync('public/js/notes-carousel.js','utf8'),{window,document,IntersectionObserver:IO,MutationObserver:MO,TRANSLATIONS:{en:{notes:{slideLabel:'Note {number} of {total}',previousSlide:'Previous',nextSlide:'Next',featuredNotes:'Featured'}}},setTimeout(fn,delay){const id=++serial;timers.set(id,{fn,delay});return id;},clearTimeout:id=>timers.delete(id)});
   return {frame,track,controls,dots,slides,prev,next,document,docEvents,events,timers,motion,io,refresh:window.NotesCarousel.refresh,advance(ms){clock+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);clock+=t.delay;t.fn();}};
 }
-test('at most six featured notes appear, including with older cached markup',()=>{
-  const h=harness({count:8});
-  assert.equal(h.dots.children.length,6);
-  assert.equal(h.slides[6].hidden,true); assert.equal(h.slides[7].hidden,true);
-  for(let i=0;i<6;i++)h.fire();
+test('at most eight featured notes appear',()=>{
+  const h=harness({count:10});
+  assert.equal(h.dots.children.length,8);
+  assert.equal(h.slides[8].hidden,true); assert.equal(h.slides[9].hidden,true);
+  for(let i=0;i<8;i++)h.fire();
   assert.equal(h.track.style.transform,'translateX(0%)');
   assert.equal(h.timers.values().next().value.delay,5000);
 });
@@ -43,13 +43,14 @@ test('expired birthday slides leave the rotation; an empty carousel releases its
   assert.equal(h.frame.hidden,true); assert.equal(h.timers.size,0);
   h.next.listeners.click(); assert.equal(h.timers.size,0);
 });
-test('expired features never expose an old unfeatured fallback',()=>{
+test('old feature end dates are ignored and unfeatured fallbacks stay hidden',()=>{
   const h=harness();
   h.slides[0].setAttribute('data-note-highlight-until','2000-01-01');
   h.slides[1].setAttribute('data-note-featured','false');
   h.refresh();
-  assert.equal(h.frame.hidden,true);
-  assert.ok(h.slides.every(slide=>slide.hidden));
+  assert.equal(h.frame.hidden,false);
+  assert.equal(h.slides[0].hidden,false);
+  assert.equal(h.slides[1].hidden,true);
   assert.equal(h.timers.size,0);
 });
 test('autoplay advances every five seconds and keeps only the active article focusable',()=>{

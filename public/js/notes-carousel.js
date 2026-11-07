@@ -64,14 +64,10 @@
     run();
   }
   function refresh() {
-    var today = new Date(); today.setHours(0, 0, 0, 0);
     var selected = slides.filter(function (slide) {
       var expiry = slide.getAttribute('data-note-expires');
-      var until = slide.getAttribute('data-note-highlight-until');
-      return slide.getAttribute('data-note-featured') === 'true' &&
-        (!expiry || Date.parse(expiry) > Date.now()) &&
-        (!until || new Date(until + 'T23:59:59') >= today);
-    }).slice(0, 6);
+      return slide.getAttribute('data-note-featured') === 'true' && (!expiry || Date.parse(expiry) > Date.now());
+    }).slice(0, 8);
     frame.hidden = !selected.length;
     var changed = selected.length !== active.length || selected.some(function (slide, i) { return slide !== active[i]; });
     if (changed) {

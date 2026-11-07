@@ -724,17 +724,7 @@
       "label": "Feature beneath About",
       "type": "boolean",
       "default": true,
-      "description": "On by default. Turn it off to keep this note out of the homepage carousel. The six newest eligible notes rotate every five seconds. This setting only affects the homepage carousel."
-    },
-    {
-      "name": "highlight_until",
-      "label": "Feature until (optional)",
-      "type": "date",
-      "default": "",
-      "description": "Only applies when Feature beneath About is on. The post stays in Notes after its homepage feature ends.",
-      "options": {
-        "format": "yyyy-MM-dd"
-      }
+      "description": "On by default. The eight newest eligible notes appear beneath About. Turn this off to keep this note out of the carousel."
     },
     {
       "name": "font",
