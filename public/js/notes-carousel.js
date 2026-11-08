@@ -12,7 +12,7 @@
   var status = frame.querySelector('[data-note-carousel-status]');
   var motion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
   var lightweight = window.SiteRuntime && window.SiteRuntime.lightweight;
-  var interval = 5000;
+  var interval = 6000;
   var active = [], index = 0, timer = 0, remaining = interval, started = 0;
   var visible = false, focused = false, touching = false, touchStart = null;
   var buttons = [], observer = null;
