@@ -162,8 +162,11 @@
     var lang = root.getAttribute("data-language") || "en";
     var words = (TRANSLATIONS[lang] || TRANSLATIONS.en).notes;
     var status = document.getElementById("note-share-status");
+    var location = window.location;
     var canonical = document.querySelector('link[rel="canonical"]');
-    var url = canonical ? canonical.href : window.location.href;
+    var url = /^https?:$/.test(location.protocol)
+      ? location.origin + location.pathname
+      : (canonical ? canonical.href : location.href);
     function failed() {
       var fallback = document.getElementById("note-share-fallback");
       fallback.hidden = false;

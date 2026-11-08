@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function harness({lightweight = false, saveData = false, home = false, search = '', sharing = false, shareApi, clipboardApi} = {}) {
+function harness({lightweight = false, saveData = false, home = false, search = '', sharing = false, shareApi, clipboardApi, url = 'https://timgong.me/notes/example.html'} = {}) {
   const windows = {}, documents = {}, observers = [];
   const video = () => ({
     attrs: {poster: 'small.webp', 'data-note-poster': 'large.webp'},
@@ -35,7 +35,9 @@ function harness({lightweight = false, saveData = false, home = false, search = 
     querySelectorAll: selector => selector === 'video[data-note-poster]' ? videos.filter(item => item.attrs['data-note-poster']) : selector === '[data-note-site-return]' ? [siteReturn] : selector === '[data-note-version]' ? [version] : [],
     addEventListener: (name, callback) => documents[name] = callback,
   };
-  const window = {location: {search}, SiteRuntime: {lightweight}, IntersectionObserver: Observer, addEventListener: (name, callback) => windows[name] = callback};
+  const location = new URL(url);
+  if (search) location.search = search;
+  const window = {location, SiteRuntime: {lightweight}, IntersectionObserver: Observer, addEventListener: (name, callback) => windows[name] = callback};
   vm.runInNewContext(fs.readFileSync('public/js/notes.js', 'utf8'), {
     window, document, navigator: {connection: {saveData}, share: shareApi, clipboard: clipboardApi}, IntersectionObserver: Observer,
     TRANSLATIONS: {en: {notes: {copied: 'Copied', copyFailed: 'Copy the link below'}}}, applyLanguage: () => 'en', detectLanguage: () => 'en',
@@ -58,30 +60,36 @@ test('only About entry context reveals the site return and carries through post 
   }
 });
 
-test('sharing uses the clean canonical link and cancellation does not display an error', async () => {
+test('native sharing keeps the current host and article path and ignores cancellation', async () => {
   let sent;
-  const h = harness({sharing: true, search: '?from=about', shareApi: value => {sent = value; return Promise.reject({name: 'AbortError'});}});
+  const h = harness({sharing: true, url: 'https://t-g.pages.dev/notes/example.zh?from=about#section', shareApi: value => {sent = value; return Promise.reject({name: 'AbortError'});}});
   assert.equal(h.share.hidden, false);
   h.share.click(); await new Promise(setImmediate);
-  assert.equal(sent.url, 'https://timgong.me/notes/example.html');
+  assert.equal(sent.url, 'https://t-g.pages.dev/notes/example.zh');
   assert.equal(h.fallback.hidden, true);
   assert.equal(h.status.textContent, undefined);
 });
 
-test('sharing copies the canonical URL or presents a selected manual fallback with live feedback', async () => {
+test('copy and manual sharing use the clean current address with live feedback', async () => {
   let copied;
   const success = harness({sharing: true, clipboardApi: {writeText: value => {copied = value; return Promise.resolve();}}});
   success.share.click(); await new Promise(setImmediate);
   assert.equal(copied, 'https://timgong.me/notes/example.html');
   assert.equal(success.status.textContent, 'Copied');
   for (const api of [{}, {clipboardApi: {writeText: () => Promise.reject(new Error('Unavailable'))}}, {shareApi: () => Promise.reject(new Error('Unavailable'))}]) {
-    const h = harness({sharing: true, ...api});
+    const h = harness({sharing: true, url: 'https://t-g.pages.dev/notes/example?from=about#section', ...api});
     h.share.click(); await new Promise(setImmediate);
     assert.equal(h.fallback.hidden, false);
-    assert.equal(h.input.value, 'https://timgong.me/notes/example.html');
+    assert.equal(h.input.value, 'https://t-g.pages.dev/notes/example');
     assert.equal(h.input.focused, true); assert.equal(h.input.selected, true);
     assert.equal(h.status.textContent, 'Copy the link below');
   }
+});
+
+test('sharing from a local file uses the public canonical link', () => {
+  const h = harness({sharing: true, url: 'file:///public/notes/example.html'});
+  h.share.click();
+  assert.equal(h.input.value, 'https://timgong.me/notes/example.html');
 });
 
 test('Watch, data-saving, and home pages keep video previews on the small source', () => {
