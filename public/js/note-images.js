@@ -3,6 +3,7 @@
   var viewer = document.querySelector(".note-image-viewer");
   if (!viewer || typeof viewer.showModal !== "function") return;
 
+  var script = document.currentScript;
   var root = document.documentElement;
   var frame = viewer.querySelector(".note-image-viewer__frame");
   frame.tabIndex = -1;
@@ -59,11 +60,22 @@
     caption.tabIndex = caption.scrollHeight > caption.clientHeight ? 0 : -1;
   }
   var zoomSteps = [1], zoomIndex = 0, fitWidth = 0, fitHeight = 0;
-  function updateZoomControls() {
-    var label = percent.format(zoomSteps[zoomIndex]);
+  var photoSwipeModule, photoSwipeAssets, photoSwipe;
+  function stepsFor(limit) {
+    var steps = [1, 1.25, 1.5, 2, 2.5].filter(function (step) { return step === 1 || step < limit - .06; });
+    if (limit > 1.06) steps.push(limit);
+    return steps;
+  }
+  function zoomTarget(direction, current) {
+    for (var i = direction > 0 ? 0 : zoomSteps.length - 1; i >= 0 && i < zoomSteps.length; i += direction) {
+      if ((zoomSteps[i] - current) * direction > .015) return zoomSteps[i];
+    }
+  }
+  function updateZoomControls(current) {
+    var label = percent.format(current);
     if (level.textContent !== label) level.textContent = label;
-    zoomOut.setAttribute("aria-disabled", String(zoomIndex === 0));
-    zoomIn.setAttribute("aria-disabled", String(zoomIndex === zoomSteps.length - 1));
+    zoomOut.setAttribute("aria-disabled", String(zoomTarget(-1, current) === undefined));
+    zoomIn.setAttribute("aria-disabled", String(zoomTarget(1, current) === undefined));
   }
   function resetZoom() {
     zoomIndex = 0;
@@ -76,16 +88,52 @@
     fitWidth = bounds.width;
     fitHeight = bounds.height;
     var limit = viewer.open && image.complete && fitWidth ? Math.min(3, image.naturalWidth / fitWidth) : 1;
-    zoomSteps = [1, 1.25, 1.5, 2, 2.5].filter(function (step) { return step === 1 || step < limit - .06; });
-    if (limit > 1.06) zoomSteps.push(limit);
-    updateZoomControls();
+    zoomSteps = stepsFor(limit);
+    updateZoomControls(1);
+  }
+  function syncPhotoSwipeZoom(slide) {
+    var fit = slide.zoomLevels.initial;
+    zoomSteps = stepsFor(slide.zoomLevels.max / fit);
+    updateZoomControls(slide.currZoomLevel / fit);
+  }
+  function photoSwipeAllowed() {
+    return !root.hasAttribute("data-lightweight") && !window.matchMedia("(max-width: 320px)").matches &&
+      !(navigator.connection && navigator.connection.saveData);
+  }
+  function enhance() {
+    if (!photoSwipeModule || photoSwipe || zoomIndex || !viewer.open || !image.complete || !image.naturalWidth ||
+        !photoSwipeAllowed()) return;
+    photoSwipe = photoSwipeModule.createPhotoSwipe(viewer, image, tools, caption, syncPhotoSwipeZoom, function () {
+      photoSwipe = null;
+      resetZoom();
+    });
+    syncPhotoSwipeZoom(photoSwipe.currSlide);
+  }
+  function loadPhotoSwipe() {
+    // Private previews inline this script and keep their self-contained viewer.
+    if (!script || !script.src || !photoSwipeAllowed()) return;
+    if (photoSwipeModule) { enhance(); return; }
+    if (photoSwipeAssets) return;
+    var url = new URL(script.src);
+    photoSwipeAssets = import(new URL("note-photo-swipe.mjs" + url.search, url).href)
+      .then(function (module) { return module.loadStyle().then(function () { return module; }); })
+      .then(function (module) { photoSwipeModule = module; enhance(); })
+      .catch(function () { photoSwipeAssets = null; });
   }
   resetZoom();
   function changeZoom(direction) {
+    if (photoSwipe) {
+      var slide = photoSwipe.currSlide;
+      var fit = slide.zoomLevels.initial;
+      var target = zoomTarget(direction, slide.currZoomLevel / fit);
+      if (target !== undefined) photoSwipe.zoomTo(target * fit);
+      return;
+    }
     var next = zoomIndex + direction;
     if (next < 0 || next >= zoomSteps.length) return;
     if (next === 0) {
       resetZoom();
+      enhance();
       return;
     }
     var x = zoomIndex ? (viewport.scrollLeft + viewport.clientWidth / 2) / image.clientWidth : .5;
@@ -98,7 +146,7 @@
     viewport.tabIndex = 0;
     viewport.scrollLeft = x * image.clientWidth - viewport.clientWidth / 2;
     viewport.scrollTop = y * image.clientHeight - viewport.clientHeight / 2;
-    updateZoomControls();
+    updateZoomControls(zoomSteps[zoomIndex]);
   }
   zoomOut.addEventListener("click", function () { changeZoom(-1); });
   zoomIn.addEventListener("click", function () { changeZoom(1); });
@@ -133,6 +181,7 @@
       root.classList.add("note-image-open");
       updateCaptionFocus();
       resetZoom();
+      loadPhotoSwipe();
     });
   });
 
@@ -146,6 +195,7 @@
   viewer.addEventListener("close", function () {
     if (viewer.open) return;
     root.classList.remove("note-image-open");
+    if (photoSwipe) photoSwipe.destroy();
     image.removeAttribute("src");
     updateCaption(null);
     resetZoom();
@@ -155,11 +205,14 @@
   document.addEventListener("noteexpired", function () {
     if (viewer.open) viewer.close();
   });
-  image.addEventListener("load", function () { updateCaptionFocus(); resetZoom(); });
+  image.addEventListener("load", function () {
+    updateCaptionFocus();
+    if (!photoSwipe) { resetZoom(); enhance(); }
+  });
   image.addEventListener("error", resetZoom);
   window.addEventListener("resize", function () {
     if (!viewer.open) return;
-    resetZoom();
+    if (!photoSwipe) resetZoom();
     updateCaptionFocus();
   });
 }());

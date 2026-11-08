@@ -122,6 +122,7 @@ The supplied RSS icon is Google's Material Symbols icon, distributed under Apach
 - Balloon effect: [balloons-js](https://github.com/arturbien/balloons-js), MIT © 2024 Artur Bień; license retained in `public/js/vendor/balloons.js`
 - New Year fireworks: [fireworks-js](https://github.com/crashmax-dev/fireworks-js) 2.10.8, MIT © 2021–2023 Vitalij Ryndin; license retained in `public/js/vendor/fireworks.js`
 - Countdown digits: [NumberFlow](https://github.com/barvian/number-flow) 0.6.2, MIT © 2024 Maxwell Barvian; license retained in `public/js/vendor/number-flow.mjs`. Bundled with esbuild 0.25.12; the two `esm-env` browser checks are resolved to `true` for the browser-only entry. No build tool is required to serve the site.
+- Notes image gestures: [PhotoSwipe](https://github.com/dimsemenov/PhotoSwipe) 5.4.4, MIT © Dmitry Semenov. The core and stylesheet are hosted locally and load on demand. The upstream license is in `public/js/vendor/photoswipe-LICENSE.txt`.
 - Photos, video, and other media (`public/assets/`, `public/og-image.png`, `public/og-image.svg`, `public/favicon.svg`): [CC BY-NC-ND 4.0](LICENSE-CONTENT.md)
 
 ## Local checks
