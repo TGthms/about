@@ -26,24 +26,59 @@ html.note-image-open { overflow: hidden; }
   background: transparent;
   color: #fff;
 }
-.note-image-viewer[open] { display: grid; place-items: center; }
+.note-image-viewer[open] {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+}
 .note-image-viewer::backdrop { background: rgba(12, 14, 16, .9); }
 .note-image-viewer__frame {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   justify-items: end;
   gap: 8px;
   min-width: 0;
   max-width: 100%;
+  max-height: 100%;
 }
 .note-image-viewer__frame img {
   display: block;
+  justify-self: center;
   max-width: 100%;
-  max-height: calc(100vh - 84px);
-  max-height: calc(100dvh - 84px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  max-height: 100%;
+  min-height: 0;
   width: auto;
   height: auto;
   object-fit: contain;
   border-radius: 8px;
+}
+.note-image-viewer__tools { display: flex; gap: 8px; }
+.note-image-viewer__viewport { display: contents; }
+.note-image-viewer__viewport.is-zoomed {
+  display: block;
+  justify-self: center;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  cursor: grab;
+}
+.note-image-viewer__viewport.is-zoomed:active { cursor: grabbing; }
+.note-image-viewer__viewport.is-zoomed img { max-width: none; max-height: none; border-radius: 0; user-select: none; }
+.note-image-viewer__caption {
+  justify-self: center;
+  max-width: 52ch;
+  max-height: 24vh;
+  margin: 0;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  color: #e6e8ea;
+  font: 400 .875rem / 1.45 var(--font);
+  text-align: center;
 }
 .note-image-viewer button {
   width: 44px;
@@ -56,7 +91,26 @@ html.note-image-open { overflow: hidden; }
   font: 400 1.65rem / 1 system-ui, sans-serif;
   cursor: pointer;
 }
-.note-image-viewer button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.note-image-viewer .note-image-viewer__close { position: relative; font-size: 0; }
+.note-image-viewer__close::before,
+.note-image-viewer__close::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 2px;
+  margin: auto;
+  border-radius: 1px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+.note-image-viewer__close::after { transform: rotate(-45deg); }
+.note-image-viewer :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.note-image-viewer .note-image-viewer__frame:focus { outline: none; }
+.note-image-viewer button:disabled { opacity: .45; cursor: default; }
+@media (hover: hover) {
+  .note-image-viewer button:enabled:hover { background: #34383b; }
+}
 @media (prefers-reduced-motion: no-preference) and (min-width: 321px) {
   html:not([data-lightweight]) .note-image-viewer[open] .note-image-viewer__frame {
     animation: note-image-in 150ms ease-out;
