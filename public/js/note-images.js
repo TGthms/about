@@ -184,7 +184,6 @@
   });
 
   close.addEventListener("click", function () { viewer.close(); });
-  viewer.addEventListener("cancel", function (event) { event.preventDefault(); });
   viewer.addEventListener("close", function () {
     if (viewer.open) return;
     root.classList.remove("note-image-open");
