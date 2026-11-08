@@ -36,10 +36,7 @@ export function createPhotoSwipe(viewer, image, tools, caption, updateZoom, onDe
     close: false, zoom: false, arrowPrev: false, arrowNext: false, counter: false, preloader: false,
     trapFocus: false, returnFocus: false, escKey: false,
     loop: false, allowPanToNext: false, closeOnVerticalDrag: false, pinchToClose: false,
-    clickToCloseNonZoomable: false, imageClickAction: "zoom", bgClickAction: () => viewer.close(),
-    tapAction: (_point, event) => {
-      if (!event.target.closest(".pswp__img")) viewer.close();
-    },
+    clickToCloseNonZoomable: false, imageClickAction: "zoom", bgClickAction: false, tapAction: false,
     doubleTapAction: "zoom", bgOpacity: 0, showHideAnimationType: "none",
   });
   let lastZoom, lastFit, lastLimit;
