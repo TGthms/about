@@ -28,8 +28,7 @@ def render(block, language, media, prefix, rich, esc, safe_link):
         items = []
         for photo in block['images']:
             image, full = media.image(photo['image'], photo.get('alt'), prefix, sizes='(max-width: 600px) calc(100vw - 32px), 350px')
-            href = (image.split('src="',1)[1].split('"',1)[0] if media.preview else prefix + full)
-            items.append('<figure><a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + image + '</a>' + caption(photo.get('caption')) + '</figure>')
+            items.append('<figure>' + media.enlarge(image, full, prefix) + caption(photo.get('caption')) + '</figure>')
         return '<figure class="note-gallery" data-note-block="gallery"><div class="note-gallery__grid">' + ''.join(items) + '</div>' + caption(block.get('caption')) + '</figure>'
     if kind == 'audio':
         source = block.get('source') or {}

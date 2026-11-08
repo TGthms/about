@@ -31,6 +31,7 @@ ROOT = Path(__file__).resolve().parents[2]
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
 FONTS = {'default', 'sans', 'serif', 'mono'}
 TABLE_NAMES = {'en': 'Table', 'zh': '表格', 'zh-Hant': '表格', 'ja': '表', 'ko': '표', 'es': 'Tabla'}
+IMAGE_CLOSE = {'en': 'Close image', 'zh': '关闭图片', 'zh-Hant': '關閉圖片', 'ja': '画像を閉じる', 'ko': '이미지 닫기', 'es': 'Cerrar imagen'}
 CATEGORIES = {'projects': 'Projects', 'learning': 'Learning', 'photography': 'Photography', 'life': 'Life', 'birthday': 'Birthday'}
 LOCALES = {'en': 'en_US', 'es': 'es_ES', 'zh': 'zh_CN', 'zh-Hant': 'zh_TW', 'ja': 'ja_JP', 'ko': 'ko_KR'}
 RSS_ICON = '<svg viewBox="0 -960 960 960" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M143.5-143.5Q120-167 120-200t23.5-56.5Q167-280 200-280t56.5 23.5Q280-233 280-200t-23.5 56.5Q233-120 200-120t-56.5-23.5ZM680-120q0-117-44-218.5T516-516q-76-76-177.5-120T120-680v-120q142 0 265 53t216 146q93 93 146 216t53 265H680Zm-240 0q0-67-25-124.5T346-346q-44-44-101.5-69T120-440v-120q92 0 171.5 34.5T431-431q60 60 94.5 139.5T560-120H440Z"/></svg>'
@@ -232,6 +233,10 @@ class Media:
             markup = f'<picture><source media="(max-width: 320px), (max-device-width: 320px)" srcset="{esc(prefix + variants[0][0])}" />' + markup + '</picture>'
         return markup, largest[0]
 
+    def enlarge(self, markup, full, prefix):
+        href = markup.split('src="', 1)[1].split('"', 1)[0] if self.preview else esc(prefix + full)
+        return f'<a class="note-image-link" data-note-image href="{href}" target="_blank" rel="noopener noreferrer">{markup}</a>'
+
     def social(self, value, alt):
         from PIL import Image, ImageOps
         _, image = self.image(value, alt)
@@ -314,7 +319,9 @@ class RichText(HTMLParser):
             self.blocked.append(tag); return
         values = dict(attrs)
         if tag == 'img':
-            markup, _ = self.media.image(values.get('src'), values.get('alt'), self.prefix)
+            markup, full = self.media.image(values.get('src'), values.get('alt'), self.prefix)
+            if 'a' not in self.stack:
+                markup = self.media.enlarge(markup, full, self.prefix)
             self.output.append(markup); return
         if tag == 'h1': tag = 'h2'
         if tag not in self.allowed: return
@@ -456,7 +463,8 @@ def body(post, media, prefix):
         kind = block.get('type')
         if kind == 'text': result += rich(block.get('body'), media, prefix, post['language'])
         elif kind == 'photo':
-            markup, _ = media.image(block.get('image'), block.get('alt'), prefix)
+            markup, full = media.image(block.get('image'), block.get('alt'), prefix)
+            markup = media.enlarge(markup, full, prefix)
             result += '<figure class="note-media">' + markup + (f'<figcaption>{esc(block["caption"])}</figcaption>' if block.get('caption') else '') + '</figure>'
         elif kind == 'video': result += media.video(block, prefix)
         elif kind == 'table':
@@ -641,6 +649,15 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         markup = markup.replace('</head>', resource_versions(f'<link rel="stylesheet" href="{prefix}css/note-blocks.css" />', public) + '\n</head>')
     if 'data-note-code' in content or 'data-note-compare' in content:
         markup = markup.replace('</body>', resource_versions(f'<script src="{prefix}js/note-blocks.js" defer></script>', public) + '\n</body>')
+    if 'data-note-image ' in content:
+        lang = post['language']
+        label = content_blocks.WORDS[lang][0]
+        viewer = (f'<dialog class="note-image-viewer" aria-label="{esc(label)}"><div class="note-image-viewer__frame">'
+                  f'<button type="button" aria-label="{esc(IMAGE_CLOSE[lang])}" autofocus>×</button>'
+                  '<img alt="" /></div></dialog>')
+        style = resource_versions(f'<link rel="stylesheet" href="{prefix}css/note-images.css" />', public)
+        script = resource_versions(f'<script src="{prefix}js/note-images.js" defer></script>', public)
+        markup = markup.replace('</head>', style + '\n</head>').replace('</body>', viewer + '\n' + script + '\n</body>')
     if 'data-note-search ' in content:
         markup = markup.replace('</body>', resource_versions(f'<script src="{prefix}js/notes-search.js" defer></script>', public) + '\n</body>')
     return markup
@@ -766,6 +783,8 @@ def build(private, public, preview_path=None, preview_output=None):
                     if interactive: styles.append('same-study')
                     enhanced_blocks = 'data-note-code' in rendered or 'data-note-compare' in rendered
                     if 'data-note-block=' in rendered: styles.append('note-blocks')
+                    has_enlargeable_images = 'data-note-image ' in rendered
+                    if has_enlargeable_images: styles.append('note-images')
                     css = '\n'.join((public / f'css/{name}.css').read_text() for name in styles)
                     markup = re.sub(r'<link[^>]+rel="stylesheet"[^>]*>', '', markup)
                     markup = re.sub(r'<script\b[^>]*>.*?</script>', '', markup, flags=re.S)
@@ -780,6 +799,9 @@ def build(private, public, preview_path=None, preview_output=None):
                         markup = markup.replace('</body>', '<script>' + script + '</script></body>')
                     if enhanced_blocks:
                         script = (public / 'js/note-blocks.js').read_text().replace('</script', '<\\/script')
+                        markup = markup.replace('</body>', '<script>' + script + '</script></body>')
+                    if has_enlargeable_images:
+                        script = (public / 'js/note-images.js').read_text().replace('</script', '<\\/script')
                         markup = markup.replace('</body>', '<script>' + script + '</script></body>')
                     # Downloaded previews keep navigation useful without a local server.
                     markup = re.sub(r'href="\.\./notes/([^"/]+\.html)"', lambda m: 'href="' + m[1] + '"', markup)

@@ -50,7 +50,7 @@ parent.postMessage({type:'notes-browser-frame-ready',id:identity},'*');
     sources['/workspace/templates/notes-shell.html']=(ROOT/'templates/notes-shell.html').read_text()
     sources['/workspace/public/index.html']='<!-- notes-entrance:start --><!-- notes-entrance:end -->'
     sources['/workspace/public/sitemap.xml']='<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" />'
-    for folder,names in [('css',['styles.css','notes.css','compact.css','same-study.css','note-blocks.css']),('js',['birthday.js','vendor/balloons.js','notes.js','notes-lifetime.js','same-study.js','note-blocks.js','core.js','i18n/data.js','i18n.js'])]:
+    for folder,names in [('css',['styles.css','notes.css','compact.css','same-study.css','note-blocks.css','note-images.css']),('js',['birthday.js','vendor/balloons.js','notes.js','notes-lifetime.js','same-study.js','note-blocks.js','note-images.js','core.js','i18n/data.js','i18n.js'])]:
         for name in names:
             source=ROOT/'public'/folder/name
             if source.exists():sources['/workspace/public/'+folder+'/'+name]=source.read_text()

@@ -4,6 +4,7 @@ import json
 import datetime as dt
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -253,6 +254,9 @@ class NotesTests(unittest.TestCase):
         self.assertNotIn('/media/', markup)
         self.assertIn('max-width: 320px', markup)
         self.assertIn('-share.jpg', markup)
+        self.assertRegex(markup, r'data-note-image href="\.\./assets/notes/[a-f0-9]+-1920\.webp"')
+        self.assertIn('js/note-images.js?v=', markup)
+        self.assertNotIn('note-images.js', (self.public / 'notes.html').read_text())
     def test_video_does_not_autoload_and_has_direct_access(self):
         (self.private / 'media/videos').mkdir()
         (self.private / 'media/videos/clip.mp4').write_bytes(b'video-fixture')
@@ -318,7 +322,11 @@ class NotesTests(unittest.TestCase):
         markup = (dest / 'example.html').read_text()
         self.assertIn('PRIVATE_PREVIEW', markup)
         self.assertIn('data:image/webp;base64,', markup)
-        self.assertNotIn('<script', markup)
+        self.assertIn('data-note-image href="data:image/webp;base64,', markup)
+        self.assertIn('<dialog class="note-image-viewer"', markup)
+        image_script = (self.public / 'js/note-images.js').read_text()
+        self.assertEqual(re.findall(r'<script>(.*?)</script>', markup, re.S), [image_script])
+        self.assertNotIn('<script src=', markup)
         self.assertNotIn('rel="stylesheet"', markup)
         self.assertIn('href="https://timgong.me/notes.html"', markup)
         self.assertNotIn('href="../', markup)
