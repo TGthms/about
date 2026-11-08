@@ -1283,7 +1283,7 @@ html .home-page .project-host--section .host-option {
 .home-page #project-signal-lab .featured-card__visual { aspect-ratio: 16 / 10; background: #151a17; }
 .home-page #project-signal-lab .featured-card__visual img { object-fit: contain; }
 .home-page #project-signal-lab .featured-card__title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-weight: 650; letter-spacing: -.035em; }
-.home-page #project-signal-lab .featured-card__content { z-index: 3; }
+.home-page .featured-card__content--with-story { z-index: 3; }
 .featured-card__story { position: relative; z-index: 3; pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; width: fit-content; min-height: 40px; color: var(--accent-text); font-size: .8125rem; }
 .featured-card__story:hover { text-decoration: underline; text-underline-offset: 4px; }
 .featured-card__story:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 4px; border-radius: 3px; }
