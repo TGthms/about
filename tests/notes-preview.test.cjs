@@ -118,6 +118,7 @@ test('comment moderation checks signed owner identity and same-origin deletion',
     assert.equal((await worker.fetch(new Request(endpoint, {headers:{'Cf-Access-Jwt-Assertion':other}}), env)).status, 403);
     const confirmation = await get(env, '/preview/moderation?delete=1');
     assert.equal(confirmation.status, 200);
+    assert.equal(confirmation.headers.get('Referrer-Policy'), 'same-origin');
     const html = await confirmation.text();
     assert.match(html, /Delete this comment/);
     assert.match(html, /&lt;script&gt;unsafe/);
@@ -127,8 +128,9 @@ test('comment moderation checks signed owner identity and same-origin deletion',
       method:'POST', headers:{Origin:origin, 'Cf-Access-Jwt-Assertion':jwt},
       body:new URLSearchParams({id:'1'})
     }), env);
-    const denied = await post('https://other.example.com');
-    assert.equal(denied.status, 403);
+    for (const origin of ['https://other.example.com', 'null']) {
+      assert.equal((await post(origin)).status, 403);
+    }
     assert.equal(db.prepare('SELECT removed FROM comments').get().removed, 0);
     const deleted = await post(env.PREVIEW_ORIGIN);
     assert.equal(deleted.status, 303);

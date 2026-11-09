@@ -45,6 +45,8 @@ export async function moderate(request, db, reply) {
     `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${heading} · Notes</title>
     <style>${style}</style><main><h1>${heading}</h1>${content}</main></html>`, status, {
       "Content-Type": "text/html; charset=utf-8",
+      // The native POST form needs an Origin header for the deletion check.
+      "Referrer-Policy": "same-origin",
       "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
     });
   const selected = url.searchParams.get("delete");
