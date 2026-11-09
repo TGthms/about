@@ -99,7 +99,7 @@
         <header class="legal-hero">
           <p class="legal-hero__label" id="legal-label">Legal</p>
           <h1 class="legal-hero__title" id="legal-title">Privacy Policy</h1>
-          <p class="legal-hero__updated" id="legal-updated">Last updated: November 3, 2026</p>
+          <p class="legal-hero__updated" id="legal-updated">Last updated: November 8, 2026</p>
           <p class="legal-hero__intro" id="legal-intro">
             This Privacy Policy explains what information is handled when you visit this personal hub website (the “Site”), how on-device preferences work, and how to contact the Site operator with questions.
           </p>
@@ -110,7 +110,7 @@
           <ul class="legal-toc" id="legal-toc" role="list">
             <li><a class="legal-toc__link" href="#overview">Overview</a></li>
             <li><a class="legal-toc__link" href="#information">Information and Data Practices</a></li>
-            <li><a class="legal-toc__link" href="#notes">Notes, RSS, Search, and Sharing</a></li>
+            <li><a class="legal-toc__link" href="#notes">Notes, RSS, Search, Sharing, and Likes</a></li>
             <li><a class="legal-toc__link" href="#use">How Information Is Used</a></li>
             <li><a class="legal-toc__link" href="#sharing">Sharing</a></li>
             <li><a class="legal-toc__link" href="#cookies">Cookies and Local Storage</a></li>
@@ -149,10 +149,11 @@
         </section>
 
         <section class="legal-section" id="notes">
-          <h2 class="legal-section__title">Notes, RSS, Search, and Sharing</h2>
+          <h2 class="legal-section__title">Notes, RSS, Search, Sharing, and Likes</h2>
           <p class="legal-section__p">Reading Notes and subscribing through RSS do not require giving me your email address or creating an account. Your feed reader requests the public feed from t-g.pages.dev and may store its own copies; the reader’s privacy practices are its own. Feed requests are still ordinary requests to the hosting provider.</p>
           <p class="legal-section__p">Notes search runs in your browser against a downloaded public index. The search text is not sent to a search service by the Site. The index contains published writing, not private drafts.</p>
           <p class="legal-section__p">“Share this note” opens your device’s sharing interface or copies the article link when you choose. The Site does not read your clipboard or receive the recipients you select. Your chosen sharing application may process the link under its own policy.</p>
+          <p class="legal-section__p">Notes likes. The public count is served by Cloudflare. If you like a note, your browser saves a random key for that note and sends it to Cloudflare so you can undo the like. The service stores a hash of the key with the note’s identifier while the like remains recorded. Only the total is public. The service uses your IP address to limit repeated requests and does not store it in the likes database. Clearing browser storage does not remove an existing like and may prevent you from undoing it.</p>
           <p class="legal-section__p">If a Note includes an externally hosted video, playing it or opening its direct link sends requests to that video host. Review that provider’s policy before using it.</p>
         </section>
 
@@ -179,6 +180,7 @@
             <tr><th scope="row">Language preference</th><td>Local storage</td><td>Until changed or cleared</td></tr>
             <tr><th scope="row">Project-link host preference</th><td>Local storage</td><td>Until changed or cleared</td></tr>
             <tr><th scope="row">Pong best rally, by difficulty</th><td>Local storage</td><td>Until replaced by a better record or cleared</td></tr>
+            <tr><th scope="row">Random key for each note you like</th><td>Local storage</td><td>Until cleared</td></tr>
             <tr><th scope="row">Temporary light/dark override</th><td>Session storage</td><td>For the browser’s page session</td></tr>
             <tr><th scope="row">Public GitHub-preview cache</th><td>Session storage</td><td>Reused for up to one hour within the page session</td></tr>
           </tbody></table>
@@ -248,14 +250,14 @@
   </footer>
 
   <script src="js/preferences.js?v=dc8aac2d324d"></script>
-  <script src="js/i18n/data.js?v=c0fa1583039d"></script>
+  <script src="js/i18n/data.js?v=e62c86472d56"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=27e8a00c2ee5"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
   <script src="js/i18n/project-host.js?v=35b56e6bdb1d"></script>
   <script src="js/i18n/language.js?v=efd8d17959f5"></script>
   <script src="js/legal/ui-content.js?v=6b5b0cff78e2"></script>
-  <script src="js/legal/privacy-content.js?v=b8570717252d"></script>
+  <script src="js/legal/privacy-content.js?v=1f8de8bd8440"></script>
   <script src="js/legal.js?v=0a6d359ea7b8"></script>
 </body>
 </html>

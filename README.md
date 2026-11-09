@@ -101,6 +101,14 @@ An optional, separately hosted private browser-preview Worker is maintained in `
 
 Notes can include a fixed `same-study` content block: a silent SAME header, byte-order, and burst-comparison experiment in English or Simplified Chinese. Its small stylesheet and script load only on articles containing that block. Without scripting it presents a readable field guide. Private previews embed this trusted local component; author-supplied scripts remain blocked.
 
+Anonymous article likes use the separate [Notes likes Worker](tools/notes-likes)
+and D1 database. Both public hosts and all article translations share the total
+for the same note. The Notes build generates `public/notes/reactions.json` from
+published articles. The Worker checks this list and enforces Birthday expiry.
+To deploy Worker changes, apply its D1 migrations before running `wrangler deploy`
+with `tools/notes-likes/wrangler.jsonc`. The static site stays readable when the
+likes service is unavailable.
+
 Build checks: `python3 tests/notes_test.py` (requires `scripts/notes/requirements.txt`) and the existing interaction/HTML checks. Use `python3 scripts/notes/build.py --empty` only to initialize an empty archive; it removes previously generated Notes output. Normal development should preserve published Notes pages and update stylesheet/script query hashes recursively across `public/`.
 
 The supplied RSS icon is Google's Material Symbols icon, distributed under Apache 2.0; its license is in `LICENSES/material-symbols.txt`.

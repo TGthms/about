@@ -1363,6 +1363,16 @@ Object.keys(NOTES_A11Y_COPY).forEach(function (lang) {
   Object.assign(TRANSLATIONS[lang].notes, { readIn: words[0], languages: words[1], postLink: words[2], pages: words[3] });
 });
 
+const NOTES_LIKE_COPY = {
+  en: { like: "Like", likeCountOne: "{count} like", likeCount: "{count} likes", likeFailed: "Couldn’t update your like. Try again.", likeStorage: "Allow browser storage to like this note." },
+  es: { like: "Me gusta", likeCountOne: "{count} me gusta", likeCount: "{count} me gusta", likeFailed: "No se pudo guardar tu reacción. Inténtalo de nuevo.", likeStorage: "Permite el almacenamiento del navegador para indicar que te gusta esta nota." },
+  zh: { like: "点赞", likeCountOne: "{count} 个赞", likeCount: "{count} 个赞", likeFailed: "没能更新你的点赞，请重试。", likeStorage: "请允许浏览器存储数据后再点赞。" },
+  "zh-Hant": { like: "按讚", likeCountOne: "{count} 個讚", likeCount: "{count} 個讚", likeFailed: "無法更新你的按讚，請再試一次。", likeStorage: "請允許瀏覽器儲存資料後再按讚。" },
+  ja: { like: "いいね", likeCountOne: "いいね {count} 件", likeCount: "いいね {count} 件", likeFailed: "いいねを更新できませんでした。もう一度お試しください。", likeStorage: "いいねするには、ブラウザーのデータ保存を許可してください。" },
+  ko: { like: "좋아요", likeCountOne: "좋아요 {count}개", likeCount: "좋아요 {count}개", likeFailed: "좋아요를 반영하지 못했어요. 다시 시도해 주세요.", likeStorage: "좋아요를 누르려면 브라우저의 데이터 저장을 허용해 주세요." }
+};
+Object.keys(NOTES_LIKE_COPY).forEach(function (lang) { Object.assign(TRANSLATIONS[lang].notes, NOTES_LIKE_COPY[lang]); });
+
 const NOTES_FOLLOW_COPY = {
   "en": [
     "Follow updates",

@@ -24,7 +24,7 @@ test('every legal translation includes current sections and complete storage sem
     assert.match(doc.updated,/2026/);
     if (kind === 'privacy') {
       const table=doc.sections.find(s=>s.id==='cookies').table;
-      assert.ok(table.caption); assert.equal(table.headers.length,3);assert.equal(table.rows.length,5);
+      assert.ok(table.caption); assert.equal(table.headers.length,3);assert.equal(table.rows.length,6);
       table.rows.forEach(row=>{assert.equal(row.length,3);row.forEach(cell=>assert.ok(cell.trim()));});
       assert.ok(doc.sections.find(s=>s.id==='notes'));
     }

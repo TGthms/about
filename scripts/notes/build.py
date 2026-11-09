@@ -562,7 +562,10 @@ def post_filename(post, original):
 def version_links(post, prefix):
     return ''.join(f'<a href="{esc(prefix + post_filename(version, post))}" hreflang="{esc(version["language"])}" lang="{esc(version["language"])}" data-note-version="{esc(version["language"])}">{esc(LANGS.get(version["language"], version["language"]))}</a>' for version in post['_versions'])
 
-def render_post(version, original, media, prefix='../'):
+def reaction_id(post):
+    return hashlib.sha256(post['_id'].encode()).hexdigest()
+
+def render_post(version, original, media, prefix='../', reactions=False):
     versions = version_links(original, prefix).replace(f'data-note-version="{esc(version["language"])}"', f'aria-current="page" data-note-version="{esc(version["language"])}"')
     language_picker = ('<span data-note-language-label data-i18n="notes.readIn">Read in</span>' + versions) if len(original['_versions']) > 1 else f'<span data-note-language-label data-note-original="{esc(original["language"])}">Written in {esc(LANGS.get(original["language"], original["language"]))}</span>'
     heading = f'<h1>{esc(version["title"])}</h1>' if str(version.get('title') or '').strip() else '<h1 class="visually-hidden">' + esc(title(version)) + '</h1>'
@@ -573,12 +576,18 @@ def render_post(version, original, media, prefix='../'):
     lifetime = 'Shown in Notes for 24 hours; this link stays available.' if keep_link else 'Available for 24 hours'
     notice = '<p class="note-lifetime">' + lifetime + ' <span aria-hidden="true">·</span> ' + expiry_time(original['_expires']) + '</p>' if original.get('_expires') else ''
     expired = ('<section class="note-expired" hidden tabindex="-1"><a class="notes-back" href="../notes.html">← All notes</a><h1>This birthday note has ended.</h1><p>It was here for 24 hours.</p></section>' if original.get('_expires') and not keep_link else '')
+    like = (
+        f'<button class="note-like" type="button" data-note-like="{reaction_id(original)}" aria-pressed="false" aria-label="Like" aria-describedby="note-like-count" hidden>'
+        '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20.8 5.9a5.3 5.3 0 0 0-7.5 0L12 7.2l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5l1.3 1.3 7.5 7.1 7.5-7.1 1.3-1.3a5.3 5.3 0 0 0 0-7.5Z"/></svg>'
+        '<span data-note-like-label aria-hidden="true">Like</span><span class="visually-hidden" id="note-like-count"></span></button>'
+    ) if reactions else ''
     return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{ "" if keep_link else expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
             f'<a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a></div>'
             f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>' +
-            '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div>' + notice + heading +
+            '<div class="note-header__actions">' + like + '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div></div>' + notice + heading +
             (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix, links=not keep_link) +
+            ('<p class="note-like-status" role="status" data-note-like-status></p>' if reactions else '') +
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
@@ -648,6 +657,9 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         resources = resource_versions(f'<link rel="stylesheet" href="{prefix}css/same-study.css" />', public)
         markup = markup.replace('</head>', resources + '\n</head>')
         script = resource_versions(f'<script src="{prefix}js/same-study.js" defer></script>', public)
+        markup = markup.replace('</body>', script + '\n</body>')
+    if 'data-note-like=' in content:
+        script = resource_versions(f'<script src="{prefix}js/note-likes.js" defer></script>', public)
         markup = markup.replace('</body>', script + '\n</body>')
     if 'data-note-block=' in content:
         markup = markup.replace('</head>', resource_versions(f'<link rel="stylesheet" href="{prefix}css/note-blocks.css" />', public) + '\n</head>')
@@ -779,7 +791,7 @@ def build(private, public, preview_path=None, preview_output=None):
             note_media[note_id] = media
             for version in post['_versions']:
                 filename = post_filename(version, post); version['_filename'] = filename
-                rendered = render_post(version, post, media)
+                rendered = render_post(version, post, media, reactions=not preview_path)
                 image, alt = first_photo(version); image_path = ''
                 if image: image_path = media.social(image, alt)
                 alternates = ''.join(f'<link rel="alternate" hreflang="{esc(v["language"])}" href="{ORIGIN}/{post_filename(v, post)}" />' for v in post['_versions'])
@@ -832,6 +844,8 @@ def build(private, public, preview_path=None, preview_output=None):
                     redirect = shell(public, html_lang=esc(version['language']), prefix='../', title='This note has moved — Tim G', description='Read this note at its current address.', canonical=esc(target), image=ORIGIN + '/og-image.png', image_alt='Tim G', og_type='website', og_locale=LOCALES.get(version['language'], 'en_US'), structured_data='', alternates='', kind='redirect', content=f'<section class="note-expired"><h1>This note has moved.</h1><p><a class="notes-back" href="{esc(target)}">Read the note →</a></p><a class="notes-back" href="../notes.html">All notes →</a></section>')
                     redirect = redirect.replace('</head>', '<meta name="robots" content="noindex" /><meta http-equiv="refresh" content="0;url=' + esc(target) + '" /></head>')
                     (stage / old).write_text(redirect)
+        reactions = {reaction_id(post): None if post.get('birthday_visibility') == 'keep-link' else post.get('_expires') for post in posts}
+        (stage / 'notes/reactions.json').write_text(json.dumps(reactions, separators=(',', ':'), sort_keys=True) + '\n')
         posts = [post for post in posts if not post.get('_unlisted')]
         page_count = max(1, (len(posts) + 19) // 20)
         for index in range(page_count):

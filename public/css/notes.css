@@ -76,6 +76,17 @@ html[data-note-expired] .note-expired { display: block; }
 .notes-back { margin-bottom: 28px; }
 .note-header { margin-bottom: 20px; }
 .note-header__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 20px; }
+.note-header__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0 16px; }
+.note-like { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; padding: 0; border: 0; background: none; color: var(--accent-text); font: inherit; font-size: .8125rem; cursor: pointer; font-variant-numeric: tabular-nums; }
+.note-like[hidden] { display: none; }
+.note-like svg { flex: 0 0 20px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linejoin: round; }
+.note-like[aria-pressed="true"] svg { fill: currentColor; color: #ab3654; }
+[data-theme="dark"] .note-like[aria-pressed="true"] svg { color: #f685a1; }
+.note-like:active svg { transform: scale(.89); }
+.note-like-status { margin-top: 10px; color: var(--mute); font-size: .8125rem; }
+.note-like-status:empty { margin: 0; }
+@media (hover: hover) { .note-like:hover { text-decoration: underline; text-underline-offset: 5px; } }
+@media (prefers-reduced-motion: no-preference) { .note-like svg { transition: transform 120ms ease, color 120ms ease; } }
 .note-header__date { font-size: .8125rem; color: var(--mute); }
 .note-header h1 { margin-top: 16px; font: 400 clamp(2rem, 6vw, 3.4rem)/1.16 var(--font-display); letter-spacing: -.045em; overflow-wrap: anywhere; }
 .note-header__summary { margin-top: 12px; color: var(--mute); font-size: 1.125rem; line-height: 1.7; }

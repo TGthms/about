@@ -89,6 +89,36 @@ class NotesTests(unittest.TestCase):
         self.build(); self.assertTrue((self.public / 'notes/example.html').exists())
         for path in ['../notes/example.json', 'notes/../secret.json', '/notes/example.json']:
             with self.assertRaises(ValueError): releases.select(self.private, path)
+    def test_likes_follow_publication_identity_and_birthday_availability(self):
+        original = self.post(slug='before', translations=[{'language':'zh','published':True,'body':'随记'}])
+        draft = self.post('draft', published=False)
+        self.post('expires', birthday=True)
+        self.post('keep', birthday=True, birthday_visibility='keep-link')
+        now = dt.datetime.now(dt.timezone.utc)
+        with patch.object(notes, 'birthday_publication_time', return_value=now):
+            self.build()
+        def manifest():
+            return json.loads((self.public / 'notes/reactions.json').read_text())
+        def key(identity):
+            return notes.reaction_id({'_id': identity})
+        self.assertEqual(set(manifest()), {key('example'), key('expires'), key('keep')})
+        self.assertIsNone(manifest()[key('keep')])
+        self.assertEqual(dt.datetime.fromisoformat(manifest()[key('expires')]), now + dt.timedelta(hours=24))
+        for suffix in ['', '.zh']:
+            article = (self.public / ('notes/before' + suffix + '.html')).read_text()
+            self.assertIn(f'data-note-like="{key("example")}"', article)
+            self.assertIn('js/note-likes.js', article)
+        self.assertNotIn('js/note-likes.js', (self.public / 'notes.html').read_text())
+        preview = self.root / 'preview'
+        notes.build(self.private, self.public, draft, preview)
+        self.assertNotIn('data-note-like=', (preview / 'draft.html').read_text())
+        data = json.loads(original.read_text())
+        original.write_text(json.dumps({**data, 'slug': 'after'}))
+        with patch.object(notes, 'birthday_publication_time', return_value=now - dt.timedelta(hours=25)):
+            self.build()
+        self.assertEqual(manifest(), {key('example'): None, key('keep'): None})
+        self.assertIn(f'data-note-like="{key("example")}"', (self.public / 'notes/after.html').read_text())
+
     def test_birthday_clock_starts_at_explicit_release_and_does_not_restart(self):
         self.post(birthday=True); self.save_revision(); releases = self.release_tools()
         # An empty publication index represents a new, never-published note.
@@ -225,7 +255,8 @@ class NotesTests(unittest.TestCase):
         self.assertEqual(self.build()['posts'], 0)
         self.assertNotIn('PRIVATE_', self.sinks())
         self.assertEqual(list((self.public / 'assets/notes').iterdir()), [])
-        self.assertEqual(list((self.public / 'notes').iterdir()), [])
+        self.assertEqual([p.name for p in (self.public / 'notes').iterdir()], ['reactions.json'])
+        self.assertEqual(json.loads((self.public / 'notes/reactions.json').read_text()), {})
         self.assertIn('Nothing here just yet.', (self.public / 'notes.html').read_text())
     def test_original_and_only_published_translations_export(self):
         secret = self.image('unfinished-translation.png')
