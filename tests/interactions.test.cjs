@@ -15,10 +15,10 @@ function imageHarness(lightweight=false) {
   const document = { readyState: 'complete', documentElement: { getAttribute: () => 'en' }, querySelectorAll: () => images, createElement: () => ({ setAttribute() {}, style: { setProperty() {} } }) };
   const context = { document, Node: { DOCUMENT_POSITION_FOLLOWING: 4, DOCUMENT_POSITION_PRECEDING: 2 }, window: { SiteRuntime:{lightweight,image:src=>src.startsWith("compact/")?src:"compact/"+src},addEventListener:(key,fn,options)=>events[key]={fn,options},requestAnimationFrame:fn=>fn(), innerHeight: 900, getComputedStyle: () => ({display:'block',visibility:'visible'}), setTimeout: cb => { timers.push(cb); return timers.length; }, clearTimeout() {} } };
   vm.runInNewContext(fs.readFileSync('public/js/image-loader.js', 'utf8'), context);
-  function addImage() {
-    const attrs = new Map([['data-src', `image-${images.length}.jpg`]]);
+  function addImage(native = false) {
+    const attrs = new Map([[native ? 'src' : 'data-src', `image-${images.length}.jpg`]]);
     const listeners = {};
-    const frame = { classList: classes(), matches: () => true, querySelector: () => frame.loader, querySelectorAll: () => [img], appendChild: loader => {frame.loader = loader; loader.parentElement = frame;} };
+    const frame = { classList: classes(), hasAttribute: key => native && key === 'data-native-img-load', matches: () => true, querySelector: () => frame.loader, querySelectorAll: () => [img], appendChild: loader => {frame.loader = loader; loader.parentElement = frame;} };
     const img = { classList: classes(), isConnected: true, complete: false, naturalWidth: 0, getAttribute: key => attrs.get(key), setAttribute: (key, val) => attrs.set(key,val), removeAttribute: key => attrs.delete(key), closest: sel => sel === '[hidden]' ? null : frame, getBoundingClientRect: () => ({top:0,bottom:200,width:200,height:200}), addEventListener: (type, cb) => listeners[type] = cb, compareDocumentPosition: () => 4 };
     images.push(img);
     return {img,frame, fire: type => listeners[type]()};
@@ -34,6 +34,24 @@ test('failed image stops loading and releases the queue', () => {
   assert.equal(a.frame.classList.contains('is-img-loading'), false);
   assert.equal(a.frame.classList.contains('is-img-error'), true);
   assert.equal(b.img.getAttribute('src'), 'image-1.jpg');
+});
+
+test('responsive note cover uses the loading indicator without entering the image queue', () => {
+  const h = imageHarness(true);
+  const {img, frame, fire} = h.addImage(true);
+  img.setAttribute('srcset', 'small.webp 320w, large.webp 1280w');
+  h.start();
+  assert.equal(img.getAttribute('src'), 'image-0.jpg');
+  assert.equal(img.getAttribute('srcset'), 'small.webp 320w, large.webp 1280w');
+  assert.equal(h.timers.length, 0);
+  assert.equal(frame.classList.contains('is-img-loading'), true);
+  fire('error');
+  assert.equal(frame.classList.contains('is-img-error'), true);
+  img.complete = true;
+  img.naturalWidth = 320;
+  fire('load');
+  assert.equal(frame.classList.contains('is-img-error'), false);
+  assert.equal(frame.classList.contains('is-img-ready'), true);
 });
 
 test('image timeout releases the queue and late success clears failure', () => {

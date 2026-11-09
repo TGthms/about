@@ -190,7 +190,7 @@ class Media:
             raise ValueError('A referenced media file is missing or outside the media folder.')
         return path
 
-    def image(self, value, alt='', prefix='../', loading='lazy', sizes='(max-width: 767px) calc(100vw - 32px), 720px'):
+    def image(self, value, alt='', prefix='../', loading='lazy', sizes='(max-width: 767px) calc(100vw - 32px), 720px', spotlight=False):
         if not str(alt).strip() and self.preview:
             alt = 'Image description pending'
         if not str(alt).strip():
@@ -235,6 +235,10 @@ class Media:
                   f' width="{largest[1]}" height="{largest[2]}" alt="{esc(alt)}" loading="{loading}" decoding="async" />')
         if not self.preview:
             markup = f'<picture><source media="(max-width: 320px), (max-device-width: 320px)" srcset="{esc(prefix + variants[0][0])}" />' + markup + '</picture>'
+        if spotlight:
+            width, height = largest[1:]
+            markup = (f'<span class="notes-spotlight__media" data-native-img-load '
+                      f'style="--note-cover-ratio:{width / height:.10g};--note-cover-width:{width}px">{markup}</span>')
         return markup, largest[0]
 
     def enlarge(self, markup, full, prefix):
@@ -702,7 +706,7 @@ def entrance(posts, note_media):
         photo, alt = thumbnail(post)
         image = ''
         if photo:
-            markup, _ = note_media[post['_id']].image(photo, alt, prefix='')
+            markup, _ = note_media[post['_id']].image(photo, alt, prefix='', spotlight=True)
             if post.get('thumbnail_focal'): markup = markup.replace('<img ', '<img ' + focal_style(post), 1)
             image = '<span class="notes-spotlight__image' + (' notes-spotlight__image--crop' if post.get('thumbnail_focal') else '') + '">' + markup + '</span>'
         return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="true"{expiry_attr(post)}>'

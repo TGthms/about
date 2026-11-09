@@ -83,9 +83,16 @@ html[data-theme="dark"] .home-page { --travel-blue: #62a2ff; }
 .notes-spotlight { display: grid; grid-template-columns: minmax(0, 1fr); margin-top: 20px; border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; background: var(--bg-card); color: var(--ink); }
 .notes-spotlight[hidden] { display: none; }
 .notes-spotlight--photo { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
-.notes-spotlight__image { display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
-.notes-spotlight__image picture { display: flex; justify-content: center; width: 100%; }
-.notes-spotlight__image img { display: block; width: auto; height: auto; max-width: 100%; max-height: 310px; border-radius: 20px; }
+.notes-spotlight__image { --note-cover-height: 310px; --note-cover-radius: 20px; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+.notes-spotlight__media { position: relative; display: block; width: min(100%, var(--note-cover-width), calc(var(--note-cover-height) * var(--note-cover-ratio))); aspect-ratio: var(--note-cover-ratio); overflow: hidden; border-radius: var(--note-cover-radius); }
+.notes-spotlight__media picture { position: absolute; inset: 0; display: block; }
+.notes-spotlight__media img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.notes-spotlight__media:is(.is-img-loading, .is-img-error) { background: var(--bg-card); }
+.notes-spotlight__media.is-img-loading img, .notes-spotlight__media.is-img-error img { opacity: 0; }
+.notes-carousel__slide[aria-hidden="true"] .notes-spotlight__media .img-loader { animation-play-state: paused; }
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-lightweight]) .notes-spotlight__media.is-img-ready img { transition: opacity .4s var(--ease-out); }
+}
 .notes-spotlight__copy { display: flex; flex-direction: column; align-items: start; justify-content: center; gap: 14px; min-width: 0; padding: clamp(24px, 4vw, 44px); }
 .notes-spotlight__eyebrow, .notes-spotlight time { color: var(--mute); font-size: .75rem; }
 .notes-spotlight__title { font: 400 clamp(1.6rem, 3vw, 2.3rem)/1.2 var(--font-display); letter-spacing: -.03em; overflow-wrap: anywhere; }
@@ -126,13 +133,12 @@ html[data-lightweight] .notes-carousel__controls { gap: 4px; }
 }
 @media (max-width: 767px) {
   .notes-spotlight--photo { grid-template-columns: minmax(0, 1fr); }
-  .notes-spotlight__image { padding: 20px; }
-  .notes-spotlight__image img { max-height: 240px; border-radius: 16px; }
+  .notes-spotlight__image { --note-cover-height: 240px; --note-cover-radius: 16px; padding: 20px; }
   .notes-spotlight__copy { gap: 12px; }
 }
-html[data-lightweight] .notes-spotlight__image { padding: 12px; }
+html[data-lightweight] .notes-spotlight__image { --note-cover-height: 160px; --note-cover-radius: 8px; padding: 12px; }
 html[data-lightweight] .notes-spotlight__copy { padding: 16px; }
-html[data-lightweight] .notes-spotlight__image img { max-height: 160px; border-radius: 8px; }
+html[data-lightweight] .notes-spotlight__media .img-loader { animation: none; text-shadow: none; background: none; color: var(--mute); }
 .home-page .section > .container { border-top: 1px solid var(--rule); }
 .home-page .section__label { display: none; }
 .home-page .section__title { font: 400 clamp(1.75rem, 4vw, 2.4rem)/1.2 var(--font-display); letter-spacing: -0.035em; }
@@ -1310,6 +1316,6 @@ html .home-page .project-host--section .host-option {
 @media (min-width: 768px) { .home-page [data-interest="tt"] > .interest-card__learn { grid-column: 1 / -1; margin-top: 8px; } }
 
 /* Opt-in photo framing; text-based covers retain their full composition. */
-.notes-spotlight__image--crop{padding:0;overflow:hidden;height:310px}.notes-spotlight__image--crop picture{height:100%}.notes-spotlight__image--crop img{width:100%;height:100%;max-height:none;object-fit:cover;border-radius:0}
-@media(max-width:767px){.notes-spotlight__image--crop{height:240px}}
-html[data-lightweight] .notes-spotlight__image--crop{height:160px;padding:0}html[data-lightweight] .notes-spotlight__image--crop img{max-height:none}
+.notes-spotlight__image--crop, html[data-lightweight] .notes-spotlight__image--crop { padding: 0; height: var(--note-cover-height); }
+.notes-spotlight__image--crop .notes-spotlight__media { width: 100%; height: 100%; border-radius: 0; }
+.notes-spotlight__image--crop img { object-fit: cover; }

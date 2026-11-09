@@ -11,7 +11,7 @@
   "use strict";
 
   var FRAME_SEL =
-    ".featured-card__visual--photo, .duolingo-card__frame, .qr-modal__frame, .erhu-wiki__photo, .img-load";
+    ".featured-card__visual--photo, .duolingo-card__frame, .qr-modal__frame, .erhu-wiki__photo, [data-native-img-load], .img-load";
   var IMG_SEL = "img[data-src], " +
     FRAME_SEL.split(", ")
       .map(function (sel) {
@@ -68,7 +68,7 @@
     if (!usesLabel(frame)) return null;
     var loader = frame.querySelector(".img-loader");
     if (!loader) {
-      loader = document.createElement("div");
+      loader = document.createElement("span");
       loader.className = "img-loader";
       loader.setAttribute("aria-hidden", "true");
       frame.appendChild(loader);
@@ -289,13 +289,29 @@
 
   function attachImageLoader(img) {
     if (!img) return;
+    var frame = frameOf(img);
+    if (frame && frame.hasAttribute("data-native-img-load")) {
+      // Observe native responsive images without replacing their picture sources.
+      if (img.getAttribute("data-loader") === "1") return;
+      img.setAttribute("data-loader", "1");
+      img.addEventListener("load", function () {
+        img.removeAttribute("data-load-failed");
+        markImgReady(img);
+      });
+      img.addEventListener("error", function () {
+        img.setAttribute("data-load-failed", "1");
+        setFrameState(frame);
+      });
+      if (img.complete && img.currentSrc && !img.naturalWidth) img.setAttribute("data-load-failed", "1");
+      setFrameState(frame);
+      return;
+    }
     armSrc(img);
     if (lightweight) {
       img.setAttribute("data-src", window.SiteRuntime.image(wantedSrc(img)));
       img.removeAttribute("srcset");
       img.removeAttribute("sizes");
     }
-    var frame = frameOf(img);
     if (usesLabel(frame)) {
       frame.classList.add("img-load");
       ensureLoader(frame);
