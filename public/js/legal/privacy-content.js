@@ -32,12 +32,13 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "notes",
-        "title": "Notes, RSS, Search, Sharing, and Likes",
+        "title": "Notes and reader interactions",
         "paragraphs": [
           "Reading Notes and subscribing through RSS do not require giving me your email address or creating an account. Your feed reader requests the public feed from t-g.pages.dev and may store its own copies; the reader’s privacy practices are its own. Feed requests are still ordinary requests to the hosting provider.",
           "Notes search runs in your browser against a downloaded public index. The search text is not sent to a search service by the Site. The index contains published writing, not private drafts.",
           "“Share this note” opens your device’s sharing interface or copies the article link when you choose. The Site does not read your clipboard or receive the recipients you select. Your chosen sharing application may process the link under its own policy.",
           "Notes likes. The public count is served by Cloudflare. If you like a note, your browser saves a random key for that note and sends it to Cloudflare so you can undo the like. The service stores a hash of the key with the note’s identifier while the like remains recorded. Only the total is public. The service uses your IP address to limit repeated requests and does not store it in the likes database. Clearing browser storage does not remove an existing like and may prevent you from undoing it.",
+          "Comments. If you post a comment, the display name you enter, your message, and the posting date are public. No account or email address is required. Cloudflare stores and serves comments. The service uses your IP address to limit repeated submissions and does not store it with your comment. I can remove comments from the Site. Copies saved elsewhere may still exist.",
           "If a Note includes an externally hosted video, playing it or opening its direct link sends requests to that video host. Review that provider’s policy before using it."
         ]
       },
@@ -197,12 +198,13 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "notes",
-        "title": "Notas, RSS, búsqueda, enlaces y Me gusta",
+        "title": "Notas e interacción con lectores",
         "paragraphs": [
           "Leer notas y suscribirte mediante RSS no requiere darme tu correo ni crear una cuenta. Tu lector consulta el canal público en t-g.pages.dev y puede guardar sus propias copias, conforme a su política de privacidad. Las consultas al canal siguen siendo solicitudes al proveedor de alojamiento.",
           "La búsqueda de notas se realiza en tu navegador sobre un índice público descargado. El Sitio no envía el texto de búsqueda a ningún servicio de búsqueda. El índice contiene textos publicados, no borradores privados.",
           "«Compartir esta nota» abre el menú de compartir del dispositivo o copia el enlace cuando lo eliges. El Sitio no lee el portapapeles ni recibe los destinatarios que seleccionas. La aplicación elegida puede tratar el enlace conforme a su política.",
           "Me gusta en las notas. Cloudflare proporciona el recuento público. Si indicas que te gusta una nota, tu navegador guarda una clave aleatoria para esa nota y la envía a Cloudflare para que puedas deshacer la reacción. El servicio guarda un hash de la clave junto al identificador de la nota mientras la reacción siga registrada. Solo el total es público. El servicio usa tu dirección IP para limitar las solicitudes repetidas y no la guarda en la base de datos de reacciones. Borrar los datos del navegador no elimina una reacción existente y puede impedir que la deshagas.",
+          "Comentarios. Si publicas un comentario, el nombre visible que escribas, tu mensaje y la fecha de publicación serán públicos. No necesitas una cuenta ni un correo electrónico. Cloudflare almacena y sirve los comentarios. El servicio usa tu dirección IP para limitar los envíos repetidos y no la guarda con tu comentario. Puedo eliminar comentarios del Sitio. Pueden seguir existiendo copias guardadas en otros lugares.",
           "Si una nota incluye un vídeo alojado externamente, reproducirlo o abrir su enlace directo envía solicitudes a ese alojamiento. Consulta la política del proveedor antes de utilizarlo."
         ]
       },
@@ -362,12 +364,13 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "notes",
-        "title": "随记、RSS、搜索、分享与点赞",
+        "title": "随记与读者互动",
         "paragraphs": [
           "阅读随记或通过 RSS 订阅无需向我提供邮箱或创建账号。你的阅读器会向 t-g.pages.dev 请求公开订阅源，并可能自行保存副本，其隐私处理遵循阅读器自身政策。订阅源请求仍会由托管服务处理。",
           "随记搜索在你的浏览器内，使用下载的公开索引完成。本网站不会将搜索文字发送给搜索服务。索引仅包含已公开的文章，不包含私人草稿。",
           "“分享这篇随记”会在你选择操作后打开设备分享界面或复制文章链接。本网站不会读取剪贴板，也不会获知你选择的收件人。你使用的分享应用可能按自身政策处理链接。",
           "随记点赞。公开的点赞总数由 Cloudflare 提供。点赞时，浏览器会为这篇随记保存一个随机密钥，并将其发送给 Cloudflare，以便你取消点赞。点赞记录保留期间，服务会保存密钥的哈希值和随记标识。只有总数会公开。服务使用你的 IP 地址限制重复请求，但不会将其存入点赞数据库。清除浏览器存储不会删除已有的点赞，也可能导致你无法取消点赞。",
+          "评论。发表评论后，你填写的显示名称、评论内容和发布日期会公开。无需注册账号或提供电子邮箱。Cloudflare 存储并提供评论。服务使用你的 IP 地址限制重复提交，但不会将其与评论一同存储。我可以从本站移除评论，其他地方保存的副本仍可能存在。",
           "若随记包含外部托管的视频，播放或打开其直达链接会向该视频服务商发送请求。请在使用前查看其政策。"
         ]
       },
@@ -527,12 +530,13 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "notes",
-        "title": "ノート、RSS、検索、共有、いいね",
+        "title": "ノートと読者の参加",
         "paragraphs": [
           "ノートの閲覧やRSS購読のために、メールアドレスの提供やアカウント作成は必要ありません。フィードリーダーはt-g.pages.devの公開フィードを取得し、独自にコピーを保存することがあります。そのプライバシー慣行は各リーダーのポリシーに従います。フィードの取得もホストへの通常のリクエストです。",
           "ノート検索は、ダウンロードした公開インデックスを使ってブラウザー内で実行します。本サイトが検索語を検索サービスへ送ることはありません。インデックスに含むのは公開済みの文章であり、非公開の下書きではありません。",
           "「このノートを共有」を選ぶと、端末の共有画面を開くか記事のリンクをコピーします。本サイトはクリップボードを読み取らず、選んだ送信先も受け取りません。選択したアプリは、そのポリシーに従ってリンクを処理する場合があります。",
           "ノートの「いいね」。公開される件数は Cloudflare が提供します。「いいね」を押すと、ブラウザーがそのノート専用のランダムなキーを保存し、取り消せるよう Cloudflare に送信します。「いいね」が記録されている間、サービスはキーのハッシュ値とノートの識別子を保存します。公開されるのは合計件数のみです。サービスは連続したリクエストを制限するために IP アドレスを使用しますが、「いいね」のデータベースには保存しません。ブラウザーのデータを消去しても「いいね」は消えず、取り消せなくなる場合があります。",
+          "コメントを投稿すると、入力した表示名、コメント本文、投稿日が公開されます。アカウントやメールアドレスは不要です。コメントの保存と配信には Cloudflare を利用します。連続投稿を制限するために IP アドレスを使用しますが、コメントと一緒には保存しません。コメントはこのサイトから削除できますが、他の場所に保存されたコピーが残る場合があります。",
           "ノートに外部ホストの動画が含まれる場合、再生や直接リンクの利用により、そのホストへリクエストが送られます。利用前に提供元のポリシーをご確認ください。"
         ]
       },
@@ -690,12 +694,13 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "notes",
-        "title": "隨記、RSS、搜尋、分享與按讚",
+        "title": "隨記與讀者互動",
         "paragraphs": [
           "閱讀隨記或透過 RSS 訂閱，無須向我提供電子郵件地址或建立帳號。你的閱讀器會向 t-g.pages.dev 請求公開訂閱來源，並可能自行儲存副本，其隱私處理遵循閱讀器自身政策。訂閱來源請求仍會由託管服務處理。",
           "隨記搜尋在你的瀏覽器內，使用下載的公開索引完成。本網站不會將搜尋文字傳送給搜尋服務。索引僅包含已公開文章，不包含私人草稿。",
           "「分享這篇隨記」會在你選擇操作後開啟裝置分享介面或複製文章連結。本網站不會讀取剪貼簿，也不會得知你選擇的收件人。你使用的分享應用程式可能按自身政策處理連結。",
           "隨記按讚。公開的按讚總數由 Cloudflare 提供。按讚時，瀏覽器會為該篇隨記儲存一組隨機金鑰，並傳送給 Cloudflare，讓你可以收回讚。按讚紀錄保留期間，服務會儲存金鑰的雜湊值和隨記識別碼。只有總數會公開。服務使用你的 IP 位址限制重複請求，但不會將其存入按讚資料庫。清除瀏覽器儲存空間不會移除既有的讚，也可能讓你無法收回。",
+          "留言。發表留言後，你填寫的顯示名稱、留言內容和發表日期都會公開。無須註冊帳號或提供電子郵件。Cloudflare 儲存並提供留言。服務使用你的 IP 位址限制重複送出，但不會將其與留言一同儲存。我可以從本站移除留言，其他地方儲存的副本仍可能存在。",
           "若隨記包含外部託管的影片，播放或開啟其直接連結會向該影片服務商傳送請求。請在使用前查看其政策。"
         ]
       },
@@ -857,12 +862,13 @@ window.LEGAL_DOCUMENTS.privacy = {
       },
       {
         "id": "notes",
-        "title": "노트, RSS, 검색, 공유 및 좋아요",
+        "title": "노트와 독자 참여",
         "paragraphs": [
           "노트를 읽거나 RSS로 구독할 때 이메일을 제공하거나 계정을 만들 필요가 없습니다. 피드 리더는 t-g.pages.dev의 공개 피드를 요청하고 사본을 보관할 수 있으며, 해당 리더의 개인정보 처리방침이 적용됩니다. 피드 요청도 호스팅 제공업체로 보내는 일반적인 요청입니다.",
           "노트 검색은 다운로드한 공개 색인을 이용해 브라우저 안에서 실행됩니다. 사이트는 검색어를 검색 서비스로 보내지 않습니다. 색인에는 공개된 글만 있으며 비공개 초안은 없습니다.",
           "“이 노트 공유하기”는 선택한 경우 기기의 공유 화면을 열거나 글의 링크를 복사합니다. 사이트는 클립보드를 읽거나 선택한 수신자를 전달받지 않습니다. 선택한 앱은 자체 방침에 따라 링크를 처리할 수 있습니다.",
           "노트 좋아요. 공개 좋아요 수는 Cloudflare가 제공합니다. 좋아요를 누르면 브라우저가 해당 노트에 대한 무작위 키를 저장하고, 나중에 좋아요를 취소할 수 있도록 Cloudflare에 전송합니다. 좋아요가 기록되어 있는 동안 서비스는 키의 해시값과 노트 식별자를 저장합니다. 공개되는 것은 총개수뿐입니다. 반복 요청을 제한하기 위해 IP 주소를 사용하며, 이를 좋아요 데이터베이스에 저장하지 않습니다. 브라우저의 데이터를 지워도 기존 좋아요는 삭제되지 않으며, 이후에는 취소하지 못할 수 있습니다.",
+          "댓글을 등록하면 입력한 표시 이름, 댓글 내용, 작성 날짜가 공개됩니다. 계정이나 이메일 주소는 필요하지 않습니다. Cloudflare가 댓글을 저장하고 제공합니다. 반복 제출을 제한하기 위해 IP 주소를 사용하지만 댓글과 함께 저장하지 않습니다. 사이트에서 댓글을 삭제할 수 있으며, 다른 곳에 저장된 사본은 남아 있을 수 있습니다.",
           "노트에 외부 호스팅 영상이 포함된 경우 재생하거나 직접 링크를 열면 해당 호스트로 요청이 전송됩니다. 이용 전에 제공업체의 방침을 확인해 주세요."
         ]
       },

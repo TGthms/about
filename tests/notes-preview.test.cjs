@@ -94,3 +94,47 @@ test('audio and downloadable preview files keep owner authentication and attachm
  assert.equal(range.status,206);assert.equal(await range.text(),'3456');
  assert.equal((await put(env,'unsafe.exe','bytes')).status,405);
 });
+
+test('comment moderation checks signed owner identity and same-origin deletion', async () => {
+  const env = await environment();
+  const {DatabaseSync} = require('node:sqlite');
+  const {readFileSync} = require('node:fs');
+  const db = new DatabaseSync(':memory:');
+  try {
+    db.exec(readFileSync('tools/notes-likes/migrations/0002_comments.sql','utf8'));
+    db.prepare('INSERT INTO comments (note, submission, name, body, posted_at) VALUES (?, ?, ?, ?, ?)').run(
+      'a'.repeat(64), 'b'.repeat(32), '<b>Reader</b>', '<script>unsafe()</script>', Date.now());
+    env.COMMENTS_DB = {
+      prepare: sql => ({bind: (...args) => ({
+        all: () => ({results: db.prepare(sql).all(...args)}),
+        first: () => db.prepare(sql).get(...args),
+        run: () => db.prepare(sql).run(...args)
+      })})
+    };
+    const worker = (await service).default;
+    const endpoint = env.PREVIEW_ORIGIN + '/preview/moderation';
+    assert.equal((await worker.fetch(new Request(endpoint), env)).status, 401);
+    const other = await access(env, {email:'other@example.com'});
+    assert.equal((await worker.fetch(new Request(endpoint, {headers:{'Cf-Access-Jwt-Assertion':other}}), env)).status, 403);
+    const confirmation = await get(env, '/preview/moderation?delete=1');
+    assert.equal(confirmation.status, 200);
+    const html = await confirmation.text();
+    assert.match(html, /Delete this comment/);
+    assert.match(html, /&lt;script&gt;unsafe/);
+    assert.doesNotMatch(html, /<script>/);
+    const jwt = await access(env);
+    const post = origin => worker.fetch(new Request(endpoint, {
+      method:'POST', headers:{Origin:origin, 'Cf-Access-Jwt-Assertion':jwt},
+      body:new URLSearchParams({id:'1'})
+    }), env);
+    const denied = await post('https://other.example.com');
+    assert.equal(denied.status, 403);
+    assert.equal(db.prepare('SELECT removed FROM comments').get().removed, 0);
+    const deleted = await post(env.PREVIEW_ORIGIN);
+    assert.equal(deleted.status, 303);
+    assert.equal(deleted.headers.get('Location'), '/preview/moderation?removed=1');
+    assert.match(await (await get(env, '/preview/moderation')).text(), /No comments here yet/);
+  } finally {
+    db.close();
+  }
+});

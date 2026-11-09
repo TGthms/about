@@ -1,3 +1,5 @@
+import {moderate} from "./moderation.mjs";
+
 // Private previews are isolated from the public site and expire after three days.
 const TTL = 3 * 24 * 60 * 60;
 const MAX_FILE = 22 * 1024 * 1024;
@@ -89,12 +91,17 @@ export default {
       await env.PREVIEWS.put(upload[1] + '/' + upload[2], bytes, { expirationTtl: TTL, metadata });
       return reply('Saved', 201);
     }
-    if (request.method !== 'GET' && request.method !== 'HEAD') return reply('Method not allowed', 405);
+    const moderation = /^\/preview\/moderation\/?$/.test(url.pathname);
+    if (!moderation && request.method !== 'GET' && request.method !== 'HEAD') return reply('Method not allowed', 405);
     if (!url.pathname.startsWith('/preview')) return reply('', 302, { Location: '/preview/' });
     try {
       const claims = await verify(request.headers.get('Cf-Access-Jwt-Assertion'), 'https://' + env.ACCESS_TEAM_DOMAIN, env.ACCESS_AUDIENCE, env.FETCH || fetch);
       if (typeof claims.email !== 'string' || claims.email.toLowerCase() !== env.OWNER_EMAIL.toLowerCase()) return reply('Forbidden', 403);
     } catch { return reply('Sign in through Cloudflare Access to view this private preview.', 401); }
+    if (moderation) {
+      try { return await moderate(request, env.COMMENTS_DB, reply); }
+      catch { return reply('Comment moderation is temporarily unavailable.', 503); }
+    }
     const route = url.pathname.match(/^\/preview\/(\d{1,20}-\d{1,4})\/(?:([a-z0-9][a-zA-Z0-9.-]{0,180}\.(?:html|webp|mp4|webm|json|mp3|m4a|ogg|wav|pdf|zip|txt|csv)))?$/);
     if (!route) return reply('Open the private preview link from your Notes action.', 200);
     const selected = route[1] + '/' + (route[2] || 'index.json');

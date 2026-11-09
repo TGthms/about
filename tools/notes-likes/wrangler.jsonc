@@ -13,6 +13,11 @@
     "name": "REACTION_LIMIT",
     "namespace_id": "1637218209",
     "simple": { "limit": 20, "period": 60 }
+  }, {
+    "name": "COMMENT_LIMIT",
+    "namespace_id": "1637218210",
+    "simple": { "limit": 4, "period": 60 }
   }],
+  "vars": { "COMMENTS_OPEN": "true" },
   "observability": { "enabled": false }
 }

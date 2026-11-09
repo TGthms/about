@@ -101,9 +101,10 @@ An optional, separately hosted private browser-preview Worker is maintained in `
 
 Notes can include a fixed `same-study` content block: a silent SAME header, byte-order, and burst-comparison experiment in English or Simplified Chinese. Its small stylesheet and script load only on articles containing that block. Without scripting it presents a readable field guide. Private previews embed this trusted local component; author-supplied scripts remain blocked.
 
-Anonymous article likes use the separate [Notes likes Worker](tools/notes-likes)
-and D1 database. Both public hosts and all article translations share the total
-for the same note. The Notes build generates `public/notes/reactions.json` from
+Article likes and comments use the separate [Notes likes Worker](tools/notes-likes)
+and D1 database. Both public hosts and all article translations share reactions
+for the same note. Comments appear immediately and the owner can remove them
+from the [private moderation page](https://notes-preview.tgthms.workers.dev/preview/moderation). The Notes build generates `public/notes/reactions.json` from
 published articles. The Worker checks this list and enforces Birthday expiry.
 To deploy Worker changes, apply its D1 migrations before running `wrangler deploy`
 with `tools/notes-likes/wrangler.jsonc`. The static site stays readable when the

@@ -581,6 +581,19 @@ def render_post(version, original, media, prefix='../', reactions=False):
         '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20.8 5.9a5.3 5.3 0 0 0-7.5 0L12 7.2l-1.3-1.3a5.3 5.3 0 0 0-7.5 7.5l1.3 1.3 7.5 7.1 7.5-7.1 1.3-1.3a5.3 5.3 0 0 0 0-7.5Z"/></svg>'
         '<span data-note-like-label aria-hidden="true">Like</span><span class="visually-hidden" id="note-like-count"></span></button>'
     ) if reactions else ''
+    comments = (
+        f'<section class="note-comments" aria-labelledby="note-comments-title" data-note-comments="{reaction_id(original)}" hidden>'
+        '<h2 id="note-comments-title">Comments</h2>'
+        '<div class="note-comments__list"><ol data-comments-list></ol><p class="note-comments__muted" data-comments-empty hidden></p>'
+        '<button class="note-comments__quiet" type="button" data-comments-more>Load comments</button></div>'
+        '<form class="note-comments__form" data-comments-form hidden>'
+        '<label for="note-comment-name">Display name</label><input id="note-comment-name" name="name" maxlength="40" required />'
+        '<label for="note-comment-body">Comment</label><textarea id="note-comment-body" name="body" rows="4" maxlength="1200" required></textarea>'
+        '<div hidden><label>Website <input name="website" tabindex="-1" autocomplete="off" /></label></div>'
+        '<p class="note-comments__muted" data-comments-hint>Your display name and comment will appear publicly.</p>'
+        f'<div class="note-comments__submit"><button type="submit">Post comment</button><a href="{prefix}privacy.html#notes" data-i18n="footer.privacy">Privacy Policy</a></div>'
+        '</form><p class="note-comments__muted" data-comments-status role="status"></p></section>'
+    ) if reactions else ''
     return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{ "" if keep_link else expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
             f'<a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a></div>'
@@ -591,7 +604,7 @@ def render_post(version, original, media, prefix='../', reactions=False):
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
             f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
-            content +
+            content + comments +
             '<footer class="note-end">' + f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>' +
             '</footer><p class="note-license"><a href="' + prefix + 'terms.html#content">© Tim G · CC BY-NC-ND 4.0</a></p></article>' + expired)
 
@@ -660,6 +673,9 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         markup = markup.replace('</body>', script + '\n</body>')
     if 'data-note-like=' in content:
         script = resource_versions(f'<script src="{prefix}js/note-likes.js" defer></script>', public)
+        markup = markup.replace('</body>', script + '\n</body>')
+    if 'data-note-comments=' in content:
+        script = resource_versions(f'<script src="{prefix}js/note-comments.js" defer></script>', public)
         markup = markup.replace('</body>', script + '\n</body>')
     if 'data-note-block=' in content:
         markup = markup.replace('</head>', resource_versions(f'<link rel="stylesheet" href="{prefix}css/note-blocks.css" />', public) + '\n</head>')
@@ -844,7 +860,13 @@ def build(private, public, preview_path=None, preview_output=None):
                     redirect = shell(public, html_lang=esc(version['language']), prefix='../', title='This note has moved — Tim G', description='Read this note at its current address.', canonical=esc(target), image=ORIGIN + '/og-image.png', image_alt='Tim G', og_type='website', og_locale=LOCALES.get(version['language'], 'en_US'), structured_data='', alternates='', kind='redirect', content=f'<section class="note-expired"><h1>This note has moved.</h1><p><a class="notes-back" href="{esc(target)}">Read the note →</a></p><a class="notes-back" href="../notes.html">All notes →</a></section>')
                     redirect = redirect.replace('</head>', '<meta name="robots" content="noindex" /><meta http-equiv="refresh" content="0;url=' + esc(target) + '" /></head>')
                     (stage / old).write_text(redirect)
-        reactions = {reaction_id(post): None if post.get('birthday_visibility') == 'keep-link' else post.get('_expires') for post in posts}
+        reactions = {}
+        for post in posts:
+            expiry = None if post.get('birthday_visibility') == 'keep-link' else post.get('_expires')
+            record = {'expires': expiry}
+            if not is_birthday(post):
+                record.update(path=post_filename(post, post), title=title(post))
+            reactions[reaction_id(post)] = record
         (stage / 'notes/reactions.json').write_text(json.dumps(reactions, separators=(',', ':'), sort_keys=True) + '\n')
         posts = [post for post in posts if not post.get('_unlisted')]
         page_count = max(1, (len(posts) + 19) // 20)

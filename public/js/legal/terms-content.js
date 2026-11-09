@@ -6,7 +6,7 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Terms governing use of Tim G’s personal hub website.",
     "label": "Legal",
     "title": "Terms of Use",
-    "updated": "Last updated: November 3, 2026",
+    "updated": "Last updated: November 8, 2026",
     "intro": "These Terms of Use (the “Terms”) apply to this personal hub website and related pages operated by Tim G (the “Site”). By using the Site, you agree to these Terms. If you do not agree, please do not use the Site.",
     "sections": [
       {
@@ -32,7 +32,8 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "Acceptable Use",
         "paragraphs": [
           "You agree to use the Site only for lawful purposes and in a manner that does not infringe the rights of others or unreasonably interfere with their use of the Site.",
-          "You may not: attempt to gain unauthorized access to the Site or related systems or networks; probe or test vulnerabilities without express permission; interfere with the Site’s operation; use automated means to scrape or harvest Content in a way that imposes an unreasonable load or circumvents access controls; transmit malware; or use the Site for any unlawful, harmful, or fraudulent activity."
+          "You may not: attempt to gain unauthorized access to the Site or related systems or networks; probe or test vulnerabilities without express permission; interfere with the Site’s operation; use automated means to scrape or harvest Content in a way that imposes an unreasonable load or circumvents access controls; transmit malware; or use the Site for any unlawful, harmful, or fraudulent activity.",
+          "When you comment, you retain your rights and allow me to display your comment and chosen name on the Site. Please keep comments relevant and respect others. Spam, impersonation, harassment, and sharing other people’s private information are prohibited. I may remove comments or close commenting."
         ]
       },
       {
@@ -53,7 +54,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "no-account",
         "title": "No Accounts or Purchases",
         "paragraphs": [
-          "Public browsing, Notes, RSS, and games require no visitor account, and the Site offers no purchases. Private authoring and preview tools are restricted to the owner. The Site does not accept public comments or uploads."
+          "Public browsing, Notes, likes, comments, RSS, and games require no visitor account, and the Site offers no purchases. Private authoring, preview, and moderation tools are restricted to the owner. The Site accepts text comments on Notes and does not accept public file uploads."
         ]
       },
       {
@@ -104,7 +105,7 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Condiciones que rigen el uso del sitio personal de Tim G.",
     "label": "Legal",
     "title": "Condiciones de uso",
-    "updated": "Última actualización: 3 de noviembre de 2026",
+    "updated": "Última actualización: 8 de noviembre de 2026",
     "intro": "Las presentes Condiciones de uso (las «Condiciones») se aplican a este sitio personal y a las páginas relacionadas operadas por Tim G (el «Sitio»). Al utilizar el Sitio, usted acepta estas Condiciones. Si no está de acuerdo, no utilice el Sitio.",
     "sections": [
       {
@@ -130,7 +131,8 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "Uso lícito",
         "paragraphs": [
           "Usted se compromete a utilizar el Sitio únicamente con fines lícitos y de forma que no lesione los derechos de terceros ni interfiera de manera irrazonable en su uso del Sitio.",
-          "Queda prohibido, entre otras conductas: intentar obtener acceso no autorizado al Sitio o a sistemas o redes relacionados; sondear o probar vulnerabilidades sin permiso expreso; interferir en el funcionamiento del Sitio; emplear medios automatizados para extraer o recopilar Contenido de modo que imponga una carga desproporcionada o eluda medidas de control de acceso; transmitir malware; o utilizar el Sitio para cualquier actividad ilícita, dañina o fraudulenta."
+          "Queda prohibido, entre otras conductas: intentar obtener acceso no autorizado al Sitio o a sistemas o redes relacionados; sondear o probar vulnerabilidades sin permiso expreso; interferir en el funcionamiento del Sitio; emplear medios automatizados para extraer o recopilar Contenido de modo que imponga una carga desproporcionada o eluda medidas de control de acceso; transmitir malware; o utilizar el Sitio para cualquier actividad ilícita, dañina o fraudulenta.",
+          "Al comentar, conservas tus derechos y me permites mostrar tu comentario y el nombre elegido en el Sitio. Por favor, comenta sobre el tema y respeta a los demás. Se prohíben el spam, la suplantación de identidad, el acoso y la divulgación de información privada de otras personas. Puedo retirar comentarios o cerrar la sección de comentarios."
         ]
       },
       {
@@ -151,7 +153,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "no-account",
         "title": "Ausencia de cuentas y de compras",
         "paragraphs": [
-          "La navegación pública, las notas, RSS y los juegos no requieren cuenta de visitante, y el Sitio no ofrece compras. Las herramientas de escritura y vista previa son exclusivas del propietario. El Sitio no acepta comentarios ni archivos del público."
+          "La navegación pública, las notas, las reacciones, los comentarios, RSS y los juegos no requieren cuenta de visitante, y el Sitio no ofrece compras. Las herramientas de escritura, vista previa y moderación son exclusivas del propietario. El Sitio acepta comentarios de texto en las notas y no admite archivos del público."
         ]
       },
       {
@@ -202,7 +204,7 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Tim G 个人主页网站的使用条款。",
     "label": "法律信息",
     "title": "使用条款",
-    "updated": "最后更新：2026年11月3日",
+    "updated": "最后更新：2026年11月8日",
     "intro": "本使用条款（以下简称“本条款”）适用于由 Tim G 运营的本个人主页网站及相关页面（以下简称“本网站”）。使用本网站即表示您同意本条款。如不同意，请勿使用本网站。",
     "sections": [
       {
@@ -228,7 +230,8 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "使用规范",
         "paragraphs": [
           "您同意仅出于合法目的使用本网站，且不得侵犯他人权利，或不当妨碍他人对本网站的使用。",
-          "您不得：试图未经授权访问本网站或相关系统与网络；在未获明确许可的情况下探测或测试安全漏洞；干扰本网站运行；以施加不合理负载或规避访问控制的方式，使用自动化手段抓取或采集内容；传播恶意软件；或将本网站用于任何非法、有害或欺诈活动。"
+          "您不得：试图未经授权访问本网站或相关系统与网络；在未获明确许可的情况下探测或测试安全漏洞；干扰本网站运行；以施加不合理负载或规避访问控制的方式，使用自动化手段抓取或采集内容；传播恶意软件；或将本网站用于任何非法、有害或欺诈活动。",
+          "发表评论时，你保留自己的权利，并允许我在本站显示评论内容和你选择的名称。请围绕文章内容交流并尊重他人。禁止发布垃圾信息、冒充他人、骚扰他人或公开他人的私人信息。我可以移除评论或关闭评论功能。"
         ]
       },
       {
@@ -249,7 +252,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "no-account",
         "title": "无账户与购买",
         "paragraphs": [
-          "公开浏览、随记、RSS 和游戏均无需访客账号，网站不提供购物服务。写作与预览工具仅限所有者使用。本网站不接受公众评论或上传。"
+          "公开浏览、随记、点赞、评论、RSS 和游戏均无需访客账号，本站不提供购物服务。写作、预览和评论管理工具仅供所有者使用。本站接受随记下的文字评论，不接受公众上传文件。"
         ]
       },
       {
@@ -300,7 +303,7 @@ window.LEGAL_DOCUMENTS.terms = {
     "metaDesc": "Tim G の個人向けウェブサイトの利用規約。",
     "label": "法的情報",
     "title": "利用規約",
-    "updated": "最終更新日：2026年11月3日",
+    "updated": "最終更新日：2026年11月8日",
     "intro": "本利用規約（以下「本規約」）は、Tim G が運営する本個人向けハブウェブサイトおよび関連ページ（以下「本サイト」）に適用されます。本サイトを利用することにより、お客様は本規約に同意したものとみなされます。同意されない場合は、本サイトを利用しないでください。",
     "sections": [
       {
@@ -326,7 +329,8 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "適正利用",
         "paragraphs": [
           "お客様は、適法な目的に限り、かつ他者の権利を侵害せず、他者による本サイトの利用を不当に妨げない方法で本サイトを利用することに同意するものとします。",
-          "お客様は次の行為を行ってはなりません。本サイトまたは関連システム・ネットワークへの不正アクセスの試み、明示の許可なく脆弱性を探査または試験すること、本サイトの動作を妨害すること、過大な負荷を与えまたはアクセス制御を回避する形での自動化手段によるコンテンツの取得、マルウェアの送信、または違法・有害・詐欺的な活動のための利用。"
+          "お客様は次の行為を行ってはなりません。本サイトまたは関連システム・ネットワークへの不正アクセスの試み、明示の許可なく脆弱性を探査または試験すること、本サイトの動作を妨害すること、過大な負荷を与えまたはアクセス制御を回避する形での自動化手段によるコンテンツの取得、マルウェアの送信、または違法・有害・詐欺的な活動のための利用。",
+          "投稿者はコメントに関する権利を保持し、選んだ表示名とコメントをこのサイトで表示することを許可します。記事に沿った内容で、ほかの読者を尊重してください。スパム、なりすまし、嫌がらせ、他人の私的な情報の公開は禁止です。コメントを削除したり、受付を停止したりすることがあります。"
         ]
       },
       {
@@ -347,7 +351,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "no-account",
         "title": "アカウントおよび購入の不存在",
         "paragraphs": [
-          "公開ページ、ノート、RSS、ゲームの利用に訪問者アカウントは不要で、購入機能もありません。執筆・プレビューツールは所有者専用です。一般のコメントやアップロードは受け付けていません。"
+          "公開ページ、ノート、いいね、コメント、RSS、ゲームの利用に訪問者アカウントは不要で、購入機能もありません。執筆、プレビュー、コメント管理の各ツールは所有者専用です。ノートにはテキストのコメントを投稿できますが、一般のファイルアップロードは受け付けていません。"
         ]
       },
       {
@@ -421,7 +425,8 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "use",
         "paragraphs": [
           "您同意僅出於合法目的使用本網站，且不得侵犯他人權利，或不當妨礙他人對本網站的使用。",
-          "您不得：試圖未經授權瀏覽本網站或相關係統與網路；在未獲明確許可的情況下探測或測試安全漏洞；干擾本網站運行；以施加不合理負載或規避瀏覽控制的方式，使用自動化手段抓取或採集內容；傳播惡意軟體；或將本網站用於任何非法、有害或欺詐活動。"
+          "您不得：試圖未經授權瀏覽本網站或相關係統與網路；在未獲明確許可的情況下探測或測試安全漏洞；干擾本網站運行；以施加不合理負載或規避瀏覽控制的方式，使用自動化手段抓取或採集內容；傳播惡意軟體；或將本網站用於任何非法、有害或欺詐活動。",
+          "發表留言時，你保有自己的權利，並允許我在本站顯示留言內容與你選擇的名稱。請圍繞文章內容交流並尊重他人。禁止發送垃圾訊息、冒充他人、騷擾他人或公開他人的私人資訊。我可以移除留言或關閉留言功能。"
         ],
         "title": "使用規範"
       },
@@ -442,7 +447,7 @@ window.LEGAL_DOCUMENTS.terms = {
       {
         "id": "no-account",
         "paragraphs": [
-          "公開瀏覽、隨記、RSS 和遊戲均無須訪客帳號，網站不提供購物服務。寫作與預覽工具僅限擁有者使用。本網站不接受公眾留言或上傳。"
+          "公開瀏覽、隨記、按讚、留言、RSS 和遊戲均無須訪客帳號，本站不提供購物服務。寫作、預覽與留言管理工具僅供擁有者使用。本站接受隨記下的文字留言，不接受公眾上傳檔案。"
         ],
         "title": "無帳戶與購買"
       },
@@ -489,14 +494,14 @@ window.LEGAL_DOCUMENTS.terms = {
       }
     ],
     "title": "使用條款",
-    "updated": "最後更新：2026年11月3日"
+    "updated": "最後更新：2026年11月8日"
   },
   "ko": {
     "metaTitle": "이용약관 — Tim G",
     "metaDesc": "Tim G의 개인 웹사이트 이용에 적용되는 약관입니다.",
     "label": "법적 안내",
     "title": "이용약관",
-    "updated": "최종 수정일: 2026년 11월 3일",
+    "updated": "최종 수정일: 2026년 11월 8일",
     "intro": "이 이용약관(이하 ‘약관’)은 Tim G가 운영하는 개인 웹사이트와 관련 페이지(이하 ‘사이트’)에 적용됩니다. 사이트를 이용하면 이 약관에 동의하는 것으로 간주합니다. 동의하지 않는 경우 사이트를 이용하지 말아 주세요.",
     "sections": [
       {
@@ -522,7 +527,8 @@ window.LEGAL_DOCUMENTS.terms = {
         "title": "허용되는 이용",
         "paragraphs": [
           "사용자는 적법한 목적에 한해 사이트를 이용하며, 타인의 권리를 침해하거나 타인의 이용을 부당하게 방해하지 않는 방식으로 이용하는 데 동의합니다.",
-          "다음 행위는 금지됩니다. 사이트 또는 관련 시스템·네트워크에 무단 접근을 시도하는 행위, 명시적인 허가 없이 취약점을 탐색하거나 시험하는 행위, 사이트 운영을 방해하는 행위, 부당한 부하를 주거나 접근 통제를 우회하는 방식으로 자동화 도구를 사용해 콘텐츠를 수집하는 행위, 악성코드를 전송하는 행위, 사이트를 불법적·유해하거나 사기적인 활동에 사용하는 행위."
+          "다음 행위는 금지됩니다. 사이트 또는 관련 시스템·네트워크에 무단 접근을 시도하는 행위, 명시적인 허가 없이 취약점을 탐색하거나 시험하는 행위, 사이트 운영을 방해하는 행위, 부당한 부하를 주거나 접근 통제를 우회하는 방식으로 자동화 도구를 사용해 콘텐츠를 수집하는 행위, 악성코드를 전송하는 행위, 사이트를 불법적·유해하거나 사기적인 활동에 사용하는 행위.",
+          "댓글을 작성해도 자신의 권리는 유지되며, 사이트에 댓글과 선택한 표시 이름을 표시할 수 있도록 허용하는 데 동의합니다. 글의 주제에 맞는 내용을 쓰고 다른 사람을 존중해 주세요. 스팸, 사칭, 괴롭힘, 다른 사람의 사적인 정보 공개는 금지됩니다. 댓글을 삭제하거나 댓글 등록을 중단할 수 있습니다."
         ]
       },
       {
@@ -543,7 +549,7 @@ window.LEGAL_DOCUMENTS.terms = {
         "id": "no-account",
         "title": "계정과 구매",
         "paragraphs": [
-          "공개 페이지, 노트, RSS, 게임은 방문자 계정 없이 이용할 수 있으며 구매 기능은 없습니다. 글쓰기와 미리보기 도구는 소유자만 이용할 수 있습니다. 공개 댓글이나 파일 업로드는 받지 않습니다."
+          "공개 페이지, 노트, 좋아요, 댓글, RSS, 게임은 방문자 계정 없이 이용할 수 있으며 구매 기능은 없습니다. 글쓰기, 미리보기, 댓글 관리 도구는 소유자만 이용할 수 있습니다. 노트에 텍스트 댓글을 남길 수 있으며 방문자의 파일 업로드는 받지 않습니다."
         ]
       },
       {

@@ -102,21 +102,25 @@ class NotesTests(unittest.TestCase):
         def key(identity):
             return notes.reaction_id({'_id': identity})
         self.assertEqual(set(manifest()), {key('example'), key('expires'), key('keep')})
-        self.assertIsNone(manifest()[key('keep')])
-        self.assertEqual(dt.datetime.fromisoformat(manifest()[key('expires')]), now + dt.timedelta(hours=24))
+        self.assertEqual(manifest()[key('keep')], {'expires': None})
+        self.assertEqual(dt.datetime.fromisoformat(manifest()[key('expires')]['expires']), now + dt.timedelta(hours=24))
         for suffix in ['', '.zh']:
             article = (self.public / ('notes/before' + suffix + '.html')).read_text()
             self.assertIn(f'data-note-like="{key("example")}"', article)
             self.assertIn('js/note-likes.js', article)
+            self.assertIn(f'data-note-comments="{key("example")}"', article)
         self.assertNotIn('js/note-likes.js', (self.public / 'notes.html').read_text())
         preview = self.root / 'preview'
         notes.build(self.private, self.public, draft, preview)
         self.assertNotIn('data-note-like=', (preview / 'draft.html').read_text())
+        self.assertNotIn('data-note-comments=', (preview / 'draft.html').read_text())
         data = json.loads(original.read_text())
         original.write_text(json.dumps({**data, 'slug': 'after'}))
         with patch.object(notes, 'birthday_publication_time', return_value=now - dt.timedelta(hours=25)):
             self.build()
-        self.assertEqual(manifest(), {key('example'): None, key('keep'): None})
+        self.assertEqual(set(manifest()), {key('example'), key('keep')})
+        self.assertEqual(manifest()[key('example')]['path'], 'notes/after.html')
+        self.assertEqual(manifest()[key('keep')], {'expires': None})
         self.assertIn(f'data-note-like="{key("example")}"', (self.public / 'notes/after.html').read_text())
 
     def test_birthday_clock_starts_at_explicit_release_and_does_not_restart(self):

@@ -181,3 +181,24 @@ html[data-lightweight] .note-end { margin-top: 24px; }
 
 .note-license { margin-top: 16px; color: var(--mute); font-size: .6875rem; line-height: 1.6; }
 .note-license a { text-underline-offset: 3px; }
+
+.note-comments { max-width: 42rem; margin-block: clamp(32px, 6vw, 60px) 28px; padding-top: 24px; border-top: 1px solid var(--rule); }
+.note-comments[hidden], .note-comments [hidden] { display: none; }
+.note-comments h2 { font: 400 clamp(1.45rem, 4vw, 2rem)/1.2 var(--font-display); margin-bottom: 14px; }
+.note-comments__list ol { padding: 0; list-style: none; }
+.note-comments__list li { border-bottom: 1px solid var(--rule); padding: 12px 0; }
+.note-comments__list li > p { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9375rem; }
+.note-comments__byline { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-bottom: 4px; }
+.note-comments__byline bdi { font-weight: 600; overflow-wrap: anywhere; }
+.note-comments__byline time, .note-comments__muted { color: var(--mute); font-size: .8125rem; }
+.note-comments__form { display: grid; gap: 6px; margin-top: 24px; }
+.note-comments__form label { font-size: .875rem; font-weight: 600; }
+.note-comments__form :is(input, textarea) { width: 100%; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg-card); color: var(--ink); font: inherit; }
+.note-comments__form input[name="name"] { max-width: 19rem; min-height: 44px; margin-bottom: 8px; }
+.note-comments__form textarea { resize: vertical; }
+.note-comments__submit { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; }
+.note-comments__submit button, .note-comments__quiet { min-height: 44px; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 6px; background: var(--bg-card); color: var(--accent-text); font: inherit; font-size: .8125rem; cursor: pointer; }
+.note-comments__quiet { margin-top: 8px; }
+.note-comments__submit a { color: var(--accent-text); font-size: .8125rem; text-underline-offset: .2em; }
+.note-comments__submit button[aria-disabled="true"], .note-comments__quiet[aria-disabled="true"] { opacity: .65; cursor: wait; }
+[data-comments-status]:not(:empty) { margin-top: 10px; }
