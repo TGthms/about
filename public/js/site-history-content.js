@@ -619,27 +619,27 @@ PERSONAL_HUB.milestones.push({
   "copy": {
     "en": {
       "title": "A place to write",
-      "description": "I started writing Notes here, from quick updates to what I learned about emergency alert tones while building Signal Lab. You can follow new posts by RSS."
+      "description": "I started writing Notes here to share what I’m working on and what I learn along the way. You can follow new posts by RSS."
     },
     "es": {
       "title": "Un lugar para escribir",
-      "description": "Empecé a publicar notas aquí: desde novedades breves hasta lo que aprendí sobre los tonos de alerta de emergencia al crear Signal Lab. Puedes seguir las nuevas publicaciones por RSS."
+      "description": "Empecé a publicar notas aquí para contar en qué estoy trabajando y qué voy aprendiendo. Puedes seguir las nuevas publicaciones por RSS."
     },
     "zh": {
       "title": "有了写东西的地方",
-      "description": "我开始在这里写笔记，记下近况，也分享做 Signal Lab 时了解到的紧急警报音知识。新文章可以通过 RSS 订阅。"
+      "description": "我开始在这里写笔记，分享最近在做的事和一路上的收获。新文章可以通过 RSS 订阅。"
     },
     "zh-Hant": {
       "title": "有了寫東西的地方",
-      "description": "我開始在這裡寫筆記，記下近況，也分享做 Signal Lab 時學到的緊急警報音知識。新文章可以透過 RSS 訂閱。"
+      "description": "我開始在這裡寫筆記，分享最近在做的事和一路上的收穫。新文章可以透過 RSS 訂閱。"
     },
     "ja": {
       "title": "書く場所ができました",
-      "description": "ここでノートを書き始めました。ちょっとした近況から、Signal Lab を作る中で知った緊急警報の音の仕組みまで。新しい記事は RSS で購読できます。"
+      "description": "取り組んでいることや、その中で学んだことを共有したくて、ここでノートを書き始めました。新しい記事は RSS で購読できます。"
     },
     "ko": {
       "title": "글을 쓸 곳이 생겼어요",
-      "description": "이곳에 노트를 쓰기 시작했어요. 짧은 근황도 남기고, Signal Lab을 만들면서 알게 된 긴급 경보음 이야기도 적었습니다. 새 글은 RSS로 받아볼 수 있어요."
+      "description": "요즘 하고 있는 일과 그 과정에서 배운 것들을 나누려고 이곳에 노트를 쓰기 시작했어요. 새 글은 RSS로 받아볼 수 있어요."
     }
   }
 });
