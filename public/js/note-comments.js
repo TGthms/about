@@ -5,12 +5,12 @@
       !/^https:\/\/(timgong\.me|t-g\.pages\.dev)$/.test(window.location.origin)) return;
 
   var copy = {
-    en: ["Comments", "Display name", "Comment", "Your display name and comment will appear publicly.", "Post comment", "Load comments", "Older comments", "No comments yet.", "Couldn’t load comments. Try again.", "Comment posted.", "Couldn’t post your comment. Try again.", "Please wait a minute before posting again.", "This comment is no longer available."],
-    es: ["Comentarios", "Nombre visible", "Comentario", "Tu nombre y tu comentario serán públicos.", "Publicar comentario", "Cargar comentarios", "Comentarios anteriores", "Todavía no hay comentarios.", "No se pudieron cargar los comentarios. Inténtalo de nuevo.", "Comentario publicado.", "No se pudo publicar tu comentario. Inténtalo de nuevo.", "Espera un minuto antes de volver a publicar.", "Este comentario ya no está disponible."],
-    zh: ["评论", "显示名称", "评论内容", "你的显示名称和评论内容将公开。", "发表评论", "加载评论", "较早的评论", "还没有评论。", "评论加载失败，请重试。", "评论已发表。", "评论发表失败，请重试。", "请等一分钟再发表评论。", "这条评论已不可用。"],
-    "zh-Hant": ["留言", "顯示名稱", "留言內容", "你的顯示名稱和留言內容將公開。", "發表留言", "載入留言", "較早的留言", "還沒有留言。", "無法載入留言，請再試一次。", "留言已發表。", "無法發表留言，請再試一次。", "請等一分鐘再發表留言。", "這則留言已無法查看。"],
-    ja: ["コメント", "表示名", "コメント本文", "表示名とコメントは公開されます。", "コメントを投稿", "コメントを読み込む", "以前のコメント", "まだコメントはありません。", "コメントを読み込めませんでした。もう一度お試しください。", "コメントを投稿しました。", "コメントを投稿できませんでした。もう一度お試しください。", "1分ほど待ってからもう一度投稿してください。", "このコメントは表示できなくなりました。"],
-    ko: ["댓글", "표시 이름", "댓글 내용", "표시 이름과 댓글 내용은 공개됩니다.", "댓글 등록", "댓글 불러오기", "이전 댓글", "아직 댓글이 없어요.", "댓글을 불러오지 못했어요. 다시 시도해 주세요.", "댓글을 등록했어요.", "댓글을 등록하지 못했어요. 다시 시도해 주세요.", "1분 뒤에 다시 등록해 주세요.", "이 댓글은 더 이상 볼 수 없어요."]
+    en: ["Comments", "Display name", "Comment", "Your display name and comment will be public. Only the site owner can remove a posted comment.", "Post comment", "Load comments", "Older comments", "No comments yet.", "Couldn’t load comments. Try again.", "Comment posted.", "Couldn’t post your comment. Try again.", "Please wait a minute before posting again.", "This comment is no longer available."],
+    es: ["Comentarios", "Nombre visible", "Comentario", "Tu nombre visible y tu comentario serán públicos. Solo el propietario del sitio puede borrar un comentario ya publicado.", "Publicar comentario", "Cargar comentarios", "Comentarios anteriores", "Todavía no hay comentarios.", "No se pudieron cargar los comentarios. Inténtalo de nuevo.", "Comentario publicado.", "No se pudo publicar tu comentario. Inténtalo de nuevo.", "Espera un minuto antes de volver a publicar.", "Este comentario ya no está disponible."],
+    zh: ["评论", "显示名称", "评论内容", "你的显示名称和评论内容会公开。评论发布后，只有站长可以删除。", "发表评论", "加载评论", "较早的评论", "还没有评论。", "评论加载失败，请重试。", "评论已发表。", "评论发表失败，请重试。", "请等一分钟再发表评论。", "这条评论已不可用。"],
+    "zh-Hant": ["留言", "顯示名稱", "留言內容", "你的顯示名稱和留言內容會公開。留言發表後，只有站長可以刪除。", "發表留言", "載入留言", "較早的留言", "還沒有留言。", "無法載入留言，請再試一次。", "留言已發表。", "無法發表留言，請再試一次。", "請等一分鐘再發表留言。", "這則留言已無法查看。"],
+    ja: ["コメント", "表示名", "コメント本文", "表示名とコメントは公開されます。投稿したコメントを削除できるのは、サイトの管理者だけです。", "コメントを投稿", "コメントを読み込む", "以前のコメント", "まだコメントはありません。", "コメントを読み込めませんでした。もう一度お試しください。", "コメントを投稿しました。", "コメントを投稿できませんでした。もう一度お試しください。", "1分ほど待ってからもう一度投稿してください。", "このコメントは表示できなくなりました。"],
+    ko: ["댓글", "표시 이름", "댓글 내용", "표시 이름과 댓글 내용은 공개됩니다. 등록한 댓글은 사이트 운영자만 삭제할 수 있어요.", "댓글 등록", "댓글 불러오기", "이전 댓글", "아직 댓글이 없어요.", "댓글을 불러오지 못했어요. 다시 시도해 주세요.", "댓글을 등록했어요.", "댓글을 등록하지 못했어요. 다시 시도해 주세요.", "1분 뒤에 다시 등록해 주세요.", "이 댓글은 더 이상 볼 수 없어요."]
   };
   var root = document.documentElement;
   var list = section.querySelector("[data-comments-list]");
