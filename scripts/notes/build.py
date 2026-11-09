@@ -169,10 +169,14 @@ def safe_link(value):
 
 class Media:
     audio_types = authoring.AUDIO_TYPES
-    def __init__(self, private, output, preview=False):
+    def __init__(self, private, output, preview=False, note_id=None):
         self.private, self.output, self.preview = private, output, preview
         self.cache = {}
         self.source_keys = {}
+        self.image_dir = 'assets/notes'
+        if note_id is not None:
+            folder = note_id if re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]*', note_id) else '~' + hashlib.sha256(note_id.encode()).hexdigest()[:20]
+            self.image_dir += '/' + folder
 
     def source(self, value):
         value = unquote(str(value or '')).lstrip('/')
@@ -215,7 +219,7 @@ class Media:
                 for size in widths:
                     copy = image.copy()
                     copy.thumbnail((size, max(1, round(height * size / width))), Image.Resampling.LANCZOS)
-                    name = f'assets/notes/{key}-{copy.width}.webp'
+                    name = f'{self.image_dir}/{key}-{copy.width}.webp'
                     path = self.output / name; path.parent.mkdir(parents=True, exist_ok=True)
                     copy.save(path, 'WEBP', quality=85, method=6)
                     variants.append((name, copy.width, copy.height))
@@ -593,11 +597,11 @@ def focal_style(post):
         raise ValueError('Image focal points must be numbers between 0 and 100.')
     return f'style="object-position:{focal["x"]:g}% {focal["y"]:g}%" '
 
-def card(post, media, prefix):
+def card(post, note_media, prefix):
     photo, alt = thumbnail(post)
     image = ''
     if photo:
-        markup, _ = media.image(photo, alt, prefix, sizes='(max-width: 480px) 96px, (max-width: 767px) 144px, 208px')
+        markup, _ = note_media[post['_id']].image(photo, alt, prefix, sizes='(max-width: 480px) 96px, (max-width: 767px) 144px, 208px')
         image = markup.replace('<img ', '<img class="note-card__image' + (' note-card__image--crop' if post.get('thumbnail_focal') else '') + '" ' + focal_style(post), 1)
     heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
     text = summary(post)
@@ -662,7 +666,7 @@ def page(public, content, prefix='', kind='index', post=None, image='', image_al
         markup = markup.replace('</body>', resource_versions(f'<script src="{prefix}js/notes-search.js" defer></script>', public) + '\n</body>')
     return markup
 
-def entrance(posts, media):
+def entrance(posts, note_media):
     intro = ('<section class="notes-entrance" id="notes" aria-labelledby="notes-entrance-title"><div class="container">'
              '<a class="notes-entrance__main" href="notes.html"><span class="notes-entrance__heading"><span id="notes-entrance-title" data-i18n="notes.title">Notes</span>' + RSS_ICON + '</span>'
              '<span class="notes-entrance__action"><span data-i18n="notes.explore">Explore notes</span> <span aria-hidden="true">→</span></span></a>')
@@ -670,7 +674,7 @@ def entrance(posts, media):
         photo, alt = thumbnail(post)
         image = ''
         if photo:
-            markup, _ = media.image(photo, alt, prefix='')
+            markup, _ = note_media[post['_id']].image(photo, alt, prefix='')
             if post.get('thumbnail_focal'): markup = markup.replace('<img ', '<img ' + focal_style(post), 1)
             image = '<span class="notes-spotlight__image' + (' notes-spotlight__image--crop' if post.get('thumbnail_focal') else '') + '">' + markup + '</span>'
         return (f'<div class="notes-carousel__slide" data-note-slide data-note-featured="true"{expiry_attr(post)}>'
@@ -705,14 +709,14 @@ def category_nav(posts, prefix, current=''):
     return '<nav class="notes-topics" aria-label="Categories" data-i18n-aria="notes.categories">' + links + '</nav>'
 
 
-def archive_entries(posts, media, prefix):
+def archive_entries(posts, note_media, prefix):
     if not posts: return ''
     if len(posts) < 8 and len({p['date'][:4] for p in posts}) == 1:
-        return '<ol class="notes-list" role="list">' + ''.join(card(p, media, prefix) for p in posts) + '</ol>'
+        return '<ol class="notes-list" role="list">' + ''.join(card(p, note_media, prefix) for p in posts) + '</ol>'
     years = {}
     for post in posts: years.setdefault(post['date'][:4], []).append(post)
     return ''.join('<section class="notes-year"><h2>' + year + '</h2><ol class="notes-list" role="list">' +
-                   ''.join(card(p, media, prefix) for p in entries) + '</ol></section>' for year, entries in years.items())
+                   ''.join(card(p, note_media, prefix) for p in entries) + '</ol></section>' for year, entries in years.items())
 
 def search_control(posts, prefix):
     if len([p for p in posts if not is_birthday(p)]) < 6: return ''
@@ -764,11 +768,15 @@ def build(private, public, preview_path=None, preview_output=None):
     posts = read_posts(private, preview_path)
     if preview_path and not posts: raise ValueError('The selected draft could not be found.')
     with tempfile.TemporaryDirectory(prefix='notes-export-') as temp:
-        stage = Path(temp); media = Media(private, stage, preview=bool(preview_path))
+        stage = Path(temp)
+        note_media = {}
         (stage / 'notes').mkdir()
         (stage / 'assets/notes').mkdir(parents=True)
         urls, rss_items = [], []
         for post in posts:
+            note_id = post['_id']
+            media = Media(private, stage, preview=True) if preview_path else Media(private, stage, note_id=note_id)
+            note_media[note_id] = media
             for version in post['_versions']:
                 filename = post_filename(version, post); version['_filename'] = filename
                 rendered = render_post(version, post, media)
@@ -830,7 +838,7 @@ def build(private, public, preview_path=None, preview_output=None):
             prefix = '' if index == 0 else '../'
             filename = 'notes.html' if index == 0 else f'notes/page-{index + 1}.html'
             hero = '<header class="notes-hero"><div><h1 data-i18n="notes.title">Notes</h1></div>' + f'<a class="notes-feed-link" href="{prefix}subscribe.html">{RSS_ICON}<span data-i18n="notes.followTitle">Follow updates</span></a></header>'
-            entries = archive_entries(posts[index * 20:(index + 1) * 20], media, prefix)
+            entries = archive_entries(posts[index * 20:(index + 1) * 20], note_media, prefix)
             if not entries: entries = '<div class="notes-empty"><span class="notes-empty__mark">' + RSS_ICON + '</span><h2 data-i18n="notes.emptyTitle">Nothing here just yet.</h2><p data-i18n="notes.emptyText">A place for photographs, stories, and little updates.</p></div>'
             pagination = ''
             if page_count > 1:
@@ -851,7 +859,7 @@ def build(private, public, preview_path=None, preview_output=None):
             for index in range(count):
                 filename = f'notes/topics/{key}{"-page-" + str(index + 1) if index else ""}.html'
                 prefix = '../../'
-                entries = archive_entries(matches[index * 20:(index + 1) * 20], media, prefix)
+                entries = archive_entries(matches[index * 20:(index + 1) * 20], note_media, prefix)
                 pagination = '<nav class="notes-pagination" aria-label="Notes pages" data-i18n-aria="notes.pages">'
                 if index: pagination += f'<a href="{key}{"-page-" + str(index) if index > 1 else ""}.html"><span data-i18n="notes.newer">Newer notes</span> →</a>'
                 if index + 1 < count: pagination += f'<a href="{key}-page-{index + 2}.html"><span data-i18n="notes.older">Older notes</span> →</a>'
@@ -881,7 +889,7 @@ def build(private, public, preview_path=None, preview_output=None):
             # Keep existing identifiers stable when feed delivery moves to another host.
             ET.SubElement(item, 'guid', {'isPermaLink': 'false'}).text = ORIGIN + '/' + post_filename(post, post)
         ET.ElementTree(rss).write(stage / 'feed.xml', encoding='utf-8', xml_declaration=True)
-        home_entrance = entrance(posts, media)
+        home_entrance = entrance(posts, note_media)
         (stage / 'subscribe.html').write_text(follow_page(public))
         urls.append((ORIGIN + '/subscribe.html', ''))
         # All content has passed validation before touching the deployment tree.

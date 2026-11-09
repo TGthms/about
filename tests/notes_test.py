@@ -40,6 +40,9 @@ class NotesTests(unittest.TestCase):
         return '/media/images/' + name
     def build(self):
         return notes.build(self.private, self.public)
+    def assets(self):
+        root = self.public / 'assets/notes'
+        return {p.relative_to(root): p.read_bytes() for p in root.rglob('*') if p.is_file()}
     def sinks(self):
         return '\n'.join(path.read_text() for path in self.public.rglob('*') if path.suffix in ('.html', '.xml', '.json'))
     def release_tools(self):
@@ -57,13 +60,13 @@ class NotesTests(unittest.TestCase):
         photo = self.image('shared.png', (80, 60))
         self.post(body='<p>Released text.</p>', cover=photo, cover_alt='Blue photograph', translations=[{'language':'zh','published':False,'cover':'/media/images/not-uploaded-yet.png','body':'PRIVATE TRANSLATION'}])
         self.save_revision(); releases = self.release_tools(); releases.initialize(self.private)
-        self.build(); before = self.sinks(); files = {p.name: p.read_bytes() for p in (self.public / 'assets/notes').iterdir()}
+        self.build(); before = self.sinks(); files = self.assets()
         Image.new('RGB', (80, 60), 'red').save(self.private / 'media/images/shared.png')
         self.post(body='<p>PRIVATE REVISION</p>', cover=photo, cover_alt='Red photograph')
         self.post('other-draft', published=False, body='<p>UNRELATED SECRET</p>')
         self.save_revision(); self.build()
         self.assertEqual(before, self.sinks())
-        self.assertEqual(files, {p.name: p.read_bytes() for p in (self.public / 'assets/notes').iterdir()})
+        self.assertEqual(files, self.assets())
         releases.select(self.private, 'notes/example.json'); self.build()
         self.assertIn('PRIVATE REVISION', self.sinks()); self.assertNotIn('UNRELATED SECRET', self.sinks())
         self.post(published=False); self.save_revision(); self.build()
@@ -239,7 +242,7 @@ class NotesTests(unittest.TestCase):
         photo = self.image()
         self.post(blocks=[{'type': 'photo', 'image': photo, 'alt': 'A coastal view', 'caption': 'Along the coast.'}])
         self.build()
-        assets = list((self.public / 'assets/notes').glob('*.webp'))
+        assets = list((self.public / 'assets/notes/example').glob('*.webp'))
         self.assertEqual(len(assets), 4)
         widths = []
         for path in assets:
@@ -254,7 +257,7 @@ class NotesTests(unittest.TestCase):
         self.assertNotIn('/media/', markup)
         self.assertIn('max-width: 320px', markup)
         self.assertIn('-share.jpg', markup)
-        self.assertRegex(markup, r'data-note-image href="\.\./assets/notes/[a-f0-9]+-1920\.webp"')
+        self.assertRegex(markup, r'data-note-image href="\.\./assets/notes/example/[a-f0-9]+-1920\.webp"')
         self.assertIn('js/note-images.js?v=', markup)
         self.assertNotIn('note-images.js', (self.public / 'notes.html').read_text())
     def test_video_does_not_autoload_and_has_direct_access(self):
@@ -269,8 +272,37 @@ class NotesTests(unittest.TestCase):
         self.assertIn('Open video', markup)
         self.assertIn('Transcript', markup)
         self.assertNotIn('autoplay', markup)
-        self.assertRegex(markup, r'poster="\.\./assets/notes/[a-f0-9]+-320.webp"')
-        self.assertRegex(markup, r'data-note-poster="\.\./assets/notes/[a-f0-9]+-1920.webp"')
+        self.assertRegex(markup, r'poster="\.\./assets/notes/example/[a-f0-9]+-320\.webp"')
+        self.assertRegex(markup, r'data-note-poster="\.\./assets/notes/example/[a-f0-9]+-1920\.webp"')
+    def test_note_images_share_a_stable_folder_across_translations_and_slug_changes(self):
+        cover = self.image('cover.png', (80, 60))
+        post = {
+            'cover': cover, 'cover_alt': 'A cover', 'categories': ['Photography'],
+            'translations': [{'language': 'es', 'title': 'Foto', 'body': '<p>Foto.</p>', 'published': True}],
+        }
+        self.post('stable-id', slug='old-title', **post)
+        self.post('another-note', cover=cover, cover_alt='Shared photograph')
+        self.build()
+        root = self.public / 'assets/notes'
+        first_assets = {p.name: p.read_bytes() for p in (root / 'stable-id').iterdir()}
+        self.assertEqual(first_assets, {p.name: p.read_bytes() for p in (root / 'another-note').iterdir()})
+        for page in ('index.html', 'notes.html', 'notes/topics/photography.html',
+                     'notes/old-title.html', 'notes/old-title.es.html'):
+            self.assertIn('assets/notes/stable-id/', (self.public / page).read_text())
+        for name, data in first_assets.items():
+            (root / name).write_bytes(data)
+        self.post('stable-id', slug='new-title', **post)
+        self.build()
+        self.assertIn('assets/notes/stable-id/', (self.public / 'notes/new-title.html').read_text())
+        self.assertEqual(first_assets, {p.name: p.read_bytes() for p in (root / 'stable-id').iterdir()})
+        self.assertFalse(any(p.is_file() for p in root.iterdir()))
+        self.post('stable-id', published=False)
+        self.build()
+        self.assertFalse((root / 'stable-id').exists())
+        self.assertEqual(first_assets, {p.name: p.read_bytes() for p in (root / 'another-note').iterdir()})
+        self.post('another-note', published=False)
+        self.build()
+        self.assertEqual(self.assets(), {})
     def test_html_is_sanitized_in_body_metadata_and_feed(self):
         self.post(body='<p onclick="steal()">Hello <strong>world</strong>.</p><script>HIDDEN_SCRIPT</script><iframe src="https://evil.example">HIDDEN_FRAME</iframe><a href="javascript:steal()">bad link</a><a href="https://example.org">Good link</a>')
         self.build()

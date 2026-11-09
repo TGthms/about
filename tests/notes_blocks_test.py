@@ -88,12 +88,12 @@ class BlocksTests(unittest.TestCase):
   def git(*args):return subprocess.run(['git','-C',str(self.private),*args],check=True,capture_output=True,text=True).stdout.strip()
   git('init');git('config','user.name','Test');git('config','user.email','test@example.com');git('add','.');git('commit','-m','Saved content')
   releases.initialize(self.private);notes.build(self.private,self.public)
-  before={p.name:p.read_bytes() for p in (self.public/'assets/notes').iterdir()}
+  before={p.relative_to(self.public):p.read_bytes() for p in (self.public/'assets/notes').rglob('*') if p.is_file()}
   (self.private/'media/audio/sample.wav').write_bytes(b'UNPUBLISHED_AUDIO')
   (self.private/'media/downloads/data.csv').write_text('UNPUBLISHED_DOWNLOAD')
   (self.private/'media/downloads/private.txt').write_text('UNREFERENCED_SECRET')
   git('add','.');git('commit','-m','Private media changes');notes.build(self.private,self.public)
-  self.assertEqual(before,{p.name:p.read_bytes() for p in (self.public/'assets/notes').iterdir()})
+  self.assertEqual(before,{p.relative_to(self.public):p.read_bytes() for p in (self.public/'assets/notes').rglob('*') if p.is_file()})
  def test_local_links_and_quotation_attribution_are_safely_escaped(self):
   media=notes.Media(self.private,self.root/'output')
   post={**self.post,'blocks':[{'type':'link','title':'<img onerror=alert(1)>','url':'/index.html#projects'}, {'type':'quote','text':'<script>x</script>','author':'<b>Author</b>','url':'javascript:alert(1)'}]}
