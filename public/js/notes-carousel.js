@@ -1,4 +1,4 @@
-/* Five-second featured Notes carousel. Native scrolling is the fallback. */
+/* Featured Notes carousel. Native scrolling is the fallback. */
 (function () {
   "use strict";
   var frame = document.querySelector('[data-notes-carousel]');
@@ -15,6 +15,7 @@
   var interval = 6000;
   var active = [], index = 0, timer = 0, remaining = interval, started = 0;
   var visible = false, focused = false, touching = false, touchStart = null;
+  var hoveredSlide = null;
   var buttons = [], observer = null;
   function now() { return window.performance ? window.performance.now() : Date.now(); }
   function words() {
@@ -23,7 +24,7 @@
   }
   function label(i) { return words().slideLabel.replace('{number}', i + 1).replace('{total}', active.length); }
   function allowed() {
-    return active.length > 1 && visible && !document.hidden && !focused && !touching &&
+    return active.length > 1 && visible && !document.hidden && !focused && !touching && hoveredSlide !== active[index] &&
       !document.documentElement.classList.contains('page-scroll-locked') && !lightweight && !(motion && motion.matches);
   }
   function progress(value, duration) {
@@ -94,6 +95,20 @@
   }
   previous.addEventListener('click', function () { move(index - 1, true); });
   next.addEventListener('click', function () { move(index + 1, true); });
+  slides.forEach(function (slide) {
+    var action = slide.querySelector('.notes-spotlight__action');
+    if (!action) return;
+    action.addEventListener('pointerenter', function (event) {
+      if (event.pointerType !== 'mouse') return;
+      hoveredSlide = slide;
+      if (slide === active[index]) stop();
+    });
+    action.addEventListener('pointerleave', function (event) {
+      if (event.pointerType !== 'mouse' || hoveredSlide !== slide) return;
+      hoveredSlide = null;
+      run();
+    });
+  });
   frame.addEventListener('focusin', function (event) {
     // Mouse clicks keep autoplay running; keyboard focus keeps its place.
     focused = true;

@@ -15,7 +15,11 @@ function harness({lite=false,reduced=false,count=2}={}) {
   }
   const root=node(),track=node(),controls=node(),dots=node(),prev=node(),next=node(),status=node();
   const slides=Array.from({length:count},()=>node({'data-note-featured':'true'}));
-  slides.forEach(s=>{const a=node();s.querySelector=()=>a;});
+  const actions=slides.map(s=>{
+    const link=node(),action=node();
+    s.querySelector=selector=>selector==='a'?link:selector==='.notes-spotlight__action'?action:null;
+    return action;
+  });
   const frame=node();frame.querySelectorAll=()=>slides;
   frame.querySelector=s=>({'.notes-carousel__track':track,'.notes-carousel__controls':controls,'[data-note-dots]':dots,'[data-note-prev]':prev,'[data-note-next]':next,'[data-note-carousel-status]':status}[s]);
   const document={hidden:false,documentElement:root,querySelector:()=>frame,createElement:()=>node(),addEventListener(k,v){docEvents[k]=v;}};
@@ -24,7 +28,7 @@ function harness({lite=false,reduced=false,count=2}={}) {
   class MO {observe(){}}
   const window={SiteRuntime:{lightweight:lite},performance:{now:()=>clock},matchMedia:()=>motion,IntersectionObserver:IO,MutationObserver:MO,addEventListener(k,v){events[k]=v;}};
   vm.runInNewContext(fs.readFileSync('public/js/notes-carousel.js','utf8'),{window,document,IntersectionObserver:IO,MutationObserver:MO,TRANSLATIONS:{en:{notes:{slideLabel:'Note {number} of {total}',previousSlide:'Previous',nextSlide:'Next',featuredNotes:'Featured'}}},setTimeout(fn,delay){const id=++serial;timers.set(id,{fn,delay});return id;},clearTimeout:id=>timers.delete(id)});
-  return {frame,track,controls,dots,slides,prev,next,document,docEvents,events,timers,motion,io,refresh:window.NotesCarousel.refresh,advance(ms){clock+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);clock+=t.delay;t.fn();}};
+  return {frame,track,controls,dots,slides,actions,prev,next,document,docEvents,events,timers,motion,io,refresh:window.NotesCarousel.refresh,advance(ms){clock+=ms;},fire(){const [id,t]=timers.entries().next().value;timers.delete(id);clock+=t.delay;t.fn();}};
 }
 test('at most eight featured notes appear',()=>{
   const h=harness({count:10});
@@ -60,11 +64,29 @@ test('autoplay advances every six seconds and keeps only the active article focu
   assert.equal(h.slides[1].inert,false); assert.equal(h.slides[0].querySelector('a').tabIndex,-1);
   assert.equal(h.timers.values().next().value.delay,6000);
 });
-test('keyboard focus suspends the interval while hover and mouse clicks leave autoplay running',()=>{
+test('keyboard focus suspends the interval while mouse clicks leave autoplay running',()=>{
   const h=harness();h.advance(1200);h.frame.listeners.focusin();assert.equal(h.timers.size,0);
   h.frame.listeners.focusout({relatedTarget:null});assert.equal(h.timers.values().next().value.delay,4800);
   h.frame.listeners.focusin({target:{matches:()=>false}});h.next.listeners.click();assert.equal(h.timers.size,1);
   assert.equal(h.frame.listeners.pointerenter,undefined);assert.equal(h.frame.listeners.pointerleave,undefined);
+});
+test('only mouse hover on the active Read note action pauses its timer and progress',()=>{
+  const h=harness(),mouse={pointerType:'mouse'};
+  const progress=h.dots.children[0].style;
+  h.advance(1500);
+  h.actions[1].listeners.pointerenter(mouse);
+  assert.equal(h.timers.size,1);
+  h.actions[1].listeners.pointerleave(mouse);
+  h.actions[0].listeners.pointerenter({pointerType:'touch'});
+  assert.equal(h.timers.size,1);
+  h.actions[0].listeners.pointerenter(mouse);
+  assert.equal(h.timers.size,0);
+  assert.equal(progress['--note-progress'],0.25);
+  assert.equal(progress['--note-progress-time'],'0ms');
+  h.advance(2000);
+  h.actions[0].listeners.pointerleave(mouse);
+  assert.equal(h.timers.values().next().value.delay,4500);
+  assert.equal(progress['--note-progress-time'],'4500ms');
 });
 test('offscreen, hidden pages, reduced motion, and lightweight browsing avoid background autoplay',()=>{
   for(const option of [{lite:true},{reduced:true}]){const h=harness(option);assert.equal(h.timers.size,0);h.next.listeners.click();assert.equal(h.track.style.transform,'translateX(-100%)');}
