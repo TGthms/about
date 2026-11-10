@@ -75,6 +75,13 @@ jobs:
           npm run build
           git diff --exit-code -- static/app.js static/app.js.LEGAL.txt THIRD_PARTY_NOTICES.md src/material-icons.json
 
+      - name: Install WebKit for browser checks
+        working-directory: tools/notes-manager
+        run: npx --no-install playwright install --with-deps webkit
+
+      - name: Check homepage loading on desktop, phone, and Watch-sized screens
+        run: node tests/site-browser.cjs
+
       - name: Check online Notes document storage
         run: node --test tools/notes-online/test/store.test.mjs
 

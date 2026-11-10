@@ -20,7 +20,7 @@
   <meta property="og:url" content="https://timgong.me/" />
   <meta property="og:title" content="Tim G — Personal Hub" />
   <meta property="og:description" content="High school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
-  <meta property="og:image" content="https://timgong.me/og-image.png" />
+  <meta property="og:image" content="https://t-g.pages.dev/og-image.png" />
   <meta property="og:image:alt" content="Tim G — Personal Hub" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -36,16 +36,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Tim G — Personal Hub" />
   <meta name="twitter:description" content="High school student based in San Francisco Bay Area. Builder, photographer, erhu player, and traveler." />
-  <meta name="twitter:image" content="https://timgong.me/og-image.png" />
+  <meta name="twitter:image" content="https://t-g.pages.dev/og-image.png" />
   <meta name="twitter:image:alt" content="Tim G — Personal Hub" />
 
   <meta name="theme-color" content="#fbf9f4" id="meta-theme-color" />
 
-  <link rel="icon" href="https://timgong.me/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="https://timgong.me/apple-touch-icon.png" sizes="180x180" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180" />
   <script src="js/season-calendar.js?v=5775c00de5c2"></script>
   <link rel="stylesheet" href="css/styles.css?v=0010efaceee0" />
-  <link rel="stylesheet" href="css/home.css?v=4cb5ba9fd245" />
+  <link rel="stylesheet" href="css/home.css?v=8aaecc947adc" />
   <link rel="stylesheet" href="css/seasons.css?v=118a21ee24aa" />
 
   <link rel="stylesheet" href="css/compact.css?v=97aada9c4257" />
@@ -266,6 +266,7 @@
             <h3 class="interest-card__title" data-i18n="interests.tt.title">Table tennis</h3>
             <p class="interest-card__desc" data-i18n="interests.tt.desc">Quick rallies, focus, and friendly competition</p>
             <button type="button" class="interest-card__learn" id="rally-open" hidden data-i18n-aria="rally.open" aria-label="Play a quick rally" aria-haspopup="dialog" aria-controls="rally-modal" aria-expanded="false" data-i18n="rally.open">Play a quick rally</button>
+            <p class="feature-load-status" id="rally-open-status" role="status"></p>
           </li>
           <li class="interest-card" style="--stagger: 3" data-interest="bilingual">
             <div class="interest-card__icon" aria-hidden="true">
@@ -580,6 +581,7 @@
             <div class="featured-card__content">
               <h3 class="featured-card__title" id="project-title-hub" data-i18n="personalHub.title">Personal Hub</h3>
               <p class="featured-card__desc" data-i18n="personalHub.desc">My corner of the web, built around projects, photography, and the details in between.</p>
+              <p class="feature-load-status" id="site-history-open-status" role="status"></p>
             </div>
             <span class="hub-card__learn" aria-hidden="true"><span data-i18n="personalHub.learn">About this site</span><span>→</span></span>
           </article>
@@ -1203,14 +1205,14 @@
   </footer>
 
   <script src="js/preferences.js?v=dc8aac2d324d"></script>
-  <script src="js/i18n/data.js?v=e62c86472d56"></script>
+  <script src="js/i18n/data.js?v=9af202513aa1"></script>
   <script src="js/i18n/core.js?v=9c901657f9db"></script>
   <script src="js/i18n/theme.js?v=27e8a00c2ee5"></script>
   <script src="js/i18n/controls.js?v=9183ed691488"></script>
   <script src="js/i18n/project-host.js?v=35b56e6bdb1d"></script>
   <script src="js/i18n/language.js?v=efd8d17959f5"></script>
   <script src="js/erhu-content.js?v=54853c9605ca"></script>
-  <script src="js/erhu.js?v=5c8ac1cbdaa3"></script>
+  <script src="js/erhu.js?v=d6426a683a0a"></script>
   <script src="js/archived-projects.js?v=a0ce08a6ce8f"></script>
   <script src="js/about.js?v=cfcf08b1d2b9"></script>
   <script src="js/github-card.js?v=e1ed9570aca4"></script>
@@ -1218,16 +1220,17 @@
   <script src="js/gallery-photos.js?v=ff53a3b7ac36"></script>
   <script src="js/gallery-preview.js?v=daad2733fc73"></script>
   <script src="js/haptics.js?v=189f612efc57"></script>
-  <script src="js/site-history-content.js?v=904e3d384f3a"></script>
-  <script src="js/site-history.js?v=bcca24d9a5f4"></script>
+  <script type="application/json" data-feature="site-history-open" data-feature-src="js/site-history-content.js?v=904e3d384f3a"></script>
+  <script type="application/json" data-feature="site-history-open" data-feature-src="js/site-history.js?v=bcca24d9a5f4"></script>
   <script src="js/psalm-content.js?v=d0c1edf83dd2"></script>
   <script src="js/psalm.js?v=f73643cec70a"></script>
   <script src="js/contact.js?v=9d43bce92279"></script>
-  <script src="js/rally-engine.js?v=2080f13d66a7"></script>
-  <script src="js/rally-picker.js?v=541dba0bc94b"></script>
-  <script src="js/rally-effects.js?v=3965bd42b086"></script>
-  <script src="js/rally.js?v=d3ef489b9221"></script>
+  <script type="application/json" data-feature="rally-open" data-feature-src="js/rally-engine.js?v=2080f13d66a7"></script>
+  <script type="application/json" data-feature="rally-open" data-feature-src="js/rally-picker.js?v=541dba0bc94b"></script>
+  <script type="application/json" data-feature="rally-open" data-feature-src="js/rally-effects.js?v=3965bd42b086"></script>
+  <script type="application/json" data-feature="rally-open" data-feature-src="js/rally.js?v=d3ef489b9221"></script>
   <script src="js/main.js?v=1ee09ffeb61e"></script>
+  <script src="js/home-features.js?v=140c9e829fa1"></script>
   <script src="js/notes.js?v=6d4a2915164e"></script>
   <script src="js/notes-carousel.js?v=5d9a31017cc9"></script>
   <script src="js/home-navigation.js?v=16e1e90f5a36"></script>

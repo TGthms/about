@@ -1607,3 +1607,15 @@ Object.keys(NOTES_SEARCH_COPY).forEach(function (lang) {
 Object.entries({en: "Updated {date}", es: "Actualizado: {date}", zh: "更新于 {date}", "zh-Hant": "更新於 {date}", ja: "更新：{date}", ko: "업데이트: {date}"}).forEach(function (entry) {
   TRANSLATIONS[entry[0]].links.githubCard.snapshot = entry[1];
 });
+
+const FEATURE_LOAD_FAILURE = {
+  en: "Couldn’t open this. Try again.",
+  es: "No se pudo abrir. Inténtalo de nuevo.",
+  zh: "暂时无法打开，请重试。",
+  "zh-Hant": "暫時無法開啟，請再試一次。",
+  ja: "開けませんでした。もう一度お試しください。",
+  ko: "열지 못했어요. 다시 시도해 주세요."
+};
+Object.keys(FEATURE_LOAD_FAILURE).forEach(function (lang) {
+  TRANSLATIONS[lang].featureLoadFailed = FEATURE_LOAD_FAILURE[lang];
+});

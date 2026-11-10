@@ -251,3 +251,8 @@ an already-open desktop page intentionally keeps its original runtime policy.
 ### Asset cache versions
 
 After editing JavaScript or CSS, run `python3 scripts/version-assets.py` to refresh local resource references. GitHub Actions performs this automatically before validation and again in the deployment checkout, so small text edits in the language data can deploy without manually editing hashes. Missing assets and invalid references still fail validation.
+
+To change the site's canonical address, set `CANONICAL_ORIGIN` in
+`scripts/site_urls.py` and run the same command before committing. It updates
+the public page metadata, sitemap, and robots file. Social preview images and
+RSS use the stable Pages address independently of that setting.

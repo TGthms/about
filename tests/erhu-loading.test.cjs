@@ -43,20 +43,24 @@ test('erhu media waits for interest and reuses the preloaded photo and video', (
   assert.equal(h.videos.length, 0);
   assert.equal(h.nodes.filter(x => x.tagName === "IMG").length, 0);
   h.opener.listeners.pointerenter();
+  assert.equal(h.videos.length, 0, 'instrument interest does not fetch the video');
+  h.performance.listeners.pointerenter({pointerType:'mouse'});
   assert.equal(h.videos.length, 1);
-  assert.equal(h.videos[0].preload, 'auto');
+  assert.equal(h.videos[0].preload, 'metadata');
+  assert.equal(h.videos[0].poster, 'assets/erhu/performance-poster.webp');
   const photo = h.nodes.find(x => x.tagName === 'IMG');
   assert.equal(photo.attrs.src, 'assets/erhu/erhu-instrument.jpg');
   h.opener.listeners.focus();
-  assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 1);
+  assert.equal(h.nodes.filter(x => x.hasAttribute('data-src')).length, 1);
   h.open();
   assert.equal(h.videos.length, 1, 'opening reuses the preloaded media element');
-  assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 1);
+  assert.equal(h.videos[0].preload, 'auto');
+  assert.equal(h.nodes.filter(x => x.hasAttribute('data-src')).length, 1);
   h.opener.listeners.click();
   assert.equal(photo.alt, 'A traditional erhu from the Metropolitan Museum of Art');
   h.performance.listeners.click();
   h.closePerformance(); h.open();
-  assert.equal(h.nodes.filter(x => x.tagName === 'IMG').length, 1);
+  assert.equal(h.nodes.filter(x => x.hasAttribute('data-src')).length, 1);
 });
 
 test('data-saving connections skip speculative video loading but can open the player', () => {

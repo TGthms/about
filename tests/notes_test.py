@@ -173,11 +173,30 @@ class NotesTests(unittest.TestCase):
         self.build()
         for suffix in ['', '.zh']:
             redirect = (self.public / ('notes/old-address' + suffix + '.html')).read_text()
-            self.assertIn('content="0;url=https://timgong.me/notes/new-address' + suffix + '.html"', redirect)
+            self.assertIn('content="0;url=new-address' + suffix + '.html"', redirect)
             self.assertIn('content="noindex"', redirect)
         self.assertNotIn('old-address', (self.public / 'feed.xml').read_text())
         self.post('old-address')
         with self.assertRaises(ValueError): self.build()
+
+    def test_sharing_images_and_feed_survive_canonical_switch(self):
+        cover = self.image('cover.png', (1200, 630))
+        self.post(cover=cover, cover_alt='A cover',
+                  translations=[{'language':'zh-Hant','published':True,'title':'標題','body':'<p>文字</p>'}])
+        self.build()
+        article = self.public / 'notes/example.html'
+        feed = self.public / 'feed.xml'
+        old_feed = feed.read_text()
+        self.assertRegex(article.read_text(), r'property="og:image" content="https://t-g\.pages\.dev/assets/notes/')
+        with patch.object(notes.site_urls, 'CANONICAL_ORIGIN', notes.FEED_ORIGIN):
+            self.build()
+            self.assertIn('rel="canonical" href="https://t-g.pages.dev/notes/example"', article.read_text())
+            self.assertIn('hreflang="zh-Hant" href="https://t-g.pages.dev/notes/example.zh-Hant"', article.read_text())
+            self.assertNotIn('https://timgong.me', (self.public / 'sitemap.xml').read_text())
+            self.assertEqual(feed.read_text(), old_feed)
+        self.build()
+        self.assertIn('rel="canonical" href="https://timgong.me/notes/example.html"', article.read_text())
+        self.assertIn('hreflang="zh-Hant" href="https://timgong.me/notes/example.zh-Hant.html"', article.read_text())
     def test_birthday_clock_uses_first_publication_and_survives_edits_and_republication(self):
         def git(*args, stamp=None):
             env = dict(os.environ)

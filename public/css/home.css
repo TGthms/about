@@ -1319,3 +1319,7 @@ html .home-page .project-host--section .host-option {
 .notes-spotlight__image--crop, html[data-lightweight] .notes-spotlight__image--crop { padding: 0; height: var(--note-cover-height); }
 .notes-spotlight__image--crop .notes-spotlight__media { width: 100%; height: 100%; border-radius: 0; }
 .notes-spotlight__image--crop img { object-fit: cover; }
+
+.feature-load-status { color: var(--mute); font-size: .8125rem; margin-top: 6px; }
+.feature-load-status:empty { margin: 0; }
+#rally-open[aria-busy], #site-history-open[aria-busy] { cursor: progress; }

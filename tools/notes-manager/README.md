@@ -92,7 +92,10 @@ The publication panel tracks validation, private backup, export/build, and verif
 completion on both website hosts. Host readiness is confirmed by the existing
 publication workflow, rather than inferred from the newest public commit. On success,
 **Open published note** uses the stable Pages domain. On failure, the failed step
-and workflow link remain available. The panel can be hidden without stopping the run.
+and workflow link remain available. If only one host fails, open its deployment
+from the panel, retry there, and choose **Check deployment again**. If a newer
+site revision is available, review its deployment first. The panel can be hidden
+without stopping the run.
 
 ## Complete private backups and restore
 

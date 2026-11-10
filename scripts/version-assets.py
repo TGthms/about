@@ -5,7 +5,7 @@ import hashlib
 from pathlib import Path
 import re
 
-RESOURCE = re.compile(r'''((?:src|href|data-balloons-src|data-number-flow-src|data-fireworks-src)\s*=\s*)(["'])((?:/|(?:\.\./)*)(?:js|css)/[\w/.-]+)(?:\?v=[a-f0-9]+)?\2''')
+RESOURCE = re.compile(r'''((?:src|href|data-feature-src|data-balloons-src|data-number-flow-src|data-fireworks-src)\s*=\s*)(["'])((?:/|(?:\.\./)*)(?:js|css)/[\w/.-]+)(?:\?v=[a-f0-9]+)?\2''')
 
 def refresh(public):
     public = public.resolve()
@@ -27,7 +27,10 @@ def refresh(public):
     return changed
 
 if __name__ == '__main__':
+    import site_urls
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--public', type=Path, default=Path('public'))
     args = parser.parse_args()
+    site_urls.refresh(args.public)
     print('Updated resource versions in ' + str(refresh(args.public)) + ' pages.')

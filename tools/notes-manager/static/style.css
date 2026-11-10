@@ -39,3 +39,7 @@ button.danger-action{background:var(--danger);border-color:var(--danger);color:v
 @media(min-width:951px){main{height:100dvh;display:flex;flex-direction:column;min-width:0}.workspace-bar,#notice,#publication-progress{flex-shrink:0}.workspace{flex:1;min-height:0;height:auto!important}.writing-pane{min-height:0}.writing-only .writing-pane{height:100%}}
 
 .preview-bar{min-height:54px;height:auto;padding-block:8px;flex-wrap:wrap}#preview-theme{font-size:11px;padding:6px 7px;max-width:135px}.code-editor .cm-tooltip{background:var(--paper);color:var(--text);border:1px solid var(--line)}.code-editor .cm-search .cm-textfield,.code-editor .cm-search .cm-button{background:var(--paper);color:var(--text);border-color:var(--line)}
+
+.publication-stages li[data-state=failed] { color: var(--danger); font-weight: 600; }
+.publication-stages li[data-state=failed]:before { content: "×"; }
+.publication-controls { flex-wrap: wrap; }

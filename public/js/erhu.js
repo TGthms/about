@@ -7,6 +7,7 @@
   if (window.SiteRuntime) PHOTO_SRC = window.SiteRuntime.image(PHOTO_SRC);
   var photoEl = null;
   var VIDEO_SRC = "assets/erhu/always-with-me-performance.mp4";
+  var POSTER_SRC = "assets/erhu/performance-poster.webp";
   var openButton = document.getElementById("erhu-wiki-open");
   var performanceButton = document.getElementById("erhu-performance-open");
   var wikiModal = document.getElementById("erhu-wiki-modal");
@@ -112,7 +113,8 @@
       videoEl.playsInline = true;
       videoEl.setAttribute("playsinline", "");
       videoEl.setAttribute("webkit-playsinline", "");
-      videoEl.preload = lightweight ? "none" : "auto";
+      videoEl.preload = "none";
+      videoEl.poster = POSTER_SRC;
       var sourceEl = document.createElement("source");
       sourceEl.src = VIDEO_SRC;
       sourceEl.type = "video/mp4";
@@ -146,9 +148,9 @@
     ensureStash().appendChild(videoEl);
   }
 
-  function kickVideoLoad() {
+  function kickVideoLoad(preload) {
     if (!videoEl || lightweight) return;
-    videoEl.preload = "auto";
+    videoEl.preload = preload;
     if (!videoLoadFailed && !videoEl.error) {
       if (videoEl.readyState >= 1) return;
       if (videoEl.networkState === 2) return;
@@ -176,9 +178,16 @@
     if (!canSilentPreload()) return;
     preloadStarted = true;
     ensurePhoto().setAttribute("src", PHOTO_SRC);
+    var poster = document.createElement("img");
+    poster.src = POSTER_SRC;
+  }
+
+  function preparePerformance() {
+    if (!canSilentPreload() || videoEl) return;
+    startSilentPreload();
     ensureVideo();
-    if (activeModal !== performanceModal) stashVideo();
-    kickVideoLoad();
+    stashVideo();
+    kickVideoLoad("metadata");
   }
 
   function scheduleSilentPreload() {
@@ -190,12 +199,12 @@
         window.setTimeout(startSilentPreload, 600);
       }
     }
-    // Keep intentional preloading, but give the hero and visible photos priority.
-    // Proximity or explicit interest is a better signal than page load alone.
-    [openButton, performanceButton].filter(Boolean).forEach(function (button) {
-      button.addEventListener("pointerenter", startSilentPreload, { once: true });
-      button.addEventListener("focus", startSilentPreload, { once: true });
+    openButton.addEventListener("pointerenter", startSilentPreload, { once: true });
+    openButton.addEventListener("focus", startSilentPreload, { once: true });
+    performanceButton.addEventListener("pointerenter", function (event) {
+      if (event.pointerType === "mouse") preparePerformance();
     });
+    performanceButton.addEventListener("focus", preparePerformance);
     if (window.IntersectionObserver) {
       var observer = new IntersectionObserver(function (entries) {
         if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
@@ -238,7 +247,7 @@
       videoStatus.append(videoStatusText, videoProgress);
       body.appendChild(videoStatus);
       lastStatus = "";
-      kickVideoLoad(); updateVideoStatus();
+      kickVideoLoad("auto"); updateVideoStatus();
       if (lightweight) {
         var videoLink = text("a", "erhu-dialog-action", copy.videoTitle + " ↗");
         videoLink.href = VIDEO_SRC;

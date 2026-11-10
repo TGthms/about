@@ -24,10 +24,13 @@ _blocks_spec = importlib.util.spec_from_file_location('notes_content_blocks', Pa
 content_blocks = importlib.util.module_from_spec(_blocks_spec)
 _blocks_spec.loader.exec_module(content_blocks)
 
-ORIGIN = 'https://timgong.me'
-FEED_ORIGIN = 'https://t-g.pages.dev'
-FEED_URL = FEED_ORIGIN + '/feed.xml'
 ROOT = Path(__file__).resolve().parents[2]
+_urls_spec = importlib.util.spec_from_file_location('site_urls', ROOT / 'scripts/site_urls.py')
+site_urls = importlib.util.module_from_spec(_urls_spec)
+_urls_spec.loader.exec_module(site_urls)
+ORIGIN = site_urls.CANONICAL_ORIGIN
+FEED_ORIGIN = site_urls.STABLE_ORIGIN
+FEED_URL = FEED_ORIGIN + '/feed.xml'
 LANGS = {'en': 'English', 'es': 'Español', 'zh': '简体中文', 'zh-Hant': '繁體中文', 'ja': '日本語', 'ko': '한국어'}
 FONTS = {'default', 'sans', 'serif', 'mono'}
 TABLE_NAMES = {'en': 'Table', 'zh': '表格', 'zh-Hant': '表格', 'ja': '表', 'ko': '표', 'es': 'Tabla'}
@@ -571,7 +574,13 @@ def reaction_id(post):
 
 def render_post(version, original, media, prefix='../', reactions=False):
     versions = version_links(original, prefix).replace(f'data-note-version="{esc(version["language"])}"', f'aria-current="page" data-note-version="{esc(version["language"])}"')
-    language_picker = ('<span data-note-language-label data-i18n="notes.readIn">Read in</span>' + versions) if len(original['_versions']) > 1 else f'<span data-note-language-label data-note-original="{esc(original["language"])}">Written in {esc(LANGS.get(original["language"], original["language"]))}</span>'
+    language_picker = ''
+    original_language = ''
+    if len(original['_versions']) > 1:
+        language_picker = '<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages"><span data-note-language-label data-i18n="notes.readIn">Read in</span>' + versions + '</nav>'
+    else:
+        code = esc(original['language'])
+        original_language = f'<span class="note-header__language"><span aria-hidden="true"> · </span><span data-note-language-label data-note-original="{code}">Written in {esc(LANGS.get(original["language"], original["language"]))}</span></span>'
     heading = f'<h1>{esc(version["title"])}</h1>' if str(version.get('title') or '').strip() else '<h1 class="visually-hidden">' + esc(title(version)) + '</h1>'
     content = body(version, media, prefix)
     content = reading_contents(content)
@@ -601,13 +610,13 @@ def render_post(version, original, media, prefix='../', reactions=False):
     return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{ "" if keep_link else expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
             f'<a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a></div>'
-            f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G</p>' +
+            f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G{original_language}</p>' +
             '<div class="note-header__actions">' + like + '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div></div>' + notice + heading +
             (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix, links=not keep_link) +
             ('<p class="note-like-status" role="status" data-note-like-status></p>' if reactions else '') +
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
-            f'<nav class="note-language" aria-label="Post languages" data-i18n-aria="notes.languages">{language_picker}</nav>' +
+            language_picker +
             content + comments +
             '<footer class="note-end">' + f'<a class="notes-back" href="{prefix}notes.html"><span data-i18n="notes.all">All notes</span> <span aria-hidden="true">→</span></a>' +
             '</footer><p class="note-license"><a href="' + prefix + 'terms.html#content">© Tim G · CC BY-NC-ND 4.0</a></p></article>' + expired)
@@ -655,13 +664,13 @@ def shell(public, **values):
 def page(public, content, prefix='', kind='index', post=None, image='', image_alt='', alternates=''):
     headline = title(post) + ' — Tim G' if post else ('Follow updates — Tim G' if kind == 'follow' else 'Notes — Tim G')
     desc = summary(post) if post else ('New notes, in your own feed reader.' if kind == 'follow' else 'Notes by Tim G.')
-    canonical = ORIGIN + '/' + (post['_filename'] if post else ('subscribe.html' if kind == 'follow' else ('notes.html' if not prefix else 'notes/page-1.html')))
+    canonical = site_urls.canonical_url(post['_filename'] if post else ('subscribe.html' if kind == 'follow' else ('notes.html' if not prefix else 'notes/page-1.html')))
     structured = ''
     if post:
         data = {'@context': 'https://schema.org', '@type': 'BlogPosting', 'headline': title(post), 'datePublished': post['date'], 'inLanguage': post['language'], 'author': {'@type': 'Person', 'name': 'Tim G', 'url': ORIGIN + '/'}, 'url': canonical, 'description': desc}
-        if image: data['image'] = ORIGIN + '/' + image
+        if image: data['image'] = FEED_ORIGIN + '/' + image
         structured = '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace('<', '\\u003c') + '</script>'
-    markup = shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
+    markup = shell(public, html_lang=esc(post['language'] if post else 'en'), prefix=prefix, title=esc(headline), description=esc(desc), canonical=esc(canonical), image=esc(FEED_ORIGIN + '/' + (image or 'og-image.png')), image_alt=esc(image_alt or headline), og_type='article' if post else 'website', og_locale=esc(LOCALES.get(post['language'] if post else 'en', 'en_US')), structured_data=structured, alternates=alternates, kind=kind, content=content)
     if 'data-note-expires=' in content or (post and post.get('_expires')):
         expiry = expiry_attr(post) if post and post.get('birthday_visibility') != 'keep-link' else ''
         guard = resource_versions(f'<script src="{prefix}js/notes-lifetime.js"{expiry}></script>', public)
@@ -814,7 +823,7 @@ def build(private, public, preview_path=None, preview_output=None):
                 rendered = render_post(version, post, media, reactions=not preview_path)
                 image, alt = first_photo(version); image_path = ''
                 if image: image_path = media.social(image, alt)
-                alternates = ''.join(f'<link rel="alternate" hreflang="{esc(v["language"])}" href="{ORIGIN}/{post_filename(v, post)}" />' for v in post['_versions'])
+                alternates = ''.join(f'<link rel="alternate" hreflang="{esc(v["language"])}" href="{site_urls.canonical_url(post_filename(v, post))}" />' for v in post['_versions'])
                 markup = page(public, rendered, prefix='../', kind='post', post=version, image=image_path, image_alt=alt, alternates=alternates)
                 if preview_path:
                     # Private artifacts have no external scripts, styles, or media.
@@ -851,7 +860,7 @@ def build(private, public, preview_path=None, preview_output=None):
                     dest = preview_output / Path(filename).name; dest.parent.mkdir(parents=True, exist_ok=True); dest.write_text(markup)
                 else:
                     (stage / filename).write_text(markup)
-                    if not post.get('_expires'): urls.append((ORIGIN + '/' + filename, post['date']))
+                    if not post.get('_expires'): urls.append((site_urls.canonical_url(filename), post['date']))
             if not post.get('_expires'): rss_items.append(post)
         if preview_path: return {'posts': len(posts), 'preview': True}
         for post in posts:
@@ -859,10 +868,11 @@ def build(private, public, preview_path=None, preview_output=None):
                 for alias in post.get('_aliases', []):
                     if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', alias) or alias == post['slug']: continue
                     old = post_filename({**version, 'slug': alias}, post)
-                    target = ORIGIN + '/' + post_filename(version, post)
+                    target = site_urls.canonical_url(post_filename(version, post))
+                    destination = Path(post_filename(version, post)).name
                     if (stage / old).exists(): raise ValueError('A previous address conflicts with another published note.')
-                    redirect = shell(public, html_lang=esc(version['language']), prefix='../', title='This note has moved — Tim G', description='Read this note at its current address.', canonical=esc(target), image=ORIGIN + '/og-image.png', image_alt='Tim G', og_type='website', og_locale=LOCALES.get(version['language'], 'en_US'), structured_data='', alternates='', kind='redirect', content=f'<section class="note-expired"><h1>This note has moved.</h1><p><a class="notes-back" href="{esc(target)}">Read the note →</a></p><a class="notes-back" href="../notes.html">All notes →</a></section>')
-                    redirect = redirect.replace('</head>', '<meta name="robots" content="noindex" /><meta http-equiv="refresh" content="0;url=' + esc(target) + '" /></head>')
+                    redirect = shell(public, html_lang=esc(version['language']), prefix='../', title='This note has moved — Tim G', description='Read this note at its current address.', canonical=esc(target), image=FEED_ORIGIN + '/og-image.png', image_alt='Tim G', og_type='website', og_locale=LOCALES.get(version['language'], 'en_US'), structured_data='', alternates='', kind='redirect', content=f'<section class="note-expired"><h1>This note has moved.</h1><p><a class="notes-back" href="{esc(destination)}">Read the note →</a></p><a class="notes-back" href="../notes.html">All notes →</a></section>')
+                    redirect = redirect.replace('</head>', '<meta name="robots" content="noindex" /><meta http-equiv="refresh" content="0;url=' + esc(destination) + '" /></head>')
                     (stage / old).write_text(redirect)
         reactions = {}
         for post in posts:
@@ -887,9 +897,9 @@ def build(private, public, preview_path=None, preview_output=None):
                 if index + 1 < page_count: pagination += f'<a href="{prefix}notes/page-{index + 2}.html"><span data-i18n="notes.older">Older notes</span> →</a>'
                 pagination += '</nav>'
             markup = page(public, f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>' + hero + search_control(posts, prefix) + category_nav(posts, prefix) + entries + pagination, prefix=prefix)
-            markup = markup.replace(ORIGIN + '/notes/page-1.html', ORIGIN + '/' + filename)
+            markup = markup.replace(site_urls.canonical_url('notes/page-1.html'), site_urls.canonical_url(filename))
             (stage / filename).write_text(markup)
-            urls.append((ORIGIN + '/' + filename, ''))
+            urls.append((site_urls.canonical_url(filename), ''))
         available = {}
         for post in posts: available.update(categories(post))
         if available: (stage / 'notes/topics').mkdir()
@@ -906,10 +916,10 @@ def build(private, public, preview_path=None, preview_output=None):
                 pagination += '</nav>'
                 content = (f'<a class="notes-back notes-site-return" href="{prefix}index.html#notes">← <span data-i18n="notes.backToSite">Back to site</span></a>'
                            f'<header class="notes-hero"><h1 data-note-category="{key}">{esc(label)}</h1></header>' + search_control(posts, prefix) + category_nav(posts, prefix, key) + entries + (pagination if count > 1 else ''))
-                markup = page(public, content, prefix=prefix, kind='topic').replace(ORIGIN + '/notes/page-1.html', ORIGIN + '/' + filename)
+                markup = page(public, content, prefix=prefix, kind='topic').replace(site_urls.canonical_url('notes/page-1.html'), site_urls.canonical_url(filename))
                 markup = markup.replace('<title>Notes — Tim G</title>', f'<title>{esc(label)} — Notes — Tim G</title>')
                 (stage / filename).write_text(markup)
-                urls.append((ORIGIN + '/' + filename, ''))
+                urls.append((site_urls.canonical_url(filename), ''))
         search = []
         for post in posts:
             if is_birthday(post): continue
@@ -927,11 +937,11 @@ def build(private, public, preview_path=None, preview_output=None):
             item = ET.SubElement(channel, 'item'); url = FEED_ORIGIN + '/' + post_filename(post, post)
             for key, value in [('title', title(post)), ('link', url), ('description', summary(post)), ('pubDate', dt.datetime.combine(date(post['date']), dt.time(12), dt.timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT'))]: ET.SubElement(item, key).text = value
             # Keep existing identifiers stable when feed delivery moves to another host.
-            ET.SubElement(item, 'guid', {'isPermaLink': 'false'}).text = ORIGIN + '/' + post_filename(post, post)
+            ET.SubElement(item, 'guid', {'isPermaLink': 'false'}).text = site_urls.LEGACY_ORIGIN + '/' + post_filename(post, post)
         ET.ElementTree(rss).write(stage / 'feed.xml', encoding='utf-8', xml_declaration=True)
         home_entrance = entrance(posts, note_media)
         (stage / 'subscribe.html').write_text(follow_page(public))
-        urls.append((ORIGIN + '/subscribe.html', ''))
+        urls.append((site_urls.canonical_url('subscribe.html'), ''))
         # All content has passed validation before touching the deployment tree.
         for name in ('notes', 'assets/notes'):
             dest = public / name
@@ -957,11 +967,12 @@ def build(private, public, preview_path=None, preview_output=None):
         root = sitemap.getroot()
         for entry in list(root):
             location = entry.find('{' + namespace + '}loc')
-            if location is not None and (location.text in (ORIGIN + '/notes.html', ORIGIN + '/subscribe.html') or location.text.startswith(ORIGIN + '/notes/')): root.remove(entry)
+            if location is not None and site_urls.note_listing(location.text or ''): root.remove(entry)
         for url, updated in urls:
             entry = ET.SubElement(root, '{' + namespace + '}url'); ET.SubElement(entry, '{' + namespace + '}loc').text = url
             if updated: ET.SubElement(entry, '{' + namespace + '}lastmod').text = updated
         sitemap.write(public / 'sitemap.xml', encoding='utf-8', xml_declaration=True)
+    site_urls.refresh(public)
     return {'posts': len(posts), 'preview': False}
 
 def main():

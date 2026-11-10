@@ -34,7 +34,7 @@ class Check(HTMLParser):
         href = a.get('href', '')
         if href.startswith('#') and len(href) > 1:
             self.anchors.append(href[1:])
-        for key in ('href', 'src', 'data-src', 'data-hero-src', 'data-balloons-src', 'data-content-src', 'data-number-flow-src', 'data-fireworks-src'):
+        for key in ('href', 'src', 'data-src', 'data-hero-src', 'data-feature-src', 'data-balloons-src', 'data-content-src', 'data-number-flow-src', 'data-fireworks-src'):
             value = a.get(key, '')
             if not value or value.startswith(('#', 'https:', 'http:', 'mailto:', 'data:')):
                 continue

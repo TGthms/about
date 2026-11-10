@@ -838,17 +838,42 @@ function publicationProgress(record,result={}){
   const steps=result.steps||[],step=name=>steps.find(s=>s.name===name),exported=step('Export, validate, and publish notes'),verified=step('Confirm both website deployments');
   const success=result.status==='completed'&&result.conclusion==='success';
   const failed=result.status==='completed'&&!success;
+  const hosts=[['Cloudflare Pages','Cloudflare'],['Deploy to GitHub Pages','GitHub Pages']];
+  const hostStages=hosts.map(([key,label])=>{
+    const host=result.deployments?.[key];
+    if(success||host?.state==='ready')return [label+' ready','done'];
+    if(host?.state==='failed')return [label+' failed','failed'];
+    return [label+(host?' pending':''),verified?.status==='in_progress'?'active':'waiting'];
+  });
   const stages=[['Checking',record.phase==='checking'?'active':'done'],['Backed up',record.phase==='checking'?'waiting':record.phase==='backup'?'active':'done'],
     ['Building',success||exported?.conclusion==='success'?'done':record.run_id||record.phase==='building'?'active':'waiting'],
-    ['Cloudflare ready',success?'done':verified?.status==='in_progress'?'active':'waiting'],['GitHub Pages ready',success?'done':verified?.status==='in_progress'?'active':'waiting']];
+    ...hostStages];
   const list=el('ol',{class:'publication-stages'},stages.map(([label,status])=>el('li',{'data-state':status,text:label})));
   const heading=el('strong',{text:success?(record.action==='withdraw-note'?'Withdrawal complete':'Published'):failed?'Publication needs attention':'Publishing your saved revision'});
   const controls=el('div',{class:'publication-controls'});
   if(record.run_url)controls.append(el('a',{href:record.run_url,target:'_blank',rel:'noopener noreferrer',text:'Workflow details ↗'}));
+  if(failed&&exported?.conclusion==='success'){
+    if(result.newer_revision){
+      controls.append(el('a',{href:'https://github.com/TGthms/about/actions/workflows/static.yml',target:'_blank',rel:'noopener noreferrer',text:'Latest website deployments ↗'}));
+    }else{
+      for(const [key,label] of hosts){
+        const host=result.deployments?.[key];
+        if(host?.state==='failed'&&host.url)controls.append(el('a',{href:host.url,target:'_blank',rel:'noopener noreferrer',text:'Open '+label+' deployment ↗'}));
+      }
+    }
+    controls.append(button('Check deployment again',()=>watchRun(record),'quiet'));
+  }
   if(success&&record.action!=='withdraw-note'&&record.article_url)controls.append(el('a',{href:record.article_url,target:'_blank',rel:'noopener noreferrer',class:'open-published',text:'Open published note ↗'}));
   controls.append(button('Hide',()=>panel.hidden=true,'quiet'));
   const failure=steps.find(s=>s.status==='completed'&&!['success','skipped','neutral'].includes(s.conclusion));
-  panel.replaceChildren(heading,list,...(failed?[el('p',{text:failure?'Check “'+failure.name+'”. Your private writing is retained.':'The workflow did not complete successfully. Check its details before retrying; one host may already have updated.'})]:[]),controls);
+  let explanation='The workflow did not complete successfully. Check its details before retrying.';
+  if(exported?.conclusion==='success')explanation=result.newer_revision
+    ? 'Check the latest website deployment before retrying. Deploying this older revision could overwrite a newer update.'
+    : result.deployments
+    ? 'Your revision was exported. If a host failed, retry its deployment, then check again here.'
+    : 'Your revision was exported. Open the workflow details to check the deployments.';
+  else if(failure)explanation='Check “'+failure.name+'”. Your private writing is retained.';
+  panel.replaceChildren(heading,list,...(failed?[el('p',{text:explanation})]:[]),controls);
 }
 async function publicationDialog(withdraw=false){
   if(state.blocked){toast('Choose your recovered or saved version first.');return;}
@@ -882,7 +907,7 @@ async function watchRun(record){
       const good=result.conclusion==='success';$('#save-status').textContent=good?'Both website deployments finished':'Publication needs attention · see workflow';
       if(result.trashed){afterTrash(result.path,result.trash_id);await refreshLibrary();notice('The article was withdrawn and its private original is in Trash.');return;}
       if(result.trash_error){notice('The article was withdrawn. '+result.trash_error);await refreshLibrary();return;}
-      if(good)$('#notice').hidden=true;else notice('The workflow did not finish successfully. It may have updated one host; check the failed step before retrying.',{label:'View run',run:()=>window.open(record.run_url,'_blank','noopener')});
+      if(good)$('#notice').hidden=true;else notice('Check the publication status above for the next step.');
       await refreshLibrary();if(state.opened){const saved=await api('/api/note?path='+encodeURIComponent(state.opened.path));state.opened.status=saved.status;$('#release-state').textContent=state.epoch===state.saved?saved.status:'Unpublished changes';}return;
     }$('#save-status').textContent='Website deployment '+(result.status==='queued'?'queued':'in progress')+'…';
   }catch{$('#save-status').textContent='Publication status unavailable · your saved writing is retained';}
@@ -951,7 +976,7 @@ async function boot(){
     if(onlineTest){$('.library-brand small').textContent='Separate online test';$('#sync-status').textContent='Cloud autosave · test notes only';$('#workspace-backup').disabled=true;$('#workspace-backup').title='Complete backup/restore is not connected in this test version';$('#compare-published').hidden=true;$('#workflow-help').hidden=true;}const last=store.get('notes:last:'+state.repository);
     if(last&&state.items.some(i=>i.path===last))await openNote(last,true);
     if(state.connected===false)notice(disconnectedMessage());
-    if(session.last_publication?.run_id&&session.last_publication.status!=='completed')watchRun(session.last_publication);
+    if(session.last_publication?.run_id&&session.last_publication.conclusion!=='success')watchRun(session.last_publication);
   }catch(e){$('#save-status').textContent='Workspace needs attention';errorNotice(e);}
 }
 let checkingRemote=false;

@@ -221,6 +221,20 @@ class AuthoringTests(unittest.TestCase):
         checks[-1].update(status='completed',conclusion='failure')
         with self.assertRaises(ValueError):deployment.checks_ready(checks)
 
+    def test_partial_deployment_exposes_only_the_relevant_host_run(self):
+        url = 'https://github.com/TGthms/about/actions/runs/123'
+        checks = [
+            {'id':1,'name':'Cloudflare Pages','status':'completed','conclusion':'success'},
+            {'id':2,'name':'Validate site','status':'completed','conclusion':'failure','details_url':url + '/job/456'},
+            {'id':3,'name':'Deploy to GitHub Pages','status':'completed','conclusion':'skipped'},
+        ]
+        self.assertEqual(deployment.deployment_status(checks), {
+            'Cloudflare Pages': {'state':'ready','url':''},
+            'Deploy to GitHub Pages': {'state':'failed','url':url},
+        })
+        checks.append({'id':4,'name':'Deploy to GitHub Pages','status':'completed','conclusion':'success'})
+        self.assertTrue(deployment.checks_ready(checks))
+
     def test_workflow_python_snippets_and_preview_identity_permissions(self):
         for path in (ROOT/'scripts/notes/private-repository/.github/workflows').glob('*.yml'):
             workflow=yaml.safe_load(path.read_text())

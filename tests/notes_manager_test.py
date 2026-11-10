@@ -392,6 +392,38 @@ class ManagerTests(unittest.TestCase):
         result=self._finish_withdrawal('success');self.assertIn('newer edits',result['trash_error'])
         self.assertEqual(self.app.get(self.path)['document']['title'],'New writing')
 
+    def test_deployment_recheck_uses_the_exported_public_commit(self):
+        revision = 'a' * 40
+        check_url = 'https://api.github.com/repos/TGthms/about-notes/check-runs/456'
+        workflow = 'repos/TGthms/about-notes/actions/runs/123'
+        jobs = {'jobs':[{'check_run_url':check_url,'steps':[
+            {'name':'Confirm both website deployments','status':'completed','conclusion':'failure'}
+        ]}]}
+        public = 'repos/TGthms/about/commits/'
+        results = {
+            workflow:{'status':'completed','conclusion':'failure'},
+            workflow + '/jobs?per_page=20':jobs,
+            'repos/TGthms/about-notes/check-runs/456/annotations?per_page=100':[
+                {'title':'Notes public revision','message':revision}],
+            public + revision + '/check-runs?per_page=100':{'check_runs':[
+                {'id':1,'name':'Cloudflare Pages','status':'completed','conclusion':'success'},
+                {'id':2,'name':'Deploy to GitHub Pages','status':'completed','conclusion':'failure'}]},
+            public + 'main':{'sha':revision},
+        }
+        def run(*args):
+            return subprocess.CompletedProcess(args, 0, json.dumps(results[args[-1]]).encode(), b'')
+        with patch.object(manager, 'run', run):
+            status = self.app.run_status('123')
+            self.assertEqual(status['conclusion'], 'failure')
+            self.assertEqual(status['deployments']['Cloudflare Pages']['state'], 'ready')
+            self.assertEqual(status['deployments']['Deploy to GitHub Pages']['state'], 'failed')
+            self.assertFalse(status['newer_revision'])
+            results[public + 'main']['sha'] = 'b' * 40
+            self.assertTrue(self.app.run_status('123')['newer_revision'])
+            results[public + revision + '/check-runs?per_page=100']['check_runs'].append(
+                {'id':3,'name':'Deploy to GitHub Pages','status':'completed','conclusion':'success'})
+            self.assertEqual(self.app.run_status('123')['conclusion'], 'success')
+
     def test_cover_designs_are_private_and_duplicates_are_independent(self):
         identity='a'*24;design=json.loads((ROOT/'tools/notes-manager/vendor/og-studio/defaults.json').read_text())
         design.update(title='A cover',backgroundData='/media/images/example.png')

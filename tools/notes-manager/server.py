@@ -45,6 +45,7 @@ def module(name):
 
 notes = module('build')
 releases = module('releases')
+deployment = module('deployment')
 preview_bundle = module('preview_upload')
 _archive_spec = importlib.util.spec_from_file_location('manager_archives', HERE / 'archives.py')
 archives = importlib.util.module_from_spec(_archive_spec)
@@ -746,13 +747,25 @@ class Workspace:
         if not re.fullmatch(r'\d{1,20}', str(identity)): raise Problem('Invalid workflow run.')
         reply = run('gh', 'api', 'repos/TGthms/about-notes/actions/runs/' + str(identity))
         data = json.loads(reply.stdout)
-        # Read step names/status only; logs and credentials never reach the editor.
+        # Read status and the public commit marker; private logs never reach the editor.
         steps = []
         try:
             jobs = json.loads(run('gh', 'api', 'repos/TGthms/about-notes/actions/runs/' + str(identity) + '/jobs?per_page=20').stdout)
-            for job in jobs.get('jobs', []): steps.extend(job.get('steps', []))
-        except (Problem, ValueError): pass
+            for job in jobs.get('jobs', []):
+                job_steps = job.get('steps', [])
+                steps.extend(job_steps)
+                if any(step.get('name') == 'Confirm both website deployments' and
+                       step.get('status') in ('in_progress', 'completed') and step.get('conclusion') != 'skipped'
+                       for step in job_steps):
+                    data.update(self.public_deployments(job.get('check_run_url') or ''))
+        except (Problem, ValueError, KeyError): pass
         data['steps'] = [{k: step.get(k) for k in ('name', 'status', 'conclusion')} for step in steps]
+        recovered = (data.get('status') == 'completed' and data.get('conclusion') != 'success' and
+                     any(step['name'] == 'Confirm both website deployments' and step['conclusion'] == 'failure'
+                         for step in data['steps']) and bool(data.get('deployments')) and
+                     all(host['state'] == 'ready' for host in data['deployments'].values()))
+        if recovered:
+            data['conclusion'] = 'success'
         last = self.state / 'last-publication.json'
         if data.get('status') == 'completed' and last.exists():
             with self.writing():
@@ -771,7 +784,25 @@ class Workspace:
                         atomic(last,encode(record))
                     for key in ('trashed','trash_id','trash_error','path'):
                         if key in record: data[key] = record[key]
-        return {k: data.get(k) for k in ('status', 'conclusion', 'html_url', 'head_sha','trashed','trash_id','trash_error','path','steps')}
+        return {k: data.get(k) for k in ('status', 'conclusion', 'html_url', 'head_sha','trashed','trash_id','trash_error','path','steps','deployments','newer_revision')}
+
+    def public_deployments(self, check_run_url):
+        check = re.fullmatch(r'https://api\.github\.com/repos/TGthms/about-notes/check-runs/(\d+)', check_run_url, re.I)
+        if not check: return {}
+        annotations = json.loads(run('gh', 'api', f'repos/TGthms/about-notes/check-runs/{check[1]}/annotations?per_page=100').stdout)
+        revision = next((entry.get('message', '') for entry in annotations if entry.get('title') == deployment.REVISION_TITLE), '')
+        if not re.fullmatch(r'[a-f0-9]{40}', revision): return {}
+        response = run('gh', 'api', f'repos/TGthms/about/commits/{revision}/check-runs?per_page=100')
+        hosts = deployment.deployment_status(json.loads(response.stdout)['check_runs'])
+        result = {'deployments': hosts}
+        if any(host['state'] == 'failed' for host in hosts.values()):
+            # Re-running an older Pages workflow could overwrite a newer release.
+            result['newer_revision'] = True
+            try:
+                head = json.loads(run('gh', 'api', 'repos/TGthms/about/commits/main').stdout)['sha']
+                result['newer_revision'] = head != revision
+            except (Problem, ValueError, KeyError): pass
+        return result
 
     def job(self, operation, data):
         if operation not in ('preview', 'sync', 'publish', 'withdraw','trash','backup','restore-preview','restore'): raise Problem('Unknown operation.')
