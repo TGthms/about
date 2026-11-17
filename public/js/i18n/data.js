@@ -38,6 +38,7 @@ const TRANSLATIONS = {
       eyebrow: "Hi, I’m",
       note: "I make websites, take photos, and play the erhu. This is where I keep a little of each.",
       contact: "Contact",
+      hearMePlay: "Hear me play",
       scroll: "Scroll",
     },
     about: {
@@ -198,6 +199,7 @@ const TRANSLATIONS = {
       eyebrow: "Hola, soy",
       note: "Hago sitios web, tomo fotos y toco el erhu. Aquí reúno un poco de todo.",
       contact: "Contacto",
+      hearMePlay: "Escucha cómo toco",
       scroll: "Bajar",
     },
     about: {
@@ -358,6 +360,7 @@ const TRANSLATIONS = {
       eyebrow: "你好，我是",
       note: "我做网站、拍照，也拉二胡。这里收集着我的一些作品和日常兴趣。",
       contact: "联系",
+      hearMePlay: "听我拉二胡",
       scroll: "向下浏览",
     },
     about: {
@@ -518,6 +521,7 @@ const TRANSLATIONS = {
       eyebrow: "こんにちは、",
       note: "ウェブサイトを作ったり、写真を撮ったり、二胡を弾いたり。ここに少しずつまとめています。",
       contact: "連絡先",
+      hearMePlay: "二胡の演奏を聴く",
       scroll: "下へ",
     },
     about: {
@@ -685,6 +689,7 @@ TRANSLATIONS["zh-Hant"] = {
   "hero": {
     "eyebrow": "你好，我是",
     "contact": "聯絡",
+    "hearMePlay": "聽我拉二胡",
     "note": "我做網站、拍照，也拉二胡。這裡收集著我的一些作品和日常興趣。",
     "scroll": "向下瀏覽"
   },
@@ -1000,6 +1005,7 @@ TRANSLATIONS.ko = {
     "eyebrow": "안녕하세요, 저는",
     "note": "웹사이트를 만들고, 사진을 찍고, 얼후를 연주해요. 그 이야기들을 조금씩 모아 두는 곳입니다.",
     "contact": "연락하기",
+    "hearMePlay": "제 얼후 연주 듣기",
     "scroll": "아래로"
   },
   "about": {

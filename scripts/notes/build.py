@@ -610,9 +610,11 @@ def render_post(version, original, media, prefix='../', reactions=False):
     return (f'<article class="notes-post{ " notes-post--long" if "note-reading-layout" in content else ""}" lang="{esc(version["language"])}" data-note-font="{esc(version.get("font", "default"))}"{ "" if keep_link else expiry_attr(original)}>'
             f'<div class="note-return"><a class="notes-back" href="{prefix}index.html#notes" data-note-site-return hidden>← <span data-i18n="notes.backToSite">Back to site</span></a>'
             f'<a class="notes-back" href="{prefix}notes.html">← <span data-i18n="notes.all">All notes</span></a></div>'
-            f'<header class="note-header"><div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G{original_language}</p>' +
-            '<div class="note-header__actions">' + like + '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div></div>' + notice + heading +
-            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') + category_labels(original, prefix, links=not keep_link) +
+            '<header class="note-header">' + heading +
+            (f'<p class="note-header__summary">{esc(version["summary"])}</p>' if version.get('summary') else '') +
+            f'<div class="note-header__meta"><p class="note-header__date"><time datetime="{version["date"]}" data-note-date>{readable_date(version["date"])}</time> · Tim G{original_language}</p>' +
+            '<div class="note-header__actions">' + like + '<button class="note-share" type="button" id="note-share" hidden>' + SHARE_ICON + '<span data-i18n="notes.share">Share this note</span></button></div></div>' + notice +
+            category_labels(original, prefix, links=not keep_link) +
             ('<p class="note-like-status" role="status" data-note-like-status></p>' if reactions else '') +
             '<p class="visually-hidden" role="status" aria-live="polite" id="note-share-status"></p>' +
             '<label class="note-share-fallback" id="note-share-fallback" hidden><span data-i18n="notes.copyFailed">You can copy the link below.</span><input readonly type="url" aria-label="Post link" data-i18n-aria="notes.postLink" /></label></header>' +
@@ -638,13 +640,14 @@ def card(post, note_media, prefix):
     if photo:
         markup, _ = note_media[post['_id']].image(photo, alt, prefix, sizes='(max-width: 480px) 96px, (max-width: 767px) 144px, 208px')
         image = markup.replace('<img ', '<img class="note-card__image' + (' note-card__image--crop' if post.get('thumbnail_focal') else '') + '" ' + focal_style(post), 1)
-    heading = f'<h2 class="note-card__title" data-note-title>{esc(post["title"])}</h2>' if str(post.get('title') or '').strip() else ''
-    text = summary(post)
-    return (f'<li class="note-card" lang="{esc(post["language"])}"{expiry_attr(post)}><div class="note-card__date"><time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' + availability(post) + '</div>'
-            f'<a class="note-card__link{ " note-card__link--photo" if image else ""}" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}"><div class="note-card__copy">{heading}' +
-            (f'<p class="note-card__excerpt" data-note-summary>{esc(text)}</p>' if text else '') +
-            '<span class="note-card__meta"><span class="note-card__more"><span data-i18n="notes.read">Read note</span> <span aria-hidden="true">→</span></span>' +
-            f'<span data-note-language-name>{esc(LANGS.get(post["language"], post["language"]))}</span></span></div>' + image + '</a>' + category_labels(post, prefix) + '</li>')
+    headline, text = title(post), summary(post)
+    code = post['language']
+    return (f'<li class="note-card"{expiry_attr(post)}><div class="note-card__date"><time datetime="{post["date"]}" data-note-date>{readable_date(post["date"])}</time>' + availability(post) + '</div>'
+            f'<a class="note-card__link{ " note-card__link--photo" if image else ""}" {variant_data(post, prefix)} href="{prefix}{post_filename(post, post)}" hreflang="{esc(code)}"><div class="note-card__copy">'
+            f'<h2 class="note-card__title" data-note-title lang="{esc(code)}">{esc(headline)}</h2>'
+            f'<p class="note-card__excerpt" data-note-summary lang="{esc(code)}"{ " hidden" if not text or text == headline else ""}>{esc(text)}</p>'
+            f'<span class="note-card__language" data-note-language-name="{esc(LANGS.get(code, code))}" lang="{esc(code)}"{ " hidden" if code == "en" else ""}>{esc(LANGS.get(code, code))}</span></div>'
+            + image + '</a></li>')
 
 def resource_versions(markup, public):
     def replace(match):

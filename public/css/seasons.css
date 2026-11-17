@@ -24,11 +24,13 @@
 .seasonal-credits[open] p { padding: 10px 12px; border-radius: 8px; background: color-mix(in srgb, var(--bg) 90%, transparent); }
 html[data-occasion="christmas"] .hero { --signature-accent: #a26c2e; --accent-text: #765020; }
 html[data-theme="dark"][data-occasion="christmas"] .hero { --signature-accent: #dfb66e; --accent-text: #e6c284; }
-html[data-occasion="christmas"] .hero__backdrop img { object-position: 68% center; }
-html[data-occasion="good-friday"] .hero__backdrop img { object-position: 74% center; }
-html[data-occasion="easter"] .hero__backdrop img { object-position: 75% center; }
-html[data-occasion="thanksgiving"] .hero__backdrop img { object-position: 72% center; }
-html[data-occasion="palm-sunday"] .hero__backdrop img { object-position: 78% center; }
+/* The seasonal previews use the same crop as their full-size photographs. */
+html[data-occasion="christmas"] .home-page .hero__photo { --hero-preview: url("../assets/hero-preview/christmas.webp"); --hero-photo-position: 68% center; }
+html[data-occasion="good-friday"] .home-page .hero__photo { --hero-preview: url("../assets/hero-preview/good-friday.webp"); --hero-photo-position: 74% center; }
+html[data-occasion="easter"] .home-page .hero__photo { --hero-preview: url("../assets/hero-preview/easter.webp"); --hero-photo-position: 75% center; }
+html[data-occasion="thanksgiving"] .home-page .hero__photo { --hero-preview: url("../assets/hero-preview/thanksgiving.webp"); --hero-photo-position: 72% center; }
+html[data-occasion="palm-sunday"] .home-page .hero__photo { --hero-preview: url("../assets/hero-preview/palm-sunday.webp"); --hero-photo-position: 78% center; }
+html[data-new-year-phase="greeting"] .home-page .hero__photo { --hero-preview: url("../assets/hero-preview/new-year.webp"); --hero-photo-position: 75% center; }
 html[data-occasion="good-friday"] .hero__photo { filter: brightness(.88) saturate(.72); }
 html[data-theme="dark"][data-occasion="good-friday"] .hero__photo { filter: brightness(.66) saturate(.76); }
 html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::before {
@@ -122,15 +124,14 @@ html[data-theme="light"] .season-stage__year, html[data-theme="light"] .season-s
 html[data-theme="light"] .season-stage__track { stroke: var(--rule); }
 .home-page .hero__backdrop .seasonal-year-photo { opacity: 0; transform: scale(1.025); transition: opacity 1200ms ease, transform 1800ms cubic-bezier(.22, 1, .36, 1); object-position: 75% center; }
 .home-page .hero__backdrop .seasonal-year-photo.is-active { opacity: 1; transform: scale(1); }
-html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% center; }
 @keyframes season-stage-in { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
 @keyframes season-stage-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes season-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
 .seasonal-countdown[hidden], .seasonal-reference[hidden], .seasonal-credits[hidden], .seasonal-verse[hidden], .hero__occasion[hidden], .hero__note[hidden] { display: none; }
 @media (max-width: 1024px) {
-  html[data-new-year-phase="greeting"] .hero__backdrop img,
+  html[data-new-year-phase="greeting"] .home-page .hero__photo { --hero-photo-position: 83% center; }
   .home-page .hero__backdrop .seasonal-year-photo { object-position: 83% center; }
-  html[data-occasion="easter"] .hero__backdrop img { object-position: 88% center; }
+  html[data-occasion="easter"] .home-page .hero__photo { --hero-photo-position: 88% center; }
   html[data-occasion]:not([data-new-year-phase="countdown"]) .hero__backdrop::before {
     background: linear-gradient(90deg, rgb(251 249 244 / 92%), rgb(251 249 244 / 82%) 45%, rgb(251 249 244 / 68%));
   }
@@ -139,11 +140,11 @@ html[data-new-year-phase="greeting"] .hero__backdrop img { object-position: 75% 
   }
 }
 @media (max-width: 767px) {
-  html[data-occasion="christmas"] .hero__backdrop img { object-position: 76% center; }
-  html[data-occasion="good-friday"] .hero__backdrop img { object-position: 82% center; }
-  html[data-occasion="easter"] .hero__backdrop img { object-position: 88% center; }
-  html[data-occasion="thanksgiving"] .hero__backdrop img { object-position: 85% center; }
-  html[data-occasion="palm-sunday"] .hero__backdrop img { object-position: 86% center; }
+  html[data-occasion="christmas"] .home-page .hero__photo { --hero-photo-position: 76% center; }
+  html[data-occasion="good-friday"] .home-page .hero__photo { --hero-photo-position: 82% center; }
+  html[data-occasion="easter"] .home-page .hero__photo { --hero-photo-position: 88% center; }
+  html[data-occasion="thanksgiving"] .home-page .hero__photo { --hero-photo-position: 85% center; }
+  html[data-occasion="palm-sunday"] .home-page .hero__photo { --hero-photo-position: 86% center; }
   .hero__occasion { font-size: .8rem; }
   .seasonal-verse { font-size: 1.05rem; line-height: 1.6; }
   html[data-occasion]:not([data-new-year-phase="countdown"]) .home-page .hero__name { font-size: clamp(4rem, 18vw, 4.75rem); margin-bottom: 16px; }

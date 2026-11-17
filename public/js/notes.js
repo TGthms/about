@@ -62,7 +62,18 @@
         });
         var label = link.querySelector("[data-note-language-name]");
         if (label) {
-          try { label.textContent = new Intl.DisplayNames([lang], { type: "language" }).of(chosen.language); } catch (_) { label.textContent = chosen.language; }
+          link.hreflang = chosen.language;
+          label.hidden = chosen.language === lang;
+          try {
+            label.textContent = new Intl.DisplayNames([lang], { type: "language" }).of(chosen.language);
+            label.lang = lang;
+          } catch (_) {
+            var original = variants[0].language;
+            label.textContent = chosen.language === original ? label.getAttribute("data-note-language-name") : chosen.language;
+            label.lang = chosen.language;
+          }
+          var excerpt = link.querySelector("[data-note-summary]");
+          excerpt.hidden = !chosen.summary || chosen.summary === chosen.title;
         }
       } catch (_) { /* The static original remains a usable fallback. */ }
     });

@@ -684,9 +684,12 @@ html .home-page .archived-projects-trigger:active { transform: scale(0.995); box
   transition: background-color 460ms var(--ease-out);
 }
 .home-page .hero__photo {
+  --hero-preview: url("../assets/hero-preview/landscape.webp");
+  --hero-photo-position: center 82%;
   position: absolute;
   inset: 0;
   overflow: hidden;
+  background: var(--hero-preview) var(--hero-photo-position) / cover no-repeat;
   filter: brightness(.94) saturate(1.02) contrast(1.01);
   transition: filter 460ms var(--ease-out);
 }
@@ -698,7 +701,7 @@ html .home-page .archived-projects-trigger:active { transform: scale(0.995); box
   height: 100%;
   object-fit: cover;
   /* Match main-modern.webp's crop so the bridge and pelican stay in view. */
-  object-position: center 82%;
+  object-position: var(--hero-photo-position);
   filter: none;
 }
 html.hero-photo-pending .home-page .hero__backdrop img:not(.is-hero-enter) {
@@ -906,7 +909,11 @@ html[data-theme="dark"] .home-page .hero__backdrop::after { opacity: 1; }
   }
   .home-page .hero__index a { font-size: 1.2rem; }
   .home-page .hero__index a::after { width: min(58%, 300px); }
-  .home-page .hero__backdrop img { object-position: center 82%; }
+}
+@media (max-width: 600px) and (max-aspect-ratio: 3/5) {
+  html:not([data-lightweight]) .home-page .hero__photo {
+    --hero-preview: url("../assets/hero-preview/portrait.webp");
+  }
 }
 @media (max-width: 480px) {
   .home-page .top-bar { padding-inline: max(16px, var(--gutter)); }
